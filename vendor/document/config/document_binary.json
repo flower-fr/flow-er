@@ -1,0 +1,14 @@
+{
+    "document_binary/model": {
+        "entities": {
+        },
+        "properties": {
+            "id": { "entity": "document_binary", "column": "id", "type": "primary" },
+            "data": { "entity": "document_binary", "column": "data", "type": "mediumblob" },
+
+            "visibility": { "entity": "document_binary", "column": "visibility", "audit": true },
+            "touched_at": { "entity": "document_binary", "column": "touched_at", "type": "datetime" },
+            "touched_by": { "entity": "document_binary", "column": "touched_by", "type": "int" }
+       }
+    }
+}

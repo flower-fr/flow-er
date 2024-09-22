@@ -1,0 +1,101 @@
+{
+    "log": {
+        "level" : "debug",
+        "console" : true,
+        "maxsize": 10000000,
+        "maxFiles": 10,
+        "filename" : "server.log"
+    },
+    "server" : {
+        "bindAddress": "0.0.0.0",
+        "listenPort" : "$PORT",
+        "middlewares": {
+            "bo": {
+                "dir": "../vendor/bo",
+                "prefix": "/bo/",
+                "db" : {
+                    "host": "$DB_HOST",
+                    "port": "$DB_PORT",
+                    "user": "$DB_USER",    
+                    "password": "$DB_PASSWORD"
+                }
+            },
+            "doc": {
+                "dir": "../vendor/doc",
+                "prefix": "/doc/",
+                "db" : {
+                    "host": "$DB_HOST",
+                    "port": "$DB_PORT",
+                    "user": "$DB_USER",    
+                    "password": "$DB_PASSWORD"
+                }
+            },
+            "mdb": {
+                "dir": "../vendor/mdb",
+                "prefix": "/mdb/",
+                "db" : {
+                    "host": "$DB_HOST",
+                    "port": "$DB_PORT",
+                    "user": "$DB_USER",    
+                    "password": "$DB_PASSWORD"
+                }
+            },
+            "document": {
+                "dir": "../vendor/document",
+                "prefix": "/document/",
+                "db" : {
+                    "host": "$DB_HOST",
+                    "port": "$DB_PORT",
+                    "user": "$DB_USER",    
+                    "password": "$DB_PASSWORD"
+                }
+            },
+            "hub": {
+                "dir": "../vendor/hub",
+                "prefix": "/hub/",
+                "db" : {
+                    "host": "$DB_HOST",
+                    "port": "$DB_PORT",
+                    "user": "$DB_USER",    
+                    "password": "$DB_PASSWORD"
+                }
+            },
+            "my": {
+                "dir": "../vendor/my",
+                "prefix": "/my/",
+                "db" : {
+                    "host": "$DB_HOST",
+                    "port": "$DB_PORT",
+                    "user": "$DB_USER",    
+                    "password": "$DB_PASSWORD"
+                }
+            },
+            "pub": {
+                "dir": "../vendor/pub",
+                "prefix": "/pub/",
+                "db" : {
+                    "host": "$DB_HOST",
+                    "port": "$DB_PORT",
+                    "user": "$DB_USER",    
+                    "password": "$DB_PASSWORD"
+                },
+                "recaptchaToken": "$RECAPTCHA_TOKEN"
+            },
+            "studio": {
+                "dir": "../vendor/studio",
+                "prefix": "/studio/",
+                "db" : {
+                    "host": "$DB_HOST",
+                    "port": "$DB_PORT",
+                    "user": "$DB_USER",    
+                    "password": "$DB_PASSWORD"
+                }
+            }
+       },
+        "config": {
+            "dir": "../config",
+            "dbName": "$DB_NAME",
+            "current": []
+        }
+    }
+}

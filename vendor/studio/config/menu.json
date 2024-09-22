@@ -1,0 +1,21 @@
+{  	
+    "applications": {
+		"studio": {
+			"labels": { "default": "Flow-ER Studio" }
+        }
+    },
+
+    "menu/studio": {
+        "tabs": ["tab/configView"],
+        "defaultTab": "tab/configView",
+        "labels": { "default": "Flow-ER Studio" }
+    },
+
+    "tab/configView": {
+        "menu": "menu/studio",
+        "route": "/bo/index/config_property",
+        "urlParams": "view=configView",
+        "labels": { "default": "Paramétrage" },
+        "darkMode": true
+    }
+}

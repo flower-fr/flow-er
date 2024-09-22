@@ -1,0 +1,17 @@
+{
+    "my_audit/model": {
+        "entities": {
+        },
+        "properties": {
+            "id": { "entity": "my_audit", "column": "id", "type": "primary" },
+            "entity": { "entity": "my_audit", "column": "entity" },
+            "row_id": { "entity": "my_audit", "column": "row_id", "type": "int" },
+            "property": { "entity": "my_audit", "column": "property" },
+            "value": { "entity": "my_audit", "column": "value" },
+
+            "visibility": { "entity": "my_audit", "column": "visibility", "audit": true },
+            "touched_at": { "entity": "my_audit", "column": "touched_at", "type": "datetime" },
+            "touched_by": { "entity": "my_audit", "column": "touched_by", "type": "int" }
+       }
+    }
+}

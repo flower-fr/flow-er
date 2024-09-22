@@ -1,0 +1,48 @@
+{
+    "menu/admin": {
+        "tabs": ["tab/profile", "tab/place", "tab/tag", "tab/interaction"],
+        "defaultTab": "tab/profile",
+        "labels": { "default": "Admin" }
+    },
+
+    "tab/profile": {
+        "menu": "menu/admin",
+        "route": "/bo/index/profile",
+        "urlParams": "view=profile",
+        "labels": { "default": "Équipe" }
+    },
+
+    "tab/interaction": {
+        "menu": "menu/admin",
+        "route": "/bo/index/interaction",
+        "urlParams": "view=interaction",
+        "labels": { "default": "Interactions" }
+    },
+
+    "tab/place": {
+        "menu": "menu/admin",
+        "route": "/bo/index/place",
+        "urlParams": "view=place",
+        "labels": { "default": "Places", "fr_FR": "Établissements" }
+    },
+
+    "tab/tag": {
+        "menu": "menu/admin",
+        "route": "/bo/index/tag",
+        "urlParams": "view=tag",
+        "labels": { "default": "Tags", "fr_FR": "Tags" }
+    },
+
+    "menu/contact": {
+        "tabs": ["tab/account"],
+        "defaultTab": "tab/account",
+        "labels": { "default": "Contacts" }
+    },
+
+    "tab/account": {
+        "menu": "menu/contact",
+        "route": "/bo/index/account",
+        "urlParams": "view=account",
+        "labels": { "default": "Accounts", "fr_FR": "Comptes" }
+    }
+}

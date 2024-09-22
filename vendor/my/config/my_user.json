@@ -1,0 +1,26 @@
+{
+    "my_user/model": {
+        "entities": {
+        },
+        "properties": {
+            "id": { "entity": "my_user", "column": "id", "type": "primary" },
+            "identifier": { "entity": "my_user", "column": "identifier" },
+            "password": { "entity": "my_user", "column": "password" },
+            "number_of_trials": { "entity": "my_user", "column": "number_of_trials" },
+            "password_date": { "entity": "my_user", "column": "password_date" },
+            "previous_password_1": { "entity": "my_user", "column": "previous_password_1" },
+            "previous_password_2": { "entity": "my_user", "column": "previous_password_2" },
+            "previous_password_3": { "entity": "my_user", "column": "previous_password_3" },
+            "password_init_token": { "entity": "my_user", "column": "password_init_token" },
+            "password_init_validity": { "entity": "my_user", "column": "password_init_validity", "type": "datetime" },
+            "n_first": { "entity": "my_user", "column": "n_first" },
+            "n_last": { "entity": "my_user", "column": "n_last" },
+            "n_fn": { "entity": "my_user", "column": "n_fn" },
+            "email": { "entity": "my_user", "column": "email" },
+
+            "visibility": { "entity": "my_user", "column": "visibility", "audit": true },
+            "touched_at": { "entity": "my_user", "column": "touched_at", "type": "datetime" },
+            "touched_by": { "entity": "my_user", "column": "touched_by", "type": "int" }
+       }
+    }
+}

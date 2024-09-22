@@ -1,0 +1,104 @@
+{
+    "tag/model": {
+        "entities": {},
+        "properties": {
+            "id": { "entity": "tag", "column": "id" },
+            "status": { "entity": "tag", "column": "status" },
+            "name": { "entity": "tag", "column": "name" },
+            "vector": { "entity": "tag", "column": "vector" },
+
+            "visibility": { "entity": "tag", "column": "visibility", "audit": true },
+            "touched_at": { "entity": "tag", "column": "touched_at", "type": "datetime" },
+            "touched_by": { "entity": "tag", "column": "touched_by", "type": "int" }
+        }
+    },
+
+    "tag/property/id": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Tag id"
+        }
+    },
+
+    "tag/property/status": {
+        "definition": "inline",
+        "type": "select",
+        "modalities": {
+            "new": { "default": "New", "fr_FR": "Actif" },
+            "active": { "default": "Archived", "fr_FR": "Archivé" }
+        },
+        "labels": {
+            "default": "Status",
+            "fr_FR": "Statut"
+        }
+    },
+
+    "tag/property/name": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Name",
+            "fr_FR": "Nom"
+        }
+    },
+
+    "tag/property/vector": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Vector",
+            "fr_FR": "Vecteur"
+        }
+    },
+		
+	"tag/index/tag": {
+        "view": "renderIndexB5"
+    }, 
+
+    "tag/search/default": {
+        "view": "renderSearchB5",
+        "properties": {
+            "status": { "multiple": true },
+            "name": {}
+        }
+    },
+
+    "tag/list/tag": {
+        "view": "renderDataviewB5",
+        "properties": {
+            "status": {},
+            "name": {},
+            "vector": {}
+        }
+    },
+
+    "tag/detail/default": {
+        "tabs": {
+            "contact_1": {
+                "definition": "inline",
+                "route": "/bo/update/tag",
+                "labels": {"en_US": "Tag"}
+            }
+        }
+    },
+
+	"tag/global/default": {
+		"actions": {
+			"export": {
+				"route": "generic/export/tag",
+				"labels": { "default": "Export", "fr_FR": "Exporter" },
+				"glyph": "fa-cloud-download-alt"
+            }
+        }
+    },
+
+    "tag/v1/default": {
+        "properties": {
+            "id": {},
+            "status": {},
+            "name": {},
+            "vector": {}
+        }
+    }
+}

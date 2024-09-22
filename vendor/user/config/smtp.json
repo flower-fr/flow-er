@@ -1,0 +1,8 @@
+{
+    "create-account": {
+        "replyAddress": "\"Flow-ER\" <contact@flow-er.fr>"
+    },
+    "reset-password": {
+        "replyAddress": "\"Flow-ER\" <contact@flow-er.fr>"
+    }
+}

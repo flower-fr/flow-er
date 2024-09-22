@@ -1,0 +1,17 @@
+{
+    "my_notification/model": {
+        "entities": {
+        },
+        "properties": {
+            "id": { "entity": "my_notification", "column": "id", "type": "primary" },
+            "user_id": { "entity": "my_notification", "column": "user_id", "type": "int" },
+            "from": { "entity": "my_notification", "column": "from" },
+            "subject": { "entity": "my_notification", "column": "subject" },
+            "text": { "entity": "my_notification", "column": "text", "type": "mediumtext" },
+
+            "visibility": { "entity": "my_notification", "column": "visibility", "audit": true },
+            "touched_at": { "entity": "my_notification", "column": "touched_at", "type": "datetime" },
+            "touched_by": { "entity": "my_notification", "column": "touched_by", "type": "int" }
+       }
+    }
+}

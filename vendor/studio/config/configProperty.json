@@ -1,0 +1,129 @@
+{
+    "config_property/model": {
+        "entities": {},
+        "properties": {
+            "id": { "entity": "config_property", "column": "id" },
+            "status": { "entity": "config_property", "column": "status" },
+            "entity": { "entity": "config_property", "column": "entity" },
+            "property_id": { "entity": "config_property", "column": "property_id" },
+            "definition": { "entity": "config_property", "column": "definition", "type": "json" },
+
+            "visibility": { "entity": "config_property", "column": "visibility", "audit": true },
+            "touched_at": { "entity": "config_property", "column": "touched_at", "type": "datetime" },
+            "touched_by": { "entity": "config_property", "column": "touched_by", "type": "int" }
+        }
+    },
+
+    "config_property/property/id": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Config id"
+        }
+    },
+
+    "config_property/property/status": {
+        "definition": "inline",
+        "type": "select",
+        "modalities": {
+            "active": { "default": "Active", "fr_FR": "Actif" },
+            "archived": { "default": "Archived", "fr_FR": "Archivé" }
+        },
+        "labels": {
+            "default": "Status",
+            "fr_FR": "Statut"
+        }
+    },
+
+    "config_property/property/entity": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Entity",
+            "fr_FR": "Entité"
+        }
+    },
+
+    "config_property/property/property_id": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Property",
+            "fr_FR": "Propriété"
+        }
+    },
+
+    "config_property/property/definition": {
+        "definition": "inline",
+        "type": "json",
+        "labels": {
+            "default": "Definition",
+            "fr_FR": "Définition"
+        }
+    },
+		
+	"config_property/index/configView": { 
+        "view": "renderIndexB5"
+    }, 
+
+    "config_property/search/configView": {
+        "properties": {
+            "status": { "multiple": true },
+            "entity": {},
+            "property_id": {}
+        }
+    },
+
+    "config_property/list/configView": {
+        "properties": {
+            "status": {},
+            "entity": {},
+            "property_id": {}
+        }
+    },
+
+    "config_property/detail/default": {
+        "tabs": {
+            "update": {
+                "definition": "inline",
+                "route": "/bo/update/config_property",
+                "key": "id",
+                "labels": { "default": "Detail", "fr_FR": "Détail" }
+            }
+        }
+    },
+
+    "config_property/update/default": {
+        "layout": {
+            "": {
+                "properties": ["status", "entity", "property_id", "definition"]
+            }
+        },
+        "properties": {
+            "status": {},
+            "entity": {},
+            "property_id": {},
+            "definition": {}
+        }
+    },
+
+	"config_property/global/default": {
+		"actions": {
+			"export": {
+				"route": "generic/export/config_property",
+				"labels": { "default": "Export", "fr_FR": "Exporter" },
+				"glyph": "fa-cloud-download-alt"
+            }
+        }
+    },
+
+    "config_property/v1/default": {
+        "properties": {
+            "id": {},
+            "status": {},
+            "entity": {},
+            "property_id": {},
+            "definition": {}
+        }
+    }
+}

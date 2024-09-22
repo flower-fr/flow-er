@@ -1,0 +1,18 @@
+{
+    "headerParams": {
+        "logo": "flow-er.png",
+        "logoHeight": "40"
+    },
+
+    "guard": {
+        "/bo/index/account": { "roles": ["sales_manager"]},
+        "/bo/index/place": { "roles": ["sales_manager"]},
+        "/bo/index/tag": { "roles": ["sales_manager"]},
+
+        "/bo/v1/place": { "roles": ["sales_manager"]}
+    },
+
+    "footer": [
+		{ "html": {"default": "<span class=\"text-muted\"><b>© 2024 <a href=\"https://opensource.org/license/bsd-3-clause/\" target=\"_blank\">Flow-ER</a></b></span>"}}
+	]
+}

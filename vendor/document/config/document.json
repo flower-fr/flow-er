@@ -1,0 +1,79 @@
+{
+    "document/model": {
+        "entities": {
+        },
+        "properties": {
+            "id": { "entity": "document", "column": "id", "type": "primary" },
+            "type": { "entity": "document", "column": "type" },
+            "folder": { "entity": "document", "column": "folder" },
+            "name": { "entity": "document", "column": "name" },
+            "mime": { "entity": "document", "column": "mime" },
+            "version": { "entity": "document", "column": "version", "type": "smallint" },
+            "content_vector": { "entity": "document", "column": "content_vector", "type": "mediumtext" },
+
+            "visibility": { "entity": "document", "column": "visibility", "audit": true },
+            "touched_at": { "entity": "document", "column": "touched_at", "type": "datetime" },
+            "touched_by": { "entity": "document", "column": "touched_by", "type": "int" }
+       }
+    },
+	
+    "document/property/type": {
+        "definition": "inline",
+        "type": "select",
+        "modalities": {
+            "text": { "default": "text", "fr_FR": "Texte" },
+            "binay": { "default": "binary", "fr_FR": "Binaire" }
+        },
+        "labels": { "default": "Type", "fr_FR": "Type" }
+    },
+	
+    "document/property/folder": {
+        "definition": "inline",
+        "type": "input",
+        "labels": { "default": "Folder", "fr_FR": "Dossier" }
+    },
+	
+    "document/property/name": {
+        "definition": "inline",
+        "type": "input",
+        "labels": { "default": "Name", "fr_FR": "Nom" }
+    },
+	
+    "document/property/mime": {
+        "definition": "inline",
+        "type": "select",
+        "modalities": {
+            "application/pdf": { "default": "PDF" },
+            "application/json": { "default": "JSON" }
+        },
+        "labels": { "default": "Mime type", "fr_FR": "Type mime" }
+    },
+	
+    "document/property/version": {
+        "definition": "inline",
+        "type": "number",
+        "labels": { "default": "Version", "fr_FR": "Version" }
+    },
+
+    "document/view/default": {
+        "properties": {
+            "type": {},
+            "folder": {},
+            "name": {},
+            "mime": {},
+            "version": {}
+        }
+    },
+
+    "document/list/default": {
+        "where": "",
+        "order": "-touched_at",
+        "properties": {
+            "type": {},
+            "folder": {},
+            "name": {},
+            "mime": {},
+            "version": {}
+        }
+    }
+}

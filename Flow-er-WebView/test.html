@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" data-mdb-theme="dark">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta http-equiv="x-ua-compatible" content="ie=edge" />
+        <title>Material Design for Bootstrap</title>
+        <!-- MDB icon -->
+        <link rel="icon" href="img/mdb-favicon.ico" type="image/x-icon" />
+        <!-- Font Awesome -->
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        />
+        <!-- Google Fonts Roboto -->
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+        />
+        <!-- MDB ESSENTIAL -->
+        <link rel="stylesheet" href="../vendor/bo/client/resources/mdbootstrap/css/mdb.min.css" />
+        <!-- MDB PLUGINS -->
+        <link rel="stylesheet" href="../vendor/bo/client/resources/mdbootstrap/plugins/css/all.min.css" />
+        <!-- Custom styles -->
+        <style>
+            #sidenav-6 {
+                width: 610px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- Sidenav -->
+        <nav
+        data-mdb-sidenav-init
+        id="sidenav-1"
+        class="sidenav"
+        data-mdb-hidden="false"
+        >
+        <ul class="sidenav-menu">
+        <li class="sidenav-item">
+            <a class="sidenav-link">
+            <i class="far fa-smile fa-fw me-3"></i><span>Link 1</span></a
+            >
+        </li>
+        <li class="sidenav-item">
+            <a class="sidenav-link"
+            ><i class="fas fa-grin fa-fw me-3"></i><span>Category 1</span></a
+            >
+            <ul class="sidenav-collapse show">
+            <li class="sidenav-item">
+                <a class="sidenav-link">Link 2</a>
+            </li>
+            <li class="sidenav-item">
+                <a class="sidenav-link">Link 3</a>
+            </li>
+            </ul>
+        </li>
+        <li class="sidenav-item">
+            <a class="sidenav-link"
+            ><i class="fas fa-grin-wink fa-fw me-3"></i><span>Category 2</span></a
+            >
+            <ul class="sidenav-collapse">
+            <li class="sidenav-item">
+                <a class="sidenav-link">Link 4</a>
+            </li>
+            <li class="sidenav-item">
+                <a class="sidenav-link"
+                >Link 5</a
+                >
+            </li>
+            </ul>
+        </li>
+        </ul>
+        </nav>
+        <!-- Sidenav -->
+
+        <!-- Toggler -->
+        <button
+        data-mdb-ripple-init
+        data-mdb-toggle="sidenav"
+        data-mdb-target="#sidenav-1"
+        class="btn btn-primary"
+        aria-controls="#sidenav-1"
+        aria-haspopup="true"
+        >
+        <i class="fas fa-bars"></i>
+        </button>
+        <!-- Toggler -->
+    </body>
+
+    <!-- MDB ESSENTIAL -->
+    <script type="text/javascript" src="../vendor/bo/client/resources/mdbootstrap/js/mdb.umd.min.js"></script>
+    <!-- MDB PLUGINS -->
+    <script type="text/javascript" src="../vendor/bo/client/resources/mdbootstrap/plugins/js/all.min.js"></script>
+    <!-- Custom scripts -->
+    <script type="text/javascript">
+        let sideNav = document.getElementById('sidenav-6');
+        sideNav.style.width = '610px';
+    </script>
+</html>

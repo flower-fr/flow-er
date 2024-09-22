@@ -1,0 +1,158 @@
+{
+    "event/model": {
+        "entities": {},
+        "properties": {
+            "id": { "entity": "event", "column": "id", "type": "primary" },
+            "caption": { "entity": "event", "column": "caption" },
+            "date": { "entity": "event", "column": "date", "type": "date" },
+            "start_time": { "entity": "event", "column": "start_time", "type": "time" },
+            "end_date": { "entity": "event", "column": "end_date", "type": "date" },
+            "end_time": { "entity": "event", "column": "end_time", "type": "time" },
+            "location": { "entity": "event", "column": "location" },
+
+            "visibility": { "entity": "event", "column": "visibility", "length": 8, "audit": true },
+            "touched_at": { "entity": "event", "column": "touched_at", "type": "datetime" },
+            "touched_by": { "entity": "event", "column": "touched_by", "type": "int" }
+       }
+    },
+
+    "event/property/caption": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Caption",
+            "fr_FR": "Libellé"
+        }
+    },
+
+    "event/property/date": {
+        "definition": "inline",
+        "type": "date",
+        "labels": {
+            "default": "Date",
+            "fr_FR": "Date"
+        }
+    },
+
+    "event/property/start_time": {
+        "definition": "inline",
+        "type": "date",
+        "labels": {
+            "default": "Start time",
+            "fr_FR": "Heure de début"
+        }
+    },
+
+    "event/property/end_date": {
+        "definition": "inline",
+        "type": "date",
+        "labels": {
+            "default": "End date",
+            "fr_FR": "Date de fin"
+        }
+    },
+
+    "event/property/end_time": {
+        "definition": "inline",
+        "type": "date",
+        "labels": {
+            "default": "End time",
+            "fr_FR": "Heure de fin"
+        }
+    },
+
+    "event/property/location": {
+        "definition": "inline",
+        "type": "email",
+        "labels": {
+            "default": "Location",
+            "fr_FR": "Lieu"
+        }
+    },
+	
+	"event/index/event": {
+        "bodyRenderer": "renderBody10",
+        "searchRenderer": "renderSearch",
+        "listRenderer": "renderCalendar"
+    }, 
+
+	"event/search/event": { 
+        "properties": { 
+            "caption": {},
+            "date": {},
+            "start_time": {},
+            "end_time": {},
+            "location": {}
+        }
+    },
+	
+	"event/list/event": { 
+        "view": "renderCalendar",
+        "properties": {
+            "caption": {},
+            "date": {},
+            "start_time": {},
+            "end_time": {},
+            "location": {}
+        }
+    },
+
+    "event/detail/event": {
+        "tabs": {
+            "update": {
+                "definition": "inline",
+                "route": "/bo/update/event",
+                "labels": {"en_US": "Update", "fr_FR": "Modifier"}
+            }
+        }
+    },
+
+	"event/update/event": {
+        "layout": {
+            "intro": {
+                "properties": ["caption", "date", "start_time", "end_date", "end_time", "location"]
+            }
+        },
+        "properties": {
+            "caption": { "mandatory": true },
+            "date": { "mandatory": true },
+            "start_time": {},
+            "end_date": {},
+            "end_time": {},
+            "location": {}
+        }
+    },
+
+    "event/groupUpdate/event": { 
+        "properties": {
+            "caption": { "mandatory": true },
+            "date": { "mandatory": true },
+            "start_time": {},
+            "end_date": {},
+            "end_time": {},
+            "location": {}
+        }
+    },
+
+    "event/export/event": { 
+        "properties": { 
+            "caption": { "mandatory": true },
+            "date": { "mandatory": true },
+            "start_time": {},
+            "end_date": {},
+            "end_time": {},
+            "location": {}
+       }
+    },
+
+    "event/v1/event": {
+        "properties": {
+            "caption": { "mandatory": true },
+            "date": { "mandatory": true },
+            "start_time": {},
+            "end_date": {},
+            "end_time": {},
+            "location": {}
+        }
+    }
+}

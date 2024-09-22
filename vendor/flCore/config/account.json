@@ -1,0 +1,275 @@
+{
+    "guard": {
+        "account/search": { "roles": ["sales_manager"]}
+    },
+
+    "account/model": {
+        "entities": {
+            "place": { "table": "place", "foreignKey": "place_id", "foreignEntity": "account" },
+            "vcard": { "table": "vcard", "foreignKey": "contact_1_id", "foreignEntity": "account" }
+        },
+        "properties": {
+            "id": { "entity": "account", "column": "id", "type": "int" },
+            "status": { "entity": "account", "column": "status", "audit": true },
+            "place_region": { "entity": "place", "column": "region" },
+            "place_id": { "entity": "place", "column": "id" },
+            "place_name": { "entity": "place", "column": "name" },
+            "n_first": { "entity": "vcard", "column": "n_first" },
+            "n_last": { "entity": "vcard", "column": "n_last" },
+            "email": { "entity": "vcard", "column": "email", "type": "email" },
+            "tel_cell": { "entity": "vcard", "column": "tel_cell" },
+
+            "visibility": { "entity": "account", "column": "visibility", "audit": true },
+            "touched_at": { "entity": "account", "column": "touched_at", "type": "datetime" },
+            "touched_by": { "entity": "account", "column": "touched_by", "type": "int" }
+        }
+    },
+
+    "account/property/id": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Account ID"
+        }
+    },
+
+    "account/property/status": {
+        "definition": "inline",
+        "type": "select",
+        "modalities": {
+            "new": { "default": "New", "fr_FR": "Nouveau" },
+            "active": { "default": "Active", "fr_FR": "Actif" }
+        },
+        "labels": {
+            "default": "Status",
+            "fr_FR": "Statut"
+        }
+    },
+
+    "account/property/place_region": {
+        "definition": "inline",
+        "type": "select",
+        "modalities": {
+            "grand_est": { "default": "Grand Est" },
+            "hauts_de_france": { "default": "Hauts de France" },
+            "idf": { "default": "Île de France" }
+        },
+        "labels": {
+            "default": "Region",
+            "fr_FR": "Région"
+        }
+    },
+
+    "account/property/place_id": {
+        "definition": "inline",
+        "type": "source",
+        "entity": "place",
+        "key": "id",
+        "format": ["%s (%s)", "name,region"],
+        "where": "status:new|region:?place_region",
+        "order": "name",
+        "labels": {
+            "default": "Place",
+            "fr_FR": "Établissement"
+        }
+    },
+
+    "account/property/place_name": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Place",
+            "fr_FR": "Établissement"
+        }
+    },
+
+    "account/property/n_first": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "First name",
+            "fr_FR": "Prénom"
+        }
+    },
+
+    "account/property/n_last": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Last name",
+            "fr_FR": "Nom"
+        }
+    },
+
+    "account/property/email": {
+        "definition": "inline",
+        "type": "email",
+        "labels": {
+            "default": "Email",
+            "fr_FR": "Email"
+        }
+    },
+
+    "account/property/tel_cell": {
+        "definition": "inline",
+        "type": "phone",
+        "labels": {
+            "default": "Cellular",
+            "fr_FR": "Téléphone portable"
+        }
+    },
+
+    "account/property/tag": {
+        "definition": "inline",
+        "type": "tag",
+        "entity": "tag",
+        "vector": "vector",
+        "key": "id",
+        "format": ["%s", "name"],
+        "where": "status:new",
+        "order": "name",
+        "labels": {
+            "default": "Tag"
+        }
+    },
+
+    "account/property/contacts": {
+		"definition": "inline",
+		"type": "history",
+        "entity": "contact",
+        "key": "candidat_id",
+		"labels": {
+			"default": "History",
+			"fr_FR": "Historique"
+		}
+    },
+
+    "account/index/account": {
+        "body": "/bo/cli/bootstrap/renderBody10.js",
+        "search": "/dashboard/cli/mdbootstrap/renderSearch.js",
+        "searchRenderer": "renderSearch",
+        "listRenderer": "renderColumns"
+    }, 
+
+    "account/count/default": [
+        {
+            "filters": {
+                "property_18": ["esi"],
+                "status": ["candidate"],
+                "max_property_8": "today-1"
+            }, 
+            "labels": { "default": "Candidats < J" }
+        }
+    ],
+
+    "account/search/default": {
+        "properties": {
+            "status": { "multiple": true },
+            "place_region": { "multiple": true },
+            "place_id": { "multiple": true },
+            "email": {},
+            "n_last": { "completion": true },
+            "n_first": {},
+            "tel_cell": {},
+            "tag": { "multiple": true }
+        }
+    },
+
+    "account/list/default": {
+        "where": "status:new",
+        "order": "n_last",
+        "properties": {
+            "status": {},
+            "place_region": {},
+            "place_name": {},
+            "n_last": {},
+            "email": {},
+            "tel_cell": {}
+        }
+    },
+
+    "account/list/account": {
+        "distribution": {
+            "variable": "status",
+            "modalities": "new,active"
+        },
+        "title": [
+            { "format": "<h5 class=\"card-title align-self-center mb-0\">%s</h5>", "params": "n_last" }
+        ],
+        "layout": [ 
+            { "format": "<p class=\"card-text\">%s (%s)</p>", "params": "place_name,place_region" },
+            { "format": "%s<br>", "params": "email" },
+            { "format": "%s", "params": "tel_cell" }
+        ],
+        "properties": {
+            "status": {},
+            "place_region": {},
+            "place_name": {},
+            "n_last": {},
+            "email": {},
+            "tel_cell": {}
+        }
+    },
+
+    "account/detail/default": {
+        "tabs": {
+            "contact_1": {
+                "definition": "inline",
+                "route": "/bo/update/account",
+                "labels": {"en_US": "Lead", "fr_FR": "Contact"}
+            }
+        }
+    },
+
+    "account/update/default": {
+        "properties": {
+            "status": { "mandatory": true },
+            "place_region": { "readonly": true },
+            "place_id": {},
+            "email": { "mandatory": true },
+            "n_last": { "mandatory": true },
+            "n_first": { "mandatory": true },
+            "tel_cell": {},
+            "tag": { "multiple": true }
+        }
+    },
+
+	"account/global/default": {
+		"actions": {
+			"export": {
+				"route": "generic/export/account",
+				"labels": { "default": "Export", "fr_FR": "Exporter" },
+				"glyph": "fa-cloud-download-alt"
+            }
+        }
+    },
+
+	"account/form/default": {
+        "layout": {
+            "account": {
+                "properties": [
+                    "n_first", "n_last",
+                    "email", "tel_cell"
+                ]
+            },
+            "comments": {
+                "labels": { "en_US": "Comments", "fr_FR": "Commentaires" },
+                "properties": ["contacts", "contact_agreement"]
+            }
+        },
+        "properties": {
+            "n_last": { "class": "col-md-6 mb-3", "required": true },
+            "n_first": { "class": "col-md-6 mb-3", "required": true },
+            "email": { "class": "col-md-6 mb-3", "required": true },
+            "tel_cell": { "class": "col-md-6 mb-3", "required": true },
+            "contacts": { "class": "col-md-12 mb-3" },
+            "contact_agreement": {
+                "type": "checkbox", 
+                "labels": { "default": "I aggree to be contacted again", "fr_FR": "J’accepte d’être recontacté" }, 
+                "class": "col-md-12 mb-3",
+                "required": true
+            }
+        },
+        "renderer": "mdb"
+    }
+}

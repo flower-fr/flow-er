@@ -1,0 +1,14 @@
+{
+    "document_text/model": {
+        "entities": {
+        },
+        "properties": {
+            "id": { "entity": "document_text", "column": "id", "type": "primary" },
+            "data": { "entity": "document_text", "column": "data", "type": "mediumtext" },
+
+            "visibility": { "entity": "document_text", "column": "visibility", "audit": true },
+            "touched_at": { "entity": "document_text", "column": "touched_at", "type": "datetime" },
+            "touched_by": { "entity": "document_text", "column": "touched_by", "type": "int" }
+       }
+    }
+}

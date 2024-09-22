@@ -1,0 +1,210 @@
+{
+    "config/model": {
+        "entities": {
+            "place": { "table": "place", "foreignKey": "place_id", "foreignEntity": "config" }
+        },
+        "properties": {
+            "id": { "entity": "config", "column": "id", "type": "primary" },
+            "name": { "entity": "config", "column": "name" },
+            "status": { "entity": "config", "column": "status" },
+            "entity": { "entity": "config", "column": "entity" },
+            "level": { "entity": "config", "column": "level" },
+            "key": { "entity": "config", "column": "key" },
+            "value": { "entity": "config", "column": "value", "type": "json" },
+            "place_id": { "entity": "config", "column": "place_id", "type": "int" },
+            "place_name": { "entity": "place", "column": "name" },
+
+            "visibility": { "entity": "config", "column": "visibility", "audit": true },
+            "touched_at": { "entity": "config", "column": "touched_at", "type": "datetime" },
+            "touched_by": { "entity": "config", "column": "touched_by", "type": "int" }
+       }
+    },
+
+    "config/property/id": {
+        "definition": "inline",
+        "type": "id",
+        "labels": {
+            "default": "Config id"
+        }
+    },
+
+    "config/property/name": {
+		"definition": "inline",
+		"type": "input",
+		"labels": {
+			"default": "Name",
+			"fr_FR": "Nom"
+		}
+    },
+
+    "config/property/status": {
+		"definition": "inline",
+        "type": "select",
+		"modalities": {
+            "active": { "default": "Active", "fr_FR": "Actif" },
+            "archived": { "default": "Archived", "fr_FR": "Archivé" }
+        },
+		"labels": {
+			"default": "Status",
+			"fr_FR": "Statut"
+		}
+    },
+
+    "config/property/entity": {
+		"definition": "inline",
+		"type": "input",
+		"labels": {
+			"default": "Entity",
+			"fr_FR": "Entité"
+		}
+    },
+
+    "config/property/level": {
+		"definition": "inline",
+		"type": "select",
+		"modalities": {
+            "count": { "default": "Views", "fr_FR": "Vues" }
+        },
+		"labels": {
+			"default": "Level",
+			"fr_FR": "Niveau"
+		}
+    },
+
+    "config/property/key": {
+		"definition": "inline",
+		"type": "input",
+		"labels": {
+			"default": "Key",
+			"fr_FR": "Clé"
+		}
+    },
+
+    "config/property/value": {
+		"definition": "inline",
+		"type": "input",
+		"labels": {
+			"default": "Value",
+			"fr_FR": "Valeur"
+		}
+    },
+
+    "config/property/place_id": {
+		"definition": "inline",
+		"type": "source",
+        "entity": "place",
+        "where": "status:new",
+        "order": "name",
+        "format": ["%s", "name"],
+		"labels": {
+			"default": "Place",
+			"fr_FR": "Campus"
+		}
+    },
+
+    "config/property/place_name": {
+		"definition": "inline",
+		"type": "input",
+		"labels": {
+			"default": "Place",
+			"fr_FR": "Campus"
+		}
+    },
+
+    "config/property/touched_at": {
+        "definition": "inline",
+        "type": "datetime",
+        "labels": {
+            "default": "Update time",
+            "fr_FR": "Dernière modification"
+        }
+    },
+    	
+	"config/index/configView": {
+        "view": "renderIndex"
+    }, 
+
+	"config/search/configView": { 
+        "view": "renderSearch",
+        "properties": { 
+            "name": {},
+            "status": { "multiple": true },
+            "place_id": { "multiple": true }
+        }
+    },
+	
+	"config/list/configView": { 
+        "view": "renderDataview",
+        "properties": { 
+            "name": {},
+            "level": { "restriction": ["count"] },
+            "key": {},
+            "touched_at": {}
+        }
+    },
+
+    "config/detail/default": {
+        "tabs": {
+            "update": {
+                "definition": "inline",
+                "route": "/bo/configShortcuts/config",
+                "labels": {"en_US": "Update", "fr_FR": "Modifier"},
+                "key": "id"
+            },
+            "add": {
+                "definition": "inline",
+                "route": "/bo/configShortcuts/config",
+                "labels": {"en_US": "Add", "fr_FR": "Ajouter"},
+                "key": false
+            }
+        }
+    },
+
+	"config/update/default": {
+        "layout": {
+            "unique": {
+                "properties": ["name", "status", "entity", "level", "key", "value", "place_id", "touched_at"]
+            }
+        },
+        "properties": {
+            "name": { "mandatory": true },
+            "status": { "mandatory": true },
+            "entity": { "mandatory": true },
+            "level": { "mandatory": true },
+            "key": { "mandatory": true },
+            "value": { "mandatory": true },
+            "place_id": {},
+            "touched_at": { "readonly": true }
+        }
+    },
+
+	"config/add/default": {
+        "layout": {
+            "unique": {
+                "properties": ["name", "status", "entity", "level", "key", "value", "place_id", "touched_at"]
+            }
+        },
+        "properties": {
+            "name": { "mandatory": true },
+            "status": { "mandatory": true },
+            "entity": { "mandatory": true },
+            "level": { "mandatory": true },
+            "key": { "mandatory": true },
+            "value": { "mandatory": true },
+            "place_id": {}
+        }
+    },
+
+    "config/export/configView": { 
+        "properties": { 
+            "name": {},
+            "status": {},
+            "entity": {},
+            "level": {},
+            "key": {},
+            "value": {},
+            "place_id": {},
+            "touched_at": {}
+        }
+    }
+}

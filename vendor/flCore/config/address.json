@@ -1,0 +1,25 @@
+{
+    "address/model": {
+        "entities": {
+        },
+        "properties": {
+            "id": { "entity": "address", "column": "id", "type": "primary" },
+            "name": { "entity": "address", "column": "name", "audit": true },
+            "identifier": { "entity": "address", "column": "identifier", "audit": true },
+            "adr_street": { "entity": "address", "column": "adr_street", "audit": true },
+            "adr_extended": { "entity": "address", "column": "adr_extended", "audit": true },
+            "adr_post_office_box": { "entity": "address", "column": "adr_post_office_box", "audit": true },
+            "adr_zip": { "entity": "address", "column": "adr_zip", "audit": true },
+            "adr_city": { "entity": "address", "column": "adr_city", "audit": true },
+            "adr_state": { "entity": "address", "column": "adr_state", "audit": true },
+            "adr_country": { "entity": "address", "column": "adr_country", "audit": true },
+            "email": { "entity": "address", "column": "email", "audit": true },
+            "tel": { "entity": "address", "column": "tel", "audit": true },
+
+            "visibility": { "entity": "address", "column": "visibility", "audit": true },
+            "touched_at": { "entity": "address", "column": "touched_at", "type": "datetime" },
+            "touched_by": { "entity": "address", "column": "touched_by", "type": "int" }
+       },
+       "audit": "audit"
+    }
+}

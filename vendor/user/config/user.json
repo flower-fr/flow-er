@@ -1,0 +1,18 @@
+{
+    "user/model": {
+        "entities": {},
+        "properties": {
+            "id": { "entity": "user", "column": "id", "type": "int" },
+            "status": { "entity": "user", "column": "status", "audit": true },
+            "email": { "entity": "user", "column": "email", "audit": true },
+            "password": { "entity": "user", "column": "password" },
+            "last_login": { "entity": "user", "column": "last_login", "type": "datetime" },
+            "last_updated": { "entity": "user", "column": "last_updated", "type": "datetime" },
+            "login_failed": { "entity": "user", "column": "login_failed", "type": "int" },
+            "creation_time": {},
+            "creation_user": {},
+            "touched_at": {},
+            "update_user": {}
+        }
+    }
+}
