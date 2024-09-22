@@ -9,7 +9,7 @@ const renderCross = ({ context, entity, view }, data) => {
 
     for (let row of rows) {
         for (let propertyId of Object.keys(crossConfig.properties)) {
-            if (propertyId != "owner_id") {
+            if (!["owner_id", "count", crossConfig.measure].includes(propertyId)) {
                 dict[row[distribution]][propertyId] = row[propertyId]
             }
         }

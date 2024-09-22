@@ -287,7 +287,6 @@ const getTab = ({ context, entity, view }, tab, id, message, searchParams) => {
                 })
                 $(".renderModalCalendar").each(function () {
                     const tabId = $(this).attr("id").split("-")[1]
-                    console.log(tabId, tab)
                     if (tabId == tab) {
                         $("#detailPanel").html(renderModalCalendar({ context, entity, view }, tabId, data)) 
                         modalCalendarCallback({ context, entity, view }, tabId, data)
