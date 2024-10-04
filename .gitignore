@@ -7,6 +7,7 @@
 !/public/flow-er
 /module/
 /vendor/*
+!/vendor/auth/
 !/vendor/bo/
 !/vendor/flCore/
 !/vendor/doc/
