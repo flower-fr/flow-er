@@ -162,8 +162,10 @@
 
 	"config/update/default": {
         "layout": {
-            "unique": {
-                "properties": ["name", "status", "entity", "level", "key", "value", "place_id", "touched_at"]
+            "sections": {
+                "unique": {
+                    "properties": ["name", "status", "entity", "level", "key", "value", "place_id", "touched_at"]
+                }
             }
         },
         "properties": {

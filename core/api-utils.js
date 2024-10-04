@@ -5,13 +5,25 @@ const { v4: uuid } = require("uuid")
 
 const { STATUS_CODES } = require("http")
 
-const executeService = (config, logger) => (service, ...args) => async (req, res) => {
+const executeService = (context, config, logger) => (service, ...args) => async (req, res) => {
+
     if (typeof service !== "function") {
         const message = `unknown service ${service ? service.toString() : service}`
         logger.error(message)
         return res.status(500).send({message})
     }
     try {
+
+        /**
+         * Check habilitation based on matching a user role to allowed roles on route
+         */
+        // const entity = req.params.entity
+        // const view = (req.query.view) ? req.query.view : "default"
+
+        // if (entity) {
+        //     if (!context.isAllowed(entity, view)) return res.status(403).send({message: "unauthorized"})    
+        // }
+
         const result = await service({req, res, config, logger}, ...args)
         if (Array.isArray(result)) {
             const [status, content, contentType] = result

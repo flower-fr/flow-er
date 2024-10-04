@@ -14,7 +14,7 @@ const getMeasure = async (db, context, entity, view, column, whereParam) => {
     const model = context.config[`${entity}/model`]
     const columns = [["count", "id"]]
     if (column) columns.push(["sum", column])
-    const rows = (await db.execute(select(context, entity, columns, where, null, null, model)))[0]
+    const rows = (where) ? (await db.execute(select(context, entity, columns, where, null, null, model)))[0] : []
     return rows[0]
 }
 

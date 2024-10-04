@@ -12,10 +12,19 @@ const listAction = async ({ req }, context, db) => {
     const limit = (req.query.limit) ? req.query.limit : 1000
 
     const whereParam = (where != null) ? where.split("|") : []
-
+    
     let listConfig = context.config[`${entity}/list/${view}`]
     if (!listConfig) listConfig = context.config[`${entity}/list/default`]
     const propertyDefs = listConfig.properties
+    
+    /**
+     * Add where properties to list config
+     */
+    for (let param of whereParam) {
+        const propertyId = param.split(":")[0]
+        if (!propertyDefs[propertyId]) propertyDefs[propertyId] = {}
+    }
+
     const properties = await getProperties(db, context, entity, view, propertyDefs, whereParam)
 
     /**
@@ -28,20 +37,11 @@ const listAction = async ({ req }, context, db) => {
     }
     columns.push("id")
 
-    const propertyList = []
-    for (let propertyId of Object.keys(properties)) {
-        const property = properties[propertyId]
-        if (property.type != "tags") propertyList.push(propertyId)
-    }
-
     let major = false
     if (order != null) {
         major = order.split(",")[0]
         if (major.charAt(0) == "-") major = major.substring(1)
     }
-
-    if (!columns) columns = propertyList
-    columns = columns.concat(["id"])
 
     const rows = await getList(db, context, entity, view, columns, properties, whereParam, order, limit)
     return {

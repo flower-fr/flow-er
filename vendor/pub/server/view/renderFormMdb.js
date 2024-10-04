@@ -198,7 +198,7 @@ const renderFormMdb = ({ context, entity, view} , { properties, formJwt }) => {
                             <option />`)
                 
                 for (let tag of property.tags) {
-                        html.push(`<option value="${tag.id}">${tag.name}</option>`)
+                    html.push(`<option value="${tag.id}">${tag.name}</option>`)
                 }
 
                 html.push(`
@@ -269,6 +269,7 @@ const renderFormMdb = ({ context, entity, view} , { properties, formJwt }) => {
 
     html.push(`
 
+    <div class="container">
     <form method="post" id="customForm" class="contactForm" enctype="multipart/form-data">
         <input id="lead_origin" type="hidden" name="flower-identifier" value="">
         <div class="row">
@@ -296,7 +297,8 @@ const renderFormMdb = ({ context, entity, view} , { properties, formJwt }) => {
 
             </div>
         </div>
-    </form>`)
+    </form>
+    </div>`)
 
     return html.join("\n")
 }

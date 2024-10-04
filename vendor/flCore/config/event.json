@@ -109,8 +109,10 @@
 
 	"event/update/event": {
         "layout": {
-            "intro": {
-                "properties": ["caption", "date", "start_time", "end_date", "end_time", "location"]
+            "sections": {
+                "intro": {
+                    "properties": ["caption", "date", "start_time", "end_date", "end_time", "location"]
+                }
             }
         },
         "properties": {

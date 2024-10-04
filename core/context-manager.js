@@ -17,10 +17,9 @@ const loadContext = (settings, logger) => {
     }
 
     const user = {
-        //instance_id: 1,
         id: 83,
         formattedName: "Démo CRITE",
-        roles: ["sales_manager"],
+        roles: ["sales_manager", "admin", "user"],
         locale: "fr_FR",
         config: {}
     }
@@ -30,50 +29,60 @@ const loadContext = (settings, logger) => {
     config = loadClientConfig(config, settings.server.config.dir, settings.server.config.current)
     config = loadUserConfig(config, user.config)
 
+    const dbName = settings.server.config.dbName
+
+    const localize = (str) => {
+        if (str) {
+            if (str[user.locale]) return str[user.locale]
+            else return str.default    
+        }
+    }
+
+    const decodeDate = (str) => {
+        if (str) {
+            return new moment(str).format("DD/MM/YYYY")
+        }
+        return ""
+    }
+
+    const decodeTime = (str) => {
+        if (str) {
+            return str
+        }
+    }
+
+    const translate = (str) => {
+        if (translations[user.locale][str]) {
+            return translations[user.locale][str]
+        }
+        else return str
+    }
+
+    const isAllowed = (entity, view) => {
+        let authorization = config.guard[`${entity}:${view}`]
+        if (!authorization) authorization = config.guard[`${entity}`]
+        if (!authorization) return false
+        for (let role of user.roles) {
+            if (authorization.roles.includes(role)) return true
+        }
+        return false
+    }
+
     const context = {
 
-        settings: settings,
-        dbName: settings.server.config.dbName,
-        instance: instance,
-        user: user,
-        config: config,
-        translations: translations,
+        settings, dbName, instance, user, config, translations,
+        localize, decodeDate, decodeTime, translate, isAllowed,
 
-        localize: (str) => {
-            if (str) {
-                if (str[user.locale]) return str[user.locale]
-                else return str.default    
+        clone: () => {
+            return {
+                settings: { ...settings }, 
+                dbName, 
+                instance, 
+                user : { ...user }, 
+                config: { ...config }, 
+                translations: { ...translations },
+                localize, decodeDate, decodeTime, translate, isAllowed
             }
-        },
-
-        decodeDate: (str) => {
-            if (str) {
-                return new moment(str).format("DD/MM/YYYY")
-            }
-            return ""
-        },
-
-        decodeTime: (str) => {
-            if (str) {
-                return str
-            }
-        },
-
-        translate: (str) => {
-            if (translations[user.locale][str]) {
-                return translations[user.locale][str]
-            }
-            else return str
-        },
-
-        isAllowed: (route) => {
-            if (config.guard[route]) {
-                for (let role of user.roles) {
-                    if (config.guard[route].roles.includes(role)) return true
-                }
-                return false
-            }
-            else return true
         }
     }
 

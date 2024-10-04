@@ -120,6 +120,18 @@ const postTab = async ({ context, entity, view }, tab, id, searchParams) => {
                     if (propertyId) formData.append(propertyId, $(this).val())
                 })
 
+                const tags = {}
+                $(".updateBadgeDiv").each(function () {
+                    const propertyId = $(this).attr("data-badge-div-property-id")
+                    const tagId = $(this).attr("data-badge-div-tag-id")
+                    const matched = parseInt($(this).attr("data-badge-div-matched"))
+                    if (!tags[propertyId]) tags[propertyId] = []
+                    if (matched) {
+                        tags[propertyId].push(tagId) 
+                    }
+                })
+                for (let tagId of Object.keys(tags)) formData.append(tagId, tags[tagId])
+    
                 $(".updateTags").each(function () {
                     const propertyId = $(this).attr("id")
                     formData.append(propertyId, $(this).val())
@@ -237,147 +249,6 @@ const submitDelete = ({ context, entity, view }, id) => {
         }
     }
     xhttp.send(formData)
-}
-
-const getTab = ({ context, entity, view }, tab, id, message, searchParams) => {
-
-    let route = $(`#detailTabRoute-${tab}`).val()
-    const xhttp = new XMLHttpRequest()
-
-    let params = []
-    for (const key of Object.keys(searchParams)) {
-        let value = searchParams[key]
-        if (Array.isArray(value)) {
-            if (value[0] == null) value = `le,${value[1]}`
-            else if (value[1] == null) value = `ge,${value[0]}`
-            else value = `between,${value[0]},${value[1]}`
-        }
-        params.push(key + ":" + value)
-    }
-    const where = params.join("|")
-    if (where) route += "&where=" + where
-
-    xhttp.open("GET", route, true)
-    xhttp.onreadystatechange = function() {
-        if (xhttp.readyState == 4) {
-            if (xhttp.status == 401) {
-                getLogin(loadPage)
-            }
-            else if (xhttp.status == 200) {
-
-                if (xhttp.statusText.substring(0, 3) == "jwt") {
-                    document.cookie = `JWT-${$("#instanceCaption").val()}${xhttp.statusText.substring(4)};path=/`
-                }
-
-                const data = JSON.parse(xhttp.responseText)
-                $(".renderUpdate").each(function () { 
-                    const tabId = $(this).attr("id").split("-")[1]
-                    if (tabId == tab) {
-                        $("#detailPanel").html(renderUpdate({ context, entity, view }, data))
-                        updateCallback({ context, entity, view }, data)
-                    }
-                })
-                $(".renderModalList").each(function () {
-                    const tabId = $(this).attr("id").split("-")[1]
-                    if (tabId == tab) {
-                        $("#detailPanel").html(renderModalList({ context, entity, view }, data)) 
-                        modalListCallback({ context, entity, view }, data)
-                        triggerModalList({ context, entity, view }, data)
-                    }
-                })
-                $(".renderModalCalendar").each(function () {
-                    const tabId = $(this).attr("id").split("-")[1]
-                    if (tabId == tab) {
-                        $("#detailPanel").html(renderModalCalendar({ context, entity, view }, tabId, data)) 
-                        modalCalendarCallback({ context, entity, view }, tabId, data)
-                    }
-                })
-
-                $(".document-cancel-btn").hide()
-
-                $(".updateMessage").hide()
-                if (message == "ok") {
-                    $("#updateMessageOk").show()
-                    document.location = "#updateMessageOk"
-                }
-                else if (message == "expired") {
-                    $("#updateMessageExpired").show()
-                    document.location = "#updateMessageExpired"
-                }
-                else if (message == "consistency") {
-                    $("#updateMessageConsistency").show()
-                    document.location = "#updateMessageConsistency"
-                }
-                else if (message == "duplicate") {
-                    $("#updateMessageDuplicate").show()
-                    document.location = "#updateMessageDuplicate"
-                }
-                else if (message == "serverError") {
-                    $("#updateMessageServerError").show()
-                    document.location = "#updateMessageServerError"
-                }
-
-                $("#deleteButton").click(function () {
-                    $("#deleteButton").removeClass("btn-outline-primary").addClass("btn-danger")
-                    $("#deleteButton").click(function () {
-                        submitDelete({ context, entity, view }, id)
-                    })
-                })
-
-                $(".submitSpinner").hide()
-                
-                checkForm()
-
-                $(".input-iban").each(function () {
-                    const propertyId = $(this).attr("id")
-                    if ($(this).val() != "" && controleIBAN($(this).val()) != 0) {
-                        $(this).addClass("is-invalid")
-                        $(`#inputError-${propertyId}`).text("Invalid IBAN")
-                        $(".submit-button").addClass("disabled")
-                    }
-                })
-
-                $(".updateIban").change(function () {
-                    const propertyId = $(this).attr("id")
-                    if ($(this).val() != "" && controleIBAN($(this).val()) != 0) {
-                        $(this).addClass("is-invalid")
-                        $(`#inputError-${propertyId}`).text("Invalid IBAN")
-                        $(".submitButton").addClass("disabled")
-                    }
-                    else {
-                        $(".submitButton").removeClass("disabled")
-                        $(this).removeClass("is-invalid")
-                        $(`#inputError-${propertyId}`).text("")
-                    }
-                })
-              
-                $(".updateDate").datepicker()
-                $(".updateDatetimeDate").datepicker()
-                $(".updateTime").timepicker({ "timeFormat":"H:i:s", "step": 15, "scrollDefault": "now" })
-                $(".updateDatetimeTime").timepicker({ "timeFormat":"H:i:s", "step": 15, "scrollDefault": "now" })
-                //$(".updateSelectpicker").selectpicker()
-
-                $(".updateHistory").each(function () {
-                    const propertyId = $(this).attr("id").split("-")[1]
-                    getHistory(propertyId)
-                })
-
-                $(".updateSelectRoute").each(function () {
-                    const propertyId = $(this).attr("id").split("-")[1]
-                    getSelect(propertyId)
-                })
-
-                postTab({ context, entity, view }, tab, id, searchParams)
-
-                $(".detailPanel").each(function () {
-                    const panel = $(this).attr("id")
-                    getPanel(tab, panel, id)
-                })
-            }
-            else toastr.error("A technical error has occured. PLease try again later")
-        }
-    }
-    xhttp.send()
 }
 
 const getDetail = (context, entity, view, id, searchParams) => {

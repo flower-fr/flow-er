@@ -2,7 +2,7 @@ const express = require("express")
 const bodyParser = require("body-parser");
 const multer = require("multer");
 const { executeService, assert } = require("../../../../core/api-utils")
-const { createDbClient2 } = require("../../../utils/db-client")
+const { createDbClient } = require("../../../utils/db-client")
 const { getModel } = require("../../../../vendor/flCore/server/model/index")
 const { getDBConfig } = require("../../../../vendor/studio/server/controller/getDBConfig")
 
@@ -36,12 +36,14 @@ const { select } = require("../../../flCore/server/model/select")
 
 const registerBo = async ({ context, config, logger, app }) => {
 
+    const db = await createDbClient(config.db, context.dbName)
+
     const model = await getModel(config, context)
-    const db = model.db
     if (context.config.studio.mode == "staging") {
-        getDBConfig(context, model)
+        getDBConfig(context, model, db)
     }
-    const execute = executeService(config, logger)
+
+    const execute = executeService(context.clone(), config, logger)
     const upload = multer()
     app.use(upload.array())
     app.get(`${config.prefix}config`, execute(() => { return JSON.stringify(context.config) }))
@@ -84,7 +86,7 @@ const registerBo = async ({ context, config, logger, app }) => {
     app.post(`${config.prefix}v1/:entity`, execute(postAction, context, db))
 }
 
-const index = async ({ req }, context, db) => {
+const index = async ({ req }, context) => {
     const entity = assert.notEmpty(req.params, "entity")
     const view = (req.query.view) ? req.query.view : "default"
     let indexConfig = context.config[`${entity}/index/${view}`]
@@ -96,10 +98,6 @@ const index = async ({ req }, context, db) => {
         const menuTab = context.config[menuTabId]
         menu[menuTabId] = menuTab
     }
-
-    const where = (indexConfig && indexConfig.where) ? indexConfig.where : ""
-    const order = (indexConfig && indexConfig.order) ? indexConfig.order : ""
-    const limit = (indexConfig && indexConfig.limit) ? indexConfig.limit : 1000
 
     const data = {
         user: context.user, 

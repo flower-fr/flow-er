@@ -1,6 +1,6 @@
 const renderHeader = ({ context }, data) => {
 
-	const headerParams = data.headerParams, instance = data.instance, user = data.user, applications = data.applications, applicationName = data.applicationName
+    const headerParams = data.headerParams, instance = data.instance, user = data.user, applications = data.applications, applicationName = data.applicationName
 
     return `<header>
 		<nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -47,8 +47,8 @@ const renderApplications = (context, applications, applicationName) => {
     const html = []
     for (let applicationId of Object.keys(applications)) {
         const application = applications[applicationId]
-		const label = context.localize(application.labels)
-		html.push(`<li class="nav-item">
+        const label = context.localize(application.labels)
+        html.push(`<li class="nav-item">
 			<a class="nav-link ${ (label.localeCompare(applicationName) == 0) ? "active" : "" }" href="${application.url}">
 				${label}
 			</a>

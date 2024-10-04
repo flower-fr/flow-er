@@ -29,7 +29,7 @@ const insert = (context, table, data, model) => {
             }
         }
     }
-    pairs[qi("visibility")] = 'active'
+    pairs[qi("visibility")] = qv("active")
     if (model.properties.creation_date) pairs[qi("creation_date")] = `'${new Date().toISOString().slice(0, 10)}'`
     if (model.properties.creation_month) pairs[qi("creation_month")] = `'${new Date().toISOString().slice(0, 7)}'`
     if (model.properties.creation_year) pairs[qi("creation_year")] = `'${new Date().toISOString().slice(0, 4)}'`

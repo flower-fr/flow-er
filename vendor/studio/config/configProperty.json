@@ -95,8 +95,11 @@
 
     "config_property/update/default": {
         "layout": {
-            "": {
-                "properties": ["status", "entity", "property_id", "definition"]
+            "cols" : { "content": { "class": "col-md-10" }, "scrollspy": { "class": "col-md-2" }},
+            "sections": {
+                "": {
+                    "properties": ["status", "entity", "property_id", "definition"]
+                }
             }
         },
         "properties": {

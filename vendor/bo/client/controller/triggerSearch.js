@@ -93,18 +93,21 @@ const triggerSearch = ({ context, entity, view }) => {
         $("#searchCheck-" + propertyId).removeClass("btn-default").addClass("btn-secondary").addClass("active")
         $("#searchCheckValue-" + propertyId).val("1")
 
-        const badges = JSON.parse($(`#searchInputBadgeValues-${propertyId}`).val())
-        const newValue = $(`#search-${propertyId}`).val()
-        let keep = true
-        for (let value of badges) {
-            if (value == newValue) {
-                keep = false
-                break
+        const badgeValues = $(`#searchInputBadgeValues-${propertyId}`).val()
+        if (badgeValues) {
+            const badges = JSON.parse(badgeValues)
+            const newValue = $(`#search-${propertyId}`).val()
+            let keep = true
+            for (let value of badges) {
+                if (value == newValue) {
+                    keep = false
+                    break
+                }
             }
+            if (keep) badges.push($(`#search-${propertyId}`).val())
+            $(`#searchInputBadgeValues-${propertyId}`).val(JSON.stringify(badges))
+            $(`#searchInputBadge-${propertyId}`).html(renderSearchInputBadges(propertyId, badges))    
         }
-        if (keep) badges.push($(`#search-${propertyId}`).val())
-        $(`#searchInputBadgeValues-${propertyId}`).val(JSON.stringify(badges))
-        $(`#searchInputBadge-${propertyId}`).html(renderSearchInputBadges(propertyId, badges))
 
         $(".searchInputBadgeRefresh").click(function () { 
             const badges = JSON.parse($(`#searchInputBadgeValues-${propertyId}`).val())

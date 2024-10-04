@@ -19,7 +19,7 @@ const countAction = async ({ req }, context, db) => {
 
     const where = getWhere(properties, whereParam)
     const model = context.config[`${entity}/model`]
-    const data = (await db.execute(select(context, entity, columns, where, null, null, model)))[0]
+    const data = (where) ? (await db.execute(select(context, entity, columns, where, null, null, model)))[0] : []
 
     return { "status": "ok", "data": data }
 }

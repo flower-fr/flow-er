@@ -266,14 +266,16 @@
 
     "account/update/default": {
         "layout": {
-            "intro": {
-                "properties": ["status", "place_id"]
-            },
-            "vcard": {
-                "properties": ["email", "n_last", "n_first", "tel_cell"]
-            },
-            "contacts": {
-                "properties": ["tag"]
+            "sections": {
+                "intro": {
+                    "properties": ["status", "place_id"]
+                },
+                "vcard": {
+                    "properties": ["email", "n_last", "n_first", "tel_cell"]
+                },
+                "contacts": {
+                    "properties": ["tag"]
+                }
             }
         },
         "properties": {

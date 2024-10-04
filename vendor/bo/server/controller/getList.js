@@ -4,6 +4,7 @@ const { select } = require("../../../flCore/server/model/select")
 const getList = async (db, context, entity, view, columns, properties, whereParam, orderParam, limit) => {
 
     const where = getWhere(properties, whereParam)
+    if (!where) return [] // in the case of an empty result due to the selected tag -> No need to select in DB
 
     const orderTags = {}
     let order = null
@@ -29,7 +30,7 @@ const getList = async (db, context, entity, view, columns, properties, wherePara
     if (rows.length > 0) {
         for (let propertyId of Object.keys(properties)) {
             const property = properties[propertyId]
-
+            
             /**
              * Tags 
              */ 
@@ -44,7 +45,8 @@ const getList = async (db, context, entity, view, columns, properties, wherePara
                 
                 const tags = property.tags
                 for (let row of rows) row[propertyId] = []
-                for (let tag of tags) {
+                for (let tagId of Object.keys(tags)) {
+                    const tag = tags[tagId]
                     tag.rowCache = []
                     const vectorId = (property.vector) ? property.vector : "vector"
                     const vector = tag[vectorId]

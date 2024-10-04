@@ -37,9 +37,9 @@ const getWhere = (properties, whereParam) => {
                     const vectorId = property.vector
                     const ids = tag[vectorId]
                     const tagKey = (property.key) ? property.key : "id"
+                    if (!whereTags[tagKey]) whereTags[tagKey] = {}
+                    if (!whereTags[tagKey][key]) whereTags[tagKey][key] = []
                     for (let id of ids) {
-                        if (!whereTags[tagKey]) whereTags[tagKey] = {}
-                        if (!whereTags[tagKey][key]) whereTags[tagKey][key] = []
                         whereTags[tagKey][key][id] = null
                     }
                 }
@@ -51,9 +51,11 @@ const getWhere = (properties, whereParam) => {
 
     for (let id of Object.keys(whereTags)) {
         const vectors = whereTags[id]
-        where[id] = arrayIntersect(Object.values(vectors).map((x) => { return Object.keys(x) }))
+        const intersect = arrayIntersect(Object.values(vectors).map((x) => { return Object.keys(x) }))
+        if (intersect.length == 0) return null // Means no select to do since the resulting vector has no ids
+        where[id] = intersect
     }
-
+    
     return where
 }
 

@@ -20,6 +20,38 @@ const renderForm = ({ context, entity, view} , { properties, formJwt }) => {
         return html.join("\n")
     }
 
+    const renderHidden = (hiddenPart) => {
+
+        const html = []
+
+        for (let propertyId of hiddenPart) {
+            const property = properties[propertyId]
+            const options = property.options
+
+            let value = ""
+            if (options.value && !Array.isArray(options.value)) {
+                value = options.value
+                if (value.includes("today")) {
+                    if (value && value.charAt(5) == "+") value = moment().add(value.substring(6), "days").format("YYYY-MM-DD")
+                    else if (value && value.charAt(5) == "-") value = moment().subtract(value.substring(6), "days").format("YYYY-MM-DD")
+                    else value = moment().format("YYYY-MM-DD")        
+                }
+            }
+            if (options.initialValue) {
+                value = options.initialValue
+                if (value.includes("today")) {
+                    if (value && value.charAt(5) == "+") value = moment().add(value.substring(6), "days").format("YYYY-MM-DD")
+                    else if (value && value.charAt(5) == "-") value = moment().subtract(value.substring(6), "days").format("YYYY-MM-DD")
+                    else value = moment().format("YYYY-MM-DD")
+                }
+            }
+
+            html.push(`<input type="hidden" class="property updateInput" id="${propertyId}" value="${value}" />`)
+        }
+
+        return html.join("\n")
+    }
+
     const renderProperty = (section) => {
 
         const html = []
@@ -29,7 +61,6 @@ const renderForm = ({ context, entity, view} , { properties, formJwt }) => {
             const options = property.options
             const label = (options.labels) ? context.localize(options.labels) : context.localize(property.labels)
             const propertyType = (options.type) ? options.type : property.type
-            const readonly = (property.options.readonly) ? true : false
             const required = (property.options.required) ? true : false
 
             html.push(`<div class="${ (options.class) ? options.class : "col-lg-12 mb-3" }">`)
@@ -230,6 +261,8 @@ const renderForm = ({ context, entity, view} , { properties, formJwt }) => {
         return html.join("\n")
     }
 
+    const config = context.config[`${entity}/form/${view}`]
+
     const html = []
 
     html.push(`
@@ -240,6 +273,8 @@ const renderForm = ({ context, entity, view} , { properties, formJwt }) => {
             ${renderSection()}
         </div>
  
+        ${ (config["hidden"]) ? renderHidden(config["hidden"]) : "" }
+
         <div class="updateMessage" id="updateMessageOk">
             <div class="alert alert-success my-3 text-center">${context.translate("Your request has been registered")}</div>
         </div>
@@ -255,7 +290,7 @@ const renderForm = ({ context, entity, view} , { properties, formJwt }) => {
         <div class="col-md-12">
             <div class="form-group">
 
-                <input type="submit" value="Envoyer" class="btn btn-primary">
+                <input type="submit" value="Envoyer" class="btn btn-primary updateSubmit">
 
             </div>
         </div>

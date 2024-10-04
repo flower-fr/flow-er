@@ -5,11 +5,11 @@
     },
 
     "guard": {
-        "/bo/index/account": { "roles": ["sales_manager"]},
-        "/bo/index/place": { "roles": ["sales_manager"]},
-        "/bo/index/tag": { "roles": ["sales_manager"]},
-
-        "/bo/v1/place": { "roles": ["sales_manager"]}
+        "account": { "roles": ["sales_manager"]},
+        "place": { "roles": ["sales_manager"]},
+        "tag": { "roles": ["sales_manager"]},
+        "crm_account": { "roles": ["sales_manager"]},
+        "audit": { "roles": ["admin"]}
     },
 
     "footer": [

@@ -24,6 +24,24 @@ const getSearchParams = () => {
         }
     })
 
+    const tags = {}
+    $(".searchTag").each(function () {
+        if ($(this).attr("id")) {
+            const id = $(this).attr("id"), propertyId = id.split("-")[1], value = id.split("-")[2], matched = $(this).attr("data-badge-div-matched")
+            if (matched == "1") {
+                if (!tags[propertyId]) tags[propertyId] = []
+                tags[propertyId].push(value)
+            }
+        }
+    })
+    for (let propertyId of Object.keys(tags)) {
+        const ids = [...["in"], ...tags[propertyId]]
+        searchParams[propertyId] = ids.join(",")
+    }
+
+    /**
+     * Deprecated
+     */
     $(".searchTagSelect").each(function () {
         if ($(this).attr("id")) {
             const propertyId = $(this).attr("id").split("-")[1]

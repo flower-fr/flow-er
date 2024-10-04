@@ -17,7 +17,7 @@ const getDistribution = async (db, context, entity, view, column, properties, wh
     else {
         const where = getWhere(properties, whereParam)
         const model = context.config[`${entity}/model`]
-        const rows = (await db.execute(select(context, entity, ["id", column], where, null, null, model)))[0]
+        const rows = (where) ? (await db.execute(select(context, entity, ["id", column], where, null, null, model)))[0] : []
     
         let code
         
