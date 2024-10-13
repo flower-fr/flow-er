@@ -5,10 +5,11 @@ const { ddl } = require("./ddl")
 
 const registerStudio = async ({ context, config, logger, app }) => {
     const db = await createDbClient2(config.db, context.dbName)
-    const execute = executeService(config, logger)
+    const execute = executeService(context.clone(), config, logger)
     const upload = multer()
     app.use(upload.array())
     app.get(`${config.prefix}ddl/:entity`, execute(ddl, context, db))
+    app.get(`${config.prefix}ddl/:entity/:property`, execute(ddl, context, db))
 }
 
 module.exports = {

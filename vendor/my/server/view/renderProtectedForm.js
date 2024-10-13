@@ -1,8 +1,6 @@
 
-const { renderHead } = require("../../../bo/server/view/renderHead")
-const { mdbRenderHead } = require("../../../mdb/server/view/mdbRenderHead")
-const { renderScripts } = require("../../../bo/server/view/renderScripts")
-const { mdbRenderScripts } = require("../../../mdb/server/view/mdbRenderScripts")
+const { renderHead } = require("../../../mdb/server/view/renderHead")
+const { renderScripts } = require("../../../mdb/server/view/renderScripts")
 
 const renderProtectedForm = ({ context, entity, view }, data) => {
 

@@ -1,9 +1,13 @@
+const { createDbClient2 } = require("../../../utils/db-client")
 const { encryptPassword, createToken } = require("../../../../core/tools/security")
 const { assert, throwUnauthorized, throwNotFoundError } = require("../../../../core/api-utils")
 const { select } = require("../../../flCore/server/model/select")
 const { insert } = require("../../../flCore/server/model/insert")
 
-const createUser = async ({ req }, context, db) => {
+const createUser = async ({ req }, context, config) => {
+
+    const db = await createDbClient2(config.db, context.dbName)
+
     const [
         email, password
     ] = assert.notEmpty(req.body, "email", "password")

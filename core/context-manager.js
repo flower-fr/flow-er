@@ -59,8 +59,8 @@ const loadContext = (settings, logger) => {
     }
 
     const isAllowed = (entity, view) => {
-        let authorization = config.guard[`${entity}:${view}`]
-        if (!authorization) authorization = config.guard[`${entity}`]
+        let authorization = settings.server.guard[`${entity}:${view}`]
+        if (!authorization) authorization = settings.server.guard[`${entity}`]
         if (!authorization) return false
         for (let role of user.roles) {
             if (authorization.roles.includes(role)) return true

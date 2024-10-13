@@ -1,8 +1,7 @@
 const vsprintf = require("sprintf-js").vsprintf
-const { getWhere } = require("./getWhere")
 const { select } = require("../../../flCore/server/model/select")
 
-const getDistribution = async (db, context, entity, view, column, properties, whereParam) => {
+const getDistribution = async (db, context, entity, view, column, properties, where) => {
 
     const distribution = {}
 
@@ -15,7 +14,6 @@ const getDistribution = async (db, context, entity, view, column, properties, wh
         }        
     } 
     else {
-        const where = getWhere(properties, whereParam)
         const model = context.config[`${entity}/model`]
         const rows = (where) ? (await db.execute(select(context, entity, ["id", column], where, null, null, model)))[0] : []
     

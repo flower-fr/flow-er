@@ -35,13 +35,13 @@ const formPost = async ({ req }, context, db) => {
 
     const { cellsToStore, cellsToReject } = dataToStore(model, payload)
     const { entitiesToInsert, entitiesToUpdate } = entitiesToStore(entity, model, cellsToStore, row)
-
+    console.log(entitiesToInsert, entitiesToUpdate)
     await connection.beginTransaction()
 
     await storeEntities(context, entity, { entitiesToInsert, entitiesToUpdate }, model, connection)
     await auditCells(context, { insertedEntities: entitiesToInsert, updatedEntities: entitiesToUpdate }, connection)
 
-    await connection.commit()
+    //await connection.commit()
     await connection.release()
 
     if (formConfig.redirect) return { "redirect": formConfig.redirect }

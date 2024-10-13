@@ -75,5 +75,12 @@
     "Sep": "Sept",
     "Oct": "Oct",
     "Nov": "Nov",
-    "Dec": "Déc"
+    "Dec": "Déc",
+
+    "Sign in with:": "S’authentifier avec :",
+    "or:": "ou :",
+    "Remember me": "Se souvenir de moi",
+    "Forgot password?": "Mot de passe oublié ?",
+    "Sign in": "S’authentifier",
+    "Invalid authentication, please try again": "Authentification invalide, veuillez ré-essayer"
 }

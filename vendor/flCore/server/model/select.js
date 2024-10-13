@@ -3,7 +3,7 @@ const { join } = require("./join")
 
 const select = (context, table, columns, where, order = [], limit = null, model = [], debug = false) => {
 
-    if (!where.visibility || where.visibility == 'deleted' /* deleted never visible */) where.visibility = 'active'
+    if (model.properties.visibility && (!where.visibility || where.visibility == 'deleted') /* deleted never visible */) where.visibility = 'active'
 
     if (!columns) {
         columns = []
@@ -60,7 +60,7 @@ const select = (context, table, columns, where, order = [], limit = null, model 
     request += `${Object.values(joins).join("\n")}\n`
 
     const predicates = []
-    if (model.properties.status) predicates.push(`${qTable}.${qi("visibility")} != 'deleted'`)
+    if (model.properties.visibility) predicates.push(`${qTable}.${qi("visibility")} != 'deleted'`)
     
     for (let propertyId of Object.keys(where)) {
         if (!["instance_id", "touched_at", "touched_by"].includes(propertyId)) {

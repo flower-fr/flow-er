@@ -11,11 +11,8 @@ const registerAuthApi = ({ config, logger, app }) => {
 };
 
 const sessionCookieMiddleware = config => async (req, res, next) => {
-    const session = req.cookies["session"]
-    console.log(config.tokenExpirationTime)
-    const expiresIn = config.tokenExpirationTime || DEFAULT_TOKEN_EXPIRATION_TIME
-    console.log(createToken({ id: 1 }, config.apiKey, expiresIn))
 
+    const session = req.cookies["session"]
     if (!session) {
         return res.status(403).send({message: "missing cookie"})
     }

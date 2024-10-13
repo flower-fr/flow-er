@@ -5,13 +5,18 @@ const { renderIndexMdb } = require("../view/renderIndexMdb")
 
 const { select } = require("../../../flCore/server/model/select")
 
-const formGet = async ({ req }, context, config, db) => {
+const csr = async ({ req }, context, config, db) => {
     const entity = assert.notEmpty(req.params, "entity")
     const view = (req.query.view) ? req.query.view : "default"
     const user = { locale: "fr-FR" }
     const formConfig = context.config[`${entity}/form/${view}`]
     const propertyDefs = formConfig.properties
     const properties = await getProperties(db, context, entity, view, propertyDefs, [])
+
+    let where = (req.query.where) ? req.query.where : null
+    where = (where != null) ? where.split("|") : []
+    where = where.map((x) => x.split(":"))
+    where = Object.assign({}, ...where.map((x) => ({[x[0]]: x[1]})))
 
     /**
      * Data source
@@ -60,10 +65,9 @@ const formGet = async ({ req }, context, config, db) => {
         }
     }
 
-    const renderer = (formConfig.renderer && formConfig.renderer == "mdb") ? renderIndexMdb : renderIndex
-    return renderer( { context, entity, view }, { user: user, recaptchaToken: config.recaptchaToken, formConfig, properties } )
+    return { context, entity, view }, { user: user, recaptchaToken: config.recaptchaToken, formConfig, where, properties }
 }
 
 module.exports = {
-    formGet
+    csr
 }

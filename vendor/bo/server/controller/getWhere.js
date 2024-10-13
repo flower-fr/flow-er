@@ -10,18 +10,9 @@ const getWhere = (properties, whereParam) => {
 
     const where = {}
 
-    for (let propertyId of Object.keys(properties)) {
-        const property = properties[propertyId]
-        if (property.options && property.options.restriction) {
-            where[propertyId] = property.options.restriction
-        }
-    }    
-
     const whereTags = {}
-    for (let param of whereParam) {
-        const keyValue = param.split(":")
-        const key = keyValue[0]
-        let value = keyValue[1].split(",")
+    for (let key of Object.keys(whereParam)) {
+        let value = whereParam[key].split(",")
 
         /**
          * Tags

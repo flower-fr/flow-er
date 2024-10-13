@@ -7,7 +7,7 @@ function removeTags(str) {
 
 $(".updateMessage").hide()
 
-const triggerPost = (entity, recaptchaToken) => {
+const triggerPost = ({ context, entity, view }, recaptchaToken) => {
     const form = document.getElementById("customForm")
     if (form) {
         form.onsubmit = async function (event) {
@@ -24,7 +24,7 @@ const triggerPost = (entity, recaptchaToken) => {
                     const propertyId = property.getAttribute("id")
                     data[propertyId] = property.value.replace(/(<([^>]+)>)/ig, '')
                 }
-                const route = `/pub/${entity}`
+                const route = `/pub/${entity}?view=${view}`
 
                 const http = await fetch(route, {
                     method: "POST",
