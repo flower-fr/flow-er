@@ -63,7 +63,7 @@ const loginPost = async ({ req, res }, context, config) => {
 
     res.cookie("session", `Bearer ${token}`, {
         path: "/", 
-        domain: "localhost", 
+        domain: config.cookieDomain, 
         secure: true, 
         httpOnly: true
     })
