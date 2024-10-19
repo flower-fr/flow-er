@@ -17,12 +17,12 @@ const executeService = (context, config, logger) => (service, ...args) => async 
         /**
          * Check habilitation based on matching a user role to allowed roles on route
          */
-        // const entity = req.params.entity
-        // const view = (req.query.view) ? req.query.view : "default"
+        const entity = req.params.entity
+        const view = (req.query.view) ? req.query.view : "default"
 
-        // if (entity) {
-        //     if (!context.isAllowed(entity, view)) return res.status(403).send({message: "unauthorized"})    
-        // }
+        if (entity) {
+            //if (!context.isAllowed(entity, view)) return res.status(403).send({message: "unauthorized"})    
+        }
 
         const result = await service({req, res, config, logger}, ...args)
         if (Array.isArray(result)) {

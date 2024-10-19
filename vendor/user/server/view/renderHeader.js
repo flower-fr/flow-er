@@ -4,7 +4,7 @@ const renderHeader = ({ context }, data) => {
     return `<header>
 		<nav class="navbar navbar-expand-lg bg-body-tertiary">
 			<div class="container-fluid">
-				<a class="navbar-brand" href="#">	
+				<a class="navbar-brand" href="/">	
 					${(headerParams && headerParams.logo) 
         ? `<img height="${headerParams.logoHeight}" src="/${`${instance.caption }/logos/${headerParams.logo}`}" alt="${context.config["headerParams"]["title"]}" title="${context.config["headerParams"]["title"]}" />`
         : `<span>${instance.label}&nbsp;&nbsp;|</span>`}

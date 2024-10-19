@@ -1,6 +1,19 @@
 const moment = require("moment")
 const { renderSsrMdb } = require("./renderSsrMdb")
 
+const extractParams = (params, param, mapping) => {
+    const result = []
+    for (let key of Object.keys(params)) {
+        const value = params[key]
+        if (!param) result.push(`${key}=${value}`)
+        else if (param == key) {
+            if (mapping) result.push(mapping[value])
+            else result.push(value)
+        }
+    }
+    return result.join("&")
+}
+
 const computeValue = (expression, closedDays = false, format = "YYYY-MM-DD") => {
     if (expression.includes("today")) {
         if (expression.includes("+") || expression.includes("-")) {
@@ -62,7 +75,8 @@ const renderFormMdb = ({ context, entity, view} , data) => {
 
             let value = ""
             if (options.value && !Array.isArray(options.value)) {
-                value = computeValue(options.value, closedDays)
+                if (options.value == "query") value = extractParams(data.params, options.param, options.mapping)
+                else value = computeValue(options.value, closedDays)
             }
 
             html.push(`<input type="hidden" class="property updateInput" id="${propertyId}" value="${value}" />`)
@@ -101,7 +115,7 @@ const renderFormMdb = ({ context, entity, view} , data) => {
         <div class="col-md-12">
             <div class="form-group">
 
-                <input type="submit" value="Envoyer" class="updateSubmit boutonGIE2">
+                <input type="submit" value="Envoyer" class="updateSubmit ${ (config.layout.submit) ? config.layout.submit.class : ""}">
 
             </div>
         </div>

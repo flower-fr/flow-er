@@ -109,51 +109,7 @@ const renderSsrMdb = ({ context, entity, view} , data) => {
                         <label class="form-label" for="form12">${label}</label>
                     </div>`)
             }
-        
-            else if (["date", "datetime", "closing_date"].includes(propertyType)) {
-                html.push(`
-                    <div class="form-outline mb-2" ${propertyType == "datetime" ? "data-mdb-datetimepicker-init" : "data-mdb-datepicker-init"} data-mdb-input-init>
-                        <input 
-                            type="text" 
-                            class="form-control form-control-sm property ssr-input updateInput updateDate"
-                            id="${propertyId}" value="${value}" 
-                            ${ (required) ? "required" : "" } 
-                            maxlength="${ (property.options.max_length) ? property.options.max_length : 255 }"
-                        />
-                        <label for="datetimepickerExample" class="form-label">${label}</label>
-                    </div>`)
-            }
-    
-            else if (propertyType == "birth_year") {
-                html.push(`
-                    <div class="form-group">
-                        <label class="form-label">${(required) ? "* " : ""}${label}</label>
-                        <select 
-                            class="form-control form-control-sm property ssr-input updateSelect updateBirthYear"
-                            id="${propertyId}" 
-                            ${ (required) ? "required" : "" }
-                        >
-                            <option />
-                            ${() => { for (let year = 1950; year < new Date.getFullYear(); year++) `<option value="${year}" ${(value == year) ? "selected=\"selected\"" : ""}>${year}</option>` }}
-                        </select>
-                    </div>`)
-            }
-
-            else if (propertyType == "time") {
-                html.push(`
-                    <div class="form-outline mb-2" data-mdb-input-init>
-                        <input 
-                            type="text" 
-                            class="form-control form-control-sm property ssr-input updateInput updateTime"
-                            id="${propertyId}" 
-                            value="${value}" 
-                            ${ (required) ? "required" : "" } 
-                            maxlength="${ (property.options.max_length) ? property.options.max_length : 255 }"
-                        />
-                        <label class="form-label" for="form12">${label}</label>
-                    </div>`)              
-            }
-    
+   
             else if (propertyType == "textarea") {
                 html.push(`
                     <div class="form-outline" data-mdb-input-init>

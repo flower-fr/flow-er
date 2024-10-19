@@ -61,7 +61,7 @@ const formGet = async ({ req }, context, config, db) => {
     }
 
     const renderer = (formConfig.renderer && formConfig.renderer == "mdb") ? renderIndexMdb : renderIndex
-    return renderer( { context, entity, view }, { user: user, recaptchaToken: config.recaptchaToken, formConfig, properties } )
+    return renderer( { context, entity, view }, { params: req.query, user: user, recaptchaToken: config.recaptchaToken, formConfig, properties } )
 }
 
 module.exports = {

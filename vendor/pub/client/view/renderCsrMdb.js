@@ -58,31 +58,7 @@ const renderCsrMdb = ({ context, entity, view}, data) => {
             const options = property.options
             const label = (options.labels) ? context.localize(options.labels) : context.localize(property.labels)
             const propertyType = (options.type) ? options.type : property.type
-            
-            let propertyModalities = (options.modalities) ? options.modalities : property.modalities
-            if (propertyModalities) {
-                let kept = {}
-                for (let modalityId of Object.keys(propertyModalities)) {
-                    const modality = propertyModalities[modalityId]
-                    let keep = true
-                    if (modality.where) {
-                        for (let predicate of Object.keys(modality.where)) {
-                            const value = modality.where[predicate]
-                            if (!Object.keys(data.where).includes(predicate)) {
-                                keep = false
-                                break
-                            }
-                            if (!value.includes(data.where[predicate])) {
-                                keep = false
-                                break
-                            }
-                        }
-                    }
-                    if (keep) kept[modalityId] = modality
-                }
-                propertyModalities = kept    
-            }
-
+            const propertyModalities = (options.modalities) ? options.modalities : property.modalities
             const required = (property.options.required) ? true : false
 
             html.push(`<div class="${ (options.class) ? options.class : "col-lg-12 mb-3" }">`)
@@ -95,6 +71,7 @@ const renderCsrMdb = ({ context, entity, view}, data) => {
             if (options.value && !Array.isArray(options.value)) {
                 value = computeValue(options.value, closedDays)
             }
+            value = value.replace(/(<([^>]+)>)/ig, "")
     
             if (["input", "email", "phone", "number"].includes(propertyType)) {
                 html.push(`
@@ -130,7 +107,7 @@ const renderCsrMdb = ({ context, entity, view}, data) => {
                 html.push(`
                     <div class="form-outline mb-2">
                         <select 
-                            class="property csr-select updateSelect" 
+                            class="form-control form-control-sm property csr-select updateSelect" 
                             data-mdb-select-init 
                             data-mdb-visible-options=${ Object.keys(propertyModalities).length + 1 }
                             id="${propertyId}"
@@ -178,7 +155,7 @@ const renderCsrMdb = ({ context, entity, view}, data) => {
                 html.push(`
                     <div class="form-group" id="updateSelectDiv-${propertyId}">
                         <select 
-                            class="form-control form-control-sm property updateSelect"
+                            class="form-control form-control-sm property csr-select updateSelect"
                             data-mdb-select-init 
                             id="${propertyId}" 
                             ${ (required) ? "required" : "" } 

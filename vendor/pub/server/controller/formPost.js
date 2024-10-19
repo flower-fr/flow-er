@@ -19,13 +19,14 @@ const formPost = async ({ req }, context, db) => {
     for (let column of columns) {
         where[column] = req.body[column]
     }
-    for (let foreignKey of formConfig.foreignKeys) columns.push(foreignKey)
+    const fks = foreignKeys({ entity }, model, Object.keys(formConfig.properties))
+    columns.concat(fks)
     const rows = (await connection.execute(select(context, entity, columns, where, null, null, model)))
 
     let row = false
     if (rows[0].length > 0) {
         row = rows[0][0]
-        for (let foreignKey of formConfig.foreignKeys) payload[foreignKey] = row[foreignKey]
+        for (let foreignKey of fks) payload[foreignKey] = row[foreignKey]
         for (let propertyId of Object.keys(formConfig.properties)) {
             const propertyDef = formConfig.properties[propertyId]
             if (propertyDef.update) payload[propertyId] = req.body[propertyId]
@@ -35,17 +36,30 @@ const formPost = async ({ req }, context, db) => {
 
     const { cellsToStore, cellsToReject } = dataToStore(model, payload)
     const { entitiesToInsert, entitiesToUpdate } = entitiesToStore(entity, model, cellsToStore, row)
-    console.log(entitiesToInsert, entitiesToUpdate)
     await connection.beginTransaction()
 
     await storeEntities(context, entity, { entitiesToInsert, entitiesToUpdate }, model, connection)
     await auditCells(context, { insertedEntities: entitiesToInsert, updatedEntities: entitiesToUpdate }, connection)
 
-    //await connection.commit()
+    await connection.commit()
     await connection.release()
 
     if (formConfig.redirect) return { "redirect": formConfig.redirect }
     else return {}
+}
+
+const foreignKeys = ({ entity }, model, propertyIds) => {
+    const result = []
+    for (let propertyId of propertyIds) {
+        if (model.properties[propertyId]) {
+            const entityId = model.properties[propertyId].entity
+            if (entityId != entity) {
+                const foreignKey = model.entities[entityId].foreignKey
+                if (!result.includes(foreignKey)) result.push(foreignKey)
+            }    
+        }
+    }
+    return result
 }
 
 /**
@@ -87,12 +101,12 @@ const entitiesToStore = (mainEntity, model, payload, row) => {
 
             const { table, foreignEntity, foreignKey } = 
                 (model.entities[property.entity])
-                ? { 
-                    table: model.entities[entityId].table,
-                    foreignEntity: model.entities[entityId].foreignEntity,
-                    foreignKey: model.entities[entityId].foreignKey
-                }
-                : { table: mainEntity, foreignKey: "id" }
+                    ? { 
+                        table: model.entities[entityId].table,
+                        foreignEntity: model.entities[entityId].foreignEntity,
+                        foreignKey: model.entities[entityId].foreignKey
+                    }
+                    : { table: mainEntity, foreignKey: "id" }
 
             let idToUpdate = data[foreignKey]
             if (!idToUpdate || idToUpdate === null) idToUpdate = 0
@@ -191,6 +205,7 @@ const auditCells = async (context, { insertedEntities, updatedEntities }, connec
                     property: propertyId,
                     value: value
                 }
+                console.log(insert(context, auditTable, auditToInsert, auditModel))
                 await connection.execute(insert(context, auditTable, auditToInsert, auditModel))
             }
         }

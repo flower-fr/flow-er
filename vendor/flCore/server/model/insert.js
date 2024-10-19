@@ -8,13 +8,13 @@ const insert = (context, table, data, model) => {
             if (key != "visibility" || value != "deleted") {
                 const type = (model.properties[key].type) ? model.properties[key].type : "text"
                 if (!value) {
-                    if (["foreign", "date", "datetime"].includes(type)) value = "null"
+                    if (["foreign", "date", "datetime", "time"].includes(type)) value = "null"
                     else if (["int", "smallint", "tinyint", "float"].includes(type)) value = 0
                     else if (["json"].includes(type)) value = "'[]'"
                     else value = "''"
                 }
                 else {
-                    if (["date", "datetime"].includes(type)) value = `'${value}'`
+                    if (["date", "datetime", "time"].includes(type)) value = `'${value}'`
                     else if (type === "json") value = qv(JSON.stringify(value))
                     else if (type === "text") {
                         if (typeof value === "string") {

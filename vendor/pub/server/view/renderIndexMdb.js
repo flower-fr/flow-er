@@ -8,11 +8,11 @@ const renderIndexMdb = ({ context, entity, view }, data) => {
     const formConfig = data.formConfig
 
     return `<!DOCTYPE html>
-    <html lang="fr" data-bs-theme="${ (data.formConfig.theme) ? data.formConfig.theme : "light" }" }>
+    <html lang="fr" data-bs-theme="${ (formConfig.theme) ? formConfig.theme : "light" }" }>
     
     ${ mdbRenderHead({ context, entity, view }, data) }
 
-    <script src="https://www.google.com/recaptcha/enterprise.js?render=${data.recaptchaToken}"></script>
+    ${ (data.recaptchaToken) ? `<script src="https://www.google.com/recaptcha/enterprise.js?render=${data.recaptchaToken}"></script>`: "" }
 
     ${ renderStyle({ context, entity, view }, data) }
 
@@ -30,7 +30,7 @@ const renderIndexMdb = ({ context, entity, view }, data) => {
     <script src="/pub/cli/view/renderCsrMdb.js"></script>
     <script>
     loadPage({ entity: "${entity}", view: "${view}" })
-    triggerPost("${entity}", "${view}", "${data.recaptchaToken}")
+    triggerPost({ "entity": "${entity}", "view": "${view}" }, ${ (data.recaptchaToken) ? `"${data.recaptchaToken}"` : false })
     </script>
     </html>`
 }
