@@ -2,6 +2,7 @@ const express = require("express")
 const bodyParser = require("body-parser");
 const multer = require("multer");
 const { executeService, assert } = require("../../../../core/api-utils")
+const { sessionCookieMiddleware } = require("../../../user/server/controller/sessionCookieMiddleware");
 const { createDbClient } = require("../../../utils/db-client")
 const { getModel } = require("../../../../vendor/flCore/server/model/index")
 const { getDBConfig } = require("../../../../vendor/studio/server/controller/getDBConfig")
@@ -49,6 +50,9 @@ const registerBo = async ({ context, config, logger, app }) => {
     app.get(`${config.prefix}config`, execute(() => { return JSON.stringify(context.config) }))
     app.get(`${config.prefix}language`, execute(() => { return JSON.stringify(context.translations) }))
     app.get(`${config.prefix}user`, execute(() => { return JSON.stringify(context.user) }))
+
+    app.use(`${config.prefix}`, sessionCookieMiddleware(config))
+    
     app.get(`${config.prefix}index/:entity`, execute(index, context, db))
     app.get(`${config.prefix}dashboard/:entity`, execute(dashboardAction, context, db))
     

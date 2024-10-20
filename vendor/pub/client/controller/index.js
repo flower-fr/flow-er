@@ -66,7 +66,7 @@ const loadPage = async ({ entity, view }) => {
 
     getForm({ context, entity, view })
     const mySelect = document.getElementById("place_id")
-    mySelect.addEventListener("valueChanged.mdb.select", (e) => { 
+    if (mySelect) mySelect.addEventListener("valueChanged.mdb.select", (e) => { 
         getForm({ context, entity, view })
     })
 }
