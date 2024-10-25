@@ -1,0 +1,10 @@
+{
+    "flow-er/doc/vi20Ssr": [
+        {
+            "class": "row mt-5",
+            "rows": [
+                { "default": "<h5>Server Side Rendering (SSR)</h5>" }
+            ]
+        }
+    ]
+}

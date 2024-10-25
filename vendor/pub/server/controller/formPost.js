@@ -36,6 +36,7 @@ const formPost = async ({ req }, context, db) => {
 
     const { cellsToStore, cellsToReject } = dataToStore(model, payload)
     const { entitiesToInsert, entitiesToUpdate } = entitiesToStore(entity, model, cellsToStore, row)
+
     await connection.beginTransaction()
 
     await storeEntities(context, entity, { entitiesToInsert, entitiesToUpdate }, model, connection)
@@ -129,7 +130,7 @@ const entitiesToStore = (mainEntity, model, payload, row) => {
         }
     }
 
-    return { entitiesToInsert: entitiesToInsert, entitiesToUpdate: entitiesToUpdate }
+    return { entitiesToInsert, entitiesToUpdate }
 }
 
 const storeEntities = async (context, mainEntity, { entitiesToInsert, entitiesToUpdate }, model, connection) => {

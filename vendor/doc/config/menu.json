@@ -1,0 +1,277 @@
+{
+    "flow-er/doc/sidenav": [
+        {
+            "level": "menu",
+            "labels": { "default": "Framework" },
+            "icon": { "default": "" },
+            "items": [
+                {
+                    "labels": { "default": "Web server" },
+                    "route": "/doc/index/flow-er/fr05WebServer" 
+                },
+                {
+                    "labels": { "default": "Settings" },
+                    "route": "/doc/index/flow-er/fr10Settings" 
+                },
+                {
+                    "labels": { "default": "Modules" },
+                    "route": "/doc/index/flow-er/fr15Modules" 
+                },
+                {
+                    "labels": { "default": "Config" },
+                    "route": "/doc/index/flow-er/fr20Config" 
+                },
+                {
+                    "labels": { "default": "Router" },
+                    "route": "/doc/index/flow-er/fr25Router" 
+                },
+                {
+                    "labels": { "default": "SQL connection" },
+                    "route": "/doc/index/flow-er/fr30SqlConnection" 
+                },
+                {
+                    "labels": { "default": "Authentication" },
+                    "route": "/doc/index/flow-er/fr35Authentication" 
+                },
+                {
+                    "labels": { "default": "Authorizations" },
+                    "route": "/doc/index/flow-er/fr40Authorizations" 
+                }
+            ]
+        },
+        {
+            "level": "menu",
+            "labels": { "default": "Model" },
+            "icon": { "default": "" },
+            "items": [
+                {
+                    "labels": { "default": "Entities" },
+                    "route": "/doc/index/flow-er/mo05Entities" 
+                },
+                {
+                    "labels": { "default": "Properties" },
+                    "route": "/doc/index/flow-er/mo10Properties" 
+                },
+                {
+                    "labels": { "default": "Data types" },
+                    "route": "/doc/index/flow-er/mo15DataTypes" 
+                },
+                {
+                    "labels": { "default": "Data sources" },
+                    "route": "/doc/index/flow-er/mo20DataSources" 
+                },
+                {
+                    "labels": { "default": "Tags" },
+                    "route": "/doc/index/flow-er/mo25Tags" 
+                },
+                {
+                    "labels": { "default": "Data selection" },
+                    "route": "/doc/index/flow-er/mo30Select" 
+                },
+                {
+                    "labels": { "default": "Aggregation" },
+                    "route": "/doc/index/flow-er/mo35Aggregation" 
+                },
+                {
+                    "labels": { "default": "Pivot table" },
+                    "route": "/doc/index/flow-er/mo40PivotTable" 
+                },
+                {
+                    "labels": { "default": "Distribution" },
+                    "route": "/doc/index/flow-er/mo45Distribution" 
+                },
+                {
+                    "labels": { "default": "Mesure" },
+                    "route": "/doc/index/flow-er/mo50Measure" 
+                },
+                {
+                    "labels": { "default": "Data load" },
+                    "route": "/doc/index/flow-er/mo55DataLoad" 
+                },
+                {
+                    "labels": { "default": "Data update" },
+                    "route": "/doc/index/flow-er/mo60DataUpdate" 
+                },
+                {
+                    "labels": { "default": "Audits" },
+                    "route": "/doc/index/flow-er/mo65Audits" 
+                },
+                {
+                    "labels": { "default": "Data deletion" },
+                    "route": "/doc/index/flow-er/mo70DataDeletion" 
+                },
+                {
+                    "labels": { "default": "Atomicity" },
+                    "route": "/doc/index/flow-er/mo75Atomicity" 
+                },
+                {
+                    "labels": { "default": "Consistency" },
+                    "route": "/doc/index/flow-er/mo80Consistency" 
+                },
+                {
+                    "labels": { "default": "SQL injection safe" },
+                    "route": "/doc/index/flow-er/mo85SqlInjectionSafe" 
+                }
+            ]
+        },
+        {
+            "level": "menu",
+            "labels": { "default": "View" },
+            "icon": { "default": "" },
+            "items": [
+                {
+                    "labels": { "default": "Layout" },
+                    "route": "/doc/index/flow-er/vi05Layout" 
+                },
+                {
+                    "labels": { "default": "Styling" },
+                    "route": "/doc/index/flow-er/vi10Styling" 
+                },
+                {
+                    "labels": { "default": "Header / Footer" },
+                    "route": "/doc/index/flow-er/vi15HeaderFooter" 
+                },
+                {
+                    "labels": { "default": "Server side rendering (SSR)" },
+                    "route": "/doc/index/flow-er/vi20Ssr" 
+                },
+                {
+                    "labels": { "default": "Client side rendering (CSR)" },
+                    "route": "/doc/index/flow-er/vi25Csr" 
+                },
+                {
+                    "labels": { "default": "Internationalization" },
+                    "route": "/doc/index/flow-er/vi30Internationalization" 
+                },
+                {
+                    "labels": { "default": "Date & time management" },
+                    "route": "/doc/index/flow-er/vi35DateTime" 
+                },
+                {
+                    "labels": { "default": "XSS injection safe" },
+                    "route": "/doc/index/flow-er/vi40XssInjection" 
+                }
+            ]
+        },
+        {
+            "level": "menu",
+            "labels": { "default": "Controller" },
+            "icon": { "default": "" },
+            "items": [
+                {
+                    "labels": { "default": "REST API" },
+                    "route": "/doc/index/flow-er/co05RestApi" 
+                },
+                {
+                    "labels": { "default": "Single page application" },
+                    "route": "/doc/index/flow-er/co10Spa" 
+                },
+                {
+                    "labels": { "default": "Server side search" },
+                    "route": "/doc/index/flow-er/co15SsSearch" 
+                },
+                {
+                    "labels": { "default": "Client side search" },
+                    "route": "/doc/index/flow-er/co20CsSearch" 
+                },
+                {
+                    "labels": { "default": "Order trigger" },
+                    "route": "/doc/index/flow-er/co25OrderTrigger" 
+                },
+                {
+                    "labels": { "default": "List limit" },
+                    "route": "/doc/index/flow-er/co30ListLimit" 
+                },
+                {
+                    "labels": { "default": "Global actions" },
+                    "route": "/doc/index/flow-er/co35GlobalActions" 
+                },
+                {
+                    "labels": { "default": "Detail modal" },
+                    "route": "/doc/index/flow-er/co40DetailModal" 
+                },
+                {
+                    "labels": { "default": "Detail actions" },
+                    "route": "/doc/index/flow-er/co45DetailActions" 
+                },
+                {
+                    "labels": { "default": "Group modal" },
+                    "route": "/doc/index/flow-er/co50GroupModal" 
+                },
+                {
+                    "labels": { "default": "Grouped actions" },
+                    "route": "/doc/index/flow-er/co55GroupedActions" 
+                },
+                {
+                    "labels": { "default": "CSRF safe" },
+                    "route": "/doc/index/flow-er/co60CsrfSafe" 
+                }
+            ]
+        },
+        {
+            "level": "menu",
+            "labels": { "default": "Widgets" },
+            "icon": { "default": "" },
+            "items": [
+                {
+                    "labels": { "default": "Chart" },
+                    "route": "/doc/index/flow-er/wi05Chart" 
+                },
+                {
+                    "labels": { "default": "Calendar" },
+                    "route": "/doc/index/flow-er/wi10Calendar" 
+                },
+                {
+                    "labels": { "default": "Tree table" },
+                    "route": "/doc/index/flow-erwi15TreeTable" 
+                },
+                {
+                    "labels": { "default": "Columns" },
+                    "route": "/doc/index/flow-er/wi20Columns" 
+                }
+            ]
+        },
+        {
+            "level": "menu",
+            "labels": { "default": "Utilities" },
+            "icon": { "default": "" },
+            "items": [
+                {
+                    "labels": { "default": "API client" },
+                    "route": "/doc/index/flow-er/ut05ApiClient" 
+                },
+                {
+                    "labels": { "default": "SMTP gateway" },
+                    "route": "/doc/index/flow-er/ut10SmtpGateway" 
+                }
+            ]
+        },
+        {
+            "level": "menu",
+            "labels": { "default": "Apps" },
+            "icon": { "default": "" },
+            "items": [
+                {
+                    "labels": { "default": "Back-office" },
+                    "route": "/doc/index/flow-er/ap05BackOffice" 
+                },
+                {
+                    "labels": { "default": "Public form generator" },
+                    "route": "/doc/index/flow-er/ap10PublicFormGenerator" 
+                },
+                {
+                    "labels": { "default": "Protected form generator" },
+                    "route": "/doc/index/flow-er/ap15ProtectedFormGenerator" 
+                },
+                {
+                    "labels": { "default": "No-code studio" },
+                    "route": "/doc/index/flow-er/ap20NoCodeStudio" 
+                },
+                {
+                    "labels": { "default": "Documentation" },
+                    "route": "/doc/index/flow-er/ap25Documentation" 
+                }
+            ]
+        }
+    ]
+}

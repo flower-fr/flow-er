@@ -9,7 +9,7 @@ const { renderIndex } = require("../view/renderIndex")
 const registerDoc = async ({ context, config, logger, app }) => {
 
     const db = await createDbClient2(config.db, context.dbName)
-    const execute = executeService(config, logger)
+    const execute = executeService(context.clone(), config, logger)
     const upload = multer()
     app.use(upload.array())
     app.get(`${config.prefix}index/:entity/:view`, execute(index, context, db))

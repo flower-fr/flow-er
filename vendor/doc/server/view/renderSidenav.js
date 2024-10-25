@@ -32,9 +32,10 @@ const renderSidenav = ({ context, entity, view }, sidenav) => {
         <!-- Sidenav-->
         <nav
             data-mdb-sidenav-init
-            id="sidenav-6"
+            id="sidenav"
             class="sidenav"
-            data-mdb-accordion="true"
+            data-mdb-mode="push"
+            data-mdb-content="#content"
             style="padding-bottom : 100px"
         >
             <ul class="sidenav-menu">
@@ -56,22 +57,7 @@ const renderSidenav = ({ context, entity, view }, sidenav) => {
     result.push(`</ul>
         </nav>
 
-        <!-- Sidenav-->
-
-        <div class="container mb-5 mt-5">
-            <!-- Toggler -->
-            <button
-                data-mdb-ripple-init
-                data-mdb-toggle="sidenav"
-                data-mdb-target="#sidenav-6"
-                class="btn btn-primary"
-                aria-controls="#sidenav-6"
-                aria-haspopup="true"
-            >
-                <i class="fas fa-bars"></i>
-            </button>
-            <!-- Toggler -->
-        </div>`)
+        <!-- Sidenav-->`)
 
     return result.join("\n")
 }

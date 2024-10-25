@@ -7,29 +7,37 @@
 
     "tab/profile": {
         "menu": "menu/admin",
-        "route": "/mdb/index/profile",
-        "urlParams": "view=profile",
+        "controller": "mdb",
+        "action": "index",
+        "entity": "profile",
+        "view": "profile",
         "labels": { "default": "Équipe" }
     },
 
     "tab/interaction": {
         "menu": "menu/admin",
-        "route": "/mdb/index/interaction",
-        "urlParams": "view=interaction",
+        "controller": "mdb",
+        "action": "index",
+        "entity": "interaction",
+        "view": "interaction",
         "labels": { "default": "Interactions" }
     },
 
     "tab/place": {
         "menu": "menu/admin",
-        "route": "/mdb/index/place",
-        "urlParams": "view=place",
+        "controller": "mdb",
+        "action": "index",
+        "entity": "place",
+        "view": "place",
         "labels": { "default": "Places", "fr_FR": "Établissements" }
     },
 
     "tab/tag": {
         "menu": "menu/admin",
-        "route": "/mdb/index/tag",
-        "urlParams": "view=tag",
+        "controller": "mdb",
+        "action": "index",
+        "entity": "tag",
+        "view": "tag",
         "labels": { "default": "Tags", "fr_FR": "Tags" }
     },
 
@@ -41,8 +49,10 @@
 
     "tab/account": {
         "menu": "menu/contact",
-        "route": "/mdb/index/account",
-        "urlParams": "view=account",
+        "controller": "mdb",
+        "action": "index",
+        "entity": "account",
+        "view": "account",
         "labels": { "default": "Accounts", "fr_FR": "Comptes" }
     }
 }

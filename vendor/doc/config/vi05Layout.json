@@ -1,0 +1,10 @@
+{
+    "flow-er/doc/vi05Layout": [
+        {
+            "class": "row mt-5",
+            "rows": [
+                { "default": "<h5>Layout</h5>" }
+            ]
+        }
+    ]
+}

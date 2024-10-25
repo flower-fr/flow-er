@@ -1,0 +1,10 @@
+{
+    "flow-er/doc/fr35Authentication": [
+        {
+            "class": "row mt-5",
+            "rows": [
+                { "default": "<h5>Authentication</h5>" }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "flow-er/doc/fr25Router": [
+        {
+            "class": "row mt-5",
+            "rows": [
+                { "default": "<h5>Router</h5>" }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "flow-er/doc/mo80Consistency": [
+        {
+            "class": "row mt-5",
+            "rows": [
+                { "default": "<h5>Consistency</h5>" }
+            ]
+        }
+    ]
+}

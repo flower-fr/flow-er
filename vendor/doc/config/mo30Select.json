@@ -1,0 +1,10 @@
+{
+    "flow-er/doc/mo30Select": [
+        {
+            "class": "row mt-5",
+            "rows": [
+                { "default": "<h5>Select</h5>" }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "flow-er/doc/vi30Internationalization": [
+        {
+            "class": "row mt-5",
+            "rows": [
+                { "default": "<h5>Internationalization</h5>" }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "flow-er/doc/mo25Tags": [
+        {
+            "class": "row mt-5",
+            "rows": [
+                { "default": "<h5>Tags</h5>" }
+            ]
+        }
+    ]
+}

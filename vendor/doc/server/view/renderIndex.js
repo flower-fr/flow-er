@@ -34,8 +34,24 @@ const renderIndex = ({ context, entity, view }, data) => {
     
         ${ renderSidenav({ context, entity, view}, context.config[`${entity}/doc/sidenav`]) }
 
-        <div class="container">
-            <div class="section">
+        <div id="content">
+
+            <div class="container mb-5 mt-5">
+                <!-- Toggler -->
+                <button
+                    data-mdb-ripple-init
+                    data-mdb-toggle="sidenav"
+                    data-mdb-target="#sidenav"
+                    class="btn btn-primary"
+                    aria-controls="#sidenav"
+                    aria-haspopup="true"
+                >
+                    <i class="fas fa-bars"></i>
+                </button>
+                <!-- Toggler -->
+            </div>
+
+            <div class="container">
 
                 ${ renderContent({ context, entity, view }, docConfig) }
 

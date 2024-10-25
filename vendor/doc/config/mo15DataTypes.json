@@ -1,0 +1,10 @@
+{
+    "flow-er/doc/mo15DataTypes": [
+        {
+            "class": "row mt-5",
+            "rows": [
+                { "default": "<h5>mo15DataTypes</h5>" }
+            ]
+        }
+    ]
+}

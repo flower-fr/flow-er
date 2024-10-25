@@ -1,0 +1,10 @@
+{
+    "flow-er/doc/vi15HeaderFooter": [
+        {
+            "class": "row mt-5",
+            "rows": [
+                { "default": "<h5>Header / Footer</h5>" }
+            ]
+        }
+    ]
+}

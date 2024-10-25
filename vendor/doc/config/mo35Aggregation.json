@@ -1,0 +1,10 @@
+{
+    "flow-er/doc/mo35Aggregation": [
+        {
+            "class": "row mt-5",
+            "rows": [
+                { "default": "<h5>Aggregation</h5>" }
+            ]
+        }
+    ]
+}

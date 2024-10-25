@@ -1,0 +1,10 @@
+{
+    "flow-er/doc/vi25Csr": [
+        {
+            "class": "row mt-5",
+            "rows": [
+                { "default": "<h5>Client Side Rendering (CSR)</h5>" }
+            ]
+        }
+    ]
+}

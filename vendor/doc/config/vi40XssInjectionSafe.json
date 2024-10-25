@@ -1,0 +1,10 @@
+{
+    "flow-er/doc/vi40XssInjectionSafe": [
+        {
+            "class": "row mt-5",
+            "rows": [
+                { "default": "<h5>XSS injection safe</h5>" }
+            ]
+        }
+    ]
+}
