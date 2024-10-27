@@ -12,12 +12,13 @@ const registerDoc = async ({ context, config, logger, app }) => {
     const execute = executeService(context.clone(), config, logger)
     const upload = multer()
     app.use(upload.array())
+    app.get("/", execute(index, context, db))
     app.get(`${config.prefix}index/:entity/:view`, execute(index, context, db))
 }
 
 const index = async ({ req }, context, db) => {
-    const entity = assert.notEmpty(req.params, "entity")
-    const view = assert.notEmpty(req.params, "view")
+    const entity = (req.params.entity) ? req.params.entity : "flow-er"
+    const view = (req.query.view) ? req.query.view : "fr10Settings"
     
     return renderIndex({ context, entity, view })
 }

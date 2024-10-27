@@ -9,9 +9,10 @@
 /vendor/*
 !/vendor/auth/
 !/vendor/bo/
-!/vendor/flCore/
 !/vendor/doc/
 !/vendor/document/
+!/vendor/flCore/
+!/vendor/hub/
 !/vendor/translation/
 !/vendor/my/
 !/vendor/pub/

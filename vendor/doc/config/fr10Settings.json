@@ -3,7 +3,13 @@
         {
             "class": "row mt-5",
             "rows": [
-                { "default": "<h5>Settings</h5>" }
+                { "default": "<h5>Settings</h5>" },
+                { "default": "<p>The file <code>etc/settings.json</code> sets the global parameters:</p>"},
+                { "default": "<ul><li>The log file name, max size per file, max files number, debug mode and console mode.</li>"},
+                { "default": "<li>The server ip address and port.</li>"},
+                { "default": "<li>The access control list on routes by user roles.</li>"},
+                { "default": "<li>The config file to use, allowing to switch, in development environment typically, among several client configurations.</li>"},
+                { "default": "<li>The middlewares that activate the features provided by vendor and proprietary modules (see <a href=\"/doc/index/flow-er/modules\">Modules</a>).</li></ul>"}
             ]
         }
     ]

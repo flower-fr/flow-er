@@ -1,0 +1,236 @@
+{
+    "interaction/model": {
+        "entities": {},
+        "properties": {
+            "id": { "entity": "interaction", "column": "id" },
+            "place_id": { "entity": "interaction", "column": "place_id" },
+            "status": { "entity": "interaction", "column": "status" },
+            "provider": { "entity": "interaction", "column": "provider" },
+            "endpoint": { "entity": "interaction", "column": "endpoint" },
+            "method": { "entity": "interaction", "column": "method" },
+            "params": { "entity": "interaction", "column": "params", "max_length": 65535 },
+            "body": { "entity": "interaction", "column": "body", "max_length": 65535 },
+            "authorization": { "entity": "interaction", "column": "authorization", "max_length": 65535 },
+            "status_code": { "entity": "interaction", "column": "status_code" },
+            "response_body": { "entity": "interaction", "column": "response_body" },
+
+            "touched_at": { "entity": "interaction", "column": "touched_at", "type": "datetime" },
+            "touched_by": { "entity": "interaction", "column": "touched_by", "type": "int" }
+        }
+    },
+
+    "interaction/property/id": {
+        "definition": "inline",
+        "type": "id",
+        "labels": {
+            "default": "Interaction id"
+        }
+    },
+
+    "interaction/property/place_id": {
+		"definition": "inline",
+		"type": "source",
+        "entity": "place",
+        "where": "status:new",
+        "order": "name",
+        "format": ["%s", "name"],
+		"labels": {
+			"default": "Place",
+			"fr_FR": "Campus"
+		}
+    },
+
+    "interaction/property/status": {
+        "definition": "inline",
+        "type": "select",
+        "modalities": {
+            "to_send": { "default": "To send", "fr_FR": "À envoyer" },
+            "sent": { "default": "Sent", "fr_FR": "Envoyé" },
+            "archived": { "default": "Archived", "fr_FR": "Archivé" }
+        },
+        "labels": {
+            "default": "Status",
+            "fr_FR": "Statut"
+        }
+    },
+
+    "interaction/property/provider": {
+        "definition": "inline",
+        "type": "select",
+        "modalities": {
+            "brevo": { "default": "Brevo" },
+            "smsPartner": { "default": "SMS Partner" },
+            "adobeSign": { "default": "Adobe Sign" }
+        },
+        "labels": {
+            "default": "Service provider",
+            "fr_FR": "Fournisseur de service"
+        }
+    },
+
+    "interaction/property/endpoint": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Endpoint"
+        }
+    },
+
+    "interaction/property/method": {
+        "definition": "inline",
+        "type": "select",
+        "modalities": {
+            "get": { "default": "GET" },
+            "post": { "default": "POST" }
+        },
+        "labels": {
+            "default": "Method",
+            "fr_FR": "Méthode"
+        }
+    },
+
+    "interaction/property/params": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Params"
+        }
+    },
+
+    "interaction/property/content_type": {
+        "definition": "inline",
+        "type": "select",
+        "modalities": {
+            "raw": { "default": "Raw" },
+            "json": { "default": "JSON" },
+            "form-data": { "default": "form-data" },
+            "x-www-form-urlencoded": { "default": "x-www-form-urlencoded" }
+        },
+        "labels": {
+            "default": "Content type"
+        }
+    },
+
+    "interaction/property/body": {
+        "definition": "inline",
+        "type": "textarea",
+        "labels": {
+            "default": "Body"
+        }
+    },
+
+    "interaction/property/authorization": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Authorization"
+        }
+    },
+
+    "interaction/property/status_code": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Status code"
+        }
+    },
+
+    "interaction/property/response_body": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Response",
+            "fr_FR": "Réponse"
+        }
+    },
+
+    "interaction/property/creation_time": {
+		"definition": "inline",
+		"type": "datetime",
+		"labels": {
+			"default": "Creation time",
+			"fr_FR": "Date de création"
+		}
+    },
+
+    "interaction/property/touched_at": {
+		"definition": "inline",
+		"type": "datetime",
+		"labels": {
+			"default": "Last update",
+			"fr_FR": "Dernière mise à jour"
+		}
+    },
+		
+	"interaction/index/interaction": {
+        "view": "renderIndexB5"
+    }, 
+
+	"interaction/search/interaction": { 
+        "view": "renderSearchB5",
+        "properties": { 
+            "provider": {},
+            "endpoint": {},
+            "method": {},
+            "status_code": { "multiple": true }
+        }
+    },
+	
+	"interaction/list/interaction": { 
+        "view": "renderDataviewB5",
+        "properties": {
+            "provider": { "detailCaption": true },
+            "endpoint": {},
+            "method": {},
+            "status_code": {},
+            "touched_at": {}
+        }
+    },
+
+    "interaction/detail/interaction": {
+        "tabs": {
+            "update": {
+                "definition": "inline",
+                "route": "/bo/update/interaction",
+                "labels": {"en_US": "Detail", "fr_FR": "Détail"}
+            }
+        }
+    },
+
+	"interaction/update/interaction": {
+        "layout": {
+            "intro": {
+                "properties": ["place_id", "provider", "endpoint", "method", "status_code", "params", "body", "authorization", "response_body",  "touched_at"]
+            }
+        },
+        "properties": {
+            "place_id": { "readonly": true },
+            "provider": { "readonly": true },
+            "endpoint": { "readonly": true },
+            "status_code": { "readonly": true },
+            "params": { "readonly": true },
+            "body": { "readonly": true },
+            "authorization": { "readonly": true },
+            "response_body": { "readonly": true }
+        }
+    },
+
+    "interaction/groupUpdate/interaction": { 
+        "properties": {
+            "status_code": {}
+        }
+    },
+
+    "interaction/export/interaction": { 
+        "properties": { 
+            "place_id": {},
+            "provider": {},
+            "endpoint": {},
+            "status_code": {},
+            "params": {},
+            "body": {},
+            "authorization": {},
+            "response_body": {}
+       }
+    }
+}
