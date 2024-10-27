@@ -13,14 +13,13 @@ const createMailClient = ({ config, logger }) => {
         }
     })
     return {
-        sendMail: sendMail({ logger, transporter })
+        sendMail: sendMail({ logger, transporter, from: config.from })
     }
 }
 
-const sendMail = ({ logger, transporter }) => async options => {
-    const { from, to, subject, type, content, attachments } = options
+const sendMail = ({ logger, transporter, from }) => async options => {
+    const { to, subject, type, content, attachments } = options
 
-    if (!from) throw new Error("missing mail from")
     if (!to) throw new Error("missing mail to")
     if (!subject) throw new Error("missing mail subject")
     if (!content) throw new Error("missing mail content")

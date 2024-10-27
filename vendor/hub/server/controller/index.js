@@ -28,7 +28,6 @@ const postAction = async ({ req }, context, db) => {
 const sendMailAction = async ({ req }, context, mailClient) => {
     await mailClient.sendMail({
         type: "html",
-        from: context.config.from,
         to: "bruno@lartillot.net",
         subject: "Test emailing",
         content: `Bonjour,
