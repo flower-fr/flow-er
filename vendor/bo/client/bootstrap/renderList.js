@@ -28,14 +28,14 @@ const renderList = ({ context, entity, view }, data) => {
         </td>
 
         <td class="text-center">
-            <button type="button" class="btn btn-sm btn-outline-primary index-btn listGroupButton" data-toggle="tooltip" data-placement="top" title="${context.translate("Grouped actions")}" id="listGroupButton-1">
+            <button type="button" class="btn btn-sm btn-outline-primary index-btn listGroupButton" data-mdb-target="#listDetailModalForm" data-mdb-modal-init="" data-toggle="tooltip" data-placement="top" title="${context.translate("Grouped actions")}" id="listGroupButton-1">
                 <span class="fas fa-list"></span>
             </button>
             ${(rows.length == limit) ? `
                 <button type="button" class="btn btn-sm btn-outline-primary listMoreButton" data-toggle="tooltip" data-placement="top" title="${context.translate("Display the entire list")}">
                     <i class="fas fa-ellipsis-h"></i>
                 </button>`
-                : ""}
+        : ""}
         </td>
 
         <td colspan="${Object.keys(properties).length - 1}" />
@@ -55,6 +55,8 @@ const renderRows = (context, listConfig, properties, rows) => {
                 listCheckIds.push(`<input type="hidden" class="listCheckId-${row.id}" id="listCheckId-${row.id}-${checkId}" value="${row[checkId]}"></input>`)
             }
         }
+
+        result.push(renderHidden(context, listConfig, properties, row))
 
         result.push(`
         <tr class="listRow">
@@ -76,6 +78,17 @@ const renderRows = (context, listConfig, properties, rows) => {
     }
 
     return result.join("\n")
+}
+
+const renderHidden = (context, listConfig, properties, row) => {
+
+    const html = []
+    if (listConfig.hidden) {
+        for (let propertyId of Object.keys(listConfig.hidden)) {
+            html.push(`<input type="hidden" id="listHidden-${ propertyId }-${ row.id }" value="${ row[propertyId] }" />`)
+        }
+    }
+    return html
 }
 
 const renderProperties = (context, row, properties) => {

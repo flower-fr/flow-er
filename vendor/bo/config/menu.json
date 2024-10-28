@@ -42,9 +42,18 @@
     },
 
     "menu/contact": {
-        "tabs": ["tab/account"],
+        "tabs": ["tab/accountList", "tab/account"],
         "defaultTab": "tab/account",
         "labels": { "default": "Contacts" }
+    },
+
+    "tab/accountList": {
+        "menu": "menu/contact",
+        "controller": "mdb",
+        "action": "index",
+        "entity": "account",
+        "view": "accountList",
+        "labels": { "default": "Accounts", "fr_FR": "Comptes" }
     },
 
     "tab/account": {

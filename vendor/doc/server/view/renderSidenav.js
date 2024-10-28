@@ -35,6 +35,7 @@ const renderSidenav = ({ context, entity, view }, sidenav) => {
             id="sidenav"
             class="sidenav"
             data-mdb-mode="push"
+            data-mdb-hidden="false"
             data-mdb-content="#content"
             style="padding-bottom : 100px"
         >

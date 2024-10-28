@@ -41,6 +41,11 @@ const listAction = async ({ req }, context, db) => {
         const property = properties[propertyId]
         if (property.type != "tag") columns.push(propertyId)
     }
+
+    if (listConfig.hidden) {
+        for (let propertyId of Object.keys(listConfig.hidden)) columns.push(propertyId)
+    }
+
     columns.push("id")
 
     let major = false

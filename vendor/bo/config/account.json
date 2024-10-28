@@ -9,13 +9,14 @@
             "vcard": { "table": "vcard", "foreignKey": "contact_1_id", "foreignEntity": "account" }
         },
         "properties": {
-            "id": { "entity": "account", "column": "id", "type": "int" },
+            "id": { "entity": "account", "column": "id", "type": "primary" },
+            "place_id": { "entity": "account", "column": "place_id", "type": "int" },
+            "contact_1_id": { "entity": "account", "column": "contact_1_id", "type": "int" },
             "status": { "entity": "account", "column": "status", "audit": true },
             "callback_date": { "entity": "account", "column": "callback_date", "type": "date", "audit": true },
             "date_active": { "entity": "account", "column": "date_active", "type": "date", "audit": true },
 
             "place_region": { "entity": "place", "column": "region" },
-            "place_id": { "entity": "place", "column": "id" },
             "place_name": { "entity": "place", "column": "name" },
             "n_first": { "entity": "vcard", "column": "n_first" },
             "n_last": { "entity": "vcard", "column": "n_last" },
@@ -33,6 +34,14 @@
         "type": "input",
         "labels": {
             "default": "Account ID"
+        }
+    },
+
+    "account/property/contact_1_id": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Contact ID"
         }
     },
 
@@ -176,6 +185,10 @@
         "listRenderer": "renderColumns"
     }, 
 
+    "account/index/default": {
+        "modalRenderers": {}
+    },
+
     "account/count/default": [
         {
             "filters": {
@@ -201,6 +214,9 @@
     "account/list/default": {
         "where": "status:new",
         "order": "n_last",
+        "hidden": {
+            "contact_1_id": {}
+        },
         "properties": {
             "status": {},
             "place_region": {},
@@ -286,6 +302,55 @@
             "n_first": { "mandatory": true },
             "tel_cell": {},
             "interest": { "multiple": true }
+        }
+    },
+
+    "account/group/default": {
+        "tabs": {
+            "groupUpdate": {
+                "definition": "inline",
+                "route": "/bo/groupTab/account",
+                "labels": {"en_US": "Group update", "fr_FR": "Modifier en masse"}
+            },
+            "groupReinit": {
+                "definition": "inline",
+                "route": "/bo/groupTab/account",
+                "query": { "view": "erase" },
+                "labels": {"en_US": "Group erase", "fr_FR": "Effacer en masse"}
+            }
+        }
+    },
+
+    "account/groupTab/default": {
+        "layout": {
+            "sections": {
+                "intro": {
+                    "properties": ["status", "place_id"]
+                },
+                "contacts": {
+                    "properties": ["interest"]
+                }
+            }
+        },
+        "properties": {
+            "status": { "mandatory": true },
+            "place_id": {
+                "modalities": { "erase": { "default": "Erase", "fr_FR": "-- Effacer --" }}},
+            "interest": { "multiple": true }
+        }
+    },
+
+    "account/groupTab/erase": {
+        "layout": {
+            "sections": {
+                "intro": {
+                    "properties": ["status", "place_id"]
+                }
+            }
+        },
+        "properties": {
+            "status": { "mandatory": true },
+            "place_id": {}
         }
     },
 

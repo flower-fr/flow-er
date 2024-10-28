@@ -18,7 +18,7 @@ const registerDoc = async ({ context, config, logger, app }) => {
 
 const index = async ({ req }, context, db) => {
     const entity = (req.params.entity) ? req.params.entity : "flow-er"
-    const view = (req.query.view) ? req.query.view : "fr10Settings"
+    const view = (req.params.view) ? req.params.view : "fr10Settings"
     
     return renderIndex({ context, entity, view })
 }

@@ -177,7 +177,7 @@ const getListRows = (context, entity, view, searchParams) => {
                 // Connect the grouped actions anchors
                 $(".listGroupButton").click(function () {
                     $("#modalBody").html("")
-                    getGroup()
+                    getGroup(context, entity, view, searchParams)
                 });
 
                 // Connect the detail anchors

@@ -286,10 +286,6 @@ const getDetail = (context, entity, view, id, searchParams) => {
             }
             else if (xhttp.status == 200) {
 
-                if (xhttp.statusText.substring(0, 3) == "jwt") {
-                    document.cookie = `JWT-${$("#instanceCaption").val()}${xhttp.statusText.substring(4)};path=/`
-                }
-
                 if (id != 0) {
                     const n_fn = $("#detailCaption-" + id).val()
                     $("#listDetailModalLabel").text(n_fn)

@@ -286,7 +286,7 @@ const getList = (context, entity, view, searchParams) => {
                 $(".listGroupButton").click(function () {
                     $("#listGroupModal").html("")
                     $("#groupModalForm").modal("show")
-                    getGroup()
+                    getGroup(context, entity, view, searchParams)
                 });
 
                 // Connect the detail anchors
