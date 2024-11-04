@@ -49,6 +49,10 @@ const registerBo = async ({ context, config, logger, app }) => {
     const execute = executeService(context.clone(), config, logger)
     const upload = multer()
     app.use(upload.array())
+
+    // Default tab
+    app.get("/", execute(defaultTab, context, config))
+
     app.get(`${config.prefix}config`, execute(() => { return JSON.stringify(context.config) }))
     app.get(`${config.prefix}language`, execute(() => { return JSON.stringify(context.translations) }))
     app.get(`${config.prefix}user`, execute(() => { return JSON.stringify(context.user) }))
@@ -115,6 +119,15 @@ const index = async ({ req }, context) => {
         indexConfig: indexConfig
     }
     return renderIndex({ context, entity, view }, data)
+}
+
+const defaultTab = async ({ req, res }, context) => {
+
+    const defaultTabConfig = context.config["application/defaultTab"]
+    if (defaultTabConfig) {
+        const tab = context.config[defaultTabConfig]
+        return res.redirect(`/${ tab.controller }/${ tab.action }/${ tab.entity }${ (tab.view) ? `?view=${ tab.view }` : "" }`)
+    }
 }
 
 module.exports = {

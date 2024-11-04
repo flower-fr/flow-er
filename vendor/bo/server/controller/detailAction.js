@@ -6,7 +6,6 @@ const detailAction = ({ req }, context, db) => {
     const view = (req.query.view) ? req.query.view : "default"
     let detailConfig = context.config[`${entity}/detail/${view}`]
     if (!detailConfig) detailConfig = context.config[`${entity}/detail/default`]
-    console.log(`${entity}/detail/${view}`)
     return JSON.stringify({ id: id, detailConfig: detailConfig })
 }
 

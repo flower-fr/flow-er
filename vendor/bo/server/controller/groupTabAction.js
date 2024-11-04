@@ -21,6 +21,10 @@ const groupTabAction = async ({ req }, context, db) => {
 
     let groupTabConfig = context.config[`${entity}/groupTab/${view}`]
     if (!groupTabConfig) groupTabConfig = context.config[`${entity}/groupTab/default`]
+ 
+    // Initialize a row pattern
+    const row = {}
+
     const propertyDefs = groupTabConfig.properties
     const properties = await getProperties(db, context, entity, view, propertyDefs, [])
     
@@ -29,6 +33,18 @@ const groupTabAction = async ({ req }, context, db) => {
      */
     for (let propertyId of Object.keys(properties)) {
         const property = properties[propertyId]
+        let redef = false
+        if (propertyDefs[propertyId]) {
+            redef = propertyDefs[propertyId]
+            if (redef.value) {
+                //row[propertyId] = redef.value
+                if (redef.value[0] === "?") { // Value set in query
+                    const key = redef.value.substr(1)
+                    if (where[key] && where[key].length === 1) row[propertyId] = where[key][0]
+                }
+            }
+            if (redef.columns) property.columns = redef.columns
+        }
         if (property.type === "source") {
             let filters = property.where
             filters = (filters) ? filters.split("|") : []
@@ -51,11 +67,18 @@ const groupTabAction = async ({ req }, context, db) => {
                 if (value.length !== 0) sourceWhere[filter[0]] = value
             }
             const sourceColumns = ["id"]
-            for (let columnId of property.format[1].split(",")) sourceColumns.push(columnId)
-            
+            property.columns = (redef.columns) ? Object.keys(redef.columns) : property.format[1].split(",")
+            for (let columnId of property.columns) sourceColumns.push(columnId)
             const modalities = (await db.execute(select(context, sourceEntity, sourceColumns, sourceWhere, null, null, context.config[`${property.entity}/model`])))[0]
             property.modalities = {}
+            property.rows = {}
             for (let modality of modalities) {
+                if (row[propertyId] == modality.id && redef.columns) {
+                    for (let columnId of Object.keys(redef.columns)) {
+                        if (modality[columnId]) row[redef.columns[columnId]] = modality[columnId]
+                    }
+                }
+                property.rows[modality.id] = modality
                 const args = []
                 for (let param of property.format[1].split(",")) {
                     args.push(modality[param])
@@ -70,10 +93,8 @@ const groupTabAction = async ({ req }, context, db) => {
             }
         }
     }
-
-    // Retrieve the existing row
     
-    const data = { groupTabConfig, properties, where, formJwt: "formJwt à construire" }
+    const data = { groupTabConfig, properties, row, where, formJwt: "formJwt à construire" }
     return JSON.stringify(data)
 }
 
@@ -344,7 +365,6 @@ const auditCells = async (context, { insertedEntities, updatedEntities }, connec
                     property: propertyId,
                     value: value
                 }
-                console.log(insert(context, auditTable, auditToInsert, auditModel))
                 await connection.execute(insert(context, auditTable, auditToInsert, auditModel))
             }
         }

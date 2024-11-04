@@ -112,10 +112,10 @@ const getTab = async ({ context, entity, view }, tab, id, message, searchParams)
         }
     })
     
-    $(".updateDate").datepicker()
-    $(".updateDatetimeDate").datepicker()
-    $(".updateTime").timepicker({ "timeFormat":"H:i:s", "step": 15, "scrollDefault": "now" })
-    $(".updateDatetimeTime").timepicker({ "timeFormat":"H:i:s", "step": 15, "scrollDefault": "now" })
+    $(".datepicker").datepicker()
+    //$(".updateDatetimeDate").datepicker()
+    $(".timepicker").timepicker({ "timeFormat":"H:i:s", "step": 15, "scrollDefault": "now" })
+    //$(".updateDatetimeTime").timepicker({ "timeFormat":"H:i:s", "step": 15, "scrollDefault": "now" })
     //$(".updateSelectpicker").selectpicker()
 
     $(".updateHistory").each(function () {

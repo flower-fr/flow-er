@@ -3,7 +3,14 @@
         {
             "class": "row mt-5",
             "rows": [
-                { "default": "<h5>Config</h5>" }
+                { "default": "<h5>Config</h5>" },
+                { "default": "<p>Like settings, config in <em>Flow-ER</em> is a JSON based description of parameters for the application.</p>" },
+                { "default": "<p>But where settings are a predefined set of global parameters, mainly technical ones (database or SMTP credentials for example), the config is the mean to adapt the default application model or, what's most important, define new application’s model from scratch.</p>" },
+                { "default": "<p>By <em>model</em> one means data structure to persist in a database typically, ie the data model, but also the mean of presenting it to the end user, the view model.</p>" },
+                { "default": "<p>Think of the config as the mean for you to present to the end user &laquo; things &raquo; that are related to his own semantics, ie clients or invoices or products&hellip;</p>" },
+                { "default": "<p>In terms of code architecture, the config is defined on a per module basis. The <code>config/</code> folder contains JSON files that are automatically loaded for each module declared as a middleware (see <a href=\"/doc/index/flow-er/fr10Settings\">settings</a>). All the modules configs are merged into a resulting dictionary (key-value pairs) that constitutes the application model.</p>" },
+                { "default": "<p>In addition to this aggregation of per module configs, the config loader provides a way of overwriting values in the config dictionary </p>" },
+                { "default": "<p>The configs defined in each module for a given application should be disjoint in terms of defined keys in the dictionary, since the way of choosing between two ambiguous keys (same key between two different modules) is unpredictable.</p>" }
             ]
         }
     ]

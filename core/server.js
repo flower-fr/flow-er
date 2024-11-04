@@ -40,9 +40,12 @@ const registerMiddlewares = async (context, config, logger, app) => {
     for (let key of Object.keys(middlewares)) {
         const middleware = require(middlewares[key].dir)
         if (typeof middleware.register === "function") {
-            app.use(`${middlewares[key].prefix}cli/`, express.static(`./vendor${middlewares[key].prefix}client/`))
-            app.use(`${middlewares[key].prefix}cli/`, express.static(`./module${middlewares[key].prefix}client/`))
-            await middleware.register({context, config: middlewares[key], logger, app})
+            if (middlewares[key].status !== "disabled") {
+                console.log(key, middleware.status)
+                app.use(`${middlewares[key].prefix}cli/`, express.static(`./vendor${middlewares[key].prefix}client/`))
+                app.use(`${middlewares[key].prefix}cli/`, express.static(`./module${middlewares[key].prefix}client/`))
+                await middleware.register({context, config: middlewares[key], logger, app})    
+            }
         }
         else {
             throw new Error(`invalid middleware for key ${key}, please check for function "register"`)

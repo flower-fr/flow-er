@@ -33,7 +33,7 @@ const getAction = async ({ req }, context, db) => {
      */
     let columns
     // if (version) {
-        columns = null
+    columns = null
     // }
     // else {
     //     columns = Object.keys(context.config[`${entity}/view/default`].properties)
@@ -56,9 +56,9 @@ const getAction = async ({ req }, context, db) => {
          * Retrieve single document parts
          */
         //if (version) {
-            const partModel = context.config[`document_text/model`]
-            const parts = (await db.execute(select(context, "document_text", null, { "id": row.content_vector.split(",") }, null, null, partModel)))[0]
-            obj.parts = parts
+        const partModel = context.config[`document_text/model`]
+        const parts = (await db.execute(select(context, "document_text", null, { "id": row.content_vector.split(",") }, null, null, partModel)))[0]
+        obj.parts = parts
         //}
 
         if (!result[row.name] || result[row.name].version < obj.version) result[row.name] = obj

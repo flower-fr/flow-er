@@ -15,33 +15,6 @@ function getHistory(propertyId) {
     xhttp.send()
 }
 
-const getSelect = (propertyId) => {
-    const xhttp = new XMLHttpRequest()
-    const route = $("#updateSelectRoute-" + propertyId).val()
-    xhttp.open("GET", route, true)
-    xhttp.onreadystatechange = function() {
-        if (xhttp.readyState == 4) {
-            if (xhttp.status == 401) {
-                $(".modal-body").html("")
-                $("#listDetailModalForm").modal("hide")
-                getLogin(loadPage)
-            }
-            else if (xhttp.status == 200) {
-
-                if (xhttp.statusText.substring(0, 3) == "jwt") {
-                    document.cookie = `JWT-${$("#instanceCaption").val()}${xhttp.statusText.substring(4)};path=/`
-                }
-
-                $("#updateSelectDiv-" + propertyId).html(xhttp.responseText)
-                //$(".updateSelectpicker-" + propertyId).selectpicker()
-                if (propertyId == "place_id") $(`#${propertyId}`).change(function () { selectDynamic("owner_id", "") })
-            }
-            else toastr.error("A technical error has occured. PLease try again later")
-        }
-    }
-    xhttp.send()
-}
-
 const postTab = async ({ context, entity, view }, tab, id, searchParams) => {
     const form = document.getElementById("tabForm")
     if (form) {
@@ -253,8 +226,6 @@ const submitDelete = ({ context, entity, view }, id) => {
 
 const getDetail = (context, entity, view, id, searchParams) => {
     
-    $(".modal-body").unbind()
-
     var ListForeignKeyProperty = []
     $("input.foreignKeyProperty-"+id).each(function(i){
         var key = $(this).attr("id").split("-")[1]

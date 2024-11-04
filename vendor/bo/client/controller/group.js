@@ -156,7 +156,7 @@ const getGroup = async (context, entity, view, searchParams) => {
 
     $("#listDetailModalLabel").text(context.translate("Grouped actions"))
     $(".modal-body").html("")
-    $("#listDetailModal").html(renderDetail({ context, entity, view}, data))
+    $("#listDetailModal").html(renderGroup({ context, entity, view}, data))
 
     $(".detailTab").click(function () {
         const tabId = $(this).attr("id").split("-")[1]

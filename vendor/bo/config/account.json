@@ -325,10 +325,10 @@
         "layout": {
             "sections": {
                 "intro": {
-                    "properties": ["status", "place_id"]
+                    "properties": { "status": {}, "place_id": {} }
                 },
                 "contacts": {
-                    "properties": ["interest"]
+                    "properties": { "interest": {} }
                 }
             }
         },

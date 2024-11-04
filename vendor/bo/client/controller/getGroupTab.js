@@ -2,6 +2,8 @@
 const getGroupTab = async ({ context, entity, view }, tab, searchParams) => {
 
     let route = $(`#detailTabRoute-${tab}`).val()
+    const routeDef = $(`#detailTabRoute-${tab}`), tabController = routeDef.attr("data-controller"), tabAction = routeDef.attr("data-action"), tabEntity = routeDef.attr("data-entity"), tabId = routeDef.attr("data-id"), tabQuery = routeDef.attr("data-query")
+    //route = `${tabController}/${tabAction}/${tabEntity}/`
 
     let params = []
     for (const key of Object.keys(searchParams)) {
@@ -51,6 +53,15 @@ const getGroupTab = async ({ context, entity, view }, tab, searchParams) => {
             $("#detailPanel").html(renderModalCalendar({ context, entity, view }, tabId, data)) 
             modalCalendarCallback({ context, entity, view }, tabId, data)
         }
+    })
+
+    $(".form-change").each(function () {
+        const propertyId = $(this).attr("data-property-id")
+        $(`#${propertyId}`).change(function () {
+            const value = $(this).val()
+            searchParams[propertyId] = value
+            getGroupTab({ context, entity, view }, tab, searchParams )
+        })
     })
 
     postGroupTab({ context, entity, view }, tab, searchParams)
