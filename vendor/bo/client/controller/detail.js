@@ -131,6 +131,11 @@ const postTab = async ({ context, entity, view }, tab, id, searchParams) => {
                         }
                     }
                 })
+                
+                $(".wysiwyg").each(function () {
+                    const propertyId = $(this).attr("id")
+                    formData.append(propertyId, $(this).html())
+                })
 
                 $(".user-update-input").each(function (e) {
                     let propertyId = $(this).attr("id"), val = $("#" + propertyId).val()

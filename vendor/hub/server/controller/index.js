@@ -1,13 +1,15 @@
 const multer = require("multer");
-const { createDbClient2 } = require("../../../utils/db-client")
+const { createDbClient } = require("../../../utils/db-client")
 const { createMailClient } = require("../../../utils/mail-client")
 const { createXlsxClient } = require("../../../utils/xlsx-client")
+const { createPdfClient } = require("../../../utils/pdf-client")
 const { executeService, assert } = require("../../../../core/api-utils")
 
 const registerHub = async ({ context, config, logger, app }) => {
-    const db = await createDbClient2(config.db)
+    const db = await createDbClient(config.db)
     const mailClient = createMailClient({ config: config.smtp, logger })
     const xlsxClient = createXlsxClient({ logger })
+    const pdfClient = createPdfClient({ logger })
 
     const execute = executeService(context.clone(), config, logger)
     const upload = multer()
@@ -16,6 +18,7 @@ const registerHub = async ({ context, config, logger, app }) => {
     app.post(`${config.prefix}send`, execute(postAction, context, db))
     app.get(`${config.prefix}send-mail`, execute(sendMailAction, context, mailClient))
     app.get(`${config.prefix}xlsx`, execute(xlsxAction, context, xlsxClient))
+    app.get(`${config.prefix}pdf`, execute(pdfAction, context, pdfClient))
 }
 
 const getAction = async ({ req }, context, db) => {
@@ -54,6 +57,10 @@ const xlsxAction = async ({ req }, context, xlsxClient) => {
             "!ref": "A1:C3"
         }
     )
+}
+
+const pdfAction = async ({ req }, context, pdfClient) => {
+    await pdfClient.pdf()
 }
 
 module.exports = {

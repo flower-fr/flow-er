@@ -21,6 +21,7 @@ const groupTabAction = async ({ req }, context, db) => {
 
     let groupTabConfig = context.config[`${entity}/groupTab/${view}`]
     if (!groupTabConfig) groupTabConfig = context.config[`${entity}/groupTab/default`]
+    console.log(groupTabConfig)
  
     // Initialize a row pattern
     const row = {}
@@ -79,6 +80,8 @@ const groupTabAction = async ({ req }, context, db) => {
                     }
                 }
                 property.rows[modality.id] = modality
+
+                // Deprecated
                 const args = []
                 for (let param of property.format[1].split(",")) {
                     args.push(modality[param])

@@ -13,7 +13,7 @@ const listAction = async ({ req }, context, db) => {
     
     let listConfig = context.config[`${entity}/list/${view}`]
     if (!listConfig) listConfig = context.config[`${entity}/list/default`]
-
+    
     const propertyDefs = { ...listConfig.properties }
 
     const whereParam = {}
@@ -39,6 +39,10 @@ const listAction = async ({ req }, context, db) => {
     for (let propertyId of Object.keys(properties)) {
         const property = properties[propertyId]
         if (property.type != "tag") columns.push(propertyId)
+    }
+
+    if (listConfig.checkData) {
+        for (let propertyId of listConfig.checkData) columns.push(propertyId)
     }
 
     if (listConfig.hidden) {

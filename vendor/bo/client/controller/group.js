@@ -7,7 +7,10 @@ const postGroupTab = async ({ context, entity, view }, tab, searchParams) => {
         
             event.preventDefault()
             form.checkValidity()
-            var validity = true
+
+            const submit = event.submitter
+
+            let validity = true
 
             // IBAN check
             $(".inputIban").each( function () {
@@ -21,61 +24,86 @@ const postGroupTab = async ({ context, entity, view }, tab, searchParams) => {
                 $(".submitSpinner").show()
 
                 // Create a new FormData object.
+                const payload = {}
                 var formData = new FormData()
+                payload.formJwt = $("#formJwt").val()
                 formData.append("formJwt", $("#formJwt").val())
+                payload.touched_at = $("#touched_at").val()
                 formData.append("touched_at", $("#touched_at").val())
 
                 $(".updateInput").each(function () {
                     const propertyId = $(this).attr("id")
+                    payload[propertyId] = $(this).val()
                     formData.append(propertyId, $(this).val())
                 })
 
                 $(".updateIban").each(function () {
                     const propertyId = $(this).attr("id")
+                    payload[propertyId] = $(this).val()
                     formData.append(propertyId, $(this).val())
                 })
 
                 $(".updateEmail").each(function () {
                     const propertyId = $(this).attr("id")
+                    payload[propertyId] = $(this).val()
                     formData.append(propertyId, $(this).val())
                 })
                 
                 $(".updatePhone").each(function () {
                     const propertyId = $(this).attr("id")
+                    payload[propertyId] = $(this).val()
                     formData.append(propertyId, $(this).val())
                 })
 
                 $(".updateDate").each(function () {
                     const propertyId = $(this).attr("id"), val = $(this).val()
-                    if (val) formData.append(propertyId, val.substring(6, 10) + "-" + val.substring(3, 5) + "-" + val.substring(0, 2))
-                    else formData.append(propertyId, "")
+                    if (val) {
+                        payload[propertyId] = val.substring(6, 10) + "-" + val.substring(3, 5) + "-" + val.substring(0, 2)
+                        formData.append(propertyId, val.substring(6, 10) + "-" + val.substring(3, 5) + "-" + val.substring(0, 2))
+                    }
+                    else {
+                        payload[propertyId] = ""
+                        formData.append(propertyId, "")
+                    }
                 })
 
                 $(".updateDatetimeDate").each(function () {
                     const propertyId = $(this).attr("id"), dateval = $(this).val(), timeval = $(`#updateDatetimeTime-${propertyId}`).val()
-                    if (dateval) formData.append(propertyId, `${dateval.substring(6, 10)}-${dateval.substring(3, 5)}-${dateval.substring(0, 2)} ${timeval}`)
-                    else formData.append(propertyId, "")
+                    if (dateval) {
+                        payload[propertyId] = `${dateval.substring(6, 10)}-${dateval.substring(3, 5)}-${dateval.substring(0, 2)} ${timeval}`
+                        formData.append(propertyId, `${dateval.substring(6, 10)}-${dateval.substring(3, 5)}-${dateval.substring(0, 2)} ${timeval}`)
+                    }
+                    else {
+                        payload[propertyId] = ""
+                        formData.append(propertyId, "")
+                    }
                 })
                 
                 $(".updateBirthYear").each(function () { 
                     const propertyId = $(this).attr("id")
+                    payload[propertyId] = ($(this).val()) ? $(this).val() + "-01-01" : ""
                     formData.append(propertyId, ($(this).val()) ? $(this).val() + "-01-01" : "")
                 })
 
                 $(".updateNumber").each(function () {
                     const propertyId = $(this).attr("id")
                     const value = $(this).val().replace(",", ".")
+                    payload[propertyId] = value
                     formData.append(propertyId, value)
                 })
 
                 $(".updateTime").each(function () {
                     const propertyId = $(this).attr("id")
+                    payload[propertyId] = $(this).val()
                     formData.append(propertyId, $(this).val())
                 })
                 
                 $(".updateSelect").each(function () {
                     const propertyId = $(this).attr("id")
-                    if (propertyId) formData.append(propertyId, $(this).val())
+                    if (propertyId) {
+                        payload[propertyId] = $(this).val()
+                        formData.append(propertyId, $(this).val())
+                    }
                 })
 
                 const tags = {}
@@ -88,20 +116,26 @@ const postGroupTab = async ({ context, entity, view }, tab, searchParams) => {
                         tags[propertyId].push(tagId) 
                     }
                 })
-                for (let tagId of Object.keys(tags)) formData.append(tagId, tags[tagId])
+                for (let tagId of Object.keys(tags)) {
+                    payload[tagId] = tags[tagId]
+                    formData.append(tagId, tags[tagId])
+                }
     
                 $(".updateTags").each(function () {
                     const propertyId = $(this).attr("id")
+                    payload[propertyId] = $(this).val()
                     formData.append(propertyId, $(this).val())
                 })
                 
                 $(".updateTextarea").each(function () {
                     const propertyId = $(this).attr("id")
+                    payload[propertyId] = $(this).val()
                     formData.append(propertyId, $(this).val())
                 })
 
                 $(".updateCheck").each(function () {
                     const propertyId = $(this).attr("id")
+                    payload[propertyId] = $(this).prop("checked") ? 1 : 0
                     formData.append(propertyId, $(this).prop("checked") ? 1 : 0)
                 })
                 
@@ -116,12 +150,40 @@ const postGroupTab = async ({ context, entity, view }, tab, searchParams) => {
                         }
                     }
                 })
+                
+                $(".wysiwyg").each(function () {
+                    const propertyId = $(this).attr("id")
+                    payload[propertyId] = $(this).children(".wysiwyg-content").html()
+                    formData.append(propertyId, $(this).children(".wysiwyg-content").html())
+                })
 
-                let route = $(`#detailTabRoute-${tab}`).val()
+                /**
+                 * Retrieve the properties related to checked rows
+                 */
+
+                const rows = []
+                $(".listCheck").each(function () {
+                    if ($(this).prop("checked")) {
+                        const checkData = $(this).attr("data-properties").split("|")
+                        const row = {}
+                        for (let pair of checkData) {
+                            pair = pair.split(":")
+                            row[pair[0]] = pair[1]
+                        }
+                        rows.push({ ...row })
+                    }
+                })
+                const body = { 
+                    payload: payload,
+                    rows: rows 
+                }
+
+                const route = `/${$(submit).attr("data-controller")}/${$(submit).attr("data-action")}/${$(submit).attr("data-entity")}/${$(submit).attr("data-transaction")}${ ($(submit).attr("data-view")) ? `?view=${ $(submit).attr("data-view") }` : "" }`
 
                 const xhttp = await fetch(route, {
                     method: "POST",
-                    body: formData
+                    headers: new Headers({"content-type": "application/json"}),
+                    body: JSON.stringify(body)
                 })
 
                 if (xhttp.status == 200) {
@@ -129,7 +191,7 @@ const postGroupTab = async ({ context, entity, view }, tab, searchParams) => {
                 }
                 else if (xhttp.status == 401) getGroupTab({ context, entity, view }, tab, id, "expired", searchParams)
                 else if (xhttp.status == 409) getGroupTab({ context, entity, view }, tab, id, xhttp.statusText, searchParams)
-                else getGroupTab({ context, entity, view }, tab, id, "serverError", searchParams)
+                else getGroupTab({ context, entity, view }, tab, searchParams)
             }
             else return false
         }

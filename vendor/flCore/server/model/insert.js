@@ -19,7 +19,7 @@ const insert = (context, table, data, model) => {
                     else if (type === "text") {
                         if (typeof value === "string") {
                             const maxLength = (model.properties[key].max_length) ? model.properties[key].max_length : 255
-                            value = value.replace(/(<([^>]+)>)/ig, '').substring(0, maxLength)
+                            //value = value.replace(/(<([^>]+)>)/ig, '').substring(0, maxLength)
                             value = qv(value)    
                         }
                     }

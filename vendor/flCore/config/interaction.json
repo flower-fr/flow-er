@@ -8,7 +8,7 @@
             "provider": { "entity": "interaction", "column": "provider" },
             "endpoint": { "entity": "interaction", "column": "endpoint" },
             "method": { "entity": "interaction", "column": "method" },
-            "params": { "entity": "interaction", "column": "params", "max_length": 65535 },
+            "params": { "entity": "interaction", "column": "params", "type": "json" },
             "body": { "entity": "interaction", "column": "body", "max_length": 65535 },
             "authorization": { "entity": "interaction", "column": "authorization", "max_length": 65535 },
             "status_code": { "entity": "interaction", "column": "status_code" },

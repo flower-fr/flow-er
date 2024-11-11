@@ -1,17 +1,19 @@
 const multer = require("multer");
+const { postAction } = require("./postAction")
 const { createDbClient } = require("../../../utils/db-client")
+const { createMailClient } = require("../../../utils/mail-client")
 const { executeService, assert } = require("../../../../core/api-utils")
-const { ddl } = require("./ddl")
 
-const registerStudio = async ({ context, config, logger, app }) => {
+const registerCore = async ({ context, config, logger, app }) => {
     const db = await createDbClient(config.db, context.dbName)
+    const smtp = createMailClient({ config: config.smtp, logger })
+
     const execute = executeService(context.clone(), config, logger)
     const upload = multer()
     app.use(upload.array())
-    app.get(`${config.prefix}ddl/:entity`, execute(ddl, context, db))
-    app.get(`${config.prefix}ddl/:entity/:property`, execute(ddl, context, db))
+    app.post(`${config.prefix}v1/:entity/:transaction`, execute(postAction, context, { db, smtp }))
 }
 
 module.exports = {
-    registerStudio
+    registerCore
 }

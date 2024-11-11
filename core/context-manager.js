@@ -95,19 +95,22 @@ const loadAppConfig = middlewares => {
 
     const appConfig = {}
     for (let key of Object.keys(middlewares)) {
-        if (fs.existsSync(`${middlewares[key].dir}/config`)) {
-            const fileNames = fs.readdirSync(`${middlewares[key].dir}/config`)
-            for (let fileName of fileNames) {
-                const configFile = loadConfig(`${middlewares[key].dir}/config/${fileName}`)
-                for (let key of Object.keys(configFile)) {
-                    if (appConfig[key]) {
-                        for (let subkey of Object.keys(configFile[key])) {
-                            appConfig[key][subkey] = configFile[key][subkey]
+        const middleware = middlewares[key]
+        if (!middleware.status || middleware.status != "disabled") {
+            if (fs.existsSync(`${middleware.dir}/config`)) {
+                const fileNames = fs.readdirSync(`${middleware.dir}/config`)
+                for (let fileName of fileNames) {
+                    const configFile = loadConfig(`${middleware.dir}/config/${fileName}`)
+                    for (let key of Object.keys(configFile)) {
+                        if (appConfig[key]) {
+                            for (let subkey of Object.keys(configFile[key])) {
+                                appConfig[key][subkey] = configFile[key][subkey]
+                            }
                         }
-                    }
-                    else appConfig[key] = configFile[key]
-                }    
-            }
+                        else appConfig[key] = configFile[key]
+                    }    
+                }
+            }    
         }
     }
     return appConfig
