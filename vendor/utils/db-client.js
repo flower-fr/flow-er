@@ -11,7 +11,7 @@ const createDbClient = async (config, dbName) => {
         port: config.port, 
         user: config.user, 
         password: config.password, 
-        database : (dbName) ? dbName : config.database,
+        database : dbName,
         dateStrings: [
             "DATE",
             "DATETIME"

@@ -19,7 +19,6 @@ const createMailClient = ({ config, logger }) => {
 
 const sendMail = ({ logger, transporter, from, forcedTo }) => async options => {
     const { to, subject, type, content, attachments } = options
-    console.log(forcedTo)
     if (!to) throw new Error("missing mail to")
     if (!subject) throw new Error("missing mail subject")
     if (!content) throw new Error("missing mail content")
@@ -29,7 +28,7 @@ const sendMail = ({ logger, transporter, from, forcedTo }) => async options => {
     const mailOptions = { from, to: forcedTo, subject, attachments }
     if (type === "html") mailOptions.html = content
     else mailOptions.text = content
-    console.log(mailOptions)
+
     await transporter.sendMail(mailOptions)
 
     logger && logger.debug(`email sent to ${forcedTo}, with subject ${subject}`)

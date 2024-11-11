@@ -8,7 +8,7 @@ const { createUser } = require("./createUser")
 const { register } = require("./register")
 
 const registerUser = async ({ context, config, logger, app }) => {
-    const db = await createDbClient(config.db)
+    const db = await createDbClient(config.db, context.dbName)
     const mailClient = createMailClient({ config: config.smtp, logger })
     const execute = executeService(context, config, logger)
 

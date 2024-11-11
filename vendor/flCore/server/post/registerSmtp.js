@@ -23,7 +23,7 @@ const registerSmtp = async ({ req }, context, rows, { db }) => {
         for (let split of row.email_body.split("{")) {
             const split2 = split.split("}")
             if (split2.length == 2) {
-                [propertyId, html] = split2
+                const [propertyId, html] = split2
                 email_body.push(`${ row[propertyId] }${html}`)
             }
             else email_body.push(split)
