@@ -121,9 +121,9 @@ function checkForm() {
             if ($(this).val() && !$(this).val().match(/^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/)) isValid = false
         })
 
-        $(".updatePhone").each(function () {
-            if ($(this).val() && !$(this).val().match(/^\+?([0-9\. ]*)$/)) isValid = false
-        })
+        // $(".updatePhone").each(function () {
+        //     if ($(this).val() && !$(this).val().match(/^\+?([0-9\. ]*)$/)) isValid = false
+        // })
 
         $(".updateNumber").each(function () {
             if ($(this).val() && null != checkNumber($(this).val(), -999999, 999999)) isValid = false
@@ -153,12 +153,12 @@ function checkForm() {
         }
     })
 
-    $(".updatePhone").each(function () {
-        if ($(this).val() && !$(this).val().match(/^\+?([0-9\. ]*)$/)) {
-            $(this).addClass("is-invalid")
-            $(".submitButton").prop("disabled", true)
-        }
-    })
+    // $(".updatePhone").each(function () {
+    //     if ($(this).val() && !$(this).val().match(/^\+?([0-9\. ]*)$/)) {
+    //         $(this).addClass("is-invalid")
+    //         $(".submitButton").prop("disabled", true)
+    //     }
+    // })
 
     $(".updateNumber").each(function () {
         if ($(this).val()) {
