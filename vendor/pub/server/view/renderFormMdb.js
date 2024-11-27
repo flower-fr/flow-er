@@ -75,7 +75,10 @@ const renderFormMdb = ({ context, entity, view} , data) => {
 
             let value = ""
             if (options.value && !Array.isArray(options.value)) {
-                if (options.value == "query") value = extractParams(data.params, options.param, options.mapping)
+                if (options.value == "query") {
+                    value = extractParams(data.params, options.param, options.mapping)
+                    if (!value && options.default) value = options.default
+                }
                 else value = computeValue(options.value, closedDays)
             }
 

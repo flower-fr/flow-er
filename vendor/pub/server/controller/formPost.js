@@ -13,14 +13,21 @@ const formPost = async ({ req }, context, db) => {
     const connection = await db.getConnection()
 
     /**
-     * Search for existing row
+     * Search for existing row and retrieve foreign key values and updatable property values
      */
-    const payload = {}, columns = formConfig.identifier, where = {}
+
+    const payload = {}, columns = [ ...formConfig.identifier ], where = {}
     for (let column of columns) {
         where[column] = req.body[column]
     }
     const fks = foreignKeys({ entity }, model, Object.keys(formConfig.properties))
     columns.concat(fks)
+    columns.push("id")
+
+    for (let column of Object.keys(formConfig.properties)) {
+        if (formConfig.properties[column].update) columns.push(column)
+    }
+
     const rows = (await connection.execute(select(context, entity, columns, where, null, null, model)))
 
     let row = false
@@ -29,17 +36,26 @@ const formPost = async ({ req }, context, db) => {
         for (let foreignKey of fks) payload[foreignKey] = row[foreignKey]
         for (let propertyId of Object.keys(formConfig.properties)) {
             const propertyDef = formConfig.properties[propertyId]
-            if (propertyDef.update) payload[propertyId] = req.body[propertyId]
+            if (propertyDef.update || propertyDef.insert) {
+                let update = true
+                if (propertyDef.update_condition) {
+                    for (let key of Object.keys(propertyDef.update_condition)) {
+                        const predicate = propertyDef.update_condition[key]
+                        if (!predicate.includes(row[key])) update = false
+                    }
+                }
+                if (update) payload[propertyId] = req.body[propertyId]
+            }
         }
     }
     else for (let propertyId of Object.keys(formConfig.properties)) payload[propertyId] = req.body[propertyId]
-
+    console.log(payload)
     const { cellsToStore, cellsToReject } = dataToStore(model, payload)
     const { entitiesToInsert, entitiesToUpdate } = entitiesToStore(entity, model, cellsToStore, row)
 
     await connection.beginTransaction()
 
-    await storeEntities(context, entity, { entitiesToInsert, entitiesToUpdate }, model, connection)
+    await storeEntities(context, entity, { entitiesToInsert, entitiesToUpdate }, model, row, connection)
     await auditCells(context, { insertedEntities: entitiesToInsert, updatedEntities: entitiesToUpdate }, connection)
 
     await connection.commit()
@@ -54,7 +70,7 @@ const foreignKeys = ({ entity }, model, propertyIds) => {
     for (let propertyId of propertyIds) {
         if (model.properties[propertyId]) {
             const entityId = model.properties[propertyId].entity
-            if (entityId != entity) {
+            if (model.entities[entityId] && model.entities[entityId].foreignKey) {
                 const foreignKey = model.entities[entityId].foreignKey
                 if (!result.includes(foreignKey)) result.push(foreignKey)
             }    
@@ -74,7 +90,7 @@ const dataToStore = (model, payload) => {
         if (!property) cellsToReject[propertyId] = "unknown"
         else {
             let value = payload[propertyId]
-            if (property.type == "int" && !Number.isInteger(value)) cellsToReject[propertyId] = "type"
+            if (property.type == "int" && !parseInt(value)) cellsToReject[propertyId] = "type"
             else if (property.type == "float" && typeof(value) != "number") cellsToReject[propertyId] = "type"
             else cellsToStore[propertyId] = value    
         }
@@ -86,6 +102,7 @@ const dataToStore = (model, payload) => {
 const entitiesToStore = (mainEntity, model, payload, row) => {
 
     const data = {}
+    if (row) data["id"] = row["id"]
 
     /**
      * Retrieve foreign keys on already existing joined entities
@@ -94,20 +111,20 @@ const entitiesToStore = (mainEntity, model, payload, row) => {
         const entity = model.entities[entityId]
         if (payload[entity.foreignKey]) data[entity.foreignKey] = payload[entity.foreignKey]
     }
-
+    
     const entitiesToInsert = {}, entitiesToUpdate = {}
     for (let propertyId of Object.keys(payload)) {
         if (model.properties[propertyId]) {
             const value = payload[propertyId], property = model.properties[propertyId], entityId = property.entity
 
             const { table, foreignEntity, foreignKey } = 
-                (model.entities[property.entity])
-                    ? { 
+                (entityId == mainEntity)
+                    ? { table: mainEntity, foreignKey: "id" }
+                    : {
                         table: model.entities[entityId].table,
                         foreignEntity: model.entities[entityId].foreignEntity,
                         foreignKey: model.entities[entityId].foreignKey
                     }
-                    : { table: mainEntity, foreignKey: "id" }
 
             let idToUpdate = data[foreignKey]
             if (!idToUpdate || idToUpdate === null) idToUpdate = 0
@@ -133,7 +150,7 @@ const entitiesToStore = (mainEntity, model, payload, row) => {
     return { entitiesToInsert, entitiesToUpdate }
 }
 
-const storeEntities = async (context, mainEntity, { entitiesToInsert, entitiesToUpdate }, model, connection) => {
+const storeEntities = async (context, mainEntity, { entitiesToInsert, entitiesToUpdate }, model, row, connection) => {
 
     const columnsToUpdate = {}
 
@@ -159,8 +176,19 @@ const storeEntities = async (context, mainEntity, { entitiesToInsert, entitiesTo
     for (let entityId of Object.keys(model.entities).reverse()) {
         const entity = model.entities[entityId]
         if (entitiesToInsert[entityId]) await insertEntity(entityId, entity)
+        else {
+            if (entityId == mainEntity && entity.foreignEntity) {
+                if (entitiesToInsert[entity.foreignEntity]) {
+                    entitiesToInsert[entity.foreignEntity].cells[entity.foreignKey] = row.id
+                }
+    
+                if (entitiesToUpdate[entity.foreignEntity]) {
+                    entitiesToUpdate[entity.foreignEntity].cells[entity.foreignKey] = row.id
+                }
+            }
+        }
     }
-    if (entitiesToInsert[mainEntity]) await insertEntity(mainEntity, { table: mainEntity })
+    //if (entitiesToInsert[mainEntity]) await insertEntity(mainEntity, { table: mainEntity })
 
     /**
      * Perfs: Pivot the per row basis update vector to per column basis vectors
@@ -206,7 +234,6 @@ const auditCells = async (context, { insertedEntities, updatedEntities }, connec
                     property: propertyId,
                     value: value
                 }
-                console.log(insert(context, auditTable, auditToInsert, auditModel))
                 await connection.execute(insert(context, auditTable, auditToInsert, auditModel))
             }
         }

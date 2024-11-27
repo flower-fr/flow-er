@@ -321,10 +321,12 @@ const getDetail = (context, entity, view, id, searchParams) => {
                     const tabId = $(this).attr("id").split("-")[1]
                     $(".detailTab").removeClass("active")
                     $(this).addClass("active")
-                    getTab({ context, entity, view }, tabId, id, "", searchParams)
+                    const route = $(`#detailTabRoute-${tabId}`).val()
+                    getTab({ context, entity, view }, tabId, route, id, "", searchParams)
                 })
 
-                getTab({ context, entity, view }, $("#defaultTab").val(), id, "", searchParams)
+                const tab = $("#defaultTab").val(), route = $(`#detailTabRoute-${tab}`).val()
+                getTab({ context, entity, view }, tab, route, id, "", searchParams)
             }
             else toastr.error("A technical error has occured. PLease try again later")
         }

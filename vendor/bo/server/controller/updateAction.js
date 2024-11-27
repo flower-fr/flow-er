@@ -97,7 +97,7 @@ const postUpdateAction = async ({ req }, context, db) => {
     // Retrieve the existing row
 
     const model = context.config[`${entity}/model`]
-    const payload = {}, columns = Object.keys(model.properties)
+    const payload = { id: id }, columns = Object.keys(model.properties)
     const fks = foreignKeys({ entity }, model, Object.keys(updateConfig.properties))
     columns.concat(fks)
     const row = (await db.execute(select(context, entity, columns, { "id": id }, null, null, model)))[0][0]
@@ -234,7 +234,8 @@ const dataToStore = (properties, payload, data) => {
 const entitiesToStore = (mainEntity, model, cellsToStore, payload, row) => {
 
     const data = {}
-
+    if (row.id) data.id = row.id
+    
     /**
      * Retrieve foreign keys on already existing joined entities
      */

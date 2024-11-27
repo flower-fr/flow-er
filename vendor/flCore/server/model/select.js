@@ -3,7 +3,7 @@ const { join } = require("./join")
 
 const select = (context, table, columns, where, order = [], limit = null, model = [], debug = false) => {
 
-    if (model.properties.visibility && (!where.visibility || where.visibility == 'deleted') /* deleted never visible */) where.visibility = 'active'
+    if (model.properties.visibility && (!where.visibility || where.visibility == "deleted") /* deleted never visible */) where.visibility = 'active'
 
     if (!columns) {
         columns = []

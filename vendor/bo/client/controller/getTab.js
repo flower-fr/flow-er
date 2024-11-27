@@ -1,7 +1,6 @@
 
-const getTab = async ({ context, entity, view }, tab, id, message, searchParams) => {
+const getTab = async ({ context, entity, view }, tab, route, id, message, searchParams) => {
 
-    let route = $(`#detailTabRoute-${tab}`).val()
     const xhttp = new XMLHttpRequest()
 
     let params = []
@@ -31,6 +30,14 @@ const getTab = async ({ context, entity, view }, tab, id, message, searchParams)
     
     const data = await response.json()
 
+    $(".renderDetailTab").each(function () { 
+        const tabId = $(this).attr("id").split("-")[1]
+        if (tabId == tab) {
+            $("#detailPanel").html(renderDetailTab({ context, entity, view }, data))
+            updateCallback({ context, entity, view })
+        }
+    })
+
     $(".renderUpdate").each(function () { 
         const tabId = $(this).attr("id").split("-")[1]
         if (tabId == tab) {
@@ -52,6 +59,11 @@ const getTab = async ({ context, entity, view }, tab, id, message, searchParams)
             $("#detailPanel").html(renderModalCalendar({ context, entity, view }, tabId, data)) 
             modalCalendarCallback({ context, entity, view }, tabId, data)
         }
+    })
+
+    // trigger detail buttons
+    $(".modalListDetailButton").click(function () {
+        getTab({ context, entity, view }, tab, $(this).attr("data-route"), id, message, searchParams)
     })
 
     $(".document-cancel-btn").hide()
