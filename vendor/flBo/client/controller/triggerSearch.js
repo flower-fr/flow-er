@@ -22,14 +22,14 @@ const triggerSearch = async ({ context, entity, view }, param = false) => {
 
     const data = await response.json()
 
-    $("#flSearch").html(searchRenderer({ context, entity, view }, data))
+    $("#sidenav").html(searchRenderer({ context, entity, view }, data))
+    searchCallback({ context, entity, view })
 
     // Trigger search properties change
     $(".fl-search-change").each(function () {
         const propertyId = $(this).attr("data-property-id")
         $(`#flSearch-${propertyId}`).change(function() {
             const param = `&where=${propertyId}:${$(`#flSearch-${propertyId}`).val()}`
-            console.log(param)
             triggerSearch({ context, entity, view }, param)
         })
     })

@@ -10,6 +10,7 @@ const ddlProperty = (entity, propertyId, property) => {
         else if (property.type == "datetime") type = "DATETIME DEFAULT NULL"
         else if (property.type == "int") type = "INT(11) DEFAULT 0"
         else if (property.type == "tinyint") type = "TINYINT DEFAULT 0"
+        else if (property.type == "decimal") type = "DECIMAL(14,4) DEFAULT 0"
         else if (property.max_length && property.max_length > 255) type = "MEDIUMTEXT"
         else if (property.type == "mediumtext") type = "MEDIUMTEXT"
         else if (property.type == "mediumblob") type = "MEDIUMBLOB"

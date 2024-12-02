@@ -77,25 +77,14 @@ const renderFilters = (context, entity, view, properties, data) => {
 
 const renderFilterDateTime = (context, propertyId, property) => {
 
-    return `<div class="form-outline DatePickerOutline mb-1" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true">
+    return `<div class="form-outline fl-search-date-outline mb-1" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true">
             <input type="text" class="form-control form-control-sm fl-search-item fl-search-min" id="flSearchMin-${propertyId}" data-property-id="${propertyId}"/>
             <label for="flSearchMin-${propertyId}" class="form-label">${context.localize(property.labels)} - Min</label>
         </div>
-        <div class="form-outline DatePickerOutline mb-3" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true">
+        <div class="form-outline fl-search-date-outline mb-3" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true">
             <input type="text" class="form-control form-control-sm fl-search-item fl-search-max" id="flSearchMax-${propertyId}" data-property-id="${propertyId}"/>
             <label for="flSearchMax-${propertyId}" class="form-label">Max</label>
         </div>`
-} 
-
-const renderFilterAge = (context, propertyId, property) => {
-
-    return `<div class="input-group input-group-sm mb-2 mr-sm-2">
-        <div class="input-group-prepend">
-            <button type="button" class="btn btn-secondary input-group-text searchCheck" id="searchCheck-${propertyId}">${context.localize(property.labels)}</button>
-        </div>
-        <input class="form-control fl-search-item fl-search-min" type="text" id="flSearchMax-${propertyId}" placeholder="${context.translate("Max")}" data-property-id="${propertyId}" />
-        <input class="form-control fl-search-item fl-search-max" type="text" id="flSearchMin-${propertyId}" placeholder="${context.translate("Min")}" data-property-id="${propertyId}" />
-    </div>`
 } 
 
 const renderFilterSelect = (context, propertyId, property, options, where) => {
@@ -151,7 +140,6 @@ const renderFilterNumber = (context, propertyId, property) => {
 
     return `<div class="input-group input-group-sm mb-3">
                 <span class="input-group-text fs-6" id="addon-wrapping"><label class="form-label" style="margin-bottom: 0 !important">${context.localize(property.labels)}</label></span>
-                <!--<label class="form-label mb-1 mt-1 me-2 fs-6" style="font-size: small !important;">${context.localize(property.labels)}</label>-->
                 <div class="form-outline" data-mdb-input-init>
                     <input type="number" value="0" id="min" min="0" class="form-control form-control-sm fl-search-item fl-search-input" data-property-id="${propertyId}" id="flSearchMin-<${propertyId}"/>
                     <label class="form-label" for="flSearchMin-<${propertyId}">Min</label>
@@ -167,7 +155,7 @@ const renderFilterInput = (context, propertyId, property, options, properties) =
 
     const values = (properties[propertyId].distribution) ? Object.keys(properties[propertyId].distribution) : []
     return `
-        <div class="form-outline searchFormOutline mb-3" data-mdb-input-init data-values="${ values.join(",") }">
+        <div class="form-outline fl-search-form-Outline mb-3" data-mdb-input-init data-values="${ values.join(",") }">
             <input type="text" class="form-control form-control-sm fl-search-item fl-search-input" data-property-id="${propertyId}" id="flSearch-${propertyId}" />
             <label class="form-label" for="flSearch-${propertyId}">${context.localize(property.labels)}</label>
         </div>`

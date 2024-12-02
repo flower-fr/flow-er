@@ -18,8 +18,8 @@ const detailTabAction = async ({ req }, context, db) => {
     }
     if (id) where.id = id
 
-    let detailTabConfig = context.config[`${entity}/modalList/${view}`]
-    if (!detailTabConfig) detailTabConfig = context.config[`${entity}/modalList/default`]
+    let detailTabConfig = context.config[`${entity}/detailTab/${view}`]
+    if (!detailTabConfig) detailTabConfig = context.config[`${entity}/detailTab/default`]
 
     const data = { where }
     for (let entityId of Object.keys(detailTabConfig.data)) {

@@ -51,11 +51,11 @@ const triggerList = async ({ context, entity, view }) => {
         if (e.shiftKey) {
             const max = $(this).attr("data-row-id"), state = $(this).prop("checked")
             let min = 0
-            $(".list-check").each(function () {
+            $(".fl-list-check").each(function () {
                 const i = parseInt($(this).attr("data-row-id"))
                 if ($(this).prop("checked") && i < max) min = i
             })
-            $(".list-check").each(function () {
+            $(".fl-list-check").each(function () {
                 const i = parseInt($(this).attr("data-row-id"))
                 if (i >= min && i <= max) $(this).prop("checked", state)
             })
@@ -114,6 +114,10 @@ const triggerList = async ({ context, entity, view }) => {
         }
     })
 
-    //triggerDetail({ context, entity, view })
-    //triggerGroup({ context, entity, view })
+    triggerDetail({ context, entity, view }, params)
+
+    // Connect the grouped actions anchors
+    $(".fl-list-group").click(function () {
+        getGroup(context, entity, view, params)
+    })
 }

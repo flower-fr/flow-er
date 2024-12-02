@@ -45,8 +45,8 @@ const renderDetailTab = ({ context, entity }, { data, detailTabConfig, formJwt }
                             id="modal-scrollspy-div"
                             data-mdb-scrollspy-init
                             data-mdb-target="#modal-scrollspy"
-                            data-mdb-offset="200"
-                            class="scrollspy-example"
+
+                            style="position: relative; height: 600px; overflow: auto;"
                         >`
         )
     }

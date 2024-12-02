@@ -315,7 +315,7 @@ const getDetail = (context, entity, view, id, searchParams) => {
 
                 $(".modal-body").html("")
                 const data = JSON.parse(xhttp.responseText)
-                $("#listDetailModal").html(renderDetail({ context, entity, view}, data))
+                $("#flListDetailModal").html(renderDetail({ context, entity, view}, data))
 
                 $(".detailTab").click(function () {
                     const tabId = $(this).attr("id").split("-")[1]

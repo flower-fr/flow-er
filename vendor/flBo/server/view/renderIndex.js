@@ -23,7 +23,7 @@ const renderIndex = ({ context, entity, view }, data) => {
         <input type="hidden" id="flListLimitHidden" value="${data.limit}" />
     
         <nav
-            id="flSearch"
+            id="sidenav"
             data-mdb-sidenav-init
             class="sidenav"
             data-mdb-mode="push"
@@ -47,7 +47,7 @@ const renderIndex = ({ context, entity, view }, data) => {
                 <div class="row">
                     <section class="p-4 d-flex flex-wrap w-100">
                         <div>
-                            <button data-mdb-ripple-init="" data-mdb-toggle="flSearch" data-mdb-target="#flSearch" class="btn btn-primary" aria-controls="#flSearch" aria-haspopup="true" style="" aria-expanded="false">
+                            <button data-mdb-ripple-init="" data-mdb-toggle="sidenav" data-mdb-target="#sidenav" class="btn btn-primary" aria-controls="#sidenav" aria-haspopup="true" style="" aria-expanded="false">
                                 <i class="fas fa-bars"></i>
                             </button>
                         </div>

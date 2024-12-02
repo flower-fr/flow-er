@@ -51,7 +51,7 @@ const loadPage = async ({ entity, view }) => {
     // if (shortcutsRoute) triggerShortcuts({ context, entity, view }, shortcutsRoute)
     triggerSearch({ context, entity, view })
 
-    const myModalEl = document.getElementById("listDetailModalForm")
+    const myModalEl = document.getElementById("flListDetailModalForm")
     myModalEl.addEventListener("hidden.mdb.modal", (e) => {
         triggerList({ context, entity, view })
     })

@@ -1,16 +1,12 @@
 
-
-const postGroupTab = async ({ context, entity, view }, tab, searchParams) => {
+const postTab = async ({ context, entity, view }, tab, id, searchParams) => {
     const form = document.getElementById("tabForm")
     if (form) {
         form.onsubmit = async function (event) {
         
             event.preventDefault()
             form.checkValidity()
-
-            const submit = event.submitter
-
-            let validity = true
+            var validity = true
 
             // IBAN check
             $(".inputIban").each( function () {
@@ -100,10 +96,8 @@ const postGroupTab = async ({ context, entity, view }, tab, searchParams) => {
                 
                 $(".updateSelect").each(function () {
                     const propertyId = $(this).attr("id")
-                    if (propertyId) {
-                        payload[propertyId] = $(this).val()
-                        formData.append(propertyId, $(this).val())
-                    }
+                    payload[propertyId] = $(this).val()
+                    if (propertyId) formData.append(propertyId, $(this).val())
                 })
 
                 const tags = {}
@@ -154,78 +148,75 @@ const postGroupTab = async ({ context, entity, view }, tab, searchParams) => {
                 $(".wysiwyg").each(function () {
                     const propertyId = $(this).attr("id")
                     payload[propertyId] = $(this).children(".wysiwyg-content").html()
-                    formData.append(propertyId, $(this).children(".wysiwyg-content").html())
+                    formData.append(propertyId, $(this).html())
                 })
 
-                /**
-                 * Retrieve the properties related to checked rows
-                 */
-
-                const rows = []
-                $(".listCheck").each(function () {
-                    if ($(this).prop("checked")) {
-                        const checkData = $(this).attr("data-properties").split("|")
-                        const row = {}
-                        for (let pair of checkData) {
-                            pair = pair.split(":")
-                            row[pair[0]] = pair[1]
-                        }
-                        rows.push({ ...row })
+                $(".user-update-input").each(function (e) {
+                    let propertyId = $(this).attr("id"), val = $("#" + propertyId).val()
+                    if (val.length > 255) {
+                        $("#" + propertyId + "_group").addClass("has-error")
+                        $("#" + propertyId + "_error").html("The input is too long")
+                        $("#" + propertyId + "_error").css("display", "block")
+                        $("#" + propertyId).focus()
+                        validity = false
+                    }
+                    else {
+                        payload[propertyId] = $("#" + propertyId).val()
+                        formData.append(propertyId, $("#" + propertyId).val())
+                        $("#" + propertyId + "_error").css("display", "none")
                     }
                 })
-                const body = { 
-                    payload: payload,
-                    rows: rows 
-                }
 
-                const route = `/${$(submit).attr("data-controller")}/${$(submit).attr("data-action")}/${$(submit).attr("data-entity")}/${$(submit).attr("data-transaction")}${ ($(submit).attr("data-view")) ? `?view=${ $(submit).attr("data-view") }` : "" }`
+                $(".user-update-check").each(function () {
+                    let propertyId = $(this).attr("id"), checked = ($("#" + propertyId).prop("checked") ? 1: 0)
+                    payload[propertyId] = checked
+                    formData.append(propertyId, checked)
+                })
+
+                $(".user-update-select").each(function () {
+                    let propertyId = $(this).attr("id"), val = $("#" + propertyId).val()
+                    payload[propertyId] = $("#" + propertyId).val()
+                    formData.append(propertyId, $("#" + propertyId).val())
+                })
+
+                $(".user-update-textarea").each(function () {
+                    let propertyId = $(this).attr("id"), val = $("#" + propertyId).val()
+                    if (val.length > 65535) {
+                        $("#" + propertyId + "_group").addClass("has-error")
+                        $("#" + propertyId + "_error").html("The input is too long")
+                        $("#" + propertyId + "_error").css("display", "block")
+                        $("#" + propertyId).focus()
+                        validity = false
+                    }
+                    else {
+                        payload[propertyId] = $("#" + propertyId).val()
+                        formData.append(propertyId, $("#" + propertyId).val())
+                        $("#" + propertyId + "_error").css("display", "none")
+                    }
+                })
+
+                let route = $(`#detailTabRoute-${tab}`).val()
 
                 const xhttp = await fetch(route, {
                     method: "POST",
                     headers: new Headers({"content-type": "application/json"}),
-                    body: JSON.stringify(body)
+                    body: JSON.stringify(payload)
                 })
 
                 if (xhttp.status == 200) {
-                    getGroupTab({ context, entity, view }, tab, id, "ok", searchParams)
+
+                    if (xhttp.statusText.substring(0, 3) == "jwt") {
+                        document.cookie = `JWT-${$("#instanceCaption").val()}${xhttp.statusText.substring(4)};path=/`
+                    }
+
+                    if (id == 0) id = xhttp.body
+                    getTab({ context, entity, view }, tab, id, "ok", searchParams)
                 }
-                else if (xhttp.status == 401) getGroupTab({ context, entity, view }, tab, id, "expired", searchParams)
-                else if (xhttp.status == 409) getGroupTab({ context, entity, view }, tab, id, xhttp.statusText, searchParams)
-                else getGroupTab({ context, entity, view }, tab, searchParams)
+                else if (xhttp.status == 401) getTab({ context, entity, view }, tab, id, "expired", searchParams)
+                else if (xhttp.status == 409) getTab({ context, entity, view }, tab, id, xhttp.statusText, searchParams)
+                else getTab({ context, entity, view }, tab, id, "serverError", searchParams)
             }
             else return false
         }
     }
-}
-
-const getGroup = async (context, entity, view, searchParams) => {
-
-    var route = `${$("#groupRoute").val()}?view=${view}`
-
-    const response = await fetch(route)
-    if (!response.ok) {
-        switch (response.status) {
-        case 401:
-            getLogin(loadPage)
-            return
-        case 500:
-            toastr.error("A technical error has occured. PLease try again later")
-            return
-        }
-    }
-    
-    const data = await response.json()
-
-    $("#flListDetailModalLabel").text(context.translate("Grouped actions"))
-    $(".modal-body").html("")
-    $("#flListDetailModal").html(renderGroup({ context, entity, view}, data))
-
-    $(".detailTab").click(function () {
-        const tabId = $(this).attr("id").split("-")[1]
-        $(".detailTab").removeClass("active")
-        $(this).addClass("active")
-        getGroupTab({ context, entity, view }, tabId, searchParams)
-    })
-
-    getGroupTab({ context, entity, view }, $("#defaultTab").val(), searchParams)
 }
