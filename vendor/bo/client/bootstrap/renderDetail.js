@@ -24,7 +24,6 @@ const renderDetailMenu = function (context, detailConfig, id) {
 
 const renderDetailRoutes = (context, detailConfig, id) => {
     const html = []
-    console.log(detailConfig.tabs)
     for (let tabId of Object.keys(detailConfig.tabs)) {
         const tab = detailConfig.tabs[tabId]
         //if (tab.key == "id" && id != 0 || !tab.key && id == 0) {
