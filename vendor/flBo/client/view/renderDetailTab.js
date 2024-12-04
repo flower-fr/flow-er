@@ -33,7 +33,7 @@ const renderDetailTab = ({ context, entity }, { data, detailTabConfig, formJwt }
                 <h5 class="alert alert-danger  my-3 text-center">${context.translate("A technical error has occured. PLease try again later")}</h5>
             </div> -->
             
-            <form class="was-validated row g-4" id="tabForm">
+            <form class="has-validation row g-4" id="tabForm">
 
                 <div class="row">`
     )

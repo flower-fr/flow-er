@@ -36,7 +36,7 @@ const getProperties = async (db, context, entity, view, propertyDefs, where) => 
         /**
          * Tags
          */
-        if (property.type == "tag") {
+        if (["tag", "source"].includes(property.type)) {
             let filters = (property.where) ? property.where : ""
             filters = (filters) ? filters.split("|") : []
             filters = filters.map((x) => { return x.split(":") })
@@ -47,19 +47,21 @@ const getProperties = async (db, context, entity, view, propertyDefs, where) => 
                 value = value.split(",")
                 where[filter[0]] = value
             }
-            const tagColumns = property.format[1].split(",")
+            const tagColumns = (property.format[1]) ? property.format[1].split(",") : []
             tagColumns.push("id")
-            tagColumns.push(property.vector)
-            let tagOrder = {}
-            if (property.order[0] == "-") tagOrder[property.order.substr(1)] = "DESC" 
-            else tagOrder[property.order] = "ASC"
-            const rows = (await db.execute(select(context, property.entity, tagColumns, where, tagOrder, null, context.config[`${property.entity}/model`])))[0]
-            property.tags = []
+            if (property.type == "tag") tagColumns.push(property.vector)
+            let order = {}
+            if (property.order[0] == "-") order[property.order.substr(1)] = "DESC" 
+            else order[property.order] = "ASC"
+            const rows = (await db.execute(select(context, property.entity, tagColumns, where, order, null, context.config[`${property.entity}/model`])))[0]
+            const modalities = []
             for (let row of rows) {
                 const vector = (row[property.vector]) ? row[property.vector].split(",") : []
                 row[property.vector] = vector.map((x) => { return parseInt(x) })
-                property.tags.push(row)
+                modalities.push(row)
             }
+            if (property.type == "tag") property.tags = modalities
+            else property.modalities = modalities
         }
         properties[propertyId] = property
         properties[propertyId].options = options

@@ -217,7 +217,6 @@ const getGroup = async (context, entity, view, searchParams) => {
     const data = await response.json()
 
     $("#flListDetailModalLabel").text(context.translate("Grouped actions"))
-    $(".modal-body").html("")
     $("#flListDetailModal").html(renderGroup({ context, entity, view}, data))
 
     $(".detailTab").click(function () {
