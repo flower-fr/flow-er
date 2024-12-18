@@ -72,8 +72,8 @@ const renderLogin = ({ context }, data) => {
 
                                 <!-- Email input -->
                                 <div class="form-outline mb-4" data-mdb-input-init>
-                                    <input type="email" id="loginName" name="email" class="form-control" required />
-                                    <label class="form-label" for="loginName">${ context.translate("Email") }</label>
+                                    <input type="input" id="loginName" name="email" class="form-control" required />
+                                    <label class="form-label" for="loginName">${ context.translate("Identifier") }</label>
                                 </div>
 
                                 <!-- Password input -->
