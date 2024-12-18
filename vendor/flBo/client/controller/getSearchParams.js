@@ -58,6 +58,28 @@ const getSearchParams = () => {
         }
     })
 
+    $(".fl-search-date-min").each(function () {
+        let propertyId = $(this).attr("data-property-id")
+        let value = $(this).val()
+        if (value.length >= 2) {
+            if (!searchParams[propertyId]) searchParams[propertyId] = [null, null]
+            value = value.split("/")
+            value = `${value[2]}-${value[1]}-${value[0]}`            
+            searchParams[propertyId][0] = value
+        }
+    })
+
+    $(".fl-search-date-max").each(function () {
+        let propertyId = $(this).attr("data-property-id")
+        let value = $(this).val()
+        if ((value.length >= 2) && value) { 
+            if (!searchParams[propertyId]) searchParams[propertyId] = [null, null]
+            value = value.split("/")
+            value = `${value[2]}-${value[1]}-${value[0]}`            
+            searchParams[propertyId][1] = value
+        }
+    })
+
     let params = []
     for (const key of Object.keys(searchParams)) {
         let value = searchParams[key]
@@ -68,6 +90,5 @@ const getSearchParams = () => {
         }
         params.push(key + ":" + value)
     }
-
     return params
 }

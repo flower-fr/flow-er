@@ -1,4 +1,3 @@
-const multer = require("multer");
 const { executeService, assert } = require("../../../../core/api-utils")
 const { sessionCookieMiddleware } = require("../../../user/server/controller/sessionCookieMiddleware");
 const { createDbClient } = require("../../../utils/db-client")
@@ -16,8 +15,6 @@ const registerFlBo = async ({ context, config, logger, app }) => {
 
     const db = await createDbClient(config.db, context.dbName)
     const execute = executeService(context, config, logger)
-    const upload = multer()
-    app.use(upload.array())
     app.use(`${config.prefix}`, sessionCookieMiddleware(config))
     app.get(`${config.prefix}index/:entity`, execute(index, context, config, db))
     app.get(`${config.prefix}search/:entity`, execute(searchAction, context, db))

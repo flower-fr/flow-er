@@ -34,7 +34,7 @@ const getProperties = async (db, context, entity, view, propertyDefs, where) => 
         }
 
         /**
-         * Tags
+         * Tags, sources
          */
         if (["tag", "source"].includes(property.type)) {
             let filters = (property.where) ? property.where : ""
@@ -56,8 +56,10 @@ const getProperties = async (db, context, entity, view, propertyDefs, where) => 
             const rows = (await db.execute(select(context, property.entity, tagColumns, where, order, null, context.config[`${property.entity}/model`])))[0]
             const modalities = []
             for (let row of rows) {
-                const vector = (row[property.vector]) ? row[property.vector].split(",") : []
-                row[property.vector] = vector.map((x) => { return parseInt(x) })
+                if (property.type == "tag") {
+                    const vector = (row[property.vector]) ? row[property.vector].split(",") : []
+                    row[property.vector] = vector.map((x) => { return parseInt(x) })
+                }
                 modalities.push(row)
             }
             if (property.type == "tag") property.tags = modalities

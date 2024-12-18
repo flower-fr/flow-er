@@ -35,42 +35,43 @@ const detailTabAction = async ({ req }, context, db) => {
             }
         }
 
-        if (Object.keys(subWhere).length > 0) {
+        data[entityId] = {}
 
-            data[entityId] = {}
+        const propertyDefs = dataConfig.properties
+        const properties = await getProperties(db, context, entityId, view, propertyDefs, whereParam)
+        data[entityId].properties = properties    
 
-            const propertyDefs = dataConfig.properties
-            const properties = await getProperties(db, context, entityId, view, propertyDefs, whereParam)
-            data[entityId].properties = properties    
-    
-            /**
-             * List of DB columns to retrieve
-             */
-            let columns = []
-            for (let propertyId of Object.keys(properties)) {
-                const property = properties[propertyId]
-                if (property.type != "tag") columns.push(propertyId)
-            }
-            columns.push("id")
-        
-            const propertyList = []
-            for (let propertyId of Object.keys(properties)) {
-                const property = properties[propertyId]
-                if (property.type != "tags") propertyList.push(propertyId)
-            }
-        
-            let major = false
-            if (order != null) {
-                major = order.split(",")[0]
-                if (major.charAt(0) == "-") major = major.substring(1)
-            }
-        
-            if (!columns) columns = propertyList
-            columns = columns.concat(["id"])
-        
-            const rows = await getList(db, context, entityId, columns, properties, subWhere, order, limit)
-            data[entityId].rows = rows        
+        /**
+         * List of DB columns to retrieve
+         */
+        let columns = []
+        for (let propertyId of Object.keys(properties)) {
+            const property = properties[propertyId]
+            if (property.type != "tag") columns.push(propertyId)
         }
+        columns.push("id")
+    
+        const propertyList = []
+        for (let propertyId of Object.keys(properties)) {
+            const property = properties[propertyId]
+            if (property.type != "tags") propertyList.push(propertyId)
+        }
+    
+        let major = false
+        if (order != null) {
+            major = order.split(",")[0]
+            if (major.charAt(0) == "-") major = major.substring(1)
+        }
+    
+        if (!columns) columns = propertyList
+        columns = columns.concat(["id"])
+
+        let rows
+        if (Object.keys(subWhere).length > 0) {
+            rows = await getList(db, context, entityId, columns, properties, subWhere, order, limit)
+        }
+        else rows = []
+        data[entityId].rows = rows        
     }
 
     return { data, detailTabConfig }

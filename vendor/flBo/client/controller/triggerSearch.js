@@ -114,6 +114,11 @@ const triggerSearch = async ({ context, entity, view }, param = false) => {
         else $(`#flSearchHeaderIcon-${propertyId}`).show()
     })
     
+    $(".fl-global").click(function () {
+        const route = $(this).attr("data-route")
+        getGlobal({ context, entity, view }, route)
+    })
+
     triggerOrder({ context, entity, view })
     triggerList({ context, entity, view })
 }

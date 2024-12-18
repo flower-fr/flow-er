@@ -63,6 +63,8 @@ const renderIndex = ({ context, entity, view }, data) => {
                 </div>
             </div>
             
+            <!-- listDetailModal -->
+            
             <div class="modal fade" id="listDetailModalForm" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="listDetailModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
@@ -70,7 +72,26 @@ const renderIndex = ({ context, entity, view }, data) => {
                             <h5 class="modal-title" id="listDetailModalLabel"></h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" data-mdb-dismiss="modal" aria-label="Close" title="${context.localize("Cancel")}"></button>
                         </div>
-                        <div class="modal-body" id="listDetailModal">
+                        <div class="modal-body">
+                            <div class="container-fluid" id="flListDetailModal">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- globalModal -->
+            
+            <div class="modal fade" id="flGlobalModalForm" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="flGlobalModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="flGlobalModalLabel">${ context.translate("Global actions") }</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" data-mdb-dismiss="modal" aria-label="Close" title="${context.localize("Cancel")}"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="container-fluid" id="flGlobalModal">
+                            </div>
                         </div>
                     </div>
                 </div>

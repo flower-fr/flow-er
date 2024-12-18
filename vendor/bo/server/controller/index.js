@@ -1,6 +1,5 @@
 const express = require("express")
 const bodyParser = require("body-parser");
-const multer = require("multer");
 const { executeService, assert } = require("../../../../core/api-utils")
 const { sessionCookieMiddleware } = require("../../../user/server/controller/sessionCookieMiddleware");
 const { createDbClient } = require("../../../utils/db-client")
@@ -47,8 +46,6 @@ const registerBo = async ({ context, config, logger, app }) => {
     }
 
     const execute = executeService(context.clone(), config, logger)
-    const upload = multer()
-    app.use(upload.array())
 
     // Default tab
     app.get("/", execute(defaultTab, context, config))

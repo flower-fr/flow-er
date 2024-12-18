@@ -67,10 +67,10 @@ const renderDetailTab = ({ context, entity }, { data, detailTabConfig, formJwt }
             }
             else if (data.where[section.condition] && data.where[section.condition] != 0) condition = true
         }
-        if (sectionData && condition) {
+        if (!sectionData || condition) {
             const properties = sectionData.properties, rows = sectionData.rows
             html.push(
-                `<section id="${sectionId}">
+                `<section class="mt-2" id="${sectionId}">
                     ${ (section.labels) ? `<h5 class="my-4">${context.localize(section.labels)}</h5>`: "" }
                     <div class="row">
                         ${ (section.renderer == "renderUpdate") ?

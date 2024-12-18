@@ -1,0 +1,24 @@
+{
+    "interaction/model": {
+        "entities": {
+            "place": { "table": "place", "foreignKey": "place_id", "foreignEntity": "candidat" }
+        },
+        "properties": {
+            "id": { "entity": "interaction", "column": "id", "type": "primary" },
+            "status": { "entity": "interaction", "column": "status" },
+            "provider": { "entity": "interaction", "column": "provider" },
+            "endpoint": { "entity": "interaction", "column": "endpoint" },
+            "method": { "entity": "interaction", "column": "method" },
+            "params": { "entity": "interaction", "column": "params" },
+            "body": { "entity": "interaction", "column": "body", "type": "mediumtext" },
+            "authorization": { "entity": "interaction", "column": "authorization" },
+            "status_code": { "entity": "interaction", "column": "status_code" },
+            "response_body": { "entity": "interaction", "column": "response_body" },
+
+            "visibility": { "entity": "interaction", "column": "visibility", "audit": true },
+            "touched_at": { "entity": "interaction", "column": "touched_at", "type": "datetime" },
+            "touched_by": { "entity": "interaction", "column": "touched_by", "type": "int" }
+       }
+    }
+}
+

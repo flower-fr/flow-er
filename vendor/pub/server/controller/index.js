@@ -1,5 +1,4 @@
 const express = require("express")
-const multer = require("multer");
 const { createDbClient } = require("../../../utils/db-client")
 const { executeService, assert } = require("../../../../core/api-utils")
 const { getModel } = require("../../../flCore/server/model/index")
@@ -11,8 +10,6 @@ const registerPub = async ({ context, config, logger, app }) => {
 
     const db = await createDbClient(config.db, context.dbName)
     const execute = executeService(context.clone(), config, logger)
-    const upload = multer()
-    app.use(upload.array())
     app.get(`${config.prefix}config`, execute(() => { return JSON.stringify(context.config) }))
     app.get(`${config.prefix}language`, execute(() => { return JSON.stringify(context.translations) }))
     app.get(`${config.prefix}user`, execute(() => { return JSON.stringify(context.user) }))

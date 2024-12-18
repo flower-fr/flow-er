@@ -1,6 +1,5 @@
 const express = require("express");
 const { noCacheMiddleware, notFoundMiddleware, handleCorsMiddleware } = require("../../core/api-utils")
-const multer = require("multer");
 const { executeService, assert } = require("../../core/api-utils")
 const { registerDoc } = require("./server/controller/index")
 

@@ -1,8 +1,6 @@
 
 const getTab = async ({ context, entity, view }, tab, route, id, message, searchParams) => {
     
-    const xhttp = new XMLHttpRequest()
-
     let params = []
     for (const key of Object.keys(searchParams)) {
         let value = searchParams[key]
@@ -96,8 +94,6 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
             submitDelete({ context, entity, view }, id)
         })
     })
-
-    $(".submitSpinner").hide()
     
     checkForm()
 

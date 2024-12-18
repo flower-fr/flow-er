@@ -1,23 +1,37 @@
-const multer = require("multer");
+const fs = require("fs");
+const xlsxParser = require("node-xlsx").default
+const multer = require("multer")
+const { authTokenMiddleware } = require("../../../auth/index")
+const { getTokenPayload } = require("../../../../core/tools/security")
 const { createDbClient } = require("../../../utils/db-client")
 const { createMailClient } = require("../../../utils/mail-client")
 const { createXlsxClient } = require("../../../utils/xlsx-client")
 const { createPdfClient } = require("../../../utils/pdf-client")
 const { executeService, assert } = require("../../../../core/api-utils")
 
+const { getImportXlsxAction, postImportXlsxAction } = require("./importXlsxAction")
+
 const registerHub = async ({ context, config, logger, app }) => {
-    const db = await createDbClient(config.db)
+    const db = await createDbClient(config.db, context.dbName)
     const mailClient = createMailClient({ config: config.smtp, logger })
     const xlsxClient = createXlsxClient({ logger })
     const pdfClient = createPdfClient({ logger })
 
     const execute = executeService(context.clone(), config, logger)
+    const executeImportXlsx = async (req, res) => {
+        if (!context.isAllowed("interaction")) return res.status(403).send({message: "unauthorized"})
+        const result = await postImportXlsxAction({ req }, context, db)
+        return res.status(200).send(result)
+    }
     const upload = multer()
-    app.use(upload.array())
+    //app.use(`${config.prefix}`, authTokenMiddleware(config, context))
+    
     app.get(`${config.prefix}send`, execute(getAction, context, db))
     app.post(`${config.prefix}send`, execute(postAction, context, db))
     app.get(`${config.prefix}send-mail`, execute(sendMailAction, context, mailClient))
     app.get(`${config.prefix}xlsx`, execute(xlsxAction, context, xlsxClient))
+    app.get(`${config.prefix}import-xlsx/:entity`, execute(getImportXlsxAction, context, db))
+    app.post(`${config.prefix}import-xlsx/:entity/:id`, upload.single("global-xlsxFile"), executeImportXlsx)
     app.get(`${config.prefix}pdf`, execute(pdfAction, context, pdfClient))
 }
 

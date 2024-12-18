@@ -1,6 +1,5 @@
 const express = require("express")
 const bodyParser = require("body-parser");
-const multer = require("multer");
 const { executeService, assert } = require("../../../../core/api-utils")
 const { createDbClient } = require("../../../utils/db-client")
 
@@ -17,8 +16,6 @@ const registerMy = async ({ context, config, logger, app }) => {
 
     const db = await createDbClient(config.db, context.dbName)
     const execute = executeService(config, logger)
-    const upload = multer()
-    app.use(upload.array())
     app.get("/", execute(homeAction, context, db))
     app.get(`${config.prefix}calendar/:id`, execute(calendarAction, context, db))
     app.get(`${config.prefix}changePassword/:id`, execute(changePasswordAction, context, db))

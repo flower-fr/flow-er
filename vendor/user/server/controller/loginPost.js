@@ -66,7 +66,7 @@ const loginPost = async ({ req, res }, context, config, db) => {
         httpOnly: true
     })
 
-    res.redirect("/mdb/index/crm_account?view=acquisition")
+    res.redirect("/")
 }
 
 module.exports = {

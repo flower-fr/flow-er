@@ -1,4 +1,3 @@
-const multer = require("multer");
 const { postAction } = require("./postAction")
 const { createDbClient } = require("../../../utils/db-client")
 const { createMailClient } = require("../../../utils/mail-client")
@@ -9,8 +8,6 @@ const registerCore = async ({ context, config, logger, app }) => {
     const smtp = createMailClient({ config: config.smtp, logger })
 
     const execute = executeService(context.clone(), config, logger)
-    const upload = multer()
-    app.use(upload.array())
     app.post(`${config.prefix}v1/:entity/:transaction`, execute(postAction, context, { db, smtp }))
 }
 

@@ -49,7 +49,7 @@ const formPost = async ({ req }, context, db) => {
         }
     }
     else for (let propertyId of Object.keys(formConfig.properties)) payload[propertyId] = req.body[propertyId]
-    console.log(payload)
+
     const { cellsToStore, cellsToReject } = dataToStore(model, payload)
     const { entitiesToInsert, entitiesToUpdate } = entitiesToStore(entity, model, cellsToStore, row)
 

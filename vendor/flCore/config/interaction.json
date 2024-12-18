@@ -9,11 +9,12 @@
             "endpoint": { "entity": "interaction", "column": "endpoint" },
             "method": { "entity": "interaction", "column": "method" },
             "params": { "entity": "interaction", "column": "params", "type": "json" },
-            "body": { "entity": "interaction", "column": "body", "max_length": 65535 },
-            "authorization": { "entity": "interaction", "column": "authorization", "max_length": 65535 },
+            "body": { "entity": "interaction", "column": "body", "type": "mediumtext" },
+            "authorization": { "entity": "interaction", "column": "authorization" },
             "status_code": { "entity": "interaction", "column": "status_code" },
-            "response_body": { "entity": "interaction", "column": "response_body" },
+            "response_body": { "entity": "interaction", "column": "response_body", "type": "mediumtext" },
 
+            "visibility": { "entity": "edu_contact", "column": "visibility", "audit": true },
             "touched_at": { "entity": "interaction", "column": "touched_at", "type": "datetime" },
             "touched_by": { "entity": "interaction", "column": "touched_by", "type": "int" }
         }
@@ -46,7 +47,7 @@
         "modalities": {
             "to_send": { "default": "To send", "fr_FR": "À envoyer" },
             "sent": { "default": "Sent", "fr_FR": "Envoyé" },
-            "archived": { "default": "Archived", "fr_FR": "Archivé" }
+            "error": { "default": "Error", "fr_FR": "Erreur" }
         },
         "labels": {
             "default": "Status",
@@ -58,6 +59,7 @@
         "definition": "inline",
         "type": "select",
         "modalities": {
+            "gmail": { "default": "Gmail" },
             "brevo": { "default": "Brevo" },
             "smsPartner": { "default": "SMS Partner" },
             "adobeSign": { "default": "Adobe Sign" }
@@ -144,15 +146,6 @@
         }
     },
 
-    "interaction/property/creation_time": {
-		"definition": "inline",
-		"type": "datetime",
-		"labels": {
-			"default": "Creation time",
-			"fr_FR": "Date de création"
-		}
-    },
-
     "interaction/property/touched_at": {
 		"definition": "inline",
 		"type": "datetime",
@@ -161,13 +154,19 @@
 			"fr_FR": "Dernière mise à jour"
 		}
     },
+
+    "interaction/property/file": {
+		"definition": "inline",
+		"type": "input",
+		"labels": {
+			"default": "File to import",
+			"fr_FR": "Fichier à importer"
+		}
+    },
 		
-	"interaction/index/interaction": {
-        "view": "renderIndexB5"
-    }, 
+	"interaction/index/interaction": {}, 
 
 	"interaction/search/interaction": { 
-        "view": "renderSearchB5",
         "properties": { 
             "provider": {},
             "endpoint": {},
@@ -177,7 +176,6 @@
     },
 	
 	"interaction/list/interaction": { 
-        "view": "renderDataviewB5",
         "properties": {
             "provider": { "detailCaption": true },
             "endpoint": {},
@@ -191,46 +189,45 @@
         "tabs": {
             "update": {
                 "definition": "inline",
-                "route": "/bo/update/interaction",
-                "labels": {"en_US": "Detail", "fr_FR": "Détail"}
+                "controller": "flBo",
+                "action": "detailTab",
+                "entity": "interaction",
+                "id": "id",
+                "labels": {"en_US": "Update", "fr_FR": "Modifier"},
+                "renderer": "renderDetailTab"
             }
         }
     },
 
-	"interaction/update/interaction": {
+    "interaction/detailTab/default": {
+        "controller": "flBo",
+        "action": "detailTab",
+        "entity": "interaction",
         "layout": {
-            "intro": {
-                "properties": ["place_id", "provider", "endpoint", "method", "status_code", "params", "body", "authorization", "response_body",  "touched_at"]
+            "cols" : { "content": { "class": "col-md-10" }, "scrollspy": { "class": "col-md-2" }},
+            "sections": {
+                "form": {
+                    "entity": "interaction",
+                    "properties": ["place_id"],
+                    "renderer": "renderUpdate"
+                }
+            },
+            "posts": {
+
+            }
+        },
+        "data": {
+            "interaction": { 
+                "where": {
+                    "id": "id"
+                },
+                "properties": {
+                    "place_id": {}
+                }
             }
         },
         "properties": {
-            "place_id": { "readonly": true },
-            "provider": { "readonly": true },
-            "endpoint": { "readonly": true },
-            "status_code": { "readonly": true },
-            "params": { "readonly": true },
-            "body": { "readonly": true },
-            "authorization": { "readonly": true },
-            "response_body": { "readonly": true }
+            "place_id": { "mandatory": true }
         }
-    },
-
-    "interaction/groupUpdate/interaction": { 
-        "properties": {
-            "status_code": {}
-        }
-    },
-
-    "interaction/export/interaction": { 
-        "properties": { 
-            "place_id": {},
-            "provider": {},
-            "endpoint": {},
-            "status_code": {},
-            "params": {},
-            "body": {},
-            "authorization": {},
-            "response_body": {}
-       }
     }
 }

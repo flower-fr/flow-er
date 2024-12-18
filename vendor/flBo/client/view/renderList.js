@@ -76,7 +76,7 @@ const renderRows = (context, listConfig, properties, rows) => {
             </td>
 
             <td class="text-center">
-                <button type="button" class="btn btn-sm btn-outline-primary index-btn listDetailButton" data-mdb-target="#listDetailModalForm" data-mdb-modal-init title="${context.translate("Detail")}" id="listDetailButton-${row.id}">
+                <button type="button" class="btn btn-sm btn-outline-primary index-btn listDetailButton" data-mdb-target="#listDetailModalForm" title="${context.translate("Detail")}" id="listDetailButton-${row.id}">
                   <i class="fas fa-search"></i>
                 </button>
             </td>

@@ -22,10 +22,18 @@ const searchAction = async ({ req }, context, db) => {
     const propertyDefs = listConfig.properties
     const properties = await getProperties(db, context, entity, view, propertyDefs, where)
 
+    /**
+     * Global actions
+     */
+    let globalConfig = context.config[`${entity}/global/${view}`]
+    if (!globalConfig) globalConfig = context.config[`${entity}/global/default`]
+    if (!globalConfig) globalConfig = {}
+
     const result = {
         where: where,
         config: listConfig,
-        properties: properties
+        properties: properties,
+        actions: globalConfig.actions
     }
     return result
 }
