@@ -1,5 +1,6 @@
 const triggerModalList = ({ context, entity, view }, data, message) => {
 
+    $(".fl-modal-list-message").hide()
     $(".fl-submit-div").hide()
     $(".fl-modal-list-close-button").hide()
 
@@ -21,6 +22,7 @@ const triggerModalList = ({ context, entity, view }, data, message) => {
     if (form) {
         form.onsubmit = async function (event) {
             event.preventDefault()
+            $("#flModalListAddSubmit").prop("disabled", true)
             const submit = event.submitter
             var validity = true
 
@@ -169,8 +171,8 @@ const triggerModalList = ({ context, entity, view }, data, message) => {
                 })
 
                 if (response.status == 200) {
-                    const data = await response.json()
-                    $("#flfl-modal-list-add-Modal").html(renderModalList({ context, entity, view }, data))
+                    $(".fl-modal-list-close-button").hide()
+                    $("#flModalListMessageOk").show()
                 }
                 else if (response.status == 401) triggerModalList({ context, entity, view }, route, "expired")
             }

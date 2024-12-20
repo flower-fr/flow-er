@@ -6,6 +6,29 @@ const renderModalList = ({ context, entity, view }, data) => {
     html.push(`
     <div class="row mt-3">
         <div class="table-responsive">
+
+            <!-- Form status messages -->
+
+            <div class="fl-modal-list-message" id="flModalListMessageOk">
+                <h5 class="alert alert-success my-3 text-center">${context.translate("Your request has been registered")}</h5>
+            </div>
+
+            <div class="fl-modal-list-message" id="flModalListMessageExpired">
+                <h5 class="alert alert-danger my-3 text-center">${context.translate("The form has expired, please input again")}</h5>
+            </div>
+
+            <div class="fl-modal-list-message" id="flModalListMessageConsistency">
+                <h5 class="alert alert-danger  my-3 text-center">${context.translate("The database has evolved in the meantime, please input again")}</h5>
+            </div>
+
+            <div class="fl-modal-list-message" id="flModalListMessageDuplicate">
+                <h5 class="alert alert-danger  my-3 text-center">${context.translate("The data already exists")}</h5>
+            </div>
+
+            <div class="fl-modal-list-message" id="flModalListMessageServerError">
+                <h5 class="alert alert-danger  my-3 text-center">${context.translate("A technical error has occured. PLease try again later")}</h5>
+            </div>
+
             <form class="was-validated row g-4" id="flModalListAddForm">
                 <table class="table table-sm">
                     <thead class="datatable-header">
