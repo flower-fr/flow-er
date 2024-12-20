@@ -20,7 +20,7 @@ const getList = async (db, context, entity, view, columns, properties, wherePara
                 propertyId = orderer
                 direction = "ASC"
             }
-            if (properties[propertyId].type != "tag") order[propertyId] = direction    
+            if (!properties[propertyId] || properties[propertyId].type != "tag") order[propertyId] = direction    
             else orderTags[propertyId] = direction
         }    
     }

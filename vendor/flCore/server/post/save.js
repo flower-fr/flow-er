@@ -94,7 +94,7 @@ const dataToStore = (entity, model, form) => {
 
     const rowsToStore = [], rowsToReject = []
 
-    for (let row of form) {
+    for (const row of form) {
         const cellsToStore = {}, cellsToReject = {}
         for (let propertyId of Object.keys(row)) {
             const property = model.properties[propertyId]
@@ -286,6 +286,7 @@ const save = async ({ req }, context, rows, { db }) => {
     /**
      * Find out the data to actually store in the database 
      */
+    
     let { rowsToStore, rowsToReject } = dataToStore(entity, model, form)
 
     if (rowsToReject.length > 0) {

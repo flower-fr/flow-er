@@ -2,31 +2,42 @@ const renderModalList = ({ context, entity, view }, data) => {
 
     const rows = data.rows, orderParam = data.orderParam, limit = data.limit, modalListConfig = data.config, properties = data.properties
 
-    return `
+    const html = []
+    html.push(`
     <div class="row mt-3">
         <div class="table-responsive">
-            <table class="table table-sm">
-                <thead class="datatable-header">
-                    ${renderModalListHeader({ context }, properties)}
-                </thead>
-                <tbody class="table-group-divider">
-                
-                    ${renderModalListRows({ context, entity: data.entity }, modalListConfig, properties, rows)}
+            <form class="was-validated row g-4" id="flModalListAddForm">
+                <table class="table table-sm">
+                    <thead class="datatable-header">
+                        ${renderModalListHeader({ context }, modalListConfig, properties)}
+                    </thead>
+                    <tbody class="table-group-divider">
+                    
+                        ${renderModalListRows({ context, entity: data.entity }, data.id, modalListConfig, properties, rows)}
 
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+                <div class="form-group row fl-submit-div">
+                    <div>
+                        <input type="submit" id="flModalListAddSubmit" class="btn btn-warning mt-3 fl-Modal-List-submit" value="${ context.localize(data.config.post.labels) }" data-controller=${data.config.post.controller} data-action=${data.config.post.action} data-entity=${data.config.post.entity}>
+                    </div>
+                </div>
+            </form>
         </div>
-    </div>`
+    </div>`)
 
+    return html.join("\n")
 }
 
-const renderModalListHeader = ({ context }, properties) => {
+const renderModalListHeader = ({ context }, modalListConfig, properties) => {
 
     const head = []
 
-    for (let propertyId of Object.keys(properties)) {
+    head.push("<th />")
+
+    for (let propertyId of Object.keys(modalListConfig.properties)) {
         const property = properties[propertyId]
-        if (Object.keys(property).length > 0) {
+        if (property.type != "hidden" && Object.keys(property).length > 0) {
             head.push(`<th scope="col">
                 <div id="modalListSortAnchor-${propertyId}">
                     <span class="fl-modal-list-header-label" id="flModalListHeaderLabel-${propertyId}">${ context.localize(property.labels) }</span>
@@ -38,23 +49,23 @@ const renderModalListHeader = ({ context }, properties) => {
     return head.join("\n")
 }
 
-const renderModalListRows = ({ context }, modalListConfig, properties, rows) => {
+const renderModalListRows = ({ context }, id, modalListConfig, properties, rows) => {
 
     const result = []
 
     result.push(`
         <tr>
 
-            ${renderModalListForm({ context }, {}, properties)}
+            ${renderModalListForm({ context }, id, modalListConfig, {}, properties)}
 
         </tr>`)
 
     for (const row of rows) {
 
         result.push(`
-        <tr>
+        <tr class="fl-modal-list-row">
 
-            ${renderModalListProperties({ context }, row, properties)}
+            ${renderModalListProperties({ context }, modalListConfig, row, properties)}
 
         </tr>`)
     }
@@ -62,13 +73,16 @@ const renderModalListRows = ({ context }, modalListConfig, properties, rows) => 
     return result.join("\n")
 }
 
-const renderModalListProperties = ({ context }, row, properties) => {
+const renderModalListProperties = ({ context }, modalListConfig, row, properties) => {
 
     const html = []
 
-    for (const [propertyId, property] of Object.entries(properties)) {
+    html.push("<td />")
 
-        if (Object.keys(property).length > 0) {
+    for (const propertyId of Object.keys(modalListConfig.properties)) {
+        const property = properties[propertyId]
+
+        if (property.type != "hidden" && Object.keys(property).length > 0) {
 
             if (property.type == "select") {
                 html.push(`<td class="${(property.options.class) ? property.options.class[row[propertyId]] : "" }">
@@ -85,15 +99,11 @@ const renderModalListProperties = ({ context }, row, properties) => {
             }
 
             else if (property.type == "date") {
-                let classe
-                if (row[propertyId] == "9999-12-31") classe = "info"
-                else if (row[propertyId] < "2024-09-01") classe = "success"
-                else classe = "danger"
-                html.push(`<td>${ context.decodeDate(row[propertyId]) }</td>`)
+                html.push(`<td>${ moment(row[propertyId]).format("DD/MM/YYYY") }</td>`)
             }
         
             else if (property.type == "datetime") {
-                html.push(`<td>${context.decodeTime(row[propertyId])}</td>`)
+                html.push(`<td>${ moment(row[propertyId]).format("DD/MM/YYYY HH:mm:ss") }</td>`)
             }
 
             else if (property.type == "number") {
@@ -120,28 +130,47 @@ const renderModalListProperties = ({ context }, row, properties) => {
     return html.join("\n")
 }
 
-const renderModalListForm = ({ context }, row, properties) => {
+const renderModalListForm = ({ context }, id, modalListConfig, row, properties) => {
 
     const html = []
 
-    for (let propertyId of Object.keys(properties)) {
+    html.push(`
+            <td class="text-center">
+                <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-modal-list-add-button" title="${context.translate("Add")}" id="flModalListAddButton" data-mdb-ripple-init>
+                    <span class="fas fa-plus"></span>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-modal-list-close-button" title="${context.translate("Add")}" id="flModalListCloseButton" data-mdb-ripple-init>
+                    <span class="fas fa-close"></span>
+                </button>
+            </td>`)
+
+    for (const propertyId of Object.keys(modalListConfig.properties)) {
         const property = properties[propertyId]
         const options = property.options
-        const label = (options.labels) ? context.localize(options.labels) : context.localize(property.labels)
-        const propertyType = (options.type) ? options.type : property.type
-        const readonly = (property.options.readonly) ? "readonly" : ""
-        const required = (property.options.required) ? "required" : ""
-        const modalities = (property.options.modalities) ? property.options.modalities : property.modalities
+        const label = (options && options.labels) ? context.localize(options.labels) : ((property.labels) ? context.localize(property.labels) : "")
+        const propertyType = (options && options.type) ? options.type : property.type
+        const disabled = (options && options.disabled) ? "disabled" : ""
+        const required = (options && options.required) ? "required" : ""
+        const modalities = (options.modalities) ? property.options.modalities : property.modalities
 
         let value = (row[propertyId]) ? row[propertyId] : ""
         if (options.value && !Array.isArray(options.value)) {
             value = options.value
-            if (value && value.charAt(5) == "+") value = moment().add(value.substring(6), "days").format("YYYY-MM-DD")
-            else if (value && value.charAt(5) == "-") value = moment().subtract(value.substring(6), "days").format("YYYY-MM-DD")
-            else value = moment().format("YYYY-MM-DD")    
+            if (value == "?id") value = id
+            if (value.substring(0, 6) == "today") {
+                if (value && value.charAt(5) == "+") value = moment().add(value.substring(6), "days").format("YYYY-MM-DD")
+                else if (value && value.charAt(5) == "-") value = moment().subtract(value.substring(6), "days").format("YYYY-MM-DD")
+                else if (property.type == "datetime") value = moment().format("YYYY-MM-DD HH:mm:ss")    
+                else value = moment().format("YYYY-MM-DD")        
+            }
         }
 
         if (Object.keys(property).length > 0) {
+
+            if (propertyType == "hidden") {
+                html.push(`<input type="hidden" class="fl-modal-list-add-input" id="${propertyId}" value="${value}" />`)
+                continue
+            }
 
             html.push("<td>")
 
@@ -153,8 +182,8 @@ const renderModalListForm = ({ context }, row, properties) => {
 
             if (propertyType == "select") {
                 html.push(`<div class="form-outline">
-                        <select class="fl-modal-list-add-select" data-mdb-select-init id="${propertyId}" ${(multiple) ? "multiple" : ""} ${ readonly } ${ required }>
-                            <option />`
+                        <select class="form-select form-select-sm fl-modal-list-add-select" data-mdb-select-init="" id="${propertyId}" ${(multiple) ? "multiple" : ""} ${ disabled }>
+                            ${ (!required) ? "<option />" : "" }`
                 )
 
                 for (let key of Object.keys(modalities)) {
@@ -202,7 +231,7 @@ const renderModalListForm = ({ context }, row, properties) => {
                 html.push(
                     `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3">
                     <div class="form-outline">
-                        <select class="fl-modal-list-add-select" data-mdb-select-init id="${propertyId}" ${(required) } ${(readonly) }>
+                        <select class="fl-modal-list-add-select" data-mdb-select-init id="${propertyId}" ${(required) } ${(disabled) }>
                             <option />`
                 )
 
@@ -220,44 +249,47 @@ const renderModalListForm = ({ context }, row, properties) => {
                 )
             }
 
-            else if (["date", "datetime"].includes(property.type)) {
-                html.push(` <div class="form-outline dateOutline" ${(propertyType == "datetime" ? "data-mdb-datetimepicker-init" : "data-mdb-datepicker-init")} data-mdb-input-init data-mdb-inline="true">
-                        <input class="form-control form-control-sm fl-modal-list-add-date" id="${propertyId}" value="${context.decodeDate(value)}" ${ readonly } ${ required } placeholder="DD/MM/YYYY" autocomplete="off" />
+            else if (["date"].includes(property.type)) {
+                html.push(`<div class="form-outline fl-modal-list-add-date-outline data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true">
+                        <input class="form-control form-control-sm fl-modal-list-add-date" id="${propertyId}" value="${context.decodeDate(value)}" ${ disabled } ${ required } placeholder="DD/MM/YYYY" autocomplete="off" />
                         <label class="form-label">${label}</label>
-                        <div class="invalid-feedback">${ context.translate("Invalid") }</div>
+                    </div>`)
+            }
+
+            else if (["datetime"].includes(property.type)) {
+                html.push(`<div class="form-outline fl-modal-list-add-date-outline data-mdb-datetimepicker-init data-mdb-input-init data-mdb-inline="true">
+                        <input class="form-control form-control-sm fl-modal-list-add-date" id="${propertyId}" value="${ moment(value).format("DD/MM/YYYY HH:mm:ss") }" ${ disabled } ${ required } placeholder="DD/MM/YYYY" autocomplete="off" />
+                        <label class="form-label">${label}</label>
                     </div>`)
             }
 
             else if (property.type == "number") {
                 html.push(`<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" }">
-                    <div class="form-outline formOutline" data-mdb-input-init>
-                        <input class="form-control form-control-sm is-valid fl-modal-list-add-input" id="${propertyId}" value="${value}" ${ readonly } ${ required } maxlength="${(property.options.max_length) ? property.options.max_length : 255}" />
+                    <div class="form-outline fl-modal-list-add-form-outline" data-mdb-input-init>
+                        <input class="form-control form-control-sm is-valid fl-modal-list-add-input" id="${propertyId}" value="${value}" ${ disabled } ${ required } maxlength="${(property.options.max_length) ? property.options.max_length : 255}" />
                         <label class="form-label">${label}</label>
                     </div>
                 </div>`)
             }
 
             else if (property.type == "email") {
-                html.push(` <div class="form-outline formOutline" data-mdb-input-init>
-                        <input class="form-control form-control-sm is-valid fl-modal-list-add-email" id="${propertyId}" value="${value}" ${ readonly } ${ required } maxlength="255" />
+                html.push(` <div class="form-outline fl-modal-list-add-form-outline" data-mdb-input-init>
+                        <input class="form-control form-control-sm is-valid fl-modal-list-add-email" id="${propertyId}" value="${value}" ${ disabled } ${ required } maxlength="255" />
                         <label class="form-label">${label}</label>
-                        <div class="invalid-feedback">${context.translate("Invalid")}</div>
                     </div>`)
             }              
 
             else if (property.type == "phone") {
-                html.push(`<div class="form-outline formOutline" data-mdb-input-init>
-                        <input class="form-control form-control-sm is-valid fl-modal-list-add-phone" id="${propertyId}" value="${value}" ${ readonly } ${ required } maxlength="255" />
+                html.push(`<div class="form-outline fl-modal-list-add-form-outline" data-mdb-input-init>
+                        <input class="form-control form-control-sm is-valid fl-modal-list-add-phone" id="${propertyId}" value="${value}" ${ disabled } ${ required } maxlength="255" />
                         <label class="form-label">${label}</label>
-                        <div class="invalid-feedback">${ context.translate("Invalid") }</div>
                     </div>`)
             }
 
             else {
-                html.push(`<div class="form-outline formOutline" data-mdb-input-init>
-                        <input class="form-control form-control-sm is-valid fl-modal-list-add-input" id="${propertyId}" value="${value}" ${ readonly } ${ required } maxlength="255" />
+                html.push(`<div class="form-outline fl-modal-list-add-form-outline" data-mdb-input-init>
+                        <input class="form-control form-control-sm is-valid fl-modal-list-add-input" id="${propertyId}" value="${value}" ${ disabled } ${ required } maxlength="255" />
                         <label class="form-label">${label}</label>
-                        <div class="invalid-feedback">${ context.translate("Invalid") }</div>
                     </div>`)                  
             }
 

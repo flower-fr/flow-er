@@ -1,13 +1,32 @@
 const triggerModalList = ({ context, entity, view }, data, message) => {
-    const form = document.getElementById("fl-modal-list-add-form")
+
+    $(".fl-submit-div").hide()
+    $(".fl-modal-list-close-button").hide()
+
+    $(".fl-modal-list-add-button").click(() => {
+        $(".fl-modal-list-row").hide()
+        $(".fl-submit-div").show()
+        $(".fl-modal-list-add-button").hide()
+        $(".fl-modal-list-close-button").show()
+    })
+
+    $(".fl-modal-list-close-button").click(() => {
+        $(".fl-modal-list-row").show()
+        $(".fl-submit-div").hide()
+        $(".fl-modal-list-close-button").hide()
+        $(".fl-modal-list-add-button").show()
+    })
+
+    const form = document.getElementById("flModalListAddForm")
     if (form) {
         form.onsubmit = async function (event) {
             event.preventDefault()
+            const submit = event.submitter
             var validity = true
 
             if (validity) {
 
-                $("#fl-modal-list-add-submit-button").prop("disabled", true)
+                $(".fl-modal-list-submit").prop("disabled", true)
 
                 // Create a new FormData object.
                 const payload = {}
@@ -139,11 +158,14 @@ const triggerModalList = ({ context, entity, view }, data, message) => {
                     formData.append(propertyId, $(this).html())
                 })
 
-                let route = `/${data.post.controller}/${data.post.action}/${data.post.entity}`
+                let route = `/${$(submit).attr("data-controller")}/${$(submit).attr("data-action")}/${$(submit).attr("data-entity")}`
 
                 const response = await fetch(route, {
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
                     method: "POST",
-                    body: formData
+                    body: JSON.stringify([payload])
                 })
 
                 if (response.status == 200) {

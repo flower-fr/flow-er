@@ -1,3 +1,5 @@
+const util = require("util")
+
 const { assert, throwConflictError } = require("../../../../core/api-utils")
 const { select } = require("../../../flCore/server/model/select")
 const { update } = require("../../../flCore/server/model/update")
@@ -13,7 +15,7 @@ const dataToStore = (entity, model, form) => {
 
     const rowsToStore = [], rowsToReject = []
 
-    for (let row of form) {
+    for (const row of form) {
         const cellsToStore = {}, cellsToReject = {}
         for (let propertyId of Object.keys(row)) {
             const property = model.properties[propertyId]
@@ -43,8 +45,7 @@ const entitiesToStore = (mainEntity, model, rowsToStore, audit) => {
         /**
          * Retrieve foreign keys on already existing joined entities
          */
-        for (let entityId of Object.keys(model.entities)) {
-            const entity = model.entities[entityId]
+        for (const entity of Object.values(model.entities)) {
             if (row[entity.foreignKey]) data[entity.foreignKey] = row[entity.foreignKey]
         }
     
@@ -54,13 +55,13 @@ const entitiesToStore = (mainEntity, model, rowsToStore, audit) => {
                 const value = row[propertyId], property = model.properties[propertyId], entityId = property.entity
     
                 const { table, foreignEntity, foreignKey } = 
-                    (model.entities[property.entity])
-                    ? { 
-                        table: model.entities[entityId].table,
-                        foreignEntity: model.entities[entityId].foreignEntity,
-                        foreignKey: model.entities[entityId].foreignKey
-                    }
-                    : { table: mainEntity, foreignKey: "id" }
+                    (entityId != mainEntity && model.entities[property.entity])
+                        ? { 
+                            table: model.entities[entityId].table,
+                            foreignEntity: model.entities[entityId].foreignEntity,
+                            foreignKey: model.entities[entityId].foreignKey
+                        }
+                        : { table: mainEntity, foreignKey: "id" }
     
                 let idToUpdate = data[foreignKey]
                 if (!idToUpdate || idToUpdate === null) idToUpdate = 0
@@ -75,6 +76,7 @@ const entitiesToStore = (mainEntity, model, rowsToStore, audit) => {
                 }
                 else {
                     if (!entitiesToUpdate[table]) entitiesToUpdate[table] = { 
+                        table: table,
                         rowId: idToUpdate,
                         cells: {}
                     }
@@ -114,11 +116,21 @@ const storeEntities = async (context, mainEntity, rowsToStore, model, db) => {
         /**
          * Insert new entities in order defined in the model and propagate the foreign keys
          */
-        for (let entityId of Object.keys(model.entities).reverse()) {
-            const entity = model.entities[entityId]
+        for (const [entityId, entity] of Object.entries(model.entities).reverse()) {
             if (entitiesToInsert[entityId]) await insertEntity(entityId, entity)
+            else {
+                if (entityId == mainEntity && entity.foreignEntity) {
+                    if (entitiesToInsert[entity.foreignEntity]) {
+                        entitiesToInsert[entity.foreignEntity].cells[entity.foreignKey] = row.id
+                    }
+        
+                    if (entitiesToUpdate[entity.foreignEntity]) {
+                        entitiesToUpdate[entity.foreignEntity].cells[entity.foreignKey] = row.id
+                    }
+                }
+            }
         }
-        if (entitiesToInsert[mainEntity]) await insertEntity(mainEntity, { table: mainEntity })
+        //if (entitiesToInsert[mainEntity]) await insertEntity(mainEntity, { table: mainEntity })
     
         /**
          * Perfs: Pivot the per row basis update vector to per column basis vectors
@@ -173,13 +185,13 @@ const auditCells = async (context, rowsToStore, db) => {
             }
         }
     
-        for (let entity of Object.keys(insertedEntities)) {
-            const insertedEntity = insertedEntities[entity], model = context.config[`${entity}/model`]
+        for (const [entity, insertedEntity] of Object.entries(insertedEntities)) {
+            const model = context.config[`${insertedEntity.table}/model`]
             await insertAudit(entity, insertedEntity, model)
         }
     
-        for (let entity of Object.keys(updatedEntities)) {
-            const updatedEntity = updatedEntities[entity], model = context.config[`${entity}/model`]
+        for (const [entity, updatedEntity] of Object.entries(updatedEntities)) {
+            const model = context.config[`${updatedEntity.table}/model`]
             await insertAudit(entity, updatedEntity, model)
         }
     }
@@ -189,21 +201,18 @@ const postAction = async ({ req }, context, db) => {
     const entity = assert.notEmpty(req.params, "entity")
     const id = (req.query.id) ? req.query.id : 0
 
-    // Check authorization
-    /*$formJwt = $this->request->getPost('formJwt');
-    if (!Authorization::verifyJwt($formJwt)) {
-        $this->response->setStatusCode('401');
-    }*/
+    const connection = await db.getConnection()
 
     const model = context.config[`${entity}/model`]
 
-    await db.beginTransaction()
+    await connection.beginTransaction()
 
     const form = req.body
-    
+
     /**
      * Find out the data to actually store in the database 
      */
+
     let { rowsToStore, rowsToReject } = dataToStore(entity, model, form)
 
     if (rowsToReject.length > 0) {
@@ -213,11 +222,12 @@ const postAction = async ({ req }, context, db) => {
     /**
      * Find out the entities to insert vs update in the database 
      */
-    rowsToStore = entitiesToStore(entity, model, rowsToStore)
-    await storeEntities(context, entity, rowsToStore, model, db)
-    await auditCells(context, rowsToStore, db)
 
-    await db.commit()
+    rowsToStore = entitiesToStore(entity, model, rowsToStore)
+    await storeEntities(context, entity, rowsToStore, model, connection)
+    await auditCells(context, rowsToStore, connection)
+
+    await connection.commit()
     return JSON.stringify({ "status": "ok", "stored": rowsToStore })
 }
 
