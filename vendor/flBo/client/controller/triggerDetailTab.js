@@ -1,24 +1,19 @@
-const triggerModalList = ({ context, entity, view }, data, tab, route, id, message, searchParams) => {
+const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, message, searchParams, order) => {
 
-    $(".fl-modal-list-search").hide()
+    /**
+     * trigger links
+     */
 
-    const flModalListSearchShow = () => {
-        $(".fl-modal-list-search-button").click(() => {
-            $(".fl-modal-list-search-button").removeClass("btn-outline-primary").addClass("btn-primary")
-            $(".fl-modal-list-search").show()
-            $(".fl-modal-list-form").hide()
-            flModalListSearchHide()
-        })    
-    }
+    $(".fl-modal-list-link").click(function() {
+        const tabId = $(this).attr("data-fl-tab")
+        const route = $(`#detailTabRoute-${tabId}`).val()
+        getTab({ context, entity, view }, tabId, route, id, "", searchParams)
+    })
 
-    const flModalListSearchHide = () => {
-        $(".fl-modal-list-search-button").click(() => {
-            $(".fl-modal-list-search-button").removeClass("btn-primary").addClass("btn-outline-primary")
-            $(".fl-modal-list-search").hide()
-            $(".fl-modal-list-form").show()
-            flModalListSearchShow()
-        })
-    }
+    /**
+     * trigger order
+     */
+    
     $(".fl-modal-list-order-button").click(function() {
         const propertyId = $(this).attr("data-fl-property")
         let direction = $(this).attr("data-fl-direction")
@@ -27,31 +22,53 @@ const triggerModalList = ({ context, entity, view }, data, tab, route, id, messa
         getTab({ context, entity, view }, tab, route, id, message, searchParams, `${direction}${propertyId}`)
     })    
 
-    flModalListSearchShow()
+    $(".fl-modal-list-refresh-button").click(function() {
+        const searchParams = getModalSearchParams()
+        getTab({ context, entity, view }, tab, route, id, message, searchParams, order)        
+    })
 
-    $(".fl-modal-list-message").hide()
+    /**
+     * trigger add
+     */
+
+    $(".fl-detail-tab-message").hide()
     $(".fl-submit-div").hide()
     $(".fl-modal-list-close-button").hide()
+    $(".fl-modal-list-form").hide()
 
     $(".fl-modal-list-add-button").click(() => {
-        $(".fl-modal-list-row").hide()
+        //$(".fl-modal-list-row").hide()
         $(".fl-submit-div").show()
-        $(".fl-modal-list-add-button").hide()
+        $(".fl-modal-list-form").show()
+        $(".fl-modal-list-add-button").removeClass("btn-outline-primary").addClass("btn-primary")
         $(".fl-modal-list-close-button").show()
     })
 
     $(".fl-modal-list-close-button").click(() => {
-        $(".fl-modal-list-row").show()
+        //$(".fl-modal-list-row").show()
         $(".fl-submit-div").hide()
+        $(".fl-modal-list-form").hide()
+        $(".fl-modal-list-add-button").removeClass("btn-primary").addClass("btn-outline-primary")
         $(".fl-modal-list-close-button").hide()
-        $(".fl-modal-list-add-button").show()
     })
 
-    const form = document.getElementById("flModalListAddForm")
+    /**
+     * trigger detail
+     */
+
+    $(".fl-modal-list-update-block").hide()
+
+    flModalRules({ context })
+
+    $(".fl-modal-list-detail-button").click(function () {
+        getTab({ context, entity, view }, tab, $(this).attr("data-fl-route"), id, message, searchParams)
+    })
+
+    const form = document.getElementById("flModalForm")
     if (form) {
         form.onsubmit = async function (event) {
             event.preventDefault()
-            $("#flModalListAddSubmit").prop("disabled", true)
+            $(".fl-detail-tab-submit").prop("disabled", true)
             const submit = event.submitter
             var validity = true
 
@@ -67,8 +84,11 @@ const triggerModalList = ({ context, entity, view }, data, tab, route, id, messa
 
                 $(".fl-modal-list-add-input").each(function () {
                     const propertyId = $(this).attr("id")
-                    payload[propertyId] = $(this).val()
-                    formData.append(propertyId, $(this).val())
+                    let value = $(this).val()
+                    if ($(this).attr("data-fl-type") == "percentage") value /= 100
+                    console.log(value)
+                    payload[propertyId] = value
+                    formData.append(propertyId, value)
                 })
 
                 $(".fl-modal-list-add-iban").each(function () {
@@ -121,7 +141,8 @@ const triggerModalList = ({ context, entity, view }, data, tab, route, id, messa
 
                 $(".fl-modal-list-add-number").each(function () {
                     const propertyId = $(this).attr("id")
-                    const value = $(this).val().replace(",", ".")
+                    let value = $(this).val().replace(",", ".")
+                    if ($(this).attr("data-fl-type") == "percentage") value /= 100
                     payload[propertyId] = value
                     formData.append(propertyId, value)
                 })
@@ -189,7 +210,7 @@ const triggerModalList = ({ context, entity, view }, data, tab, route, id, messa
                     formData.append(propertyId, $(this).html())
                 })
 
-                let route = `/${$(submit).attr("data-controller")}/${$(submit).attr("data-action")}/${$(submit).attr("data-entity")}`
+                let route = `/${$(submit).attr("data-fl-controller")}/${$(submit).attr("data-fl-action")}/${$(submit).attr("data-fl-entity")}`
 
                 const response = await fetch(route, {
                     headers: {
@@ -201,7 +222,7 @@ const triggerModalList = ({ context, entity, view }, data, tab, route, id, messa
 
                 if (response.status == 200) {
                     $(".fl-modal-list-close-button").hide()
-                    $("#flModalListMessageOk").show()
+                    $("#flDetailTabMessageOk").show()
                 }
                 else if (response.status == 401) triggerModalList({ context, entity, view }, route, "expired")
             }

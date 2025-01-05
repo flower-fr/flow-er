@@ -50,6 +50,7 @@ const registerBo = async ({ context, config, logger, app }) => {
     // Default tab
     app.get("/", execute(defaultTab, context, config))
 
+    app.get(`${config.prefix}instance`, execute(() => { return JSON.stringify(context.instance) }))
     app.get(`${config.prefix}config`, execute(() => { return JSON.stringify(context.config) }))
     app.get(`${config.prefix}language`, execute(() => { return JSON.stringify(context.translations) }))
     app.get(`${config.prefix}user`, execute(() => { return JSON.stringify(context.user) }))

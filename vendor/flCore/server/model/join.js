@@ -22,7 +22,7 @@ const join = (table, columns, where, order, model) => {
 
     const entitiesToJoin = {}
     for (let propertyId of involvedProperties) {
-        if (model.properties[propertyId]) {
+        if (model.properties[propertyId] && model.properties[propertyId].entity) {
             const entityId = model.properties[propertyId].entity
             if (model.properties[propertyId].entity != table) entitiesToJoin[entityId] = []
         }

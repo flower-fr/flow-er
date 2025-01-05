@@ -177,9 +177,9 @@ const select = (context, table, columns, where, order = [], limit = null, model 
         for (let orderSpecifier of Object.keys(order)) {
             const direction = order[orderSpecifier]
             const orderProperty = model.properties[orderSpecifier]
-            const orderTable = (model.entities[orderProperty.entity]) ? model.entities[orderProperty.entity].table : table
+            const orderTable = (orderProperty.entity) ? ((model.entities[orderProperty.entity]) ? model.entities[orderProperty.entity].table : table) : false
             const qColumn = qi(orderProperty.column)
-            orderArray.push(`${qi(orderTable)}.${qColumn} ${direction}`)
+            orderArray.push(`${ (orderTable) ? `${qi(orderTable)}.` : "" }${qColumn} ${direction}`)
         }
         request += orderArray.join(", ")
         request += "\n"

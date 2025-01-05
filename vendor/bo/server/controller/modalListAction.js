@@ -54,6 +54,8 @@ const modalListAction = async ({ req }, context, db) => {
     return {
         entity: entity,
         id: id,
+        where: whereParam,
+        order: order,
         rows : rows, 
         limit: limit, 
         config: modalListConfig,

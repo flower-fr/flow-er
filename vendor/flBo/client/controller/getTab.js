@@ -1,9 +1,12 @@
 
-const getTab = async ({ context, entity, view }, tab, route, id, message, searchParams) => {
+const getTab = async ({ context, entity, view }, tab, route, id, message, searchParams, order) => {
     
+    route = route.split("?")
+    let query = (route[1]) ? route[1].split("&").map((x) => { return x.split("=") }) : []
+    query = Object.fromEntries((new Map(query)).entries())
+
     let params = []
-    for (const key of Object.keys(searchParams)) {
-        let value = searchParams[key]
+    for (let [key, value] of Object.entries(searchParams)) {
         if (Array.isArray(value)) {
             if (value[0] == null) value = `le,${value[1]}`
             else if (value[1] == null) value = `ge,${value[0]}`
@@ -11,8 +14,16 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
         }
         params.push(key + ":" + value)
     }
+
     const where = params.join("|")
-    if (where) route += "&where=" + where
+    if (where) query.where = where
+
+    if (order) query.order = order
+
+    route = `${ route[0] }?`
+    for (const [key, value] of Object.entries(query)) {
+        if (key != "") route += `&${key}=${value}`
+    }
 
     const response = await fetch(route)
     if (!response.ok) {
@@ -32,7 +43,8 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
         const tabId = $(this).attr("id").split("-")[1]
         if (tabId == tab) {
             $("#detailPanel").html(renderDetailTab({ context, entity, view }, data))
-            updateCallback({ context, entity, view })
+            modalListCallback({ context, entity, view }, data)
+            triggerDetailTab({ context, entity, view }, data, tab, route, id, message, searchParams, order)
         }
     })
 
@@ -48,7 +60,7 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
         if (tabId == tab) {
             $("#detailPanel").html(renderModalList({ context, entity, view }, data)) 
             modalListCallback({ context, entity, view }, data)
-            triggerModalList({ context, entity, view }, data)
+            triggerModalList({ context, entity, view }, data, tab, route, id, message, searchParams)
         }
     })
     $(".renderModalCalendar").each(function () {
@@ -57,11 +69,6 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
             $("#detailPanel").html(renderModalCalendar({ context, entity, view }, tabId, data)) 
             modalCalendarCallback({ context, entity, view }, tabId, data)
         }
-    })
-
-    // trigger detail buttons
-    $(".modalListDetailButton").click(function () {
-        getTab({ context, entity, view }, tab, $(this).attr("data-route"), id, message, searchParams)
     })
 
     $(".document-cancel-btn").hide()

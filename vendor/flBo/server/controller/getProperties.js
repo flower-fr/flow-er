@@ -29,7 +29,6 @@ const getProperties = async (db, context, entity, view, propertyDefs, where) => 
                 }
                 if (keep) modalities[modalityId] = property.modalities[modalityId]
             }
-            console.log(modalities)
             property.modalities = modalities
         }
 

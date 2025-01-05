@@ -1,6 +1,8 @@
 const renderDetailTab = ({ context, entity }, { data, detailTabConfig, formJwt }) => {
 
-    const renderers = { renderModalList: renderModalList, renderUpdate: renderUpdate }
+    console.log("in renderDetailTab (flBo)")
+
+    const renderers = { renderModalList: renderModalList, renderUpdate: renderUpdate, renderDocumentSection: renderDocumentSection }
 
     const layout = detailTabConfig.layout
 
@@ -13,27 +15,27 @@ const renderDetailTab = ({ context, entity }, { data, detailTabConfig, formJwt }
 
             <!-- Form status messages -->
 
-            <!-- <div class="updateMessage" id="updateMessageOk">
+            <div class="fl-detail-tab-message" id="flDetailTabMessageOk">
                 <h5 class="alert alert-success my-3 text-center">${context.translate("Your request has been registered")}</h5>
             </div>
 
-            <div class="updateMessage" id="updateMessageExpired">
+            <div class="fl-detail-tab-message" id="flDetailTabMessageExpired">
                 <h5 class="alert alert-danger my-3 text-center">${context.translate("The form has expired, please input again")}</h5>
             </div>
 
-            <div class="updateMessage" id="updateMessageConsistency">
+            <div class="fl-detail-tab-message" id="flDetailTabMessageConsistency">
                 <h5 class="alert alert-danger  my-3 text-center">${context.translate("The database has evolved in the meantime, please input again")}</h5>
             </div>
 
-            <div class="updateMessage" id="updateMessageDuplicate">
+            <div class="fl-detail-tab-message" id="flDetailTabMessageDuplicate">
                 <h5 class="alert alert-danger  my-3 text-center">${context.translate("The data already exists")}</h5>
             </div>
 
-            <div class="updateMessage" id="updateMessageServerError">
+            <div class="fl-detail-tab-message" id="flDetailTabMessageServerError">
                 <h5 class="alert alert-danger  my-3 text-center">${context.translate("A technical error has occured. PLease try again later")}</h5>
-            </div> -->
+            </div>
             
-            <form class="has-validation row g-4" id="tabForm">
+            <form class=" row g-4" id="flModalForm">
 
                 <div class="row">`
     )
@@ -42,9 +44,9 @@ const renderDetailTab = ({ context, entity }, { data, detailTabConfig, formJwt }
         html.push(
             `       <div class="${ layout.cols.content.class || "col-md-8" }">
                         <div
-                            id="modal-scrollspy-div"
+                            id="flModalScrollspyDiv"
                             data-mdb-scrollspy-init
-                            data-mdb-target="#modal-scrollspy"
+                            data-mdb-target="#flModalScrollspy"
 
                             style="position: relative; height: 600px; overflow: auto;"
                         >`
@@ -68,16 +70,22 @@ const renderDetailTab = ({ context, entity }, { data, detailTabConfig, formJwt }
             else if (data.where[section.condition] && data.where[section.condition] != 0) condition = true
         }
         if (!sectionData || condition) {
-            const properties = sectionData.properties, rows = sectionData.rows
+
+            if (section.renderer == "renderDocument") {
+                const config = context.config[section.config]
+                html.push(renderDocument({ context, entity }, { data, config }))
+                continue
+            }
+    
+            const properties = {}
+            for (const propertyId of section.properties) properties[propertyId] = sectionData.properties[propertyId]
+
+            const rows = sectionData.rows, where = data.where, order = data.order, limit = sectionData.limit
             html.push(
-                `<section class="mt-2" id="${sectionId}">
-                    ${ (section.labels) ? `<h5 class="my-4">${context.localize(section.labels)}</h5>`: "" }
-                    <div class="row">
-                        ${ (section.renderer == "renderUpdate") ?
-        (renderers[section.renderer])({ context, entity }, section, properties, rows[0]) :
-        (renderers[section.renderer])({ context, entity }, { section, config: detailTabConfig, properties, rows }) }
-                    </div>
-                </section>`
+                `${ (section.renderer == "renderUpdate") ?
+                    (renderers[section.renderer])({ context, entity }, section, properties, rows[0]) :
+                    (renderers[section.renderer])({ context, entity }, { id: data.id, section, config: detailTabConfig, properties, rows, where, order, limit }) }
+                `
             )
         }
     }
@@ -115,14 +123,17 @@ const renderDetailTab = ({ context, entity }, { data, detailTabConfig, formJwt }
         )
     }
 
-    html.push("<div class=\"form-group row my-4 submitDiv\">")
+    html.push("<div class=\"form-group row submitDiv\">")
 
-    for (let postId of Object.keys(layout.posts)) {
-        const post = layout.posts[postId]
-        html.push(
-            `   <div>
-                    <input name="submit-${postId}" type="submit" id="submitButton-${postId}" class="btn btn-warning submitButton mt-3" value="${ context.localize(post.labels) }" data-controller=${post.controller} data-action=${post.action} data-entity=${post.entity} data-transaction=${postId} ${ (post.view) ? `data-view=${post.view}` : "" }>
-                </div>`)
+    for (const [postId, post] of Object.entries(layout.posts)) {
+        if (!post.condition && data.id == 0 || post.condition == "id" && data.id != 0) {
+            html.push(
+                `   <div class="form-group row fl-submit-div">
+                        <div>
+                            <input name="submit-${postId}" type="submit" class="btn btn-warning fl-detail-tab-submit" value="${ context.localize(post.labels) }" data-fl-controller=${post.controller} data-fl-action=${post.action} data-fl-entity=${post.entity} data-fl-transaction=${postId} ${ (post.view) ? `data-fl-view=${post.view}` : "" }>
+                        </div>
+                    </div>`)
+        }
     }
     html.push(
         `    </div>

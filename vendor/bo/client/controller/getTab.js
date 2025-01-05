@@ -50,7 +50,7 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
         if (tabId == tab) {
             $("#detailPanel").html(renderModalList({ context, entity, view }, data)) 
             modalListCallback({ context, entity, view }, data)
-            triggerModalList({ context, entity, view }, data)
+            triggerModalList({ context, entity, view }, data, tab, route, id, message, searchParams)
         }
     })
     $(".renderModalCalendar").each(function () {

@@ -1,0 +1,97 @@
+const renderModalListRows = ({ context, entity }, section, id, modalListConfig, properties, rows) => {
+
+    const result = []
+
+    for (const row of rows) {
+
+        result.push(`
+        <tr class="fl-modal-list-row">
+
+            ${renderModalListProperties({ context, entity }, section, modalListConfig, row, properties)}
+
+        </tr>`)
+    }
+
+    return result.join("\n")
+}
+
+const renderModalListProperties = ({ context, entity }, section, modalListConfig, row, properties) => {
+
+    const html = []
+
+    html.push(`<td class="text-center">
+        <input type="hidden" id="modalListTabsRoute-${row.id}" value="/bo/modalListTabs/${entity}/${row.id}" />
+        ${ (section.updatable) ?
+        `<button type="button" class="btn btn-sm btn-outline-primary index-btn fl-modal-list-detail-button" title="${context.translate("Detail")}" id="modalListDetailButton-${row.id}" data-fl-route="/${ modalListConfig.controller }/${ modalListConfig.action }/${ modalListConfig.entity }/${ row.id }">
+            <i class="fas fa-search"></i>
+        </button>` : "" }
+    </td>`)
+
+    for (const [propertyId, property] of Object.entries(properties)) {
+
+        if (property.type != "hidden" && Object.keys(property).length > 0) {
+
+            if (property.type == "select") {
+                html.push(`<td class="${(property.options.class) ? property.options.class[row[propertyId]] : "" }">
+                    ${(row[propertyId]) ? context.localize(property.modalities[row[propertyId]]) : ""}
+                </td>`)
+            }
+            
+            else if (property.type == "multiselect") {
+                const captions = []
+                for (let modalityId of row[propertyId].split(",")) {
+                    captions.push(context.localize(property.modalities[modalityId]))
+                }
+                html.push(`<td>${captions.join(",")}</td>`)                  
+            }
+
+            else if (property.type == "date") {
+                html.push(`<td>${ moment(row[propertyId]).format("DD/MM/YYYY") }</td>`)
+            }
+        
+            else if (property.type == "datetime") {
+                html.push(`<td>${ moment(row[propertyId]).format("DD/MM/YYYY HH:mm:ss") }</td>`)
+            }
+
+            else if (property.type == "number") {
+                html.push(`<td>${ parseFloat(row[propertyId]).toLocaleString("fr-FR", { minimumFractionDigits: 2 }) }${ (property.options.currency) ? property.options.currency : "" }</td>`)
+            }
+
+            else if (property.type == "percentage") {
+                html.push(`<td>${ parseFloat(row[propertyId] * 100).toLocaleString("fr-FR") }%</td>`)
+            }
+
+            else if (property.type == "email") {
+                html.push(`<td>${(row[propertyId]) ? `<a href="mailto:${row[propertyId]}">${row[propertyId]}</a>` : ""}</td>`)
+            }              
+
+            else if (property.type == "phone") {
+                html.push(`<td><a href="tel:${row[propertyId]}">${row[propertyId]}</a></td>`)
+            }
+
+            else if (["tags", "source"].includes(property.type)) {
+                let label = []
+                for (const modality of property.modalities) {
+                    if (modality.id == row[propertyId]) {
+                        const format = property.format[0].split("%s"), args = property.format[1].split(",")
+                        for (let i = 0; i <= args.length; i++) {
+                            if (i != 0) {
+                                const config = context.config[`${property.entity}/property/${args[i-1]}`]
+                                let value = modality[args[i-1]]
+                                if (config && config.type == "percentage") value = `${ parseFloat(value) * 100 }%`
+                                label.push(value)
+                            }
+                            label.push(format[i])
+                        }
+                    }
+                }
+                html.push(`<td class="fl-list-tags-name" id="flListTagsName-${propertyId}-${row.id}">${ label.join("") }</td>`)
+            }
+
+            else {
+                html.push(`<td>${(row[propertyId] !== null) ? row[propertyId] : ""}</td>`)                  
+            }
+        }
+    }
+    return html.join("\n")
+}

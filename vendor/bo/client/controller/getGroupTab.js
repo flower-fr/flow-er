@@ -44,7 +44,7 @@ const getGroupTab = async ({ context, entity, view }, tab, searchParams) => {
         if (tabId == tab) {
             $("#detailPanel").html(renderModalList({ context, entity, view }, data)) 
             modalListCallback({ context, entity, view }, data)
-            triggerModalList({ context, entity, view }, data)
+            triggerModalList({ context, entity, view }, data, tab, route, 0, false, searchParams)
         }
     })
     $(".renderModalCalendar").each(function () {

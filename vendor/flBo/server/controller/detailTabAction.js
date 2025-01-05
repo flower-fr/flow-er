@@ -7,7 +7,7 @@ const detailTabAction = async ({ req }, context, db) => {
     const id = assert.notEmpty(req.params, "id")
     const view = (req.query.view) ? req.query.view : "default"
     const whereParam = (req.query.where) ? req.query.where.split("|") : []
-    const order = (req.query.order) ? req.query.order : "-touched_at"
+    let order = (req.query.order) ? req.query.order : null
     const limit = (req.query.limit) ? req.query.limit : 1000
 
     const where = {}
@@ -21,7 +21,7 @@ const detailTabAction = async ({ req }, context, db) => {
     let detailTabConfig = context.config[`${entity}/detailTab/${view}`]
     if (!detailTabConfig) detailTabConfig = context.config[`${entity}/detailTab/default`]
 
-    const data = { where }
+    const data = { id, where, order, limit }
     for (let entityId of Object.keys(detailTabConfig.data)) {
 
         const dataConfig = detailTabConfig.data[entityId]
@@ -58,10 +58,14 @@ const detailTabAction = async ({ req }, context, db) => {
         }
     
         let major = false
-        if (order != null) {
-            major = order.split(",")[0]
-            if (major.charAt(0) == "-") major = major.substring(1)
+        
+        let defaultOrder = order
+        if (order == null) {
+            defaultOrder = (dataConfig.order) ? dataConfig.order : "-touched_at"
+            data.order = defaultOrder
         }
+        major = defaultOrder.split(",")[0]
+        if (major.charAt(0) == "-") major = major.substring(1)
     
         if (!columns) columns = propertyList
         columns = columns.concat(["id"])

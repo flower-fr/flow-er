@@ -18,14 +18,16 @@ const dataToStore = (entity, model, form) => {
     for (const row of form) {
         const cellsToStore = {}, cellsToReject = {}
         for (let propertyId of Object.keys(row)) {
-            const property = model.properties[propertyId]
-            if (!property) cellsToReject[propertyId] = "unknown"
-            //else if (property.type == "primary") cellsToReject[propertyId] = "primary"
-            else {
-                let value = row[propertyId]
-                if (property.type == "int" && !Number.isInteger(value)) cellsToReject[propertyId] = "type"
-                else if (property.type == "float" && typeof(value) != "number") cellsToReject[propertyId] = "type"
-                else cellsToStore[propertyId] = value    
+            if (propertyId != ("formJwt")) {
+                const property = model.properties[propertyId]
+                if (!property) cellsToReject[propertyId] = "unknown"
+                //else if (property.type == "primary") cellsToReject[propertyId] = "primary"
+                else {
+                    let value = row[propertyId]
+                    if (property.type == "int" && Number.isNaN(value)) cellsToReject[propertyId] = "type"
+                    else if (property.type == "float" && Number.isNaN(value)) cellsToReject[propertyId] = "type"
+                    else cellsToStore[propertyId] = value    
+                }
             }
         }    
         rowsToStore.push(cellsToStore)

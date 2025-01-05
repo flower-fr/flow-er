@@ -1,6 +1,8 @@
 const loadPage = async ({ entity, view }) => {
     let response = await fetch("/bo/config")
     const config = await response.json()
+    response = await fetch("/bo/instance")
+    const instance = await response.json()
     response = await fetch("/bo/language")
     const translations = await response.json()
     response = await fetch("/bo/user")
@@ -8,6 +10,7 @@ const loadPage = async ({ entity, view }) => {
 
     const context = {
 
+        instance: instance,
         user: user,
         config: config,
 
