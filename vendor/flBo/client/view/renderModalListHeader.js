@@ -50,7 +50,7 @@ const renderModalListHeader = ({ context }, section, modalListConfig, properties
                             data-mdb-auto-close="false"
                             aria-expanded="false"
                         >
-                            <i class="fas fa-bars"></i>
+                            <i class="fas fa-sync-alt"></i>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-left" id="flModalListSearch" aria-labelledby="navbarDropdownMenuLink" data-mdb-theme="dark">
                             <li>
@@ -60,7 +60,7 @@ const renderModalListHeader = ({ context }, section, modalListConfig, properties
                                         <label class="form-label" for="search-input-dropdown">Mots clés recherchés</label>
                                     </div>
                                     <button type="button" class="btn btn-sm btn-primary" data-mdb-ripple-init>
-                                        <i class="fas fa-search"></i>
+                                        <i class="fas fa-sync-alt"></i>
                                     </button>
                                 </div>
                             </li>

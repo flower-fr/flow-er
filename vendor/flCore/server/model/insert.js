@@ -9,7 +9,7 @@ const insert = (context, table, data, model) => {
                 const type = (model.properties[key].type) ? model.properties[key].type : "text"
                 if (!value) {
                     if (["foreign", "date", "datetime", "time"].includes(type)) value = "null"
-                    else if (["int", "smallint", "tinyint", "float"].includes(type)) value = 0
+                    else if (["int", "smallint", "tinyint", "float", "decimal"].includes(type)) value = 0
                     else if (["json"].includes(type)) value = "'[]'"
                     else value = "''"
                 }

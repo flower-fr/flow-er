@@ -24,8 +24,14 @@ const dataToStore = (entity, model, form) => {
                 //else if (property.type == "primary") cellsToReject[propertyId] = "primary"
                 else {
                     let value = row[propertyId]
-                    if (property.type == "int" && Number.isNaN(value)) cellsToReject[propertyId] = "type"
-                    else if (property.type == "float" && Number.isNaN(value)) cellsToReject[propertyId] = "type"
+                    if (property.type == "int") {
+                        if (Number.isNaN(value)) cellsToReject[propertyId] = "type"
+                        else cellsToStore[propertyId] = parseInt(value)
+                    }
+                    else if (property.type == "decimal") {
+                        if (Number.isNaN(value)) cellsToReject[propertyId] = "type"
+                        else cellsToStore[propertyId] = parseFloat(value)
+                    }
                     else cellsToStore[propertyId] = value    
                 }
             }

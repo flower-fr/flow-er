@@ -1,5 +1,5 @@
 const renderDetailTab = ({ context, entity }, { data, detailTabConfig, formJwt }) => {
-
+console.log(data)
     console.log("in renderDetailTab (flBo)")
 
     const renderers = { renderModalList: renderModalList, renderUpdate: renderUpdate, renderDocumentSection: renderDocumentSection }
@@ -123,15 +123,19 @@ const renderDetailTab = ({ context, entity }, { data, detailTabConfig, formJwt }
         )
     }
 
-    html.push("<div class=\"form-group row submitDiv\">")
+    html.push(`
+                <div class="form-group row submitDiv">`)
 
     for (const [postId, post] of Object.entries(layout.posts)) {
         if (!post.condition && data.id == 0 || post.condition == "id" && data.id != 0) {
-            html.push(
-                `   <div class="form-group row fl-submit-div">
-                        <div>
-                            <input name="submit-${postId}" type="submit" class="btn btn-warning fl-detail-tab-submit" value="${ context.localize(post.labels) }" data-fl-controller=${post.controller} data-fl-action=${post.action} data-fl-entity=${post.entity} data-fl-transaction=${postId} ${ (post.view) ? `data-fl-view=${post.view}` : "" }>
-                        </div>
+            const where = []
+            for (const [key, value] of Object.entries((data.where) ? data.where : {})) {
+                where.push(`${key}:${ Array.isArray(value) ? value.join(",") : value }`)
+            }
+            html.push(`
+                    <div class="col-md-2 fl-submit-div">
+                        <input type="hidden" id="flDetailTabSubmitRefresh-${postId}" data-fl-route="/${ detailTabConfig.controller }/${ detailTabConfig.action }/${ detailTabConfig.entity }/${ data.id }?where=${ where.join("|") }&order=${ data.order }" />
+                        <input name="submit-${postId}" type="submit" class="btn ${ (post.danger) ? "btn-danger" : "btn-warning" } fl-detail-tab-submit" value="${ context.localize(post.labels) }" data-fl-controller=${post.controller} data-fl-action=${post.action} data-fl-entity=${post.entity} data-fl-transaction=${postId} ${ (post.view) ? `data-fl-view=${post.view}` : "" }>
                     </div>`)
         }
     }

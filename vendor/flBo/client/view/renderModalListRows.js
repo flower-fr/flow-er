@@ -21,9 +21,13 @@ const renderModalListProperties = ({ context, entity }, section, modalListConfig
 
     html.push(`<td class="text-center">
         <input type="hidden" id="modalListTabsRoute-${row.id}" value="/bo/modalListTabs/${entity}/${row.id}" />
-        ${ (section.updatable) ?
+        ${ (section.action && section.action == "detail") ?
         `<button type="button" class="btn btn-sm btn-outline-primary index-btn fl-modal-list-detail-button" title="${context.translate("Detail")}" id="modalListDetailButton-${row.id}" data-fl-route="/${ modalListConfig.controller }/${ modalListConfig.action }/${ modalListConfig.entity }/${ row.id }">
             <i class="fas fa-search"></i>
+        </button>` : "" }
+        ${ (section.action && section.action == "update") ?
+        `<button type="button" class="btn btn-sm btn-outline-primary index-btn fl-modal-list-update-button" title="${context.translate("Update")}" id="modalListDetailButton-${row.id}" data-fl-route="/${ modalListConfig.controller }/${ modalListConfig.action }/${ modalListConfig.entity }/${ row.id }">
+            <i class="fas fa-pen"></i>
         </button>` : "" }
     </td>`)
 

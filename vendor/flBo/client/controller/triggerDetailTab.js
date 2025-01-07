@@ -24,7 +24,8 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
 
     $(".fl-modal-list-refresh-button").click(function() {
         const searchParams = getModalSearchParams()
-        getTab({ context, entity, view }, tab, route, id, message, searchParams, order)        
+        getTab({ context, entity, view }, tab, route, id, message, searchParams, order)
+        
     })
 
     /**
@@ -36,11 +37,23 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
     $(".fl-modal-list-close-button").hide()
     $(".fl-modal-list-form").hide()
 
-    $(".fl-modal-list-add-button").click(() => {
+    $(".fl-modal-list-add-button").click(function () {
         //$(".fl-modal-list-row").hide()
         $(".fl-submit-div").show()
         $(".fl-modal-list-form").show()
-        $(".fl-modal-list-add-button").removeClass("btn-outline-primary").addClass("btn-primary")
+        $(".fl-modal-list-add-button").removeClass("btn-primary").addClass("btn-outline-primary")
+        $(".fl-modal-list-update-button").removeClass("btn-primary").addClass("btn-outline-primary")
+        $(this).removeClass("btn-outline-primary").addClass("btn-primary")
+        $(".fl-modal-list-close-button").show()
+    })
+
+    $(".fl-modal-list-update-button").click(function () {
+        //$(".fl-modal-list-row").hide()
+        $(".fl-submit-div").show()
+        $(".fl-modal-list-form").show()
+        $(".fl-modal-list-add-button").removeClass("btn-primary").addClass("btn-outline-primary")
+        $(".fl-modal-list-update-button").removeClass("btn-primary").addClass("btn-outline-primary")
+        $(this).removeClass("btn-outline-primary").addClass("btn-primary")
         $(".fl-modal-list-close-button").show()
     })
 
@@ -49,6 +62,7 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
         $(".fl-submit-div").hide()
         $(".fl-modal-list-form").hide()
         $(".fl-modal-list-add-button").removeClass("btn-primary").addClass("btn-outline-primary")
+        $(".fl-modal-list-update-button").removeClass("btn-primary").addClass("btn-outline-primary")
         $(".fl-modal-list-close-button").hide()
     })
 
@@ -221,8 +235,10 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
                 })
 
                 if (response.status == 200) {
+                    toastr.success(context.translate("Your request has been registered"))
                     $(".fl-modal-list-close-button").hide()
                     $("#flDetailTabMessageOk").show()
+                    getTab({ context, entity, view }, tab, $(`#flDetailTabSubmitRefresh-${$(submit).attr("data-fl-transaction") }`).attr("data-fl-route"), id, message, searchParams)
                 }
                 else if (response.status == 401) triggerModalList({ context, entity, view }, route, "expired")
             }
