@@ -1,5 +1,5 @@
 const { assert } = require("../../../../core/api-utils")
-const { getProperties } = require("../../../bo/server/controller/getProperties")
+const { getProperties } = require("../../../flBo/server/controller/getProperties")
 const { renderIndex } = require("../view/renderIndex")
 const { renderIndexMdb } = require("../view/renderIndexMdb")
 
