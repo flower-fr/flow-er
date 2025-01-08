@@ -25,7 +25,8 @@ const dataToStore = (entity, model, form) => {
                 else {
                     let value = row[propertyId]
                     if (property.type == "int") {
-                        if (Number.isNaN(value)) cellsToReject[propertyId] = "type"
+                        if (value == "") cellsToStore[propertyId] = 0
+                        else if (Number.isNaN(value)) cellsToReject[propertyId] = "type"
                         else cellsToStore[propertyId] = parseInt(value)
                     }
                     else if (property.type == "decimal") {
@@ -154,6 +155,7 @@ const storeEntities = async (context, mainEntity, rowsToStore, model, db) => {
                     if (!columnsToUpdate[entityId][columnId]) columnsToUpdate[entityId][columnId] = {}
                     columnsToUpdate[entityId][columnId][entityToUpdate.rowId] = value
                 }
+                console.log(update(context, table, [entityToUpdate.rowId], entityToUpdate.cells, updateModel))
                 await db.execute(update(context, table, [entityToUpdate.rowId], entityToUpdate.cells, updateModel))
             }
         }

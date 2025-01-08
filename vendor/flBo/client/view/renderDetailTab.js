@@ -44,11 +44,12 @@ console.log(data)
         html.push(
             `       <div class="${ layout.cols.content.class || "col-md-8" }">
                         <div
+                            class="row"
                             id="flModalScrollspyDiv"
                             data-mdb-scrollspy-init
                             data-mdb-target="#flModalScrollspy"
 
-                            style="position: relative; height: 600px; overflow: auto;"
+                            style="position: relative; overflow: auto;"
                         >`
         )
     }

@@ -44,7 +44,6 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
         if (tabId == tab) {
             $("#detailPanel").html(renderDetailTab({ context, entity, view }, data))
             modalListCallback({ context, entity, view }, data)
-            triggerDetailTab({ context, entity, view }, data, tab, route, id, message, searchParams, order)
         }
     })
 
@@ -60,7 +59,6 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
         if (tabId == tab) {
             $("#detailPanel").html(renderModalList({ context, entity, view }, data)) 
             modalListCallback({ context, entity, view }, data)
-            triggerModalList({ context, entity, view }, data, tab, route, id, message, searchParams)
         }
     })
     $(".renderModalCalendar").each(function () {
@@ -70,6 +68,8 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
             modalCalendarCallback({ context, entity, view }, tabId, data)
         }
     })
+
+    triggerDetailTab({ context, entity, view }, data, tab, route, id, message, searchParams, order)
 
     $(".document-cancel-btn").hide()
 

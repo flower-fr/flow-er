@@ -33,17 +33,29 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
      */
 
     $(".fl-detail-tab-message").hide()
-    $(".fl-submit-div").hide()
-    $(".fl-modal-list-close-button").hide()
-    $(".fl-modal-list-form").hide()
+
+    $(".fl-modal-list-add-button").each(function () {
+        $(".fl-submit-div").hide()
+        $(".fl-modal-list-close-button").hide()
+        $(".fl-modal-list-form").hide()
+    })
+
+    $(".fl-modal-list-update-button").each(function () {
+        $(".fl-submit-div").hide()
+        $(".fl-modal-list-close-button").hide()
+        $(".fl-modal-list-form").hide()
+    })
 
     $(".fl-modal-list-add-button").click(function () {
         //$(".fl-modal-list-row").hide()
         $(".fl-submit-div").show()
         $(".fl-modal-list-form").show()
         $(".fl-modal-list-add-button").removeClass("btn-primary").addClass("btn-outline-primary")
+        $(".fl-modal-list-add-button").prop("disabled", false)
         $(".fl-modal-list-update-button").removeClass("btn-primary").addClass("btn-outline-primary")
+        $(".fl-modal-list-update-button").prop("disabled", false)
         $(this).removeClass("btn-outline-primary").addClass("btn-primary")
+        $(this).prop("disabled", true)
         $(".fl-modal-list-close-button").show()
     })
 
@@ -52,8 +64,11 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
         $(".fl-submit-div").show()
         $(".fl-modal-list-form").show()
         $(".fl-modal-list-add-button").removeClass("btn-primary").addClass("btn-outline-primary")
+        $(".fl-modal-list-add-button").prop("disabled", false)
         $(".fl-modal-list-update-button").removeClass("btn-primary").addClass("btn-outline-primary")
+        $(".fl-modal-list-update-button").prop("disabled", false)
         $(this).removeClass("btn-outline-primary").addClass("btn-primary")
+        $(this).prop("disabled", true)
         $(".fl-modal-list-close-button").show()
     })
 
@@ -62,7 +77,9 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
         $(".fl-submit-div").hide()
         $(".fl-modal-list-form").hide()
         $(".fl-modal-list-add-button").removeClass("btn-primary").addClass("btn-outline-primary")
+        $(".fl-modal-list-add-button").prop("disabled", false)
         $(".fl-modal-list-update-button").removeClass("btn-primary").addClass("btn-outline-primary")
+        $(".fl-modal-list-update-button").prop("disabled", false)
         $(".fl-modal-list-close-button").hide()
     })
 
@@ -96,11 +113,37 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
                 payload.formJwt = $("#formJwt").val()
                 formData.append("formJwt", $("#formJwt").val())
 
+                $(".fl-modal-form-input").each(function () {
+                    const propertyId = $(this).attr("data-fl-property"), type = $(this).attr("data-fl-type")
+                    let value = $(this).val()
+
+                    if (type == "percentage") value /= 100
+
+                    else if (type == "date") {
+                        if (value) {
+                            value = value.substring(6, 10) + "-" + value.substring(3, 5) + "-" + value.substring(0, 2)
+                        }
+                    }
+
+                    else if (type == "time") {
+                        if (value) {
+                            let h = value.substring(0, 2), m = value.substring(3, 5)
+                            if (value.substring(6, 8) == "PM") h = (parseInt(h) + 12).toString()
+                            value = `${h}:${m}:00`
+                        }
+                    }
+
+                    else if (type == "birthYear") value += "-01-01"
+
+                    else if (type == "number") value = value.replace(",", ".")
+
+                    payload[propertyId] = value
+                })
+
                 $(".fl-modal-list-add-input").each(function () {
                     const propertyId = $(this).attr("id")
                     let value = $(this).val()
                     if ($(this).attr("data-fl-type") == "percentage") value /= 100
-                    console.log(value)
                     payload[propertyId] = value
                     formData.append(propertyId, value)
                 })

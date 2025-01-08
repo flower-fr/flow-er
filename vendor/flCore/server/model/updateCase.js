@@ -11,7 +11,8 @@ const updateCase = (context, table, column, pairs, model) => {
     for (let id of Object.keys(pairs)) {
         let value = pairs[id]
         if (column != "visibility" || value != "deleted") {
-            if (typeof(value) == "string") value = qv(value.replace(/(<([^>]+)>)/ig, ''))
+            if (typeof(value) == "string") value = qv(value.replace(/(<([^>]+)>)/ig, ""))
+            else if (type == "int" && value == "") value = 0
             else if (type == "json") value = qv(JSON.stringify(value))
             ids.push(id)
             request.push(`WHEN id = ${id} THEN ${value}`)
