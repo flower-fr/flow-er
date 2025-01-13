@@ -84,7 +84,7 @@ console.log(data)
             const rows = sectionData.rows, where = data.where, order = data.order, limit = sectionData.limit
             html.push(
                 `${ (section.renderer == "renderUpdate") ?
-                    (renderers[section.renderer])({ context, entity }, section, properties, rows[0]) :
+                    (renderers[section.renderer])({ context, entity }, section, properties, (rows.length > 0) ? rows[0] : [{}]) :
                     (renderers[section.renderer])({ context, entity }, { id: data.id, section, config: detailTabConfig, properties, rows, where, order, limit }) }
                 `
             )

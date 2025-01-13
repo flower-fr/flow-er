@@ -131,6 +131,10 @@ const renderProperties = (context, listConfig, properties, row) => {
             html.push(`<td class="text-right">${ parseFloat(row[propertyId]).toLocaleString("fr-FR", { minimumFractionDigits: 2 }) }</td>`)
         }
 
+        else if (property.type == "percentage") {
+            html.push(`<td class="text-right">${ parseFloat(row[propertyId] * 100).toLocaleString("fr-FR") }%</td>`)
+        }
+
         else if (property.type == "email") {
             html.push(`<td>${(row[propertyId]) ? `<a href="mailto:${row[propertyId]}">${row[propertyId]}</a>` : ""}</td>`)
         }              

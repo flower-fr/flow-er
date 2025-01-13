@@ -190,6 +190,7 @@ const auditCells = async (context, rowsToStore, db) => {
                         property: propertyId,
                         value: value
                     }
+                    console.log(auditTable, auditToInsert, auditModel)
                     await db.execute(insert(context, auditTable, auditToInsert, auditModel))
                 }
             }

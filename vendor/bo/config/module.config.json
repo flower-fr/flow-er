@@ -14,6 +14,6 @@
     },
 
     "footer": [
-		{ "html": {"default": "<span class=\"text-muted\"><b>© 2024 <a href=\"https://opensource.org/license/bsd-3-clause/\" target=\"_blank\">Flow-ER</a></b></span>"}}
+		{ "html": {"default": "<span class=\"text-muted\"><b>© 2025 <a href=\"https://opensource.org/license/bsd-3-clause/\" target=\"_blank\">Flow-ER</a></b></span>"}}
 	]
 }
