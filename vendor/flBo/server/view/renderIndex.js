@@ -17,8 +17,6 @@ const renderIndex = ({ context, entity, view }, data) => {
     
     <body>
        
-        <input type="hidden" id="flInstanceCaption" value="${data.instance.caption}" />
-        <input type="hidden" id="flListWhereHidden" value="${data.where}" />
         <input type="hidden" id="flListOrderHidden" value="${data.order}" />
         <input type="hidden" id="flListLimitHidden" value="${data.limit}" />
     

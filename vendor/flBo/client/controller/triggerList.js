@@ -116,6 +116,10 @@ const triggerList = async ({ context, entity, view }) => {
 
     triggerDetail({ context, entity, view }, params)
 
+    triggerTaskDetail({ context, entity, view }, params)
+
+    triggerTaskAdd({ context, entity, view }, params)
+
     // Connect the grouped actions anchors
     $(".fl-list-group").click(function () {
         getGroup(context, entity, view, params)

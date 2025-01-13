@@ -16,7 +16,7 @@ const update = (context, table, ids, data, model = []) => {
                     value = value.replace(/(<([^>]+)>)/ig, '').substring(0, maxLength)
                     value = qv(value)
                 }
-                else if (type == "longtext") value = qv(value)
+                else if (["longtext", "mediumtext"].includes(type)) value = qv(value)
         
                 pairs[qi(key)] = value    
             }

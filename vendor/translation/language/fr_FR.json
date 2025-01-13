@@ -1,5 +1,6 @@
 {
     "Add": "Ajouter",
+    "Add a task": "Ajouter une tâche",
     "A technical error has occured. PLease try again later": "Une erreur technique est survenue, veuillez réessayer ultérieurement",
     "Account temporarily revoked, please try again later": "Compte temporairement révoqué, veuillez ré-essayer plus tard",
     "Authentication failed, please try again": "Authentification invalide, Veuillez essayer à nouveau",
@@ -11,6 +12,7 @@
     "Day": "Jour",
     "DD/MM/YYYY": "JJ/MM/AAAA",
     "Descending order": "Ordre décroissant",
+    "Done task": "Tâche réalisée",
     "Email or identifier": "Email ou identifiant",
     "Go back to the homepage": "Revenir à la page d’accueil",
     "Global actions": "Actions globales",
@@ -21,6 +23,8 @@
     "Logout": "Déconnexion",
     "Max": "Max",
     "Min": "Min",
+    "Modify": "Modifier",
+    "Modify a task": "Modifier une tâche",
     "Month": "Mois",
     "Missing or invalid date": "Date manquante ou invalide",
     "Missing or invalid email": "Email manquant ou invalide",
