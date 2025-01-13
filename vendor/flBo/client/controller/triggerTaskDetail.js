@@ -27,8 +27,13 @@ const getTaskDetail = async (context, entity, view, id, searchParams) => {
 
     $("#flModalContent").html(renderTaskDetail({ context, entity, view}, data.data.crm_task.rows[0] ))
     mdbTasksCallback({ context, entity, view })
-
     $(".fl-modal-message").hide()
+
+    const modal = document.getElementById("flModal")
+    modal.addEventListener("hidden.mdb.modal", (e) => {
+        console.log("ici")
+        triggerList({ context, entity, view })
+    })
 
     const form = document.getElementById("flModalForm")
     if (form) {

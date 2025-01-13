@@ -9,7 +9,7 @@ const renderTaskAdd = ({ context, entity, view }, {properties }, formJwt) => {
         <form class="row g-4" id="flModalForm" style="margin-left: 0; margin-right:0" was-validated>
 
             <input type="hidden" id="formJwt" value="${ formJwt }" />
-            <input type="hidden" id="status" value="todo" />
+            <input type="hidden" class="fl-modal-form-input" data-fl-property="status" data-fl-type="input" value="todo" />
 
             <div class="modal-header">
                 <h5 class="modal-title id="flModalTaskLabel">${ context.translate("Add a task") }</h5>
