@@ -59,5 +59,9 @@ const loadPage = async ({ entity, view }) => {
         triggerList({ context, entity, view })
     })
 
+    const modal = document.getElementById("flModal")
+    modal.addEventListener("hidden.mdb.modal", (e) => {
+        triggerList({ context, entity, view })
+    })
 }
 

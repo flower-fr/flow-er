@@ -29,11 +29,6 @@ const getTaskDetail = async (context, entity, view, id, searchParams) => {
     mdbTasksCallback({ context, entity, view })
     $(".fl-modal-message").hide()
 
-    const modal = document.getElementById("flModal")
-    modal.addEventListener("hidden.mdb.modal", (e) => {
-        triggerList({ context, entity, view })
-    })
-
     const form = document.getElementById("flModalForm")
     if (form) {
         form.onsubmit = async function (event) {
