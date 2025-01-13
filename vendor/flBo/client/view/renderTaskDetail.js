@@ -35,7 +35,7 @@ const renderTaskDetail = ({ context, entity, view }, data, formJwt) => {
                 </div>
                 <div class="d-flex justify-content-between">
                     <div class="form-check mx-2">
-                        <input class="form-check-input calendar-long-events-checkbox fl-modal-form-check" data-fl-property="status" value="done" type="checkbox" ${ (data.status == "done") ? "checked" : "" }>
+                        <input class="form-check-input calendar-long-events-checkbox fl-modal-form-check" data-fl-property="status" data-fl-unchecked-value="todo" data-fl-checked-value="done" type="checkbox" ${ (data.status == "done") ? "checked" : "" }>
                         <label class="form-check-label" for="status">
                             ${ context.translate("Done task") }
                         </label>

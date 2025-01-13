@@ -69,7 +69,8 @@ const getTaskDetail = async (context, entity, view, id, searchParams) => {
 
             $(".fl-modal-form-check").each(function () {
                 const propertyId = $(this).attr("data-fl-property")
-                if ($(this).prop("checked")) payload[propertyId] = $(this).val()
+                if ($(this).prop("checked")) payload[propertyId] = $(this).attr("data-fl-checked-value")
+                else payload[propertyId] = $(this).attr("data-fl-unchecked-value")
             })
 
             const route = `/${$(submit).attr("data-fl-controller")}/${$(submit).attr("data-fl-action")}/${$(submit).attr("data-fl-entity")}`
