@@ -31,7 +31,6 @@ const getTaskDetail = async (context, entity, view, id, searchParams) => {
 
     const modal = document.getElementById("flModal")
     modal.addEventListener("hidden.mdb.modal", (e) => {
-        console.log("ici")
         triggerList({ context, entity, view })
     })
 
