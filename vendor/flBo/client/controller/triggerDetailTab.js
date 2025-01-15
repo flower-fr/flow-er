@@ -95,6 +95,30 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
         getTab({ context, entity, view }, tab, $(this).attr("data-fl-route"), id, message, searchParams)
     })
 
+    $(".fl-update-button").each(() => {
+        $(".fl-submit-div").hide()
+        $(".fl-close-button").hide()
+        $(".fl-modal-form-input").prop("disabled", true)
+    })
+
+    $(".fl-update-button").click(function() {
+        $(".fl-submit-div").show()
+        $(".fl-close-button").show()
+        $(".fl-update-button").hide()
+        $(".fl-modal-form-input").each(function () {
+            $(this).prop("disabled", $(this).attr("data-fl-disabled"))
+        })
+    })
+
+    $(".fl-close-button").click(() => {
+        $(".fl-submit-div").hide()
+        $(".fl-close-button").hide()
+        $(".fl-update-button").show()
+        $(".fl-modal-form-input").prop("disabled", true)
+        $(".fl-detail-tab-message").hide()
+
+    })
+
     const form = document.getElementById("flModalForm")
     if (form) {
         form.onsubmit = async function (event) {
@@ -278,12 +302,11 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
                 })
 
                 if (response.status == 200) {
-                    toastr.success(context.translate("Your request has been registered"))
                     $(".fl-modal-list-close-button").hide()
                     $("#flDetailTabMessageOk").show()
-                    getTab({ context, entity, view }, tab, $(`#flDetailTabSubmitRefresh-${$(submit).attr("data-fl-transaction") }`).attr("data-fl-route"), id, message, searchParams)
+                    //getTab({ context, entity, view }, tab, $(`#flDetailTabSubmitRefresh-${$(submit).attr("data-fl-transaction") }`).attr("data-fl-route"), id, message, searchParams)
                 }
-                else if (response.status == 401) triggerModalList({ context, entity, view }, route, "expired")
+                else if (response.status == 401) triggerDetailTab = ({ context, entity, view }, data, tab, route, id, "expired", searchParams, order)
             }
             else return false
         }

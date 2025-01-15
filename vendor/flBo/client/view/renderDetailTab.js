@@ -16,7 +16,7 @@ console.log(data)
             <!-- Form status messages -->
 
             <div class="fl-detail-tab-message" id="flDetailTabMessageOk">
-                <h5 class="alert alert-success my-3 text-center">${context.translate("Your request has been registered")}</h5>
+                <h5 class="alert alert-success my-5 text-center">${context.translate("Your request has been registered")}</h5>
             </div>
 
             <div class="fl-detail-tab-message" id="flDetailTabMessageExpired">
