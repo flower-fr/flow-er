@@ -26,7 +26,7 @@ const parse = (sheet) => {
         for (let i = 0; i < row.length; i++) {
             resRow[header[i]] = (typeof(row[i]) == "string") ? row[i].split("\r").join("").split("\n").join("") : row[i]
         }
-        payload.push(resRow)
+        if (Object.values(resRow).length > 0) payload.push(resRow)
     }
     return payload
 }
@@ -46,7 +46,15 @@ const match = (payload, importConfig) => {
          * Initialize default data
          */
         for (let [propertyId, def] of Object.entries(importConfig.properties)) {
-            if (def.type == "default") validRow[propertyId] = def.value
+            if (def.type == "default") {
+                let value = def.value
+                if (value.includes("today")) {
+                    if (value && value.charAt(5) == "+") value = moment().add(value.substring(6), "days").format("YYYY-MM-DD")
+                    else if (value && value.charAt(5) == "-") value = moment().subtract(value.substring(6), "days").format("YYYY-MM-DD")
+                    else value = moment().format("YYYY-MM-DD")        
+                }
+                validRow[propertyId] = value
+            }
         }
 
         /**
@@ -140,7 +148,7 @@ const postImportXlsxAction = async ({ req }, context, db) => {
     
     for (const [propertyId, property] of Object.entries(importConfig.properties)) {
         const propertyDef = context.config[`${entity}/property/${propertyId}`]
-        property.labels = propertyDef.labels
+        if (propertyDef) property.labels = propertyDef.labels
     }
 
     for (const property of Object.values(importConfig.mapping)) {

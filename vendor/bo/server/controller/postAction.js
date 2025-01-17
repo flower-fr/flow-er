@@ -155,7 +155,6 @@ const storeEntities = async (context, mainEntity, rowsToStore, model, db) => {
                     if (!columnsToUpdate[entityId][columnId]) columnsToUpdate[entityId][columnId] = {}
                     columnsToUpdate[entityId][columnId][entityToUpdate.rowId] = value
                 }
-                console.log(update(context, table, [entityToUpdate.rowId], entityToUpdate.cells, updateModel))
                 await db.execute(update(context, table, [entityToUpdate.rowId], entityToUpdate.cells, updateModel))
             }
         }
@@ -190,7 +189,6 @@ const auditCells = async (context, rowsToStore, db) => {
                         property: propertyId,
                         value: value
                     }
-                    console.log(auditTable, auditToInsert, auditModel)
                     await db.execute(insert(context, auditTable, auditToInsert, auditModel))
                 }
             }

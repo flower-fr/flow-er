@@ -1,7 +1,6 @@
 const renderGlobalTable = ({ context, entity, view }, data) => {
 
     const properties = data.importConfig.properties
-    console.log(Object.values(properties))
     return `
     <div class="row">
         <div class="table-responsive">
@@ -64,11 +63,14 @@ const renderProperty = ({context }, propertyId, property, row) => {
 
     const html = []
 
-    if (property.type == "select") {
-        html.push(`<td class="${(property.class) ? property.class[row[propertyId]] : ""}">
-            ${ (row[propertyId]) 
-        ? ( (property.modalities[row[propertyId]]) ? context.localize(property.modalities[row[propertyId]]) : row[propertyId] )
-        : "" }
+    if (!row[propertyId]) {
+        html.push("<td/>")
+    }
+
+    else if (property.type == "select") {
+        html.push(`
+        <td class="${(property.class) ? property.class[row[propertyId]] : ""}">
+            ${ (property.modalities[row[propertyId]]) ? context.localize(property.modalities[row[propertyId]]) : row[propertyId] }
         </td>`)
     }
     

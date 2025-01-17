@@ -25,13 +25,11 @@ const qv = (value) => {
         else {
             let split = value.split("+")
             if (split.length == 2) {
-                if (split[0] == "today")
-                value = moment().add(Number.parseInt(split[1]), "days").format("YYYY-MM-DD")
+                if (split[0] == "today") value = moment().add(Number.parseInt(split[1]), "days").format("YYYY-MM-DD")
             }    
             split = value.split("-")
             if (split.length == 2) {
-                if (split[0] == "today")
-                value = moment().subtract(Number.parseInt(split[1]), "days").format("YYYY-MM-DD")
+                if (split[0] == "today") value = moment().subtract(Number.parseInt(split[1]), "days").format("YYYY-MM-DD")
             }    
         }
     }

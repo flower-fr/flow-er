@@ -143,6 +143,10 @@ const renderProperties = (context, listConfig, properties, row) => {
             html.push(`<td><a href="tel:${row[propertyId]}">${row[propertyId]}</a></td>`)
         }
 
+        else if (property.options.type == "link") {
+            html.push(`<td>${(row[propertyId]) ? `<a href="${row[propertyId]}">${row[propertyId]}</a>` : ""}</td>`)
+        }              
+
         else if (property.type == "tags") {
             html.push(`<td class="listTagsName" id="listTagsName-${propertyId}-${row.id}">${row[propertyId]}</td>`)
         }
