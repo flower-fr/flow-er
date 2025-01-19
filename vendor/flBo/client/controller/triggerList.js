@@ -1,5 +1,5 @@
-const triggerList = async ({ context, entity, view }) => {		
-    
+const triggerList = async ({ context, entity, view }, order = $("#flListOrderHidden").val()) => {		
+
     // Route with params
 
     let route = getListRoute()
@@ -9,7 +9,6 @@ const triggerList = async ({ context, entity, view }) => {
     const where = params.join("|")
     if (where) route += `&where=${where}`
 
-    const order = $("#flListOrderHidden").val()
     if (order) route += `&order=${order}`
 
     let limit = parseInt($("#flListLimitHidden").val())
@@ -31,8 +30,10 @@ const triggerList = async ({ context, entity, view }) => {
 
     const data = await response.json()
 
-    $("#flListParent").html(listRenderer({ context, entity, view }, data))
+    $("#flList").html(listRenderer({ context, entity, view }, data))
     listCallback({ context, entity, view })
+
+    triggerOrder({ context, entity, view })
 
     // Extend the displayed list
 
@@ -43,7 +44,7 @@ const triggerList = async ({ context, entity, view }) => {
 
     // Enable group action
 
-    $(".fl-list-group").prop("disabled", true)
+    $(".fl-list-group").hide()
 
     // Trigger checking rows for group action
 
@@ -74,12 +75,14 @@ const triggerList = async ({ context, entity, view }) => {
         })
 
         if (checked > 0) {
-            $(".fl-list-group").prop("disabled", false)
+            $(".fl-list-group").show()
+            $(".fl-list-add").hide()
             $(".fl-list-count").text(checked)
             if (sumChecked) $(".fl-list-sum").text((Math.round(sumChecked * 100) / 100).toFixed(2))
         }
         else {
-            $(".fl-list-group").prop("disabled", true)
+            $(".fl-list-group").hide()
+            $(".fl-list-add").show()
             $(".fl-list-count").text("")
             $(".fl-list-sum").text("")
         }

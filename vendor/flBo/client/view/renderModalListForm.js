@@ -29,7 +29,6 @@ const renderModalListForm = ({ context }, section, id, modalListConfig, where, p
                 else value = moment().format("YYYY-MM-DD")        
             }
         }
-        console.log(propertyId, value)
 
         if (Object.keys(property).length > 0) {
 

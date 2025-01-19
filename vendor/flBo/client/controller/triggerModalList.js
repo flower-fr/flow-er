@@ -19,6 +19,7 @@ const triggerModalList = ({ context, entity, view }, data, tab, route, id, messa
             flModalListSearchShow()
         })
     }
+
     $(".fl-modal-list-order-button").click(function() {
         const propertyId = $(this).attr("data-fl-property")
         let direction = $(this).attr("data-fl-direction")

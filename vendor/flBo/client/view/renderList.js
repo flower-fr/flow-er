@@ -1,17 +1,30 @@
 const renderList = ({ context, entity, view }, data) => {
+
+    console.log("In renderList(flBo)")
+
+    const rows = data.rows, orderParam = data.order, limit = data.limit, listConfig = data.config, properties = data.properties
     
-    const rows = data.rows, orderParam = data.orderParam, limit = data.limit, listConfig = data.config, properties = data.properties
-    
-    return `<tr>
+    const html = []
+
+    html.push(`
+    <thead class="table-light fl-list">
+        ${ renderListHeader({ context, entity, view }, listConfig, properties, orderParam) }
+    </thead>
+    <tbody class="table-group-divider">`)
+
+    html.push(`<tr>
         <td>
             <div class="text-center">
-                <input type="checkbox" class="listCheckAll" data-toggle="tooltip" data-placement="top" title="${context.translate("Check all")}"></input>
+                <input type="checkbox" class="fl-list-check-all" data-toggle="tooltip" data-placement="top" title="${context.translate("Check all")}"></input>
             </div>
         </td>
 
         <td class="text-center">
-            <button type="button" class="btn btn-sm btn-outline-primary index-btn listDetailButton" title="${context.translate("Add")}" id="listDetailButton-0" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#listDetailModalForm">
+            <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-list-detail fl-list-add" title="${context.translate("Add")}" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#flListDetailModalForm" data-id="0">
                 <span class="fas fa-plus"></span>
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-list-group" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#flListDetailModalForm" data-toggle="tooltip" data-placement="top" title="${context.translate("Grouped actions")}">
+                <span class="fas fa-list"></span>
             </button>
         </td>
 
@@ -23,23 +36,31 @@ const renderList = ({ context, entity, view }, data) => {
     <tr class="listRow">
         <td>
             <div class="text-center">
-                <input type="checkbox" class="listCheckAll" title="${context.translate("Check all")}"></input>
+                <input type="checkbox" class="fl-list-check-all" title="${context.translate("Check all")}"></input>
             </div>
         </td>
 
         <td class="text-center">
-            <button type="button" class="btn btn-sm btn-outline-primary index-btn listGroupButton" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#listDetailModalForm" data-toggle="tooltip" data-placement="top" title="${context.translate("Grouped actions")}" id="listGroupButton-1">
+            <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-list-detail fl-list-add" title="${context.translate("Add")}" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#flListDetailModalForm" data-id="0">
+                <span class="fas fa-plus"></span>
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-list-group" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#flListDetailModalForm" data-toggle="tooltip" data-placement="top" title="${context.translate("Grouped actions")}">
                 <span class="fas fa-list"></span>
             </button>
             ${(rows.length == limit) ? 
-        `       <button type="button" class="btn btn-sm btn-outline-primary listMoreButton" data-toggle="tooltip" data-placement="top" title="${context.translate("Display the entire list")}">
+        `       <button type="button" class="btn btn-sm btn-outline-primary fl-list-more" data-toggle="tooltip" data-placement="top" title="${context.translate("Display the entire list")}">
                     <i class="fas fa-ellipsis-h"></i>
                 </button>`
         : ""}
         </td>
 
         <td colspan="${Object.keys(properties).length - 1}" />
-    </tr>`
+    </tr>`)
+
+    html.push(`
+    </tbody>`)
+
+    return html.join("\n")
 }
 
 const renderRows = (context, listConfig, properties, rows) => {
@@ -70,13 +91,12 @@ const renderRows = (context, listConfig, properties, rows) => {
         <tr class="listRow">
             <td>
                 <div class="text-center">
-                    <input type="checkbox" class="listCheck" id="listCheck-${row.id}-${i}" data-properties="${ checkData.join("|") }"></input>
-                    ${listCheckIds.join("\n")} <!-- Deprecated -->
+                    <input type="checkbox" class="fl-list-check" data-row-id="${i}" data-properties="${ checkData.join("|") }"></input>
                 </div>
             </td>
 
             <td class="text-center">
-                <button type="button" class="btn btn-sm btn-outline-primary index-btn listDetailButton" data-mdb-target="#listDetailModalForm" title="${context.translate("Detail")}" id="listDetailButton-${row.id}">
+                <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-list-detail" data-mdb-target="#flListDetailModalForm" data-mdb-modal-init title="${context.translate("Detail")}" data-id="${row.id}">
                   <i class="fas fa-search"></i>
                 </button>
             </td>
@@ -93,7 +113,7 @@ const renderHidden = (context, listConfig, properties, row) => {
     const html = []
     if (listConfig.hidden) {
         for (let propertyId of Object.keys(listConfig.hidden)) {
-            html.push(`<input type="hidden" id="listHidden-${ propertyId }-${ row.id }" value="${ row[propertyId] }" />`)
+            html.push(`<input type="hidden" id="flListHidden-${ propertyId }-${ row.id }" value="${ row[propertyId] }" />`)
         }
     }
     return html
@@ -104,10 +124,11 @@ const renderProperties = (context, listConfig, properties, row) => {
     const html = []
     for (let propertyId of Object.keys(listConfig.properties)) {
         const property = properties[propertyId]
-
         if (property.type == "select") {
             html.push(`<td class="${(property.options.class) ? property.options.class[row[propertyId]] : ""}">
-                ${(row[propertyId]) ? context.localize(property.modalities[row[propertyId]]) : ""}
+                ${ (row[propertyId]) 
+        ? ( (property.modalities[row[propertyId]]) ? context.localize(property.modalities[row[propertyId]]) : row[propertyId] )
+        : "" }
             </td>`)
         }
         

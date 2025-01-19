@@ -96,9 +96,12 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
     })
 
     $(".fl-update-button").each(() => {
-        $(".fl-submit-div").hide()
+        if (id != 0) {
+            $(".fl-submit-div").hide()
+            $(".fl-modal-form-input").prop("disabled", true)
+        }
+        else  $(".fl-update-button").hide()
         $(".fl-close-button").hide()
-        $(".fl-modal-form-input").prop("disabled", true)
     })
 
     $(".fl-update-button").click(function() {

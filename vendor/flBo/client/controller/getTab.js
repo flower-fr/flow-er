@@ -11,11 +11,15 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
             if (value[0] == null) value = `le,${value[1]}`
             else if (value[1] == null) value = `ge,${value[0]}`
             else value = `between,${value[0]},${value[1]}`
+            params.push(key + ":" + value)
         }
-        params.push(key + ":" + value)
+        else params.push(value)
     }
 
-    const where = params.join("|")
+    let where = (query.where) ? [query.where] : []
+    where = where.concat(params)
+    where = where.join("|")
+    console.log (where)
     if (where) query.where = where
 
     if (order) query.order = order

@@ -119,6 +119,5 @@ const triggerSearch = async ({ context, entity, view }, param = false) => {
         getGlobal({ context, entity, view }, route)
     })
 
-    triggerOrder({ context, entity, view })
     triggerList({ context, entity, view })
 }

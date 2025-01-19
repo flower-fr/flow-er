@@ -49,6 +49,16 @@ const loadPage = async ({ entity, view }) => {
             else return false
         }
     }
+    
+    $("#flListDetailModalForm").each(function () {
+        const modal = $(this)
+        new mdb.Modal(modal)    
+
+        $(".btn-close").each(function () {
+            const btn = $(this)
+            new mdb.Ripple(btn)    
+        })
+    })
 
     // const shortcutsRoute = $("#shortcutsRoute").val()
     // if (shortcutsRoute) triggerShortcuts({ context, entity, view }, shortcutsRoute)
