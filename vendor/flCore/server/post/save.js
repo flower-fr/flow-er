@@ -97,14 +97,23 @@ const dataToStore = (entity, model, form) => {
     for (const row of form) {
         const cellsToStore = {}, cellsToReject = {}
         for (let propertyId of Object.keys(row)) {
-            const property = model.properties[propertyId]
-            if (!property) cellsToReject[propertyId] = "unknown"
-            //else if (property.type == "primary") cellsToReject[propertyId] = "primary"
-            else {
-                let value = row[propertyId]
-                if (property.type == "int" && !Number.isInteger(value)) cellsToReject[propertyId] = "type"
-                else if (property.type == "float" && typeof(value) != "number") cellsToReject[propertyId] = "type"
-                else cellsToStore[propertyId] = value    
+            if (propertyId != "formJwt") {
+                const property = model.properties[propertyId]
+                if (!property) cellsToReject[propertyId] = "unknown"
+                //else if (property.type == "primary") cellsToReject[propertyId] = "primary"
+                else {
+                    let value = row[propertyId]
+                    if (property.type == "int") {
+                        if (value == "") cellsToStore[propertyId] = 0
+                        else if (Number.isNaN(value)) cellsToReject[propertyId] = "type"
+                        else cellsToStore[propertyId] = parseInt(value)
+                    }
+                    else if (property.type == "decimal") {
+                        if (Number.isNaN(value)) cellsToReject[propertyId] = "type"
+                        else cellsToStore[propertyId] = parseFloat(value)
+                    }
+                    else cellsToStore[propertyId] = value    
+                }    
             }
         }    
         rowsToStore.push(cellsToStore)
@@ -276,7 +285,7 @@ const auditCells = async (context, rowsToStore, db) => {
     }
 }
 
-const save = async ({ req }, context, rows, { db }) => {
+const save = async ({ req }, context, rows, { connection }) => {
     const entity = assert.notEmpty(req.params, "entity")
 
     const model = context.config[`${entity}/model`]
@@ -287,9 +296,10 @@ const save = async ({ req }, context, rows, { db }) => {
      * Find out the data to actually store in the database 
      */
     
-    let { rowsToStore, rowsToReject } = dataToStore(entity, model, form)
+    let { rowsToStore, rowsToReject } = dataToStore(entity, model, rows)
 
     if (rowsToReject.length > 0) {
+        console.log(rowsToReject)
         return JSON.stringify({ "status": "ko", "errors": rowsToReject })
     }
     
@@ -298,8 +308,8 @@ const save = async ({ req }, context, rows, { db }) => {
      */
     
     rowsToStore = entitiesToStore(entity, model, rowsToStore)
-    await storeEntities(context, entity, rowsToStore, model, db)
-    await auditCells(context, rowsToStore, db)
+    await storeEntities(context, entity, rowsToStore, model, connection)
+    await auditCells(context, rowsToStore, connection)
 
     return JSON.stringify({ "status": "ok", "stored": rowsToStore })
 }

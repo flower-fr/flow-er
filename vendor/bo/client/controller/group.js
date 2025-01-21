@@ -162,7 +162,7 @@ const postGroupTab = async ({ context, entity, view }, tab, searchParams) => {
                  */
 
                 const rows = []
-                $(".listCheck").each(function () {
+                $(".fl-list-check").each(function () {
                     if ($(this).prop("checked")) {
                         const checkData = $(this).attr("data-properties").split("|")
                         const row = {}
@@ -187,7 +187,8 @@ const postGroupTab = async ({ context, entity, view }, tab, searchParams) => {
                 })
 
                 if (xhttp.status == 200) {
-                    getGroupTab({ context, entity, view }, tab, id, "ok", searchParams)
+                    $("#updateMessageOk").show()
+                    //getGroupTab({ context, entity, view }, tab, id, "ok", searchParams)
                 }
                 else if (xhttp.status == 401) getGroupTab({ context, entity, view }, tab, id, "expired", searchParams)
                 else if (xhttp.status == 409) getGroupTab({ context, entity, view }, tab, id, xhttp.statusText, searchParams)

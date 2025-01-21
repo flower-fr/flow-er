@@ -64,5 +64,7 @@ const getGroupTab = async ({ context, entity, view }, tab, searchParams) => {
         })
     })
 
+    $(".updateMessage").hide()
+
     postGroupTab({ context, entity, view }, tab, searchParams)
 }

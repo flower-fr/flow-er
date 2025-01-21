@@ -20,27 +20,27 @@ const postAction = async ({ req }, context, { db, smtp }) => {
     
     const rows = req.body.rows
     for (let row of req.body.rows) {
-        for (let propertyId of Object.keys(req.body.payload)) {
-            const value = req.body.payload[propertyId]
-            row[propertyId] = value
+        for (const [propertyId, value] of Object.entries(req.body.payload)) {
+            if (value) row[propertyId] = value
         }    
     }
 
-    await db.beginTransaction()
+    const connection = await db.getConnection()
+    await connection.beginTransaction()
 
     for (let stepId of Object.keys(steps)) {
         const step = steps[stepId]
-        if (!step.async) await (availableSteps[stepId])({ req }, context, rows, { db, smtp })
+        if (!step.async) await (availableSteps[stepId])({ req }, context, rows, { connection, smtp })
     }
 
-    await db.commit()
+    await connection.commit()
 
     for (let stepId of Object.keys(steps)) {
         const step = steps[stepId]
-        if (step.async) (availableSteps[stepId])({ req }, context, rows, { db, smtp })
+        if (step.async) (availableSteps[stepId])({ req }, context, rows, { connection, smtp })
     }
 
-    db.release()
+    connection.release()
     
     return JSON.stringify({ "status": "ok" })
 }

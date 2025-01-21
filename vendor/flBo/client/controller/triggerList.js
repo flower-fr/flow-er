@@ -96,7 +96,8 @@ const triggerList = async ({ context, entity, view }, order = $("#flListOrderHid
         $(".fl-list-check-all").prop("checked", state)
 
         if (state) {
-            $(".fl-list-group").prop("disabled", false)
+            $(".fl-list-group").show()
+            $(".fl-list-add").hide()
 
             let count = 0, sum = 0
             $(".fl-list-check").each(function () {
@@ -111,7 +112,8 @@ const triggerList = async ({ context, entity, view }, order = $("#flListOrderHid
             if (sum) $(".fl-list-sum").text((Math.round(sum * 100) / 100).toFixed(2))
         }
         else {
-            $(".fl-list-group").prop("disabled", true)
+            $(".fl-list-group").hide()
+            $(".fl-list-add").show()
             $(".fl-list-count").text("")
             if (sum) $(".fl-list-sum").text("")
         }
