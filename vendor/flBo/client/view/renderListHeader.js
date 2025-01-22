@@ -1,4 +1,4 @@
-const renderListHeader = ({ context }, listConfig, properties, order) => {
+const renderListHeader = ({ context }, listConfig, properties, order = "-touched_by") => {
 
     let direction = "+"
     if (order[0] == "-") {
