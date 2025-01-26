@@ -6,6 +6,7 @@ const { getProperties } = require("../../../../vendor/bo/server/controller/getPr
 const { getDistribution } = require("../../../../vendor/bo/server/controller/getDistribution")
 
 const { searchAction } = require("./searchAction")
+const { listAction } = require("./listAction")
 const { detailTabAction } = require("../../../flBo/server/controller/detailTabAction")
 const { notFoundAction } = require("./404")
 
@@ -18,6 +19,7 @@ const registerFlBo = async ({ context, config, logger, app }) => {
     app.use(`${config.prefix}`, sessionCookieMiddleware(config))
     app.get(`${config.prefix}index/:entity`, execute(index, context, config, db))
     app.get(`${config.prefix}search/:entity`, execute(searchAction, context, db))
+    app.get(`${config.prefix}list/:entity`, execute(listAction, context, db))
     app.get(`${config.prefix}detailTab/:entity/:id`, execute(detailTabAction, context, db))
     app.get(`${config.prefix}404`, execute(notFoundAction, context, config))
 

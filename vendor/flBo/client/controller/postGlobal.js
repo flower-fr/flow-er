@@ -149,7 +149,7 @@ const postGlobal = async ({ context, entity, view }, data) => {
 
                 if (response.status == 200) {
                     const data = await response.json()
-                    $("#flGlobalModal").html(renderGlobalTable({ context, entity, view }, data))
+                    $("#flGlobalModal").html(renderGlobal({ context, entity, view }, data))
                 }
                 else if (response.status == 401) getGlobal({ context, entity, view }, route, "expired")
                 //else getGlobal({ context, entity, view }, route, "serverError")

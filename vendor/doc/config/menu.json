@@ -256,6 +256,10 @@
                     "route": "/doc/index/flow-er/ap05BackOffice" 
                 },
                 {
+                    "labels": { "default": "Data hub" },
+                    "route": "/doc/index/flow-er/ap07DataHub" 
+                },
+                {
                     "labels": { "default": "Public form generator" },
                     "route": "/doc/index/flow-er/ap10PublicFormGenerator" 
                 },

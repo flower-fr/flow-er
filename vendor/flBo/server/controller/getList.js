@@ -3,8 +3,7 @@ const { select } = require("../../../flCore/server/model/select")
 const getList = async (db, context, entity, columns, properties, where, orderParam, limit) => {
 
     const whereTags = {}
-    for (let key of Object.keys(where)) {
-        let value = where[key]
+    for (const [key, value] of Object.entries(where)) {
 
         /**
          * Tags

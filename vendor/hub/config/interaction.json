@@ -19,6 +19,35 @@
             "touched_at": { "entity": "interaction", "column": "touched_at", "type": "datetime" },
             "touched_by": { "entity": "interaction", "column": "touched_by", "type": "int" }
        }
+    },
+
+    "interaction/detailTab/default": {
+        "controller": "flBo",
+        "action": "detailTab",
+        "entity": "interaction",
+        "layout": {
+            "sections": {
+                "": {
+                    "entity": "interaction",
+                    "properties": ["body"],
+                    "renderer": "renderGlobalTable"
+                }    
+            },
+            "posts": {}
+        },
+        "data": {
+            "interaction": { 
+                "where": {
+                    "id": "id"
+                },
+                "properties": {
+                    "body": {}
+                }
+            }
+        },
+        "properties": {
+            "body": {}
+        }
     }
 }
 

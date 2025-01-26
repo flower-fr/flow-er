@@ -7,18 +7,17 @@
                 { "default": "<p>A module is a set of features or services that can be added, cooperate, the whole being used by the main application. Modules can be public and reusable by a number of applications, or be private and specific to a particular application. In that case, a module is not necessarily a way to reuse code, but rather a mean to manage complexity by dividing it to smaller problems.</p>"},
                 { "default": "<p>Conventionally, modules can be added in two places: <code>vendor/</code> and <code>module/</code>. Modules in <code>vendor</code> are kind of reusable libraries, typically provided by third parts, while modules in <code>module/</code> belong to your application.</p>"},
                 { "default": "<p><em>Flow-er</em> comes with several vendor modules : </p>" },
-                { "default": "<ul><li><code>flCore</code>: The core <em>Flow-er</em> reusable services,</li>" },
-                { "default": "<li><code>flBo</code>: A powerfull back-office and user interface that can be the foundation for building a CRM for example,</li>" },
-                { "default": "<li><code>flDoc</code>: Everything needed to publish documentation for your application,</li>" },
-                { "default": "<li><code>flDocument</code>: An engine for a simple document management system,</li>" },
-                { "default": "<li><code>flHub</code>: An API orchestrator for providing graphically supervised automations,</li>" },
-                { "default": "<li><code>flMdb</code>: An extension of <em>Flow-ER</em> UI using the <em>Material Design for Bootstrap &trade;</em> style sheet,</li>" },
-                { "default": "<li><code>flMy</code>: A set of services to help implementing a public app,</li>" },
-                { "default": "<li><code>flPub</code>: Public and protected web form to be hosted in a website or accessible by a personalized link inside a mail,</li>" },
+                { "default": "<ul><li><code>flCore</code>: The core <em>Flow-er</em> reusable services</li>" },
+                { "default": "<li><code>flBo</code>: A powerfull back-office and user interface that can be the foundation for building a CRM for example</li>" },
+                { "default": "<li><code>flDoc</code>: Everything needed to publish documentation for your application</li>" },
+                { "default": "<li><code>flDocument</code>: An engine for a simple document management system</li>" },
+                { "default": "<li><code>flHub</code>: An API orchestrator for providing graphically supervised automations</li>" },
+                { "default": "<li><code>flMy</code>: A set of services to help implementing a public app</li>" },
+                { "default": "<li><code>flPub</code>: Public and protected web form to integrate as iframe in a website or as a personalized link inside a mail</li>" },
                 { "default": "<li><code>flStudio</code>: a no-code app to adapt <em>flow-er</em>'s configuration and settings to each client context,</li>" },
                 { "default": "<li><code>flTranslation</code>: for worldwide applications,</li>" },
                 { "default": "<li><code>flUser</code>: for managing user enrollment.</li></ul>" },
-                { "default": "<p>Except the vendor modules listed above, modules added to <em>flow-er</em> are gitignored, letting you manage the versioning in a per module basis.</p>" }
+                { "default": "<p>Except the vendor modules listed above, modules added to <em>flow-er</em> are gitignored, so you are free to manage the git versioning on a per module basis.</p>" }
             ]
         }
     ]

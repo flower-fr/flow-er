@@ -4,7 +4,7 @@
             "class": "row mt-5",
             "rows": [
                 { "default": "<h5>Web server</h5>" },
-                { "default": "<p>The built in NodeJS server listen to the bindAddress end the port defined in <code>/etc/settings.json</code>.</p>"},
+                { "default": "<p>The built in NodeJS server listen to the bindAddress at the port defined in <code>/etc/settings.json</code>.</p>"},
                 { "default": "<p>The router is <code>express</code>.</p>"},
                 { "default": "<p>NPM modules used : <code>compression</code>, <code>cookie-parser</code> and <code>bode-parser</code>.</p>"},
                 { "default": "<p><e>Flow-er</e> provides standard middlewares and let you provide new middlewares as modules (see <a href=\"/doc/index/flow-er/modules\">Modules</a>).</p>"}

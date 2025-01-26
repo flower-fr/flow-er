@@ -1,0 +1,21 @@
+{
+    "flow-er/doc/ap05BackOffice": [
+        {
+            "class": "row mt-5",
+            "rows": [
+                { "default": "<h5>Back-office</h5>" },
+                { "default": "<code>flBo/server/controller/getProperties</code>" },
+                { "default": "<code>flBo/server/controller/getList</code>" },
+                { "default": "<code>flBo/server/controller/index</code>" },
+                { "default": "<code>flBo/server/controller/searchAction</code>" },
+                { "default": "<code>flBo/server/controller/detailTabAction</code>" },
+                { "default": "<code>flBo/server/controller/404</code>" },
+
+                { "default": "<h5>A MIGRER</h5>" },
+                { "default": "<code>bo/server/controller/listAction</code>" },
+                { "default": "<code>bo/server/controller/detailAction</code>" },
+                { "default": "<code>bo/server/controller/v1</code>" }
+            ]
+        }
+    ]
+}

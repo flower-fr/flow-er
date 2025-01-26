@@ -116,18 +116,11 @@ const getImportXlsxAction = async ({ req }, context, db) => {
 
     const importConfig = context.config[`${entity}/import/default`]
 
-    return {
+    const result = {
         layout: {
             title: { default: "Import an XLSX file", fr_FR: "Importer un fichier XLSX" },
             formJwt: "To be defined",
             renderer: "renderGlobal"
-        },
-        properties: { 
-            xlsxFile: { 
-                type: "file", 
-                labels: { default: "Choose XLSX File", fr_FR: "Choisir un fichier XLSX" },
-                options: { required: true }
-            }
         },
         post: {
             controller: "hub",
@@ -138,6 +131,35 @@ const getImportXlsxAction = async ({ req }, context, db) => {
             renderer: "renderImportXlsx"
         }
     }
+
+    const connection = await db.getConnection()
+
+    const interactionModel = context.config["interaction/model"]
+    const [cursor] = await connection.execute(select(context, "interaction", ["id", "status", "endpoint", "body"], { "status": "new", "endpoint": `hub/import-xlsx/${entity}` }, null, null, interactionModel))
+    if (cursor.length > 0) {
+        result.message = { default: "A previous import is pending", "fr_FR": "Un précédent import est en attente", level: "warning" }
+        const interaction = cursor[0]
+        result.properties = {
+            jsonPayload: {
+                type: "table", 
+                labels: { default: "XLSX content", fr_FR: "Contenu XLSX" },
+                value: JSON.parse(interaction.body).payload,
+                options: { disabled: true }
+            }
+        }
+        result.post.id = interaction.id
+    }
+    else {
+        result.properties = { 
+            xlsxFile: { 
+                type: "file", 
+                labels: { default: "Choose XLSX File", fr_FR: "Choisir un fichier XLSX" },
+                options: { required: true }
+            }
+        }
+    }
+    
+    return result
 }
 
 const postImportXlsxAction = async ({ req }, context, db) => {
@@ -166,7 +188,7 @@ const postImportXlsxAction = async ({ req }, context, db) => {
         // Convert the formData file to JSON
         
         const workSheetsFromStream = xlsxParser.parse(req.file.buffer, { cellDates: true })
-        const sheet = workSheetsFromStream[0].data
+        const sheet = workSheetsFromStream[importConfig.sheetNumber].data
         const payload = parse(sheet)
         const { valid, invalid } = match(payload, importConfig)
 
@@ -184,7 +206,32 @@ const postImportXlsxAction = async ({ req }, context, db) => {
             "status_code": "200"
         }
         const [insertedRow] = (await connection.execute(insert(context, "interaction", interactionData, interactionModel)))
-        return { interactionId: insertedRow.insertId, importConfig, payload, valid, invalid }
+
+        const result = {
+            layout: {
+                title: { default: "Import an XLSX file", fr_FR: "Importer un fichier XLSX" },
+                formJwt: "To be defined",
+                renderer: "renderGlobal"
+            },
+            properties: {
+                jsonPayload: {
+                    type: "table", 
+                    labels: { default: "XLSX content", fr_FR: "Contenu XLSX" },
+                    value: payload,
+                    options: { disabled: true }
+                }
+            },
+            post: {
+                controller: "hub",
+                action: "import-xlsx",
+                entity: "crm_account",
+                id: insertedRow.insertId,
+                labels: { default: "import", fr_FR: "Importer" },
+                renderer: "renderImportXlsx"
+            }
+        }
+    
+        return result
     }
 
     /**

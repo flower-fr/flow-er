@@ -3,7 +3,10 @@
         {
             "class": "row mt-5",
             "rows": [
-                { "default": "<h5>Select</h5>" }
+                { "default": "<h5>Select</h5>" },
+                { "default": "<code>flCore/server/model/select</code>" },
+                { "default": "<code>flCore/server/model/quote</code>" },
+                { "default": "<code>flCore/server/model/join</code>" }
             ]
         }
     ]

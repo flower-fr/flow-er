@@ -1,5 +1,7 @@
 const renderGlobal = ({ context, entity }, config ) => {
 
+    console.log("In renderGlobal (flBo)")
+    
     const post = config.post
 
     const html = []
@@ -30,6 +32,12 @@ const renderGlobal = ({ context, entity }, config ) => {
             <div class="globalMessage my-3" id="globalMessageServerError">
                 <h5 class="alert alert-danger  my-3 text-center">${context.translate("A technical error has occured. PLease try again later")}</h5>
             </div>
+
+            ${ (config.message) ? `
+            <div class="my-3">
+                <h5 class="alert alert-${ config.message.level } my-3 text-center">${context.localize(config.message)}</h5>
+            </div>
+            ` : "" }
             
             <form class="was-validated row g-4" id="globalForm" method="post" enctype="multipart/form-data">
 
@@ -43,7 +51,7 @@ const renderGlobal = ({ context, entity }, config ) => {
             
                 <div class="form-group row submitDiv">
                     <div>
-                        <input type="submit" id="globalSubmitButton" class="btn btn-warning submitButton mt-3" value="${ context.localize(post.labels) }" data-controller=${post.controller} data-action=${post.action} data-entity=${post.entity} data-id=${post.id}>
+                        <input type="submit" id="globalSubmitButton" class="btn btn-warning submitButton mt-3" value="${ context.localize(post.labels) }" data-controller="${post.controller}" data-action="${post.action}" data-entity="${post.entity}" data-id="${post.id}">
                     </div>
                 </div>
 
@@ -360,6 +368,15 @@ const renderSection = ({ context, entity }, config ) => {
                     </div>
                 </div>`
             )
+        }
+
+        /**
+         * Table
+         */
+
+        else if (propertyType == "table") {
+
+            html.push(renderGlobalTable( { context }, property.value ))
         }
 
         /**

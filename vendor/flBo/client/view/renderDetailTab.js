@@ -2,7 +2,7 @@ const renderDetailTab = ({ context, entity }, { data, detailTabConfig, formJwt }
 
     console.log("in renderDetailTab (flBo)")
 
-    const renderers = { renderModalList: renderModalList, renderUpdate: renderUpdate, renderDocumentSection: renderDocumentSection }
+    const renderers = { renderModalList: renderModalList, renderUpdate: renderUpdate, renderDocumentSection: renderDocumentSection, renderGlobalTable: renderGlobalTable }
 
     const layout = detailTabConfig.layout
 

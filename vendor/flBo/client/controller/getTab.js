@@ -58,6 +58,7 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
             updateCallback({ context, entity, view }, data)
         }
     })
+
     $(".renderModalList").each(function () {
         const tabId = $(this).attr("id").split("-")[1]
         if (tabId == tab) {
@@ -65,6 +66,14 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
             modalListCallback({ context, entity, view }, data)
         }
     })
+
+    $(".renderGlobalTable").each(function () {
+        const tabId = $(this).attr("id").split("-")[1]
+        if (tabId == tab) {
+            $("#detailPanel").html(renderGlobalTable({ context, entity, view }, data)) 
+        }
+    })
+
     $(".renderModalCalendar").each(function () {
         const tabId = $(this).attr("id").split("-")[1]
         if (tabId == tab) {

@@ -3,7 +3,11 @@
         {
             "class": "row mt-5",
             "rows": [
-                { "default": "<h5>Atomicity</h5>" }
+                { "default": "<h5>Atomicity</h5>" },
+                { "default": "<code>flCore/server/controller/postAction</code>" },
+                { "default": "<code>flCore/server/post/save</code>" },
+                { "default": "<code>flCore/server/post/registerSmtp</code>" },
+                { "default": "<code>flCore/server/post/sendSmtp</code>" }
             ]
         }
     ]

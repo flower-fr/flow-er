@@ -34,6 +34,7 @@ const select = (context, table, columns, where, order = [], limit = null, model 
                         components.push(`${qi(model.properties[component].entity)}.${qi(model.properties[component].column)}`)
                     }
                     else components.push(qv(component))
+                    components.push(qv(" "))
                 }
                 expression = `CONCAT(${components.join(", ")})`
             }
@@ -73,9 +74,10 @@ const select = (context, table, columns, where, order = [], limit = null, model 
                     const components = []
                     for (let component of property.components) {
                         if (model.properties[component]) {
-                            components.push(`${qi(model.properties[component].entity)}.${qi(model.properties[component].column)}`)
+                            components.push(`REPLACE(${qi(model.properties[component].entity)}.${qi(model.properties[component].column)}, ' ' , '')`)
                         }
                         else components.push(qv(component))
+                        components.push(qv("|"))
                     }
                     qColumn = `CONCAT(${components.join(", ")})`    
                 }
@@ -87,7 +89,10 @@ const select = (context, table, columns, where, order = [], limit = null, model 
                 let value = where[propertyId]
 
                 if (Array.isArray(value)) {
-                    if (!["in", "ni", "between", "like", "contains", "startsWith", "endsWith", "=", "!=", ">", ">=", "<lt>", "<=>", "null", "not_null"].includes(value[0])) {
+                    if (["like", "contains", "startsWith", "endsWith"].includes(value[0])) {
+                        value = value.map(x => { return x.split(" ").join("") })
+                    }
+                    else if (!["in", "ni", "between", "=", "!=", ">", ">=", "<lt>", "<=>", "null", "not_null"].includes(value[0])) {
                         value = ["in"].concat(value)
                     }
                     const operator = value[0]
