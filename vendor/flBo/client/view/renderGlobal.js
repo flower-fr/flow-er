@@ -13,23 +13,23 @@ const renderGlobal = ({ context, entity }, config ) => {
 
             <!-- Form status messages -->
 
-            <div class="globalMessage my-3" id="globalMessageOk">
+            <div class="fl-global-message my-3" id="flGlobalMessageOk">
                 <h5 class="alert alert-success my-3 text-center">${context.translate("Your request has been registered")}</h5>
             </div>
 
-            <div class="globalMessage my-3" id="globalMessageExpired">
+            <div class="fl-global-message my-3" id="flGobalMessageExpired">
                 <h5 class="alert alert-danger my-3 text-center">${context.translate("The form has expired, please input again")}</h5>
             </div>
 
-            <div class="globalMessage my-3" id="globalMessageConsistency">
+            <div class="fl-global-message my-3" id="flGlobalMessageConsistency">
                 <h5 class="alert alert-danger  my-3 text-center">${context.translate("The database has evolved in the meantime, please input again")}</h5>
             </div>
 
-            <div class="globalMessage my-3" id="globalMessageDuplicate">
+            <div class="fl-global-message my-3" id="flGlobalMessageDuplicate">
                 <h5 class="alert alert-danger  my-3 text-center">${context.translate("The data already exists")}</h5>
             </div>
 
-            <div class="globalMessage my-3" id="globalMessageServerError">
+            <div class="fl-global-message my-3" id="flGlobalMessageServerError">
                 <h5 class="alert alert-danger  my-3 text-center">${context.translate("A technical error has occured. PLease try again later")}</h5>
             </div>
 
@@ -51,7 +51,7 @@ const renderGlobal = ({ context, entity }, config ) => {
             
                 <div class="form-group row submitDiv">
                     <div>
-                        <input type="submit" id="globalSubmitButton" class="btn btn-warning submitButton mt-3" value="${ context.localize(post.labels) }" data-controller="${post.controller}" data-action="${post.action}" data-entity="${post.entity}" data-id="${post.id}">
+                        <input type="submit" id="globalSubmitButton" class="btn btn-warning fl-global-submit-button mt-3" value="${ context.localize(post.labels) }" data-controller="${post.controller}" data-action="${post.action}" data-entity="${post.entity}" data-id="${post.id}">
                     </div>
                 </div>
 

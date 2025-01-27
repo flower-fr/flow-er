@@ -8,7 +8,7 @@ const postGlobal = async ({ context, entity, view }, data) => {
 
             if (validity) {
 
-                $("#globalSubmitButton").prop("disabled", true)
+                $(".fl-global-submit-button").prop("disabled", true)
 
                 // Create a new FormData object.
                 const payload = {}
@@ -146,13 +146,49 @@ const postGlobal = async ({ context, entity, view }, data) => {
                     method: "POST",
                     body: formData
                 })
-
-                if (response.status == 200) {
-                    const data = await response.json()
-                    $("#flGlobalModal").html(renderGlobal({ context, entity, view }, data))
+                if (!response.ok) {
+                    switch (response.status) {
+                    case 401:
+                        document.location("user/login")
+                        return
+                    case 500:
+                        toastr.error("A technical error has occured. PLease try again later")
+                        return
+                    }
                 }
-                else if (response.status == 401) getGlobal({ context, entity, view }, route, "expired")
-                //else getGlobal({ context, entity, view }, route, "serverError")
+            
+                data = await response.json()
+                const renderer = (data.layout.renderer) ? { "renderGlobal": renderGlobal}[data.layout.renderer] : renderGlobal
+                if (data.layout.title) $("#flGlobalModalLabel").text(context.localize(data.layout.title))
+                $("#flGlobalModal").html(renderer({ context, entity, view }, data))
+            
+                $(".fl-global-message").hide()
+                if (data.post) {
+                    const form = document.getElementById("globalForm")
+                    if (form) {
+                        form.onsubmit = async function (event) {
+                            event.preventDefault()
+                            let route = `/${data.post.controller}/${data.post.action}/${data.post.entity}/${data.post.id}`
+                            const response = await fetch(route, {
+                                method: "POST",
+                                body: formData
+                            })
+                            if (!response.ok) {
+                                switch (response.status) {
+                                case 401:
+                                    document.location("user/login")
+                                    return
+                                case 500:
+                                    toastr.error("A technical error has occured. PLease try again later")
+                                    return
+                                }
+                            }
+                            $("#flGlobalMessageOk").show()
+                            document.location = "#flGlobalMessageOk"
+                            $(".fl-global-submit-button").hide()
+                        }
+                    }
+                }
             }
             else return false
         }

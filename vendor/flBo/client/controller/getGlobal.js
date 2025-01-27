@@ -31,26 +31,26 @@ const getGlobal = async ({context, entity, view }, route, message = null) => {
 
     $("#flGlobalModal").html(renderer({ context, entity, view }, data))
 
-    $(".globalMessage").hide()
+    $(".fl-global-message").hide()
     if (message == "ok") {
-        $("#globalMessageOk").show()
-        document.location = "#globalMessageOk"
+        $("#flGlobalMessageOk").show()
+        document.location = "#flGlobalMessageOk"
     }
     else if (message == "expired") {
-        $("#globalMessageExpired").show()
-        document.location = "#globalMessageExpired"
+        $("#flGlobalMessageExpired").show()
+        document.location = "#flGlobalMessageExpired"
     }
     else if (message == "consistency") {
-        $("#globalMessageConsistency").show()
-        document.location = "#globalMessageConsistency"
+        $("#flGlobalMessageConsistency").show()
+        document.location = "#flGlobalMessageConsistency"
     }
     else if (message == "duplicate") {
-        $("#globalMessageDuplicate").show()
-        document.location = "#globalMessageDuplicate"
+        $("#flGlobalMessageDuplicate").show()
+        document.location = "#flGlobalMessageDuplicate"
     }
     else if (message == "serverError") {
-        $("#globalMessageServerError").show()
-        document.location = "#globalMessageServerError"
+        $("#flGlobalMessageServerError").show()
+        document.location = "#flGlobalMessageServerError"
     }
     else postGlobal({ context, entity, view }, data)
 }
