@@ -44,6 +44,10 @@ const mergePayload = async (context, entity, model, form, config, connection) =>
         }
     }
 
+    /**
+     * Index the current data
+     */
+
     const [cursor] = await connection.execute(select(context, entity, columns, where, null, null, model))
     const rows = {}
     for (const row of cursor) {
@@ -52,15 +56,24 @@ const mergePayload = async (context, entity, model, form, config, connection) =>
         rows[identifier.join("|")] = row
     }
 
-    const payload = []
-    for (let formRow of form) {
+    /**
+     * Index the form data
+     */
 
-        const payloadRow = {}
-
-        let identifier = []
+    const formData = {}
+    for (const formRow of form) {
+        const identifier = []
         for (let item of config.identifier) identifier.push(formRow[item])
-        identifier = identifier.join("|")
-    
+        formData[identifier.join("|")] = formRow
+    }
+
+    /**
+     * Rows to add or update
+     */
+
+    const payload = []
+    for (const [identifier, formRow] of Object.entries(formData)) {
+        const payloadRow = {}
         if (rows[identifier]) {
             const row = rows[identifier]
             for (let foreignKey of fks) payloadRow[foreignKey] = row[foreignKey]
@@ -82,6 +95,21 @@ const mergePayload = async (context, entity, model, form, config, connection) =>
         }
 
         payload.push(payloadRow)
+    }
+
+    /**
+     * Rows to delete
+     */
+
+    for (const [identifier, row] of Object.entries(rows)) {
+        const payloadRow = {}
+        if (rows[identifier]) {
+            for (let foreignKey of fks) payloadRow[foreignKey] = row[foreignKey]
+            payloadRow["visibility"] = "archived"
+            payloadRow["vcard_visibility"] = "archived"
+
+            payload.push(payloadRow)
+        }
     }
 
     return payload
@@ -124,7 +152,6 @@ const dataToStore = (entity, model, form) => {
 }
 
 const entitiesToStore = (mainEntity, model, rowsToStore, audit) => {
-
     for (let row of rowsToStore) {
         const data = {}
 
@@ -234,7 +261,7 @@ const storeEntities = async (context, mainEntity, rowsToStore, model, db) => {
                     if (!columnsToUpdate[entityId][columnId]) columnsToUpdate[entityId][columnId] = {}
                     columnsToUpdate[entityId][columnId][entityToUpdate.rowId] = value
                 }
-                await db.execute(update(context, table, [entityToUpdate.rowId], entityToUpdate.cells, updateModel))
+                //await db.execute(update(context, table, [entityToUpdate.rowId], entityToUpdate.cells, updateModel))
             }
         }
     }
@@ -246,7 +273,7 @@ const storeEntities = async (context, mainEntity, rowsToStore, model, db) => {
         const columns = columnsToUpdate[table]
         for (let column of Object.keys(columns)) {
             const pairs = columns[column]
-            await db.execute(updateCase(context, table, column, pairs))
+            await db.execute(updateCase(context, table, column, pairs, model))
         }
     }
 }
@@ -298,10 +325,9 @@ const save = async ({ req }, context, rows, { connection }) => {
     
     let { rowsToStore, rowsToReject } = dataToStore(entity, model, rows)
 
-    if (rowsToReject.length > 0) {
-        console.log(rowsToReject)
-        return JSON.stringify({ "status": "ko", "errors": rowsToReject })
-    }
+    // if (rowsToReject.length > 0) {
+    //     return JSON.stringify({ "status": "ko", "errors": rowsToReject })
+    // }
     
     /**
      * Find out the entities to insert vs update in the database 

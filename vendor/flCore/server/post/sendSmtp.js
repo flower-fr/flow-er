@@ -1,6 +1,6 @@
-const { update } = require("../../../flCore/server/model/update")
+const { update } = require("../model/update")
 
-const sendSmtp = async ({ req }, context, rows, { db, smtp }) => {
+const sendSmtp = async ({ req }, context, rows, { connection, smtp }) => {
 
     const type = "html"
     const model = context.config["interaction/model"]
@@ -23,7 +23,7 @@ const sendSmtp = async ({ req }, context, rows, { db, smtp }) => {
              * Mark for each message the interaction as OK
              */
 
-            await db.execute(update(context, "interaction", [row.insertId], { "status": "ok" }, model))
+            await connection.execute(update(context, "interaction", [row.insertId], { "status": "ok" }, model))
         }
         catch (err) {
                 
@@ -31,7 +31,7 @@ const sendSmtp = async ({ req }, context, rows, { db, smtp }) => {
              * Mark the interaction as KO
              */
 
-            await db.execute(update(context, "interaction", [row.insertId], { "status": "ko" }, model))
+            await connection.execute(update(context, "interaction", [row.insertId], { "status": "ko" }, model))
         }
     }
 }

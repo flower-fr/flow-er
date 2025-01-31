@@ -14,9 +14,9 @@ const update = (context, table, ids, data, model = []) => {
                 else if (type == "text") {
                     const maxLength = (model.properties[key].max_length) ? model.properties[key].max_length : 255
                     value = value.replace(/(<([^>]+)>)/ig, '').substring(0, maxLength)
-                    value = qv(value)
+                    value = qv(value.trim())
                 }
-                else if (["longtext", "mediumtext"].includes(type)) value = qv(value)
+                else if (["longtext", "mediumtext"].includes(type)) value = qv(value.trim())
         
                 pairs[qi(key)] = value    
             }

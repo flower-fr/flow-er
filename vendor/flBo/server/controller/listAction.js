@@ -30,6 +30,7 @@ const listAction = async ({ req }, context, db) => {
     }
 
     const properties = await getProperties(db, context, entity, view, propertyDefs)
+    console.log(properties)
     /**
      * List of DB columns to retrieve
      */

@@ -11,9 +11,16 @@ const updateCase = (context, table, column, pairs, model) => {
     for (let id of Object.keys(pairs)) {
         let value = pairs[id]
         if (column != "visibility" || value != "deleted") {
-            if (typeof(value) == "string") value = qv(value.replace(/(<([^>]+)>)/ig, ""))
-            else if (type == "int" && value == "") value = 0
+            if (type == "int" && !value) value = 0
+            else if (["date", "datetime", "time"].includes(type)) value = `'${value}'`
             else if (type == "json") value = qv(JSON.stringify(value))
+            else if (type == "text") {
+                const maxLength = (model && model.properties[column].max_length) ? model.properties[column].max_length : 255
+                value = value.replace(/(<([^>]+)>)/ig, "").substring(0, maxLength)
+                value = qv(value.trim())
+            }
+            else if (["longtext", "mediumtext"].includes(type)) value = qv(value.trim())
+
             ids.push(id)
             request.push(`WHEN id = ${id} THEN ${value}`)
         }

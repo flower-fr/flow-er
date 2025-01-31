@@ -1,25 +1,32 @@
 const { assert } = require("../../../../core/api-utils")
 const { registerSmtp } = require("../post/registerSmtp")
+const { registerSms } = require("../post/registerSms")
 const { save } = require("../post/save")
 const { sendSmtp } = require("../post/sendSmtp")
+const { sendSms } = require("../post/sendSms")
 
 const { insert } = require("../../../flCore/server/model/insert")
 
 const availableSteps = {
     registerSmtp: registerSmtp,
+    registerSms: registerSms,
     save: save,
-    sendSmtp: sendSmtp
+    sendSmtp: sendSmtp,
+    sendSms: sendSms
 }
 
-const postAction = async ({ req }, context, { db, smtp }) => {
+const postAction = async ({ req }, context, { db, smtp, sms }) => {
 
     const entity = assert.notEmpty(req.params, "entity")
     const config = context.config[`${entity}/groupTab/default`]
     const transaction = assert.notEmpty(req.params, "transaction")
+    const id = req.params.id
     const steps = config.layout.posts[transaction].steps
     
-    const rows = req.body.rows
-    for (let row of req.body.rows) {
+    let rows
+    if (id) rows = [{"id": id}] 
+    else rows = req.body.rows
+    for (let row of rows) {
         for (const [propertyId, value] of Object.entries(req.body.payload)) {
             if (value) row[propertyId] = value
         }    
@@ -30,14 +37,14 @@ const postAction = async ({ req }, context, { db, smtp }) => {
 
     for (let stepId of Object.keys(steps)) {
         const step = steps[stepId]
-        if (!step.async) await (availableSteps[stepId])({ req }, context, rows, { connection, smtp })
+        if (!step.async) await (availableSteps[stepId])({ req }, context, rows, { connection, smtp, sms })
     }
 
     await connection.commit()
 
     for (let stepId of Object.keys(steps)) {
         const step = steps[stepId]
-        if (step.async) (availableSteps[stepId])({ req }, context, rows, { connection, smtp })
+        if (step.async) (availableSteps[stepId])({ req }, context, rows, { connection, smtp, sms })
     }
 
     connection.release()

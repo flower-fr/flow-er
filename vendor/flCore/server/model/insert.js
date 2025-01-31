@@ -20,10 +20,10 @@ const insert = (context, table, data, model) => {
                         if (typeof value === "string") {
                             const maxLength = (model.properties[key].max_length) ? model.properties[key].max_length : 255
                             //value = value.replace(/(<([^>]+)>)/ig, '').substring(0, maxLength)
-                            value = qv(value)    
+                            value = qv(value.trim())    
                         }
                     }
-                    else if (["mediumtext", "longtext"].includes(type)) value = qv(value)    
+                    else if (["mediumtext", "longtext"].includes(type)) value = qv(value.trim())    
                 }
                 pairs[qi(key)] = value
             }

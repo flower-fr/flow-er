@@ -32,10 +32,23 @@ const getGroupTab = async ({ context, entity, view }, tab, searchParams) => {
     
     const data = await response.json()
 
+    const rows = []
+    $(".fl-list-check").each(function () {
+        if ($(this).prop("checked")) {
+            const checkData = $(this).attr("data-properties").split("|")
+            const row = {}
+            for (let pair of checkData) {
+                pair = pair.split(":")
+                row[pair[0]] = pair[1]
+            }
+            rows.push({ ...row })
+        }
+    })
+
     $(".renderUpdate").each(function () { 
         const tabId = $(this).attr("id").split("-")[1]
         if (tabId == tab) {
-            $("#detailPanel").html(renderGroupTabCards({ context, entity, view }, data))
+            $("#detailPanel").html(renderGroupTabCards({ context, entity, view }, data, rows))
             updateCallback({ context, entity, view }, data)
         }
     })
@@ -64,7 +77,26 @@ const getGroupTab = async ({ context, entity, view }, tab, searchParams) => {
         })
     })
 
-    $(".updateMessage").hide()
+    $(".fl-group-tab-message").hide()
+
+    $(".fl-update-button").each(() => {
+        $(".fl-submit-div").hide()
+        $(".fl-close-button").hide()
+    })
+
+    $(".fl-update-button").click(function() {
+        $(".fl-submit-div").show()
+        $(".fl-close-button").show()
+        $(".fl-update-button").hide()
+    })
+
+    $(".fl-close-button").click(() => {
+        $(".fl-submit-div").hide()
+        $(".fl-close-button").hide()
+        $(".fl-update-button").show()
+        $(".fl-group-tab-message").hide()
+
+    })
 
     postGroupTab({ context, entity, view }, tab, searchParams)
 }

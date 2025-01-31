@@ -178,7 +178,7 @@ const postGroupTab = async ({ context, entity, view }, tab, searchParams) => {
                     rows: rows 
                 }
 
-                const route = `/${$(submit).attr("data-controller")}/${$(submit).attr("data-action")}/${$(submit).attr("data-entity")}/${$(submit).attr("data-transaction")}${ ($(submit).attr("data-view")) ? `?view=${ $(submit).attr("data-view") }` : "" }`
+                const route = `/${$(submit).attr("data-controller")}/${$(submit).attr("data-action")}/${$(submit).attr("data-entity")}/${$(submit).attr("data-transaction")}${ ($(submit).attr("data-id")) ? `/${ $(submit).attr("data-id") }` : "" }${ ($(submit).attr("data-view")) ? `?view=${ $(submit).attr("data-view") }` : "" }`
 
                 const xhttp = await fetch(route, {
                     method: "POST",

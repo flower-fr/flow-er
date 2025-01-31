@@ -1,14 +1,14 @@
-const { insert } = require("../../../flCore/server/model/insert")
+const { insert } = require("../model/insert")
 const { renderMail } = require("../view/renderMail")
 
-const registerSmtp = async ({ req }, context, rows, { db }) => {
-
-    const type = "html"
-    const model = context.config["interaction/model"]
+const registerSmtp = async ({ req }, context, rows, { connection }) => {
 
     /**
      * Save message to send
      */
+
+    const type = "html"
+    let model = context.config["interaction/model"]
 
     for (let row of req.body.rows) {
     
@@ -29,19 +29,31 @@ const registerSmtp = async ({ req }, context, rows, { db }) => {
             else email_body.push(split)
         }
         mailData.body = email_body.join("")
-        
-        row.email_body = renderMail({ context }, mailData)
+        row.email_body = mailData.body // renderMail({ context }, mailData)
 
-        const data = {
+        let data = {
             status: "new",
             provider: "smtp",
             endpoint: "sendMail",
             method: "POST",
-            params: { "type": type, "to": row.email, "subject": row.email_subject },
+            params: JSON.stringify({ "type": type, "to": row.email, "subject": row.email_subject }),
             body: row.email_body
         }
-        const [insertedRow] = (await db.execute(insert(context, "interaction", data, model)))
+        const [insertedRow] = (await connection.execute(insert(context, "interaction", data, model)))
         row.insertId = insertedRow.insertId   
+
+        /**
+         * Insert a note
+         */
+
+        model = context.config["crm_contact/model"]
+        data = {
+            chanel: "email",
+            direction: "outbound",
+            account_id: row.id,
+            text: row.email_subject
+        }
+        await connection.execute(insert(context, "crm_contact", data, model))
     }
 }
 
