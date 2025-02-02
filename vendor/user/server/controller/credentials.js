@@ -104,22 +104,22 @@ const requestPasswordReset = async ({ req, config }, context, db, mailClient) =>
     let [origin, email] = assert.notEmpty(req.body, "origin", "email")
     email = email.toLowerCase()
     const model = context.config["user/model"]
-    const [result, fields] = (await db.execute(select(context, "user", ["id", "email", "password", "last_login", "last_updated", "login_failed"], { "email": email }, null, null, model)))
+    const [result, fields] = (await db.execute(select(context, "user", ["id", "status", "email", "password", "last_login", "last_updated", "login_failed"], { "email": email }, null, null, model)))
     const user = result[0]
 
     if (user && user.status === "active") {
-        const hashKey = `${user.password}-${user.last_updated.getTime()}`
-        const token = createToken({ email }, hashKey, config.resetPasswordTokenExpirationTime)
+        const hashKey = `${user.password}-${ user.last_updated.substring(11) }`
+        const token = createToken({ email }, hashKey, config.tokenExpirationTime)
         const data = {
-            resetPasswordLink: `${origin}user/reinitialisation-mot-de-passe"/${Buffer(token).toString("base64")}`,
+            resetPasswordLink: `${origin}user/reinitialisation-mot-de-passe/${Buffer(token).toString("base64")}`,
             registrationLink: context.instance.fqdn
         }
+        console.log(data)
         const content = renderResetPassword(context, data)
         await mailClient.sendMail({
             type: "html",
-            from: context.config["reset-password"].replyAddress,
             to: email,
-            subject: context.localize("Réinitialisation mot de passe Flow-ER"),
+            subject: context.translate("Réinitialisation du mot de passe Flow-ER"),
             content: content
         })
     }
@@ -137,9 +137,8 @@ const resetPassword = async ({ req }, context, db) => {
     const model = context.config["user/model"]
     const [result, fields] = (await db.execute(select(context, "user", ["id", "email", "password", "last_login", "last_updated", "login_failed"], { "email": email }, null, null, model)))
     const user = result[0]
-    const hashKey = `${user.password}-${user.last_updated.getTime()}`
+    const hashKey = `${user.password}-${user.last_updated.substring(11)}`
     const { status, payload } = await checkToken(token, hashKey)
-
     if (status === "expired") {
         return throwUnauthorized("token expired")
     }
@@ -152,10 +151,10 @@ const resetPassword = async ({ req }, context, db) => {
 
     const data = {
         password: await encryptPassword(password),
-        last_updated: now,
-        login_failed: 0,
+        last_updated: `${new Date().toISOString().slice(0, 19).replace("T", " ")}`,
+        login_failed: 0
     }
-    await db(update(context, "user", [user.user_id], data))
+    await db.execute(update(context, "user", [user.id], data, model))
     
     return {status: "ok"}
 }

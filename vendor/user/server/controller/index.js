@@ -9,6 +9,7 @@ const { register } = require("./register")
 
 const registerUser = async ({ context, config, logger, app }) => {
     const db = await createDbClient(config.db, context.dbName)
+    console.log(config.smtp)
     const mailClient = createMailClient({ config: config.smtp, logger })
     const execute = executeService(context, config, logger)
 
@@ -18,10 +19,10 @@ const registerUser = async ({ context, config, logger, app }) => {
     app.get(`${config.prefix}register`, execute(register, context, db, mailClient))
     app.post(`${config.prefix}checkcredentials`, execute(checkCredentials, context, config))
     app.post(`${config.prefix}/users/checkactivationtoken`, execute(checkActivationToken, context, db))
-    app.post(`${config.prefix}/users/requestpasswordreset`, execute(requestPasswordReset, context, db, mailClient))
+    app.post(`${config.prefix}requestpasswordreset`, execute(requestPasswordReset, context, db, mailClient))
     app.post(`${config.prefix}/users/refreshtoken/check`, execute(checkRefreshToken, context, db))
     app.post(`${config.prefix}/users/refreshtoken`, execute(saveRefreshToken, context, db))
-    app.post(`${config.prefix}/users/resetpassword`, execute(resetPassword, context, db))
+    app.post(`${config.prefix}resetpassword`, execute(resetPassword, context, db))
     app.post(`${config.prefix}sendactivationlink`, execute(sendActivationLink, context, db, mailClient))
 }
 

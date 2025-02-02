@@ -21,7 +21,6 @@ const groupTabAction = async ({ req }, context, db) => {
 
     let groupTabConfig = context.config[`${entity}/groupTab/${view}`]
     if (!groupTabConfig) groupTabConfig = context.config[`${entity}/groupTab/default`]
-    console.log(groupTabConfig)
  
     // Initialize a row pattern
     const row = {}

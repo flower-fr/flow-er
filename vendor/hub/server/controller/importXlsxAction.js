@@ -151,6 +151,12 @@ const getImportXlsxAction = async ({ req }, context, db) => {
     }
     else {
         result.properties = { 
+            template: { 
+                type: "html",
+                labels: { default: ".xlsx file template", fr_FR: "Modèle de fichier .xlsx" },
+                value: "<a href=\"/client-eq/template/Monportefeuilleinvestisseurscommandes.xlsx\">Monportefeuilleinvestisseurscommandes.xlsx</a>",
+                options: {}
+            },
             xlsxFile: { 
                 type: "file", 
                 labels: { default: "Choose XLSX File", fr_FR: "Choisir un fichier XLSX" },

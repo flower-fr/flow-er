@@ -71,11 +71,12 @@ const renderSection = ({ context, entity }, config ) => {
         const readonly = (property.options.readonly) ? true : false
         const required = (property.options.required) ? "required" : ""
         const modalities = (property.options.modalities) ? property.options.modalities : property.modalities
-        let value = (property.options.value) ? property.options.value : ""
+        let value = property.options.value
+        if (!value) value = property.value
         if (value && !Array.isArray(value)) {
             if (value && value.charAt(5) == "+") value = moment().add(value.substring(6), "days").format("YYYY-MM-DD")
             else if (value && value.charAt(5) == "-") value = moment().subtract(value.substring(6), "days").format("YYYY-MM-DD")
-            else value = moment().format("YYYY-MM-DD")    
+            else if (value == "today") value = moment().format("YYYY-MM-DD")    
         }
 
         if (options.change) {
@@ -423,7 +424,7 @@ const renderSection = ({ context, entity }, config ) => {
                 `<div class="row mt-3">
                     <label class="col-form-label">${(required) ? "* " : ""}${label}</label>
                 </div>
-                <div class="row">
+                <div class="row mb-5">
                     <div class="card">
                         <div class="container">
                             <div>${value}</div>
