@@ -9,7 +9,6 @@ const { register } = require("./register")
 
 const registerUser = async ({ context, config, logger, app }) => {
     const db = await createDbClient(config.db, context.dbName)
-    console.log(config.smtp)
     const mailClient = createMailClient({ config: config.smtp, logger })
     const execute = executeService(context, config, logger)
 

@@ -96,7 +96,10 @@ const getTaskAdd = async ({ context, entity, view }, searchParams) => {
             })
 
             if (response.status == 200) {
-                $("#flModalMessageOk").show()
+                const myModalEl = document.getElementById("flModal")
+                const modal = mdb.Modal.getInstance(myModalEl)
+                modal.toggle()
+                //$("#flModalMessageOk").show()
             }
             else if (response.status == 401) triggerTaskAdd({ context, entity, view }, searchParams, "expired")
         }

@@ -1,10 +1,12 @@
 const renderTaskDetail = ({ context, entity, view }, data, formJwt) => {
 
+    console.log("In renderTaskDetail (flBo)")
+
     const html = []
 
     html.push(`
                     
-        <form class="row g-4" id="flModalForm" style="margin-left: 0; margin-right:0" was-validated>
+        <form class="row g-4 was-validated" id="flModalForm" style="margin-left: 0; margin-right:0">
 
             <input type="hidden" id="formJwt" name="formJwt" value="${ formJwt }" />
             <input type="hidden" class="fl-modal-form-input" data-fl-property="id" data-fl-type="input" value="${ data.id }" />
@@ -22,13 +24,13 @@ const renderTaskDetail = ({ context, entity, view }, data, formJwt) => {
 
                 <section class="summary-section">
                     <div class="form-outline my-3 formOutline" data-mdb-input-init="" data-mdb-input-initialized="true">
-                        <input type="text" class="form-control calendar-summary-input fl-modal-form-input" data-fl-property="summary" data-fl-type="input" value="${ data.summary }">
+                        <input type="text" class="form-control form-control-sm calendar-summary-input fl-modal-form-input" data-fl-property="summary" data-fl-type="input" value="${ data.summary }">
                         <label class="form-label" style="margin-left: 0px;">Résumé</label>
                     </div>
-                    <div class="text-center"><small><a href="mailto:${ data.email }">${ data.email }</a>&nbsp;&nbsp;<a href="tel:${ data.tel_cell }">${ data.tel_cell }</a></small></div>
+                    <div class="text-center"><small> ${ (data.email) ? `<a href="mailto:${ data.email }"><i class="fa fa-at"></i>&nbsp;&nbsp;${ data.email }</a>` : "" }&nbsp;&nbsp;&nbsp;&nbsp;${ (data.tel_cell) ? `<a href="tel:${ data.tel_cell }"><i class="fa fa-mobile-screen-button"></i>&nbsp;&nbsp;${ data.tel_cell }</a>` : "" }</small></div>
                 </section>
                 <div class="form-outline my-3 formOutline" data-mdb-input-init="" data-mdb-input-initialized="true">
-                    <textarea type="text" class="form-control fl-modal-form-input" data-fl-property="description" data-fl-type="textarea">${ data.description }</textarea>
+                    <textarea type="text" class="form-control form-control-sm fl-modal-form-input" data-fl-property="description" data-fl-type="textarea">${ data.description }</textarea>
                     <label class="form-label" style="margin-left: 0px;">
                         Description
                     </label>
@@ -43,13 +45,21 @@ const renderTaskDetail = ({ context, entity, view }, data, formJwt) => {
                 </div>
                 <section class="long-event-section">
                     <div class="form-outline my-3 fl-date-outline" data-fl-container="flModal" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true"> 
-                        <input type="text" name="start.date" class="form-control calendar-date-input active form-icon-trailing fl-modal-form-input" data-fl-property="date" data-fl-type="date" value="${ context.decodeDate(data.date) }">
+                        <input type="text" name="start.date" class="form-control form-control-sm calendar-date-input active form-icon-trailing fl-modal-form-input" data-fl-property="date" data-fl-type="date" value="${ context.decodeDate(data.date) }">
                         <label class="form-label" style="margin-left: 0px;">
                             ${ context.translate("Date") }
                         </label>
                         <button id="datepicker-toggle-409550" type="button" class="datepicker-toggle-button" data-mdb-toggle="datepicker">
                             <i class="far fa-calendar datepicker-toggle-icon"></i>
                         </button>
+                    </div>
+                </section>
+                <section class="long-event-section">
+                    <div class="form-outline my-3 fl-time-outline" data-fl-container="flModal" data-mdb-datepicker-init data-mdb-input-init> 
+                        <input type="text" class="form-control form-control-sm fl-modal-form-input" data-fl-property="time" data-fl-type="time" value="${ data.time }" />
+                        <label class="form-label" style="margin-left: 0px;">
+                            ${ context.translate("Time") }
+                        </label>
                     </div>
                 </section>
             </div>

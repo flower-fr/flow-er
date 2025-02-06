@@ -19,7 +19,6 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
     let where = (query.where) ? [query.where] : []
     where = where.concat(params)
     where = where.join("|")
-    console.log (where)
     if (where) query.where = where
 
     if (order) query.order = order

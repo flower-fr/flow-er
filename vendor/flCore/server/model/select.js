@@ -29,12 +29,14 @@ const select = (context, table, columns, where, order = [], limit = null, model 
             let expression
             if (property.type == "CONCAT") {
                 const components = []
+                let first = true
                 for (let component of property.components) {
+                    if (!first) components.push(qv((property.separator) ? property.separator : " "))
+                    first = false
                     if (model.properties[component]) {
                         components.push(`${qi(model.properties[component].entity)}.${qi(model.properties[component].column)}`)
                     }
                     else components.push(qv(component))
-                    components.push(qv(" "))
                 }
                 expression = `CONCAT(${components.join(", ")})`
             }
