@@ -48,7 +48,6 @@ const join = (table, columns, where, order, model) => {
                 const primary = "id"
                 if (entity.key) primary = entity.key
                 joins[entityId] = `LEFT JOIN ${qi(entity.table)} AS ${qi(entityId)}`
-                console.log(joins[entityId], entity)
                 if (entity.join) {
                     const on = []
                     for (let matching of entity.join) {
