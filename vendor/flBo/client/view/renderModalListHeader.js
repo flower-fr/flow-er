@@ -14,17 +14,24 @@ const renderModalListHeader = ({ context }, section, modalListConfig, properties
             searchInputs.push(`
                 <div class="input-group my-2 mx-2">`)
 
-            if (["datemin", "datemax"].includes(item.type)) {
+            if (["datemin"].includes(item.type)) {
                 searchInputs.push(`
                     <div class="form-outline w-auto fl-modal-list-search-date-outline" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true">
-                        <input type="search" class="form-control form-control-sm fl-modal-list-search-date-min" />
-                        <label class="form-label" for="search-input-dropdown">${context.translate( (item.type == "datemin") ? "Date min" : "Date max" )}</label>
+                        <input type="search" class="form-control form-control-sm fl-modal-list-search-date-min" data-fl-property="${ item.property }" />
+                        <label class="form-label" for="search-input-dropdown">${ context.translate("Date min") }</label>
+                    </div>`)
+            }
+            else if (["datemax"].includes(item.type)) {
+                searchInputs.push(`
+                    <div class="form-outline w-auto fl-modal-list-search-date-outline" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true">
+                        <input type="search" class="form-control form-control-sm fl-modal-list-search-date-max" data-fl-property="${ item.property }" />
+                        <label class="form-label" for="search-input-dropdown">${ context.translate("Date max" ) }</label>
                     </div>`)
             }
             else {
                 searchInputs.push(`
                     <div class="form-outline fl-modal-list-search-form-outline" data-mdb-input-init>
-                        <input type="search" class="form-control form-control-sm fl-modal-list-search-input" />
+                        <input type="search" class="form-control form-control-sm fl-modal-list-search-input" data-fl-property="${ item.property }" />
                     </div>`)
             }
 
@@ -56,10 +63,10 @@ const renderModalListHeader = ({ context }, section, modalListConfig, properties
                             <li>
                                 <div class="input-group mt-2 mx-2">
                                     <div class="form-outline form-outline-sm w-auto" data-mdb-input-init>
-                                        <input type="search" class="form-control" />
+                                        <input type="search" class="form-control fl-modal-list-search-input" data-fl-property="keywords" />
                                         <label class="form-label" for="search-input-dropdown">Mots clés recherchés</label>
                                     </div>
-                                    <button type="button" class="btn btn-sm btn-primary" data-mdb-ripple-init>
+                                    <button type="button" class="btn btn-sm btn-primary fl-modal-list-search-refresh" data-mdb-ripple-init>
                                         <i class="fas fa-sync-alt"></i>
                                     </button>
                                 </div>

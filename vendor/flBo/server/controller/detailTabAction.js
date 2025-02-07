@@ -31,7 +31,6 @@ const detailTabAction = async ({ req }, context, db) => {
         for (let key of Object.keys(whereDef)) {
             if (where[key] && where[key] != 0) {
                 subWhere[whereDef[key]] = where[key]
-                break
             }
         }
 

@@ -54,6 +54,15 @@ const triggerSearch = async ({ context, entity, view }, param = false) => {
     /**
      * Actualize the search
      */
+
+    $(".fl-search-item").each(function () {
+        const value = $(this).val()
+        if (value && (!Array.isArray(value) || value.length != 0)) {
+            const propertyId = $(this).attr("id").split("-")[1]
+            $(`#flSearchShortcut-${propertyId}`).show()
+        }
+    })
+
     $(".fl-search-refresh").click(function () {
         $(".fl-search-item").each(function () {
             const value = $(this).val()

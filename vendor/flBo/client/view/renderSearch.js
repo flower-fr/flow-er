@@ -1,5 +1,7 @@
 const renderSearch = ({ context, entity, view }, data) => {
     
+    console.log("In renderSearch (flBo)")
+
     const properties = data.properties
     const html = []
     for (let propertyId of Object.keys(properties)) {

@@ -1,24 +1,24 @@
 
 const getTab = async ({ context, entity, view }, tab, route, id, message, searchParams, order) => {
-    
+
     route = route.split("?")
     let query = (route[1]) ? route[1].split("&").map((x) => { return x.split("=") }) : []
     query = Object.fromEntries((new Map(query)).entries())
 
-    let params = []
+    let params = {}
     for (let [key, value] of Object.entries(searchParams)) {
         if (Array.isArray(value)) {
             if (value[0] == null) value = `le,${value[1]}`
             else if (value[1] == null) value = `ge,${value[0]}`
             else value = `between,${value[0]},${value[1]}`
-            params.push(key + ":" + value)
         }
-        else params.push(value)
+        params[key] = value
     }
 
-    let where = (query.where) ? [query.where] : []
-    where = where.concat(params)
-    where = where.join("|")
+    let where = (query.where) ? query.where.split("|").map(x => x.split(":")) : []
+    where = Object.fromEntries((new Map(where)).entries())
+    for (const [key, value] of Object.entries(params)) where[key] = value
+    where = Object.entries(where).map(([x, y]) => `${x}:${y}`).join("|")
     if (where) query.where = where
 
     if (order) query.order = order

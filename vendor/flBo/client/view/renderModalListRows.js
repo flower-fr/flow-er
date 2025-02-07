@@ -54,7 +54,7 @@ const renderModalListProperties = ({ context, entity }, section, modalListConfig
             }
         
             else if (property.type == "datetime") {
-                html.push(`<td>${ moment(row[propertyId]).format("DD/MM/YYYY HH:mm:ss") }</td>`)
+                html.push(`<td>${ moment(row[propertyId]).local().format("DD/MM/YYYY HH:mm:ss") }</td>`)
             }
 
             else if (property.type == "number") {

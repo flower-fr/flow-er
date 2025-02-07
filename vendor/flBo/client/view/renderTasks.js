@@ -15,7 +15,7 @@ const renderTasks = ({ context, entity, view }, data) => {
         html.push(`
             <tr>
                 <th>
-                    ${ context.decodeDate(row.date) }
+                    ${ context.decodeDate(row.date) }&nbsp;&nbsp;&nbsp;&nbsp;${ (row.time != "00:00:00") ? row.time : "" }
                 </th>
             </tr>
             <tr>

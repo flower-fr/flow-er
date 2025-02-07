@@ -34,9 +34,9 @@ const select = (context, table, columns, where, order = [], limit = null, model 
                     if (!first) components.push(qv((property.separator) ? property.separator : " "))
                     first = false
                     if (model.properties[component]) {
-                        components.push(`${qi(model.properties[component].entity)}.${qi(model.properties[component].column)}`)
+                        components.push(`COALESCE(${qi(model.properties[component].entity)}.${qi(model.properties[component].column)}, '')`)
                     }
-                    else components.push(qv(component))
+                    else components.push(`COALESCE(${ qv(component) }, '')`)
                 }
                 expression = `CONCAT(${components.join(", ")})`
             }
@@ -66,7 +66,7 @@ const select = (context, table, columns, where, order = [], limit = null, model 
     if (model.properties.visibility) predicates.push(`${qTable}.${qi("visibility")} != 'deleted'`)
     
     for (let propertyId of Object.keys(where)) {
-        if (!["instance_id", "touched_at", "touched_by"].includes(propertyId)) {
+        if (!["instance_id", "touched_by"].includes(propertyId)) {
             if (propertyId == "id" || model.properties[propertyId]) {
                 const property = model.properties[propertyId]
 
@@ -76,9 +76,9 @@ const select = (context, table, columns, where, order = [], limit = null, model 
                     const components = []
                     for (let component of property.components) {
                         if (model.properties[component]) {
-                            components.push(`REPLACE(${qi(model.properties[component].entity)}.${qi(model.properties[component].column)}, ' ' , '')`)
+                            components.push(`REPLACE(COALESCE(${qi(model.properties[component].entity)}.${qi(model.properties[component].column)}, ''), ' ' , '')`)
                         }
-                        else components.push(qv(component))
+                        else components.push(`COALESCE(${ qv(component) }, '')`)
                         components.push(qv("|"))
                     }
                     qColumn = `CONCAT(${components.join(", ")})`    

@@ -28,6 +28,26 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
         
     })
 
+    $(".fl-modal-list-search-refresh").click(() => {
+        const searchParams = {}
+        $(".fl-modal-list-search-input").each(function () {
+            const value = $(this).val()
+            if (value) searchParams[$(this).attr("data-fl-property")] = `contains,${$(this).val()}`
+        })
+        $(".fl-modal-list-search-date-min").each(function () {
+            const date = $(this).val()
+            if (date) searchParams[$(this).attr("data-fl-property")] = ["ge", `${date.substring(6,10)}-${date.substring(3,5)}-${date.substring(0,2)}`]
+        })
+        $(".fl-modal-list-search-date-max").each(function () {
+            const propertyId = $(this).attr("data-fl-property"), date = $(this).val(), formatted = `${date.substring(6,10)}-${date.substring(3,5)}-${date.substring(0,2)}`
+            if (date) {
+                const value = (searchParams[propertyId]) ? [searchParams[propertyId][1], formatted] : [formatted]
+                searchParams[propertyId] = value    
+            }
+        })
+        getTab({ context, entity, view }, tab, route, id, message, searchParams, order)
+    })
+
     /**
      * trigger add
      */
