@@ -8,8 +8,11 @@ const update = (context, table, ids, data, model = []) => {
             if (key != "visibility" || value != "deleted") {
                 const type = (model.properties[key].type) ? model.properties[key].type : "text"
     
-                if (type == "int" && !value) value = 0
-                else if (["date", "datetime", "time"].includes(type)) value = `'${value}'`
+                if (["int", "tinyint"].includes(type) && !value) value = 0
+                else if (["date", "datetime", "time"].includes(type)) {
+                    if (!value) value = "NULL"
+                    else value = `'${value}'`
+                }
                 else if (type == "json") value = qv(JSON.stringify(value))
                 else if (type == "text") {
                     const maxLength = (model.properties[key].max_length) ? model.properties[key].max_length : 255

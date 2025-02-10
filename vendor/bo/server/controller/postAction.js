@@ -155,6 +155,7 @@ const storeEntities = async (context, mainEntity, rowsToStore, model, db) => {
                     if (!columnsToUpdate[entityId][columnId]) columnsToUpdate[entityId][columnId] = {}
                     columnsToUpdate[entityId][columnId][entityToUpdate.rowId] = value
                 }
+                console.log(update(context, table, [entityToUpdate.rowId], entityToUpdate.cells, updateModel))
                 await db.execute(update(context, table, [entityToUpdate.rowId], entityToUpdate.cells, updateModel))
             }
         }
@@ -167,7 +168,7 @@ const storeEntities = async (context, mainEntity, rowsToStore, model, db) => {
         const columns = columnsToUpdate[table]
         for (let column of Object.keys(columns)) {
             const pairs = columns[column]
-            await db.execute(updateCase(context, table, column, pairs))
+            await db.execute(updateCase(context, table, column, pairs, model))
         }
     }
 }
