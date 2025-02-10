@@ -14,6 +14,15 @@ const renderHeader = ({ context }, data) => {
 					<span class="navbar-toggler-icon"></span>
 				</button>
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
+					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+						<li class="nav-item text-uppercase">
+							<strong>
+								<a href="/user/login" class="nav-link text-danger" title="${context.translate("Show the documentation")}">
+									<i class="fa-solid fa-lg fa-right-to-bracket"></i>&nbsp;&nbsp;${ context.translate("Log in") }
+								</a>
+							</strong>
+						</li>
+					</ul>
 				</div>
 			</div>
 		</nav>

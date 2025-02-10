@@ -3,7 +3,7 @@ const getGroupTab = async ({ context, entity, view }, tab, searchParams) => {
 
     let route = $(`#detailTabRoute-${tab}`).val()
     const routeDef = $(`#detailTabRoute-${tab}`), tabController = routeDef.attr("data-controller"), tabAction = routeDef.attr("data-action"), tabEntity = routeDef.attr("data-entity"), tabId = routeDef.attr("data-id"), tabQuery = routeDef.attr("data-query")
-    route = `/${tabController}/${tabAction}/${tabEntity}?`
+    route = `/${tabController}/${tabAction}/${tabEntity}?${ (tabQuery) ? tabQuery : "" }`
 
     let params = []
     for (const key of Object.keys(searchParams)) {

@@ -10,7 +10,9 @@ const renderScripts = ({ context }, data) => {
     <!-- MDB ESSENTIAL -->
     <script type="text/javascript" src="/mdb/cli/resources/mdb/js/mdb.umd.min.js"></script>
     <!-- MDB PLUGINS -->
-    <script type="text/javascript" src="/mdb/cli/resources/mdb/plugins/js/all.min.js"></script>`
+    <script type="text/javascript" src="/mdb/cli/resources/mdb/plugins/js/all.min.js"></script>
+
+    <script type="text/javascript" src="/user/cli/controller/passwordVisibility.js"></script>`
 }
 
 module.exports = {

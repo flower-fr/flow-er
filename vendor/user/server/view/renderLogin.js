@@ -73,12 +73,13 @@ const renderLogin = ({ context }, data) => {
                                 <!-- Email input -->
                                 <div class="form-outline mb-4" data-mdb-input-init>
                                     <input type="input" id="loginName" name="email" class="form-control" required />
-                                    <label class="form-label" for="loginName">${ context.translate("Identifier") }</label>
+                                    <label class="form-label" for="loginName">${ context.translate("Email") }</label>
                                 </div>
 
                                 <!-- Password input -->
                                 <div class="form-outline mb-4" data-mdb-input-init>
-                                    <input type="password" id="loginPassword" name="password" class="form-control" required />
+                                    <i class="far fa-eye trailing fa-fw pe-auto" id="passwordToggleIcon"></i>
+                                    <input type="password" id="loginPassword" name="password" class="form-control fl-password form-icon-trailing" data-fl-toggle-icon="passwordToggleIcon" required />
                                     <label class="form-label" for="loginPassword">${ context.translate("Password") }</label>
                                 </div>
 

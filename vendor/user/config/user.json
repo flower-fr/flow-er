@@ -14,5 +14,13 @@
             "touched_at": {},
             "update_user": {}
         }
+    },
+
+    "user/password": {
+        "rule": "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d@.#$!%*?&]{8,15}$/",
+        "ruleText": { 
+            "default": "The password should contain between 8 and 15 characters mixing lowercases, uppercases and digits. Allowed special characters are: @ . # $ ! % * ? &",
+            "fr_FR": "Le mot de passe doit contenir entre 8 et 15 caractères mélangeant minuscules, majuscules et chiffres. Les caractères spéciaux autorisés sont : @ . # $ ! % * ? &"
+        }
     }
 }
