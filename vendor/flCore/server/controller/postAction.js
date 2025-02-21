@@ -1,55 +1,50 @@
 const { assert } = require("../../../../core/api-utils")
-const { registerSmtp } = require("../post/registerSmtp")
-const { registerSms } = require("../post/registerSms")
-const { save } = require("../post/save")
-const { sendSmtp } = require("../post/sendSmtp")
-const { sendSms } = require("../post/sendSms")
+const { throwBadRequestError } = require("../../../../core/api-utils")
 
-const { insert } = require("../../../flCore/server/model/insert")
+const { dataToStore } = require("../post/dataToStore")
+const { entitiesToStore } = require("../post/entitiesToStore")
+const { storeEntities } = require("../post/storeEntities")
+const { updateColumns } = require("../post/updateColumns")
+const { auditCells } = require("../post/auditCells")
 
-const availableSteps = {
-    registerSmtp: registerSmtp,
-    registerSms: registerSms,
-    save: save,
-    sendSmtp: sendSmtp,
-    sendSms: sendSms
-}
-
-const postAction = async ({ req }, context, { db, smtp, sms }) => {
-
+const postAction = async ({ req }, context, { db }) => {
     const entity = assert.notEmpty(req.params, "entity")
-    const config = context.config[`${entity}/groupTab/default`]
-    const transaction = assert.notEmpty(req.params, "transaction")
-    const id = req.params.id
-    const steps = config.layout.posts[transaction].steps
-    
-    let rows
-    if (id) rows = [{"id": id}] 
-    else rows = req.body.rows
-    for (let row of rows) {
-        for (const [propertyId, value] of Object.entries(req.body.payload)) {
-            if (value) row[propertyId] = value
-        }    
-    }
+    const id = (req.query.id) ? req.query.id : 0
 
     const connection = await db.getConnection()
-    await connection.beginTransaction()
+    //try {
+        await connection.beginTransaction()
 
-    for (let stepId of Object.keys(steps)) {
-        const step = steps[stepId]
-        if (!step.async) await (availableSteps[stepId])({ req }, context, rows, { connection, smtp, sms })
-    }
+        const model = context.config[`${entity}/model`]
+        const form = req.body
 
-    await connection.commit()
+        /**
+         * Find out the data to actually store in the database 
+         */
 
-    for (let stepId of Object.keys(steps)) {
-        const step = steps[stepId]
-        if (step.async) (availableSteps[stepId])({ req }, context, rows, { connection, smtp, sms })
-    }
+        let { rowsToStore, rowsToReject } = dataToStore(entity, model, form)
 
-    connection.release()
-    
-    return JSON.stringify({ "status": "ok" })
+        if (rowsToReject.length > 0) {
+            return JSON.stringify({ "status": "ko", "errors": rowsToReject })
+        }
+        
+        /**
+         * Find out the entities to insert vs update in the database 
+         */
+
+        rowsToStore = entitiesToStore(entity, model, rowsToStore)
+        const columnsToUpdate = await storeEntities(context, entity, rowsToStore, model, connection)
+        await updateColumns(context, columnsToUpdate, model, connection)
+        await auditCells(context, rowsToStore, connection)
+
+        await connection.commit()
+        return JSON.stringify({ "status": "ok", "stored": rowsToStore })
+    // }
+    // catch {
+    //     await connection.rollback()
+    //     connection.release()
+    //     throw throwBadRequestError()
+    // }
 }
 
 module.exports = {

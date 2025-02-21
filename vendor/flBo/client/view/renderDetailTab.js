@@ -35,7 +35,7 @@ const renderDetailTab = ({ context, entity }, { data, detailTabConfig, formJwt }
                 <h5 class="alert alert-danger  my-3 text-center">${context.translate("A technical error has occured. PLease try again later")}</h5>
             </div>
             
-            <form class="row g-4 was-validated" id="flModalForm">
+            <form class="row g-4" id="flModalForm">
 
                 <div class="row">`
     )

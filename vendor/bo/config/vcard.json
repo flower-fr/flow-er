@@ -7,6 +7,7 @@
         "entities": {
         },
         "properties": {
+            "id": { "entity": "vcard", "column": "id", "type": "primary" },
             "n_title": { "entity": "vcard", "column": "n_title" },
             "n_first": { "entity": "vcard", "column": "n_first", "audit": true },
             "n_last": { "entity": "vcard", "column": "n_last", "audit": true },

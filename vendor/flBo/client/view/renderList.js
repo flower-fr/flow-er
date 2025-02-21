@@ -3,12 +3,39 @@ const renderList = ({ context, entity, view }, data) => {
     console.log("In renderList(flBo)")
 
     const rows = data.rows, orderParam = data.order, limit = data.limit, listConfig = data.config, properties = data.properties
+
+    const columns = {}, dictionary = {}
+    for (const row of rows) dictionary[row.id] = row
+
+    for (const [propertyId, column] of Object.entries( (listConfig.columns) ? listConfig.columns : properties )) {
+        const property = properties[propertyId] || column
+
+        if (column.cross) {
+            for (const crossRow of data.crossRows) {
+                let row = dictionary[crossRow[property.foreignKey]]
+                if (!row) {
+                    row = {}
+                    for (const key of Object.keys(listConfig.properties)) {
+                        if (crossRow[key]) row[key] = crossRow[key]
+                    }
+                    rows.push(row)
+                    dictionary[crossRow[property.foreignKey]] = row
+                }
+                if (!row[propertyId]) row[propertyId] = []
+                const value = context.localize(data.crossProperties[property.property].modalities[crossRow[property.property]])
+                row[propertyId].push(value)
+            }
+        }
+
+        columns[propertyId] = property
+    }
+    console.log(rows)
     
     const html = []
 
     html.push(`
     <thead class="table-light fl-list">
-        ${ renderListHeader({ context, entity, view }, listConfig, properties, orderParam) }
+        ${ renderListHeader({ context, entity, view }, listConfig, columns, orderParam) }
     </thead>
     <tbody class="table-group-divider">`)
 
@@ -28,10 +55,10 @@ const renderList = ({ context, entity, view }, data) => {
             </button>
         </td>
 
-        <td colspan="${Object.keys(properties).length}" />
+        <td colspan="${Object.keys(columns).length}" />
     </tr>
 
-    ${renderRows(context, listConfig, properties, rows)}
+    ${renderRows(context, listConfig, columns, rows)}
 
     <tr class="listRow">
         <td>
@@ -54,7 +81,7 @@ const renderList = ({ context, entity, view }, data) => {
         : ""}
         </td>
 
-        <td colspan="${Object.keys(properties).length - 1}" />
+        <td colspan="${Object.keys(columns).length}" />
     </tr>`)
 
     html.push(`
@@ -63,7 +90,7 @@ const renderList = ({ context, entity, view }, data) => {
     return html.join("\n")
 }
 
-const renderRows = (context, listConfig, properties, rows) => {
+const renderRows = (context, listConfig, columns, rows) => {
 
     const result = []
 
@@ -85,7 +112,7 @@ const renderRows = (context, listConfig, properties, rows) => {
             }
         }
 
-        result.push(renderHidden(context, listConfig, properties, row))
+        result.push(renderHidden(context, listConfig, columns, row))
 
         result.push(`
         <tr class="listRow">
@@ -101,14 +128,14 @@ const renderRows = (context, listConfig, properties, rows) => {
                 </button>
             </td>
 
-            ${renderProperties(context, listConfig, properties, row)}
+            ${renderProperties(context, listConfig, columns, row)}
         </tr>`)
     }
 
     return result.join("\n")
 }
 
-const renderHidden = (context, listConfig, properties, row) => {
+const renderHidden = (context, listConfig, columns, row) => {
 
     const html = []
     if (listConfig.hidden) {
@@ -119,11 +146,10 @@ const renderHidden = (context, listConfig, properties, row) => {
     return html
 }
 
-const renderProperties = (context, listConfig, properties, row) => {
+const renderProperties = (context, listConfig, columns, row) => {
 
     const html = []
-    for (let propertyId of Object.keys(listConfig.properties)) {
-        const property = properties[propertyId]
+    for (let [propertyId, property] of Object.entries(columns)) {
         if (property.type == "select") {
             html.push(`<td class="${(property.options.class) ? property.options.class[row[propertyId]] : ""}">
                 ${ (row[propertyId]) 
@@ -176,7 +202,8 @@ const renderProperties = (context, listConfig, properties, row) => {
             if (property.options.detailCaption) {
                 html.push(`<input type="hidden" id="detailCaption-${row.id}" value="${row[propertyId]}" />`)
             }
-            html.push(`<td>${(row[propertyId] !== null) ? row[propertyId] : ""}</td>`)                  
+            const value = (Array.isArray(row[propertyId])) ? row[propertyId].join(", ") : row[propertyId]
+            html.push(`<td>${(value && value !== null) ? value : ""}</td>`)                  
         }
     }
     return html.join("\n")

@@ -18,7 +18,7 @@ const dataToStore = (entity, model, form) => {
     for (const row of form) {
         const cellsToStore = {}, cellsToReject = {}
         for (let propertyId of Object.keys(row)) {
-            if (propertyId != ("formJwt")) {
+            if (propertyId != "formJwt") {
                 const property = model.properties[propertyId]
                 if (!property) cellsToReject[propertyId] = "unknown"
                 //else if (property.type == "primary") cellsToReject[propertyId] = "primary"
@@ -155,8 +155,7 @@ const storeEntities = async (context, mainEntity, rowsToStore, model, db) => {
                     if (!columnsToUpdate[entityId][columnId]) columnsToUpdate[entityId][columnId] = {}
                     columnsToUpdate[entityId][columnId][entityToUpdate.rowId] = value
                 }
-                console.log(update(context, table, [entityToUpdate.rowId], entityToUpdate.cells, updateModel))
-                await db.execute(update(context, table, [entityToUpdate.rowId], entityToUpdate.cells, updateModel))
+                //await db.execute(update(context, table, [entityToUpdate.rowId], entityToUpdate.cells, updateModel))
             }
         }
     }

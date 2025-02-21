@@ -64,7 +64,7 @@ const renderTaskDetail = ({ context, entity, view }, data, formJwt) => {
                 </section>
             </div>
             <div class="modal-footer">
-                <input type="submit" class="btn btn-warning fl-task-submit" data-fl-controller="bo" data-fl-action="v1" data-fl-entity="crm_task" value="${ context.translate("Modify") }" />
+                <input type="submit" class="btn btn-warning fl-task-submit" data-fl-controller="core" data-fl-action="v1" data-fl-entity="crm_task" value="${ context.translate("Modify") }" />
             </div>
             
         </form>`)

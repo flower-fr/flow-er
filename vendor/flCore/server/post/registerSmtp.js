@@ -8,10 +8,9 @@ const registerSmtp = async ({ req }, context, rows, { connection }) => {
      */
 
     const type = "html"
-    let model = context.config["interaction/model"]
 
     for (let row of req.body.rows) {
-    
+
         const mailData = {
             preHeader: row.email_subject,
             body: row.email_body,
@@ -39,21 +38,20 @@ const registerSmtp = async ({ req }, context, rows, { connection }) => {
             params: JSON.stringify({ "type": type, "to": row.email, "subject": row.email_subject }),
             body: row.email_body
         }
-        const [insertedRow] = (await connection.execute(insert(context, "interaction", data, model)))
+        const [insertedRow] = (await connection.execute(insert(context, "interaction", data, context.config["interaction/model"])))
         row.insertId = insertedRow.insertId   
 
         /**
          * Insert a note
          */
 
-        model = context.config["crm_contact/model"]
         data = {
             chanel: "email",
             direction: "outbound",
             account_id: row.id,
             text: row.email_subject
         }
-        await connection.execute(insert(context, "crm_contact", data, model))
+        await connection.execute(insert(context, "crm_contact", data, context.config["crm_contact/model"]))
     }
 }
 

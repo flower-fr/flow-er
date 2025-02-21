@@ -177,10 +177,22 @@ const renderModalListForm = ({ context }, section, id, modalListConfig, where, p
             }
 
             else {
-                html.push(`<div class="form-outline fl-modal-list-add-form-outline" data-mdb-input-init>
-                        <input class="form-control form-control-sm is-valid fl-modal-list-add-input" id="${propertyId}" value="${value}" ${ disabled } ${ required } maxlength="255" />
-                        <label class="form-label">${label}</label>
-                    </div>`)                  
+                html.push(`
+                    <div 
+                      class="form-outline fl-modal-list-add-form-outline ${ (property.autocomplete) ? "fl-modal-list-add-autocomplete" : "" }"
+                      data-mdb-input-init
+                      ${ (property.autocomplete) ? `data-fl-values="${ property.values.join(",") }"`: "" }
+                    >
+                        <input 
+                          type="text"
+                          class="form-control form-control-sm is-valid fl-modal-list-add-input"
+                          id="${propertyId}"
+                          value="${value}"
+                          ${ disabled }
+                          ${ required }
+                          maxlength="255" />
+                        <label class="form-label" for="${propertyId}">${label}</label>
+                    </div>`)
             }
 
             html.push("</td>")

@@ -33,6 +33,19 @@ const getProperties = async (db, context, entity, view, propertyDefs, where) => 
         }
 
         /**
+         * Autocomplete
+         */
+        if (property.type == "input" && property.autocomplete) {
+            const order = {}
+            order[propertyId] = "ASC"
+            const rows = (await db.execute(select(context, entity, [property.autocomplete], {}, order, null, context.config[`${entity}/model`])))[0]
+            property.values = []
+            for (const row of rows) {
+                console.log(row, propertyId)
+                if (row[property.autocomplete].length !== 0) property.values.push(row[property.autocomplete])
+            }
+        }
+        /**
          * Tags, sources
          */
         if (["tag", "source"].includes(property.type)) {

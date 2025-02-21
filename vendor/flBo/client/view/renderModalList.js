@@ -1,5 +1,7 @@
 const renderModalList = ({ context, entity, view }, data) => {
 
+    console.log("in renderModalList (flBo)")
+
     const section = (data.section) ? data.section : {}, rows = data.rows, order = data.order, limit = data.limit, modalListConfig = data.config, properties = data.properties
 
     const html = []
@@ -16,7 +18,6 @@ const renderModalList = ({ context, entity, view }, data) => {
 
     html.push(`
     <div class="row">
-        <table class="table table-sm table-hover table-responsive">
 
             ${renderModalListHeader({ context }, section, modalListConfig, properties, order)}
 

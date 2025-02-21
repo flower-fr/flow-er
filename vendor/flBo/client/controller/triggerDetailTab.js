@@ -314,7 +314,7 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
                     formData.append(propertyId, $(this).html())
                 })
 
-                let route = `/${$(submit).attr("data-fl-controller")}/${$(submit).attr("data-fl-action")}/${$(submit).attr("data-fl-entity")}`
+                const route = `/${$(submit).attr("data-fl-controller")}/${$(submit).attr("data-fl-action")}/${$(submit).attr("data-fl-entity")}`
 
                 const response = await fetch(route, {
                     headers: {

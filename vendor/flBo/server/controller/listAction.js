@@ -38,9 +38,8 @@ const listAction = async ({ req }, context, db) => {
     /**
      * List of DB columns to retrieve
      */
-    let columns = []
-    for (let propertyId of Object.keys(properties)) {
-        const property = properties[propertyId]
+    const columns = []
+    for (const [propertyId, property] of Object.entries(properties)) {
         if (property.type != "tag") columns.push(propertyId)
     }
 
@@ -61,7 +60,37 @@ const listAction = async ({ req }, context, db) => {
     }
     
     const rows = await getList(db, context, entity, columns, properties, whereParam, order, limit)
-    return { rows, config: listConfig, properties, where, order, limit }
+    const result = { rows, config: listConfig, properties, where, order, limit }
+    
+    if (listConfig.crossEntity) {
+
+        const crossEntity = listConfig.crossEntity
+
+        /**
+         * Cross entity
+         */
+    
+        const crossPropertyDefs = { ...listConfig.crossProperties }
+
+        for (let propertyId of ((order != null) ? order.split(",") : [])) {
+            if (propertyId[0] == "-") propertyId = propertyId.substring(1)
+            if (!propertyDefs[propertyId]) propertyDefs[propertyId] = {}
+        }
+
+        const crossProperties = await getProperties(db, context, crossEntity, null, crossPropertyDefs)
+
+        const crossColumns = []
+        for (const [propertyId, property] of Object.entries(crossProperties)) {
+            if (property.type != "tag") crossColumns.push(propertyId)
+        }
+    
+        const crossOrder = listConfig.crossOrder || order
+        result.crossRows = await getList(db, context, crossEntity, crossColumns, crossProperties, whereParam, crossOrder, limit)
+        result.crossProperties = crossProperties
+        result.crossOrder = crossOrder
+    }
+
+    return result
 }
 
 module.exports = {
