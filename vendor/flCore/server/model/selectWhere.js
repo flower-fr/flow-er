@@ -42,7 +42,7 @@ const selectWhere = (context, table, where, model, joins) => {
                                 components.push(`YEAR(${ comp })`)
                             }
                             else if (e == table || Object.keys(joins).includes(e)) {
-                                components.push(`REPLACE(COALESCE(${ component }, ''), ' ' , '')`)
+                                components.push(`REPLACE(COALESCE(${ qi(e) }.${ qi(c) }, ''), ' ' , '')`)
                             }
                         }
                         else components.push(`COALESCE(${ qv(component) }, '')`)

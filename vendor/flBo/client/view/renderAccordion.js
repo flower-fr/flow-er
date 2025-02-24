@@ -10,7 +10,7 @@ const renderAccordion = ({ context, entity, view }, data) => {
     <div class="accordion accordion-flush" id="accordion">`)
 
     html.push(`
-        ${renderAccordionRows(context, listConfig, properties, rows, crossProperties, crossRows)}`)
+        ${renderAccordionRows({ context, entity }, listConfig, properties, rows, crossProperties, crossRows)}`)
 
     html.push(`
     </div>`)
@@ -18,7 +18,7 @@ const renderAccordion = ({ context, entity, view }, data) => {
     return html.join("\n")
 }
 
-const renderAccordionRows = (context, listConfig, properties, rows, crossProperties, crossRows) => {
+const renderAccordionRows = ({ context, entity }, listConfig, properties, rows, crossProperties, crossRows) => {
 
     const files = {}
     for (const row of rows) {
@@ -35,7 +35,7 @@ const renderAccordionRows = (context, listConfig, properties, rows, crossPropert
     result.push(`
         <div class="accordion-item">
             <h2 class="accordion-header" id="heading-0">
-                <a role="button" class="btn btn-sm btn-outline-primary index-btn fl-list-detail fl-list-add" title="${context.translate("Add")}" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#flListDetailModalForm" data-id="0">
+                <a role="button" class="btn btn-sm btn-outline-primary index-btn fl-list-detail fl-list-add" title="${context.translate("Add")}" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#flListDetailModalForm" data-fl-controller="bo" data-fl-action="detail" data-fl-entity="${entity}" data-id="0">
                     <span class="fas fa-plus"></span>
                 </a>
             </h2>
@@ -60,7 +60,7 @@ const renderAccordionRows = (context, listConfig, properties, rows, crossPropert
                 <div id="collapse-${case_id}" class="accordion-collapse collapse" aria-labelledby="heading-${case_id}" data-mdb-parent="#accordion">
                     <div class="accordion-body">
                         <div>
-                            <a role="button" class="fl-list-detail fl-list-add" title="${context.translate("Add")}" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#flListDetailModalForm" data-id="0">
+                            <a role="button" class="fl-list-detail fl-list-add" title="${context.translate("Add")}" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#flListDetailModalForm" data-fl-controller="bo" data-fl-action="detail" data-fl-entity="${listConfig.crossEntity}" data-id="0">
                                 <span class="fas fa-plus"></span>
                             </a>
                         </div>`)
@@ -79,7 +79,7 @@ const renderAccordionRows = (context, listConfig, properties, rows, crossPropert
 
             result.push(`
                         <div>
-                            <a role="button" class="fl-list-detail" data-mdb-target="#flListDetailModalForm" data-mdb-modal-init title="${context.translate("Detail")}" data-id="${row.id}">
+                            <a role="button" class="fl-list-detail" data-mdb-target="#flListDetailModalForm" data-mdb-modal-init title="${context.translate("Detail")}" data-fl-controller="bo" data-fl-action="detail" data-fl-entity="${listConfig.crossEntity}" data-id="${row.id}">
                                 <i class="fas fa-search"></i>&nbsp;&nbsp;<strong>${ row.n_fn }</strong> (${ context.localize(crossProperties.role.modalities[row.role]) })
                             </a>
                         </div>`)

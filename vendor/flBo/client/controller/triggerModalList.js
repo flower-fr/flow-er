@@ -67,76 +67,98 @@ const triggerModalList = ({ context, entity, view }, data, tab, route, id, messa
                 formData.append("formJwt", $("#formJwt").val())
 
                 $(".fl-modal-list-add-input").each(function () {
-                    const propertyId = $(this).attr("id")
-                    payload[propertyId] = $(this).val()
-                    formData.append(propertyId, $(this).val())
+                    if (!$(this).prop("disabled")) {
+                        const propertyId = $(this).attr("id")
+                        console.log(propertyId, $(this).prop("disabled"))
+                        payload[propertyId] = $(this).val()
+                        formData.append(propertyId, $(this).val())    
+                    }
                 })
 
                 $(".fl-modal-list-add-iban").each(function () {
-                    const propertyId = $(this).attr("id")
-                    payload[propertyId] = $(this).val()
-                    formData.append(propertyId, $(this).val())
-                })
+                    if (!$(this).prop("disabled")) {
+                        const propertyId = $(this).attr("id")
+                        payload[propertyId] = $(this).val()
+                        formData.append(propertyId, $(this).val())
+                        if (!$(this).prop("disabled")) {
+                        }
+                    )
 
                 $(".fl-modal-list-add-email").each(function () {
-                    const propertyId = $(this).attr("id")
-                    payload[propertyId] = $(this).val()
-                    formData.append(propertyId, $(this).val())
+                    if (!$(this).prop("disabled")) {
+                        const propertyId = $(this).attr("id")
+                        payload[propertyId] = $(this).val()
+                        formData.append(propertyId, $(this).val())
+                    }
                 })
                 
                 $(".fl-modal-list-add-phone").each(function () {
-                    const propertyId = $(this).attr("id")
-                    payload[propertyId] = $(this).val()
-                    formData.append(propertyId, $(this).val())
+                    if (!$(this).prop("disabled")) {
+                        const propertyId = $(this).attr("id")
+                        payload[propertyId] = $(this).val()
+                        formData.append(propertyId, $(this).val())
+                    }
                 })
 
                 $(".fl-modal-list-add-date").each(function () {
-                    const propertyId = $(this).attr("id"), val = $(this).val()
-                    if (val) {
-                        payload[propertyId] = val.substring(6, 10) + "-" + val.substring(3, 5) + "-" + val.substring(0, 2)
-                        formData.append(propertyId, val.substring(6, 10) + "-" + val.substring(3, 5) + "-" + val.substring(0, 2))
-                    }
-                    else {
-                        payload[propertyId] = ""
-                        formData.append(propertyId, "")
+                    if (!$(this).prop("disabled")) {
+                        const propertyId = $(this).attr("id"), val = $(this).val()
+                        if (val) {
+                            payload[propertyId] = val.substring(6, 10) + "-" + val.substring(3, 5) + "-" + val.substring(0, 2)
+                            formData.append(propertyId, val.substring(6, 10) + "-" + val.substring(3, 5) + "-" + val.substring(0, 2))
+                        }
+                        else {
+                            payload[propertyId] = ""
+                            formData.append(propertyId, "")
+                        }
                     }
                 })
 
                 $(".fl-modal-list-add-datetime-date").each(function () {
-                    const propertyId = $(this).attr("id"), dateval = $(this).val(), timeval = $(`#fl-modal-list-add-DatetimeTime-${propertyId}`).val()
-                    if (dateval) {
-                        payload[propertyId] = `${dateval.substring(6, 10)}-${dateval.substring(3, 5)}-${dateval.substring(0, 2)} ${timeval}`
-                        formData.append(propertyId, `${dateval.substring(6, 10)}-${dateval.substring(3, 5)}-${dateval.substring(0, 2)} ${timeval}`)
-                    }
-                    else {
-                        payload[propertyId] = ""
-                        formData.append(propertyId, "")
+                    if (!$(this).prop("disabled")) {
+                        const propertyId = $(this).attr("id"), dateval = $(this).val(), timeval = $(`#fl-modal-list-add-DatetimeTime-${propertyId}`).val()
+                        if (dateval) {
+                            payload[propertyId] = `${dateval.substring(6, 10)}-${dateval.substring(3, 5)}-${dateval.substring(0, 2)} ${timeval}`
+                            formData.append(propertyId, `${dateval.substring(6, 10)}-${dateval.substring(3, 5)}-${dateval.substring(0, 2)} ${timeval}`)
+                        }
+                        else {
+                            payload[propertyId] = ""
+                            formData.append(propertyId, "")
+                        }
                     }
                 })
                 
                 $(".fl-modal-list-add-birth-year").each(function () { 
-                    const propertyId = $(this).attr("id")
-                    payload[propertyId] = ($(this).val()) ? $(this).val() + "-01-01" : ""
-                    formData.append(propertyId, ($(this).val()) ? $(this).val() + "-01-01" : "")
+                    if (!$(this).prop("disabled")) {
+                        const propertyId = $(this).attr("id")
+                        payload[propertyId] = ($(this).val()) ? $(this).val() + "-01-01" : ""
+                        formData.append(propertyId, ($(this).val()) ? $(this).val() + "-01-01" : "")
+                    }
                 })
 
                 $(".fl-modal-list-add-number").each(function () {
-                    const propertyId = $(this).attr("id")
-                    const value = $(this).val().replace(",", ".")
-                    payload[propertyId] = value
-                    formData.append(propertyId, value)
+                    if (!$(this).prop("disabled")) {
+                        const propertyId = $(this).attr("id")
+                        const value = $(this).val().replace(",", ".")
+                        payload[propertyId] = value
+                        formData.append(propertyId, value)
+                    }
                 })
 
                 $(".fl-modal-list-add-time").each(function () {
-                    const propertyId = $(this).attr("id")
-                    payload[propertyId] = $(this).val()
-                    formData.append(propertyId, $(this).val())
+                    if (!$(this).prop("disabled")) {
+                        const propertyId = $(this).attr("id")
+                        payload[propertyId] = $(this).val()
+                        formData.append(propertyId, $(this).val())
+                    }
                 })
                 
                 $(".fl-modal-list-add-select").each(function () {
-                    const propertyId = $(this).attr("id")
-                    payload[propertyId] = $(this).val()
-                    if (propertyId) formData.append(propertyId, $(this).val())
+                    if (!$(this).prop("disabled")) {
+                        const propertyId = $(this).attr("id")
+                        payload[propertyId] = $(this).val()
+                        if (propertyId) formData.append(propertyId, $(this).val())
+                    }
                 })
 
                 const tags = {}
@@ -155,39 +177,49 @@ const triggerModalList = ({ context, entity, view }, data, tab, route, id, messa
                 }
     
                 $(".fl-modal-list-add-tags").each(function () {
-                    const propertyId = $(this).attr("id")
-                    payload[propertyId] = $(this).val()
-                    formData.append(propertyId, $(this).val())
+                    if (!$(this).prop("disabled")) {
+                        const propertyId = $(this).attr("id")
+                        payload[propertyId] = $(this).val()
+                        formData.append(propertyId, $(this).val())
+                    }
                 })
                 
                 $(".fl-modal-list-add-textarea").each(function () {
-                    const propertyId = $(this).attr("id")
-                    payload[propertyId] = $(this).val()
-                    formData.append(propertyId, $(this).val())
+                    if (!$(this).prop("disabled")) {
+                        const propertyId = $(this).attr("id")
+                        payload[propertyId] = $(this).val()
+                        formData.append(propertyId, $(this).val())
+                    }
                 })
 
                 $(".fl-modal-list-add-check").each(function () {
-                    const propertyId = $(this).attr("id")
-                    payload[propertyId] = $(this).prop("checked") ? 1 : 0
-                    formData.append(propertyId, $(this).prop("checked") ? 1 : 0)
+                    if (!$(this).prop("disabled")) {
+                        const propertyId = $(this).attr("id")
+                        payload[propertyId] = $(this).prop("checked") ? 1 : 0
+                        formData.append(propertyId, $(this).prop("checked") ? 1 : 0)
+                    }
                 })
                 
                 $(".fl-modal-list-add-file").each(function () {
-                    const propertyId = $(this).attr("id")
-                    const fileSelect = document.getElementById(propertyId)
-                    if (fileSelect) {
-                        var files = fileSelect.files
-                        for (var i = 0; i < files.length; i++) {
-                            var file = files[i]
-                            formData.append(propertyId, file, file.name)
+                    if (!$(this).prop("disabled")) {
+                        const propertyId = $(this).attr("id")
+                        const fileSelect = document.getElementById(propertyId)
+                        if (fileSelect) {
+                            var files = fileSelect.files
+                            for (var i = 0; i < files.length; i++) {
+                                var file = files[i]
+                                formData.append(propertyId, file, file.name)
+                            }
                         }
                     }
                 })
                 
                 $(".wysiwyg").each(function () {
-                    const propertyId = $(this).attr("id")
-                    payload[propertyId] = $(this).children(".wysiwyg-content").html()
-                    formData.append(propertyId, $(this).html())
+                    if (!$(this).prop("disabled")) {
+                        const propertyId = $(this).attr("id")
+                        payload[propertyId] = $(this).children(".wysiwyg-content").html()
+                        formData.append(propertyId, $(this).html())
+                    }
                 })
 
                 let route = `/${$(submit).attr("data-controller")}/${$(submit).attr("data-action")}/${$(submit).attr("data-entity")}`

@@ -79,7 +79,7 @@ const listAction = async ({ req }, context, db) => {
 
         const crossProperties = await getProperties(db, context, crossEntity, null, crossPropertyDefs)
 
-        const crossColumns = []
+        const crossColumns = ["id"]
         for (const [propertyId, property] of Object.entries(crossProperties)) {
             if (property.type != "tag") crossColumns.push(propertyId)
         }

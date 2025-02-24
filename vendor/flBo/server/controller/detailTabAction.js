@@ -37,7 +37,7 @@ const detailTabAction = async ({ req }, context, db) => {
         data[entityId] = {}
 
         const propertyDefs = dataConfig.properties
-        const properties = await getProperties(db, context, entityId, view, propertyDefs, whereParam)
+        const properties = await getProperties(db, context, entityId, view, propertyDefs, where)
         data[entityId].properties = properties    
 
         /**

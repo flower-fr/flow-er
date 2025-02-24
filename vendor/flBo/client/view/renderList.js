@@ -22,8 +22,27 @@ const renderList = ({ context, entity, view }, data) => {
                     dictionary[crossRow[property.foreignKey]] = row
                 }
                 if (!row[propertyId]) row[propertyId] = []
-                const value = context.localize(data.crossProperties[property.property].modalities[crossRow[property.property]])
-                row[propertyId].push(value)
+                let value = crossRow[property.property]
+                let keep = true
+                if (column.restriction) {
+                    for (const [k, v] of Object.entries(column.restriction)) {
+                        console.log(crossRow[k], v)
+                        if (v.substring(0, 1) == "!") {
+                            if (crossRow[k] == v.substring(1)) {
+                                keep = false
+                                break
+                            }
+                        }
+                        else if (crossRow[k] != v) {
+                            keep = false
+                            break
+                        }
+                    }
+                }
+                if (keep) {
+                    if (data.crossProperties[property.property].modalities) value = context.localize(data.crossProperties[property.property].modalities[value])
+                    row[propertyId].push(value)
+                }
             }
         }
 

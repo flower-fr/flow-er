@@ -109,6 +109,7 @@ const storeEntities = async (context, mainEntity, rowsToStore, model, db) => {
         const insertEntity = async (entityId, entity) => {
             const entityToInsert = entitiesToInsert[entityId]
             const insertModel = context.config[`${entity.table}/model`]
+            console.log(entity.table, entityToInsert.cells, insertModel)
             const [insertedRow] = (await db.execute(insert(context, entity.table, entityToInsert.cells, insertModel)))
             entityToInsert.rowId = insertedRow.insertId
             if (entity.foreignEntity) {

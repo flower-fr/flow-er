@@ -12,7 +12,7 @@ const postAction = async ({ req }, context, { db }) => {
     const id = (req.query.id) ? req.query.id : 0
 
     const connection = await db.getConnection()
-    //try {
+    try {
         await connection.beginTransaction()
 
         const model = context.config[`${entity}/model`]
@@ -39,12 +39,12 @@ const postAction = async ({ req }, context, { db }) => {
 
         await connection.commit()
         return JSON.stringify({ "status": "ok", "stored": rowsToStore })
-    // }
-    // catch {
-    //     await connection.rollback()
-    //     connection.release()
-    //     throw throwBadRequestError()
-    // }
+    }
+    catch {
+        await connection.rollback()
+        connection.release()
+        throw throwBadRequestError()
+    }
 }
 
 module.exports = {

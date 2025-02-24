@@ -1,6 +1,6 @@
 const { select } = require("../../../flCore/server/model/select")
 
-const getProperties = async (db, context, entity, view, propertyDefs, where) => {
+const getProperties = async (db, context, entity, view, propertyDefs, whereParam) => {
     const properties = {}, propertyList = Object.keys(propertyDefs)
     
     for (let propertyId of propertyList) {
@@ -21,8 +21,7 @@ const getProperties = async (db, context, entity, view, propertyDefs, where) => 
             const modalities = {}
             for (let modalityId of Object.keys(property.data)) {
                 let keep = true
-                for (let key of Object.keys(where)) {
-                    const value = where[key].split(",")
+                for (const [key, value] of Object.entries(whereParam)) {
                     if (property.data[modalityId][key]) {
                         if (!value.includes(property.data[modalityId][key])) keep = false
                     }
@@ -41,7 +40,6 @@ const getProperties = async (db, context, entity, view, propertyDefs, where) => 
             const rows = (await db.execute(select(context, entity, [property.autocomplete], {}, order, null, context.config[`${entity}/model`])))[0]
             property.values = []
             for (const row of rows) {
-                console.log(row, propertyId)
                 if (row[property.autocomplete].length !== 0) property.values.push(row[property.autocomplete])
             }
         }
@@ -57,6 +55,7 @@ const getProperties = async (db, context, entity, view, propertyDefs, where) => 
                 let value = context.config[filter[1]]
                 if (!value) value = filter[1] 
                 value = value.split(",")
+                value = value.map( x => whereParam[x] || x )
                 where[filter[0]] = value
             }
             const tagColumns = (property.format[1]) ? property.format[1].split(",") : []
