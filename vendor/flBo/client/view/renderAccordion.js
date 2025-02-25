@@ -54,7 +54,7 @@ const renderAccordionRows = ({ context, entity }, listConfig, properties, rows, 
                     aria-expanded="false"
                     aria-controls="collapse-${case_id}"
                 >
-                    <strong>${ file.designation }</strong>: ${ context.localize(properties.type.modalities[file.type]) } (${ context.localize(properties.status.modalities[file.status]) })
+                    <strong>${ file.designation }</strong>: ${ context.localize(properties.type.modalities[file.type]) } (${ file.status })
                 </button>
                 </h2>
                 <div id="collapse-${case_id}" class="accordion-collapse collapse" aria-labelledby="heading-${case_id}" data-mdb-parent="#accordion">

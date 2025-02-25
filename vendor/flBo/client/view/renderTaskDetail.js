@@ -65,6 +65,9 @@ const renderTaskDetail = ({ context, entity, view }, data, formJwt) => {
             </div>
             <div class="modal-footer">
                 <input type="submit" class="btn btn-warning fl-task-submit" data-fl-controller="core" data-fl-action="v1" data-fl-entity="crm_task" value="${ context.translate("Modify") }" />
+                <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-fl-task-delete" title="${context.translate("Delete")}" data-mdb-ripple-init>
+                    <span class="fas fa-trash-alt"></span>
+                </button>
             </div>
             
         </form>`)
