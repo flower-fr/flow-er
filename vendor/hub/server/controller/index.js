@@ -10,6 +10,7 @@ const { createPdfClient } = require("../../../utils/pdf-client")
 const { executeService, assert } = require("../../../../core/api-utils")
 
 const { getImportXlsxAction, postImportXlsxAction } = require("./importXlsxAction")
+const { getImportCsvAction, postImportCsvAction } = require("./importCsvAction")
 
 const registerHub = async ({ context, config, logger, app }) => {
     const db = await createDbClient(config.db, context.dbName)
@@ -23,6 +24,11 @@ const registerHub = async ({ context, config, logger, app }) => {
         const result = await postImportXlsxAction({ req }, context, db)
         return res.status(200).send(result)
     }
+    const executeImportCsv = async (req, res) => {
+        if (!context.isAllowed("interaction")) return res.status(403).send({message: "unauthorized"})
+        const result = await postImportCsvAction({ req }, context, db)
+        return res.status(200).send(result)
+    }
     const upload = multer()
     //app.use(`${config.prefix}`, authTokenMiddleware(config, context))
     
@@ -32,6 +38,8 @@ const registerHub = async ({ context, config, logger, app }) => {
     app.get(`${config.prefix}xlsx`, execute(xlsxAction, context, xlsxClient))
     app.get(`${config.prefix}import-xlsx/:entity`, execute(getImportXlsxAction, context, db))
     app.post(`${config.prefix}import-xlsx/:entity/:id`, upload.single("global-xlsxFile"), executeImportXlsx)
+    app.get(`${config.prefix}import-csv/:entity`, execute(getImportCsvAction, context, db))
+    app.post(`${config.prefix}import-csv/:entity/:id`, upload.single("global-csvFile"), executeImportCsv)
     app.get(`${config.prefix}pdf`, execute(pdfAction, context, pdfClient))
 }
 

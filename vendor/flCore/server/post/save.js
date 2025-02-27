@@ -104,16 +104,16 @@ const mergePayload = async (context, entity, model, form, config, connection) =>
      * Rows to delete
      */
 
-    for (const [identifier, row] of Object.entries(rows)) {
-        const payloadRow = {}
-        if (rows[identifier]) {
-            for (let foreignKey of fks) payloadRow[foreignKey] = row[foreignKey]
-            payloadRow["visibility"] = "archived"
-            payloadRow["vcard_visibility"] = "archived"
+    // for (const [identifier, row] of Object.entries(rows)) {
+    //     const payloadRow = {}
+    //     if (rows[identifier]) {
+    //         for (let foreignKey of fks) payloadRow[foreignKey] = row[foreignKey]
+    //         payloadRow["visibility"] = "archived"
+    //         payloadRow["vcard_visibility"] = "archived"
 
-            payload.push(payloadRow)
-        }
-    }
+    //         payload.push(payloadRow)
+    //     }
+    // }
 
     return payload
 }

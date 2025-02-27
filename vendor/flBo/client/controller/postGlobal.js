@@ -171,7 +171,7 @@ const postGlobal = async ({ context, entity, view }, data) => {
                             let route = `/${data.post.controller}/${data.post.action}/${data.post.entity}/${data.post.id}`
                             const response = await fetch(route, {
                                 method: "POST",
-                                body: formData
+                                //body: formData
                             })
                             if (!response.ok) {
                                 switch (response.status) {
