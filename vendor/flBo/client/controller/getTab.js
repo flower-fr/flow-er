@@ -1,6 +1,7 @@
 
 const getTab = async ({ context, entity, view }, tab, route, id, message, searchParams, order) => {
 
+    route = $(`#detailTabRoute-${tab}`).val()
     route = route.split("?")
     let query = (route[1]) ? route[1].split("&").map((x) => { return x.split("=") }) : []
     query = Object.fromEntries((new Map(query)).entries())

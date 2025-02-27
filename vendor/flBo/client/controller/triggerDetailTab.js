@@ -53,6 +53,10 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
      */
 
     $(".fl-detail-tab-message").hide()
+    if (message == "ok") {
+        $("#flDetailTabMessageOk").show()
+        document.location = "#flDetailTabMessageOk"
+    }
 
     $(".fl-modal-list-add-button").each(function () {
         $(".fl-submit-div").hide()
@@ -333,7 +337,7 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
                 if (response.status == 200) {
                     $(".fl-modal-list-close-button").hide()
                     $("#flDetailTabMessageOk").show()
-                    //getTab({ context, entity, view }, tab, $(`#flDetailTabSubmitRefresh-${$(submit).attr("data-fl-transaction") }`).attr("data-fl-route"), id, message, searchParams)
+                    getTab({ context, entity, view }, tab, null, id, "ok", searchParams)
                 }
                 else if (response.status == 401) triggerDetailTab = ({ context, entity, view }, data, tab, route, id, "expired", searchParams, order)
             }

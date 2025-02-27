@@ -1,3 +1,5 @@
+const moment = require("moment")
+
 const { assert } = require("../../../../core/api-utils")
 const { getProperties } = require("./getProperties")
 const { getList } = require("./getList")
@@ -25,7 +27,21 @@ const listAction = async ({ req }, context, db) => {
     }
     if (Object.values(whereParam).length == 0) {
         restriction = (listConfig.defaultWhere) ? listConfig.defaultWhere : {}
-        for (let propertyId of Object.keys(restriction)) whereParam[propertyId] = restriction[propertyId]    
+        for (let propertyId of Object.keys(restriction)) {
+            if (Array.isArray(restriction[propertyId])) {
+                const value = []
+                for (let comp of restriction[propertyId]) {
+                    if (comp.includes("today")) {
+                        if (comp.charAt(5) == "+") comp = moment().add(comp.substring(6), "days").format("YYYY-MM-DD")
+                        else if (comp && comp.charAt(5) == "-") comp = moment().subtract(comp.substring(6), "days").format("YYYY-MM-DD")
+                        else comp = moment().format("YYYY-MM-DD")        
+                    }
+                    value.push(comp)
+                }
+                whereParam[propertyId] = value
+            }
+            else whereParam[propertyId] = restriction[propertyId]
+        }    
     }
 
     for (let propertyId of ((order != null) ? order.split(",") : [])) {

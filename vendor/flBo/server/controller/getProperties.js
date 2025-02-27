@@ -1,6 +1,6 @@
 const { select } = require("../../../flCore/server/model/select")
 
-const getProperties = async (db, context, entity, view, propertyDefs, whereParam) => {
+const getProperties = async (db, context, entity, view, propertyDefs, whereParam = {}) => {
     const properties = {}, propertyList = Object.keys(propertyDefs)
     
     for (let propertyId of propertyList) {
