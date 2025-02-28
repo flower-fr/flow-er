@@ -1,10 +1,8 @@
 const { qi, qv } = require("./quote")
 
 const insert = (context, table, data, model) => {
-    console.log(model.properties)
     const pairs = {}
     for (let key of Object.keys(data)) {
-        console.log(key)
         if (!["instance_id", "touched_at", "touched_by"].includes(key)) {
             let value = data[key]
             if (key != "visibility" || value != "deleted") {
