@@ -59,7 +59,7 @@ const triggerSmsText = () => {
         })
     }
 
-    formatLinks()
+    $(".fl-sms-text").each(formatLinks)
     
     $(".fl-sms-text").change(formatLinks)
 }
