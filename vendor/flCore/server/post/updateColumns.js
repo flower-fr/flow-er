@@ -38,7 +38,6 @@ const updateColumns = async (context, columnsToUpdate, model, db) => {
             cellsToUpdate[table][column] = new Map()
             for (const [key, value] of Object.entries(pairs)) {
                 const row = columnsToRetrieve[table].rows[key]
-                console.log(table, cellsToUpdate[table])
                 if (row[column] != value) cellsToUpdate[table][column].set(key, { "old": row[column], "new": value })
             }
         }

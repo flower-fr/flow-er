@@ -27,7 +27,7 @@ const renderTaskDetail = ({ context, entity, view }, data, formJwt) => {
                         <input type="text" class="form-control form-control-sm calendar-summary-input fl-modal-form-input" data-fl-property="summary" data-fl-type="input" value="${ data.summary }">
                         <label class="form-label" style="margin-left: 0px;">Résumé</label>
                     </div>
-                    <div class="text-center"><small> ${ (data.email) ? `<a href="mailto:${ data.email }"><i class="fa fa-at"></i>&nbsp;&nbsp;${ data.email }</a>` : "" }&nbsp;&nbsp;&nbsp;&nbsp;${ (data.tel_cell) ? `<a href="tel:${ data.tel_cell }"><i class="fa fa-mobile-screen-button"></i>&nbsp;&nbsp;${ data.tel_cell }</a>` : "" }</small></div>
+                    <div class="text-center"><small> ${ (data.n_fn) ? data.n_fn : "" } ${ (data.business_name) ? data.business_name : "" } ${ (data.email) ? `<a href="mailto:${ data.email }"><i class="fa fa-at"></i>&nbsp;&nbsp;${ data.email }</a>` : "" }&nbsp;&nbsp;&nbsp;&nbsp;${ (data.tel_cell) ? `<a href="tel:${ data.tel_cell }"><i class="fa fa-mobile-screen-button"></i>&nbsp;&nbsp;${ data.tel_cell }</a>` : "" }</small></div>
                 </section>
                 <div class="form-outline my-3 formOutline" data-mdb-input-init="" data-mdb-input-initialized="true">
                     <textarea type="text" class="form-control form-control-sm fl-modal-form-input" data-fl-property="description" data-fl-type="textarea">${ data.description }</textarea>
@@ -56,7 +56,7 @@ const renderTaskDetail = ({ context, entity, view }, data, formJwt) => {
                 </section>
                 <section class="long-event-section">
                     <div class="form-outline my-3 fl-time-outline" data-fl-container="flModal" data-mdb-datepicker-init data-mdb-input-init> 
-                        <input type="text" class="form-control form-control-sm fl-modal-form-input" data-fl-property="time" data-fl-type="time" value="${ data.time }" />
+                        <input type="text" class="form-control form-control-sm fl-modal-form-input" data-fl-property="time" data-fl-type="time" value="${ (data.time) ? data.time : "" }" />
                         <label class="form-label" style="margin-left: 0px;">
                             ${ context.translate("Time") }
                         </label>

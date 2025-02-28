@@ -1,6 +1,8 @@
 {
     "interaction/model": {
-        "entities": {},
+        "entities": {
+            "interaction": { "table": "interaction" }
+        },
         "properties": {
             "id": { "entity": "interaction", "column": "id" },
             "place_id": { "entity": "interaction", "column": "place_id" },

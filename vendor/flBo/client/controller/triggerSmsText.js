@@ -1,9 +1,9 @@
 
 const triggerSmsText = () => {
 
-    $(".fl-sms-text").change(function () {
+    const formatLinks = function () {
 
-        const html = [], rows = [], value = $(this).val(), template = decodeURI($(`#${ $(this).attr("data-fl-template") }`).val()), div = $(this).attr("data-fl-div")
+        const html = [], rows = [], value = $("#sms").val(), template = decodeURI($(`#${ $("#sms").attr("data-fl-template") }`).val()), div = $("#sms").attr("data-fl-div")
 
         $(".fl-list-check").each(function () {
             if ($(this).prop("checked")) {
@@ -18,7 +18,7 @@ const triggerSmsText = () => {
         })
     
         const split = value.split("{")
-        if (split.length > 1) {
+        if (true) {
 
             /**
              * Separate links if the body is personnalized
@@ -29,14 +29,15 @@ const triggerSmsText = () => {
                 for (let s of split) {
                     const s2 = s.split("}")
                     if (s2.length == 2) {
-                        const [propertyId, rest] = s2
+                        let [propertyId, rest] = s2
+                        if (propertyId == "prenom") propertyId = "n_first"
                         body.push(`${ r[propertyId] }${rest}`)
                     }
                     else body.push(s)
                 }
                 body = body.join("")
 
-                html.push(template.replace("{addresses}", r.tel_cell.split(" ").join("")).replace("{body}", body).replace("{text}", body))
+                html.push(template.replaceAll("{addresses}", r.tel_cell.split(" ").join("")).replace("{body}", body).replace("{text}", body))
             }
         }
         else {
@@ -51,6 +52,15 @@ const triggerSmsText = () => {
         }
 
         $(`#${div}`).html(html.join("\n"))
-    })
+        $(".fl-sms-template").click(function () {
+            console.log("ici")
+            document.location = `sms:/open?addresses=${ $(this).attr("data-fl-addresses") }&body=${ $(this).attr("data-fl-body") }`
+            $(this).prop("disabled", true)
+        })
+    }
+
+    formatLinks()
+    
+    $(".fl-sms-text").change(formatLinks)
 }
 

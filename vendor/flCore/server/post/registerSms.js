@@ -6,14 +6,16 @@ const registerSms = async ({ req }, context, rows, { connection, sms }) => {
      * Save message to send
      */
 
-    let model = context.config["interaction/model"]
+    let model
     for (let row of req.body.rows) {
 
+        model = context.config["interaction/model"]
         let body = []
         for (let split of row.sms.split("{")) {
             const split2 = split.split("}")
             if (split2.length == 2) {
-                const [propertyId, rest] = split2
+                let [propertyId, rest] = split2
+                if (propertyId == "prenom") propertyId = "n_first"
                 body.push(`${ row[propertyId] }${rest}`)
             }
             else body.push(split)
