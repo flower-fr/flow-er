@@ -32,7 +32,7 @@ const transactionAction = async ({ req }, context, { db, smtp, sms }) => {
     }
 
     const connection = await db.getConnection()
-    try {
+    //try {
         await connection.beginTransaction()
     
         for (const [stepId, step] of Object.entries(steps)) {
@@ -51,12 +51,12 @@ const transactionAction = async ({ req }, context, { db, smtp, sms }) => {
         connection.release()
         
         return JSON.stringify({ "status": "ok" })    
-    }
-    catch {
-        await connection.rollback()
-        connection.release()
-        throw throwBadRequestError()
-    }
+    // }
+    // catch {
+    //     await connection.rollback()
+    //     connection.release()
+    //     throw throwBadRequestError()
+    // }
 }
 
 module.exports = {

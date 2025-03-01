@@ -74,12 +74,16 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
         //$(".fl-modal-list-row").hide()
         $(".fl-submit-div").show()
         $(".fl-modal-list-form").show()
+
+        // Deprecated
         $(".fl-modal-list-add-button").removeClass("btn-primary").addClass("btn-outline-primary")
         $(".fl-modal-list-add-button").prop("disabled", false)
         $(".fl-modal-list-update-button").removeClass("btn-primary").addClass("btn-outline-primary")
         $(".fl-modal-list-update-button").prop("disabled", false)
         $(this).removeClass("btn-outline-primary").addClass("btn-primary")
         $(this).prop("disabled", true)
+
+        $(".fl-modal-list-add-button").hide()
         $(".fl-modal-list-close-button").show()
     })
 
@@ -100,10 +104,14 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
         //$(".fl-modal-list-row").show()
         $(".fl-submit-div").hide()
         $(".fl-modal-list-form").hide()
+
+        // Deprecated
         $(".fl-modal-list-add-button").removeClass("btn-primary").addClass("btn-outline-primary")
         $(".fl-modal-list-add-button").prop("disabled", false)
         $(".fl-modal-list-update-button").removeClass("btn-primary").addClass("btn-outline-primary")
         $(".fl-modal-list-update-button").prop("disabled", false)
+
+        $(".fl-modal-list-add-button").show()
         $(".fl-modal-list-close-button").hide()
     })
 

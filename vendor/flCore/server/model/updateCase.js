@@ -10,7 +10,7 @@ const updateCase = (context, table, column, pairs, model) => {
     const ids = []
     for (let id of Object.keys(pairs)) {
         let value = pairs[id]
-        if (column != "visibility" || value != "deleted") {
+        //if (column != "visibility" || value != "deleted") {
             if (["int", "tinyint"].includes(type) && !value) value = 0
             else if (["date", "datetime", "time"].includes(type)) {
                 if (!value) value = "NULL"
@@ -26,7 +26,7 @@ const updateCase = (context, table, column, pairs, model) => {
 
             ids.push(id)
             request.push(`WHEN id = ${id} THEN ${value}`)
-        }
+        //}
     }
     request.push("END,")
     const touched_at = `${new Date().toISOString().slice(0, 19).replace("T", " ")}`

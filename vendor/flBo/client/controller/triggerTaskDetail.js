@@ -92,4 +92,25 @@ const getTaskDetail = async (context, entity, view, id, searchParams) => {
             else if (response.status == 401) triggerTaskAdd({ context, entity, view }, searchParams, "expired")
         }
     }
+
+    $(".fl-task-delete").click(function () {
+        $(this).removeClass("btn-outline-primary").addClass("btn-danger")
+        $(".fl-task-delete").click(async function () {
+            const route = "/core/v1/crm_task"
+            const response = await fetch(route, {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                method: "POST",
+                body: JSON.stringify([{ "id": id, "visibility": "deleted" }])
+            })
+
+            if (response.status == 200) {
+                const myModalEl = document.getElementById("flModal")
+                const modal = mdb.Modal.getInstance(myModalEl)
+                modal.toggle()
+            }
+            else if (response.status == 401) triggerTaskAdd({ context, entity, view }, searchParams, "expired")
+        })
+    })
 }
