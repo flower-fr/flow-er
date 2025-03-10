@@ -138,6 +138,13 @@ const renderModalListForm = ({ context }, section, id, modalListConfig, where, p
                         </div>`)
                 }
 
+                else if (["time"].includes(property.type)) {
+                    html.push(`<div class="form-outline" data-mdb-input-init data-mdb-inline="true">
+                            <input class="form-control form-control-sm fl-modal-list-add-input" id="${propertyId}" value="${context.decodeDate(value)}" ${ disabled } ${ required } placeholder="HH:MM" autocomplete="off" />
+                            <label class="form-label">HH:MM</label>
+                        </div>`)
+                }
+
                 else if (["datetime"].includes(property.type)) {
                     html.push(`<div class="form-outline fl-modal-list-add-date-outline" data-mdb-datetimepicker-init data-mdb-input-init data-mdb-inline="true">
                             <input class="form-control form-control-sm fl-modal-list-add-date" id="${propertyId}" value="${ moment(value).format("DD/MM/YYYY HH:mm:ss") }" ${ disabled } ${ required } placeholder="DD/MM/YYYY" autocomplete="off" />
