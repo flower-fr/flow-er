@@ -1,3 +1,8 @@
+import { triggerSearch } from "/flBo/cli/controller/triggerSearch.js"
+import { triggerList } from "/flBo/cli/controller/triggerList.js"
+
+const [entity, view] = Object.values(JSON.parse(decodeURI(document.getElementById("module-script").dataset.json)))
+
 const loadPage = async ({ entity, view }) => {
     let response = await fetch("/bo/config")
     const config = await response.json()
@@ -75,3 +80,4 @@ const loadPage = async ({ entity, view }) => {
     })
 }
 
+loadPage({ entity, view })

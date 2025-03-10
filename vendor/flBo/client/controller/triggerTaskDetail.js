@@ -9,7 +9,7 @@ const triggerTaskDetail = ({ context, entity, view }, searchParams) => {
 
 const getTaskDetail = async (context, entity, view, id, searchParams) => {
 
-    const route = `/flBo/detailTab/crm_task/${id}?view=${view}`
+    const route = `/flBo/detailTab/${entity}/${id}?view=${view}`
 
     const response = await fetch(route)
     if (!response.ok) {
@@ -25,7 +25,7 @@ const getTaskDetail = async (context, entity, view, id, searchParams) => {
 
     const data = await response.json()
 
-    $("#flModalContent").html(renderTaskDetail({ context, entity, view}, data.data.crm_task.rows[0] ))
+    $("#flModalContent").html(renderTaskDetail({ context, entity, view}, data.data[entity].rows[0] ))
     mdbTasksCallback({ context, entity, view })
     $(".fl-modal-message").hide()
 
@@ -96,7 +96,7 @@ const getTaskDetail = async (context, entity, view, id, searchParams) => {
     $(".fl-task-delete").click(function () {
         $(this).removeClass("btn-outline-primary").addClass("btn-danger")
         $(".fl-task-delete").click(async function () {
-            const route = "/core/v1/crm_task"
+            const route = `/core/v1/${entity}`
             const response = await fetch(route, {
                 headers: {
                     "Content-Type": "application/json"

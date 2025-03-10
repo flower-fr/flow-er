@@ -1,4 +1,5 @@
 const { update } = require("../model/update")
+const { throwBadRequestError } = require("../../../../core/api-utils")
 
 const sendSmtp = async ({ req }, context, rows, { connection, smtp }) => {
 
@@ -32,6 +33,7 @@ const sendSmtp = async ({ req }, context, rows, { connection, smtp }) => {
              */
 
             await connection.execute(update(context, "interaction", [row.insertId], { "status": "ko" }, model))
+            throw throwBadRequestError()
         }
     }
 }

@@ -64,3 +64,4 @@ const triggerSmsText = () => {
     $(".fl-sms-text").change(formatLinks)
 }
 
+export { triggerSmsText }

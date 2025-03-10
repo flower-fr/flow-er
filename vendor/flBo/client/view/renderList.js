@@ -69,7 +69,18 @@ const renderList = ({ context, entity, view }, data) => {
             <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-list-detail fl-list-add" title="${context.translate("Add")}" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#flListDetailModalForm" data-id="0">
                 <span class="fas fa-plus"></span>
             </button>
-            <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-list-group" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#flListDetailModalForm" data-toggle="tooltip" data-placement="top" title="${context.translate("Grouped actions")}">
+            <button 
+              type="button"
+              class="btn btn-sm btn-outline-primary index-btn fl-list-group"
+              data-fl-controller="flBo"
+              data-fl-action="group"
+              data-mdb-ripple-init
+              data-mdb-modal-init
+              data-mdb-target="#flListDetailModalForm"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="${context.translate("Grouped actions")}"
+            >
                 <span class="fas fa-list"></span>
             </button>
         </td>

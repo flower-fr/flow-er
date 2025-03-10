@@ -26,7 +26,7 @@ const renderTasks = ({ context, entity, view }, data) => {
                     </strong>
                     <p class="mb-0">
                         <small>
-                            ${ row.description }
+                            ${ (row.description) ? row.description : "" }
                         </small>
                     </p>
                 </td>

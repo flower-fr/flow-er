@@ -17,6 +17,12 @@ const renderModalListRows = ({ context, entity }, section, id, modalListConfig, 
 
 const renderModalListProperties = ({ context, entity }, section, modalListConfig, row, properties) => {
 
+    for (const [key, value] of Object.entries(row)) {
+        if (properties[key] && properties[key].type == "date") {
+            if (value) row[key] = moment(value).format("DD/MM/YYYY")
+            else row[key] = ""
+        }
+    }
     const html = []
 
     html.push(`<td class="text-center">
@@ -26,7 +32,7 @@ const renderModalListProperties = ({ context, entity }, section, modalListConfig
             <i class="fas fa-search"></i>
         </button>` : "" }
         ${ (section.action && section.action == "update") ?
-        `<button type="button" class="btn btn-sm btn-outline-primary index-btn fl-modal-list-update-button" title="${context.translate("Update")}" id="modalListDetailButton-${row.id}" data-fl-route="/${ modalListConfig.controller }/${ modalListConfig.action }/${ modalListConfig.entity }/${ row.id }">
+        `<button type="button" class="btn btn-sm btn-outline-primary index-btn fl-modal-list-update-button" title="${context.translate("Update")}" id="modalListDetailButton-${row.id}" data-fl-data="${ encodeURI(JSON.stringify(row)) }" data-fl-route="/${ modalListConfig.controller }/${ modalListConfig.action }/${ modalListConfig.entity }/${ row.id }">
             <i class="fas fa-pen"></i>
         </button>` : "" }
     </td>`)
@@ -50,7 +56,7 @@ const renderModalListProperties = ({ context, entity }, section, modalListConfig
             }
 
             else if (property.type == "date") {
-                html.push(`<td>${ (row[propertyId] != "9999-12-31") ? moment(row[propertyId]).format("DD/MM/YYYY") : "" }</td>`)
+                html.push(`<td>${ row[propertyId] }</td>`)
             }
         
             else if (property.type == "datetime") {

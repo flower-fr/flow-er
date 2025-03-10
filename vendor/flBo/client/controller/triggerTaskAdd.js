@@ -8,7 +8,7 @@ const triggerTaskAdd = ({ context, entity, view }, searchParams, message) => {
 
 const getTaskAdd = async ({ context, entity, view }, searchParams) => {
 
-    const route = `/flBo/detailTab/crm_task/0?view=${view}`
+    const route = `/flBo/detailTab/${entity}/0?view=${view}`
 
     const response = await fetch(route)
     if (!response.ok) {
@@ -24,7 +24,7 @@ const getTaskAdd = async ({ context, entity, view }, searchParams) => {
 
     const data = await response.json()
 
-    $("#flModalContent").html(renderTaskAdd({ context, entity, view}, { properties: data.data.crm_task.properties } ))
+    $("#flModalContent").html(renderTaskAdd({ context, entity, view}, { properties: data.data[entity].properties } ))
     mdbTasksCallback({ context, entity, view })
 
     $(".fl-modal-message").hide()

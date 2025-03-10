@@ -5,9 +5,11 @@ const { createDbClient } = require("../../../utils/db-client")
 const { getProperties } = require("../../../../vendor/bo/server/controller/getProperties")
 const { getDistribution } = require("../../../../vendor/bo/server/controller/getDistribution")
 
-const { searchAction } = require("./searchAction")
-const { listAction } = require("./listAction")
 const { detailTabAction } = require("../../../flBo/server/controller/detailTabAction")
+const { groupAction } = require("./groupAction")
+const { listAction } = require("./listAction")
+const { searchAction } = require("./searchAction")
+
 const { notFoundAction } = require("./404")
 
 const { renderIndex } = require("../view/renderIndex")
@@ -17,10 +19,11 @@ const registerFlBo = async ({ context, config, logger, app }) => {
     const db = await createDbClient(config.db, context.dbName)
     const execute = executeService(context, config, logger)
     app.use(`${config.prefix}`, sessionCookieMiddleware(config))
-    app.get(`${config.prefix}index/:entity`, execute(index, context, config, db))
-    app.get(`${config.prefix}search/:entity`, execute(searchAction, context, db))
-    app.get(`${config.prefix}list/:entity`, execute(listAction, context, db))
     app.get(`${config.prefix}detailTab/:entity/:id`, execute(detailTabAction, context, db))
+    app.get(`${config.prefix}group/:entity`, execute(groupAction, context, db))
+    app.get(`${config.prefix}index/:entity`, execute(index, context, config, db))
+    app.get(`${config.prefix}list/:entity`, execute(listAction, context, db))
+    app.get(`${config.prefix}search/:entity`, execute(searchAction, context, db))
     app.get(`${config.prefix}404`, execute(notFoundAction, context, config))
 
     // fallback : send 404

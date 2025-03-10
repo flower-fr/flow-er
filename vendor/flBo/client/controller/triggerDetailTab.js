@@ -91,6 +91,12 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
         //$(".fl-modal-list-row").hide()
         $(".fl-submit-div").show()
         $(".fl-modal-list-form").show()
+        const data = JSON.parse(decodeURI($(this).attr("data-fl-data")))
+        for (const [key, value] of Object.entries(data)) {
+            $(`#${key}`).val(value)
+            $(`#${key}`).focus()
+        }
+
         $(".fl-modal-list-add-button").removeClass("btn-primary").addClass("btn-outline-primary")
         $(".fl-modal-list-add-button").prop("disabled", false)
         $(".fl-modal-list-update-button").removeClass("btn-primary").addClass("btn-outline-primary")

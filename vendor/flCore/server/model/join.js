@@ -1,6 +1,9 @@
 const { qi, qv } = require("./quote")
 
-const join = (table, columns, where, order, model) => {
+const join = (entity, columns, where, order, model) => {
+
+    const table = (model.entities[entity]) ? model.entities[entity].table : entity
+    
     let involvedProperties = {}
     for (let column of columns) {
         const propertyId = (Array.isArray(column)) ? column[1] : column
@@ -24,7 +27,7 @@ const join = (table, columns, where, order, model) => {
     for (let propertyId of involvedProperties) {
         if (model.properties[propertyId] && model.properties[propertyId].entity) {
             const entityId = model.properties[propertyId].entity
-            if (model.properties[propertyId].entity != table) entitiesToJoin[entityId] = []
+            if (model.properties[propertyId].entity != entity) entitiesToJoin[entityId] = []
         }
     }
 
@@ -33,7 +36,7 @@ const join = (table, columns, where, order, model) => {
         while (true) {
             if (!model.entities[entityId].foreignEntity) break
             const foreignEntityId = model.entities[entityId].foreignEntity
-            if (foreignEntityId == table) break
+            if (foreignEntityId == entity) break
             if (!model.entities[foreignEntityId]) break;
             entitiesToJoin[foreignEntityId] = []
             entityId = foreignEntityId

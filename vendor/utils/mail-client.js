@@ -10,7 +10,9 @@ const createMailClient = ({ config, logger }) => {
         auth: {
             user: config.smtpUser,
             pass: config.smtpPassword
-        }
+        },
+        debug: false,
+        logger: true
     })
     return {
         sendMail: sendMail({ logger, transporter, from: config.from, forcedTo: config.to })

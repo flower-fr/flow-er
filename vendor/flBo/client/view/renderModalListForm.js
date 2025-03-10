@@ -21,15 +21,15 @@ const renderModalListForm = ({ context }, section, id, modalListConfig, where, p
         if (Array.isArray(value) && value.length == 1) value = value[0]
         if (options.value && !Array.isArray(options.value)) {
             value = options.value
+            console.log(propertyId, value)
             if (value == "?id") value = id
-            else if (value.substring(0, 6) == "today") {
+            else if (value.substring(0, 5) == "today") {
                 if (value && value.charAt(5) == "+") value = moment().add(value.substring(6), "days").format("YYYY-MM-DD")
                 else if (value && value.charAt(5) == "-") value = moment().subtract(value.substring(6), "days").format("YYYY-MM-DD")
                 else if (property.type == "datetime") value = moment().format("YYYY-MM-DD HH:mm:ss")    
                 else value = moment().format("YYYY-MM-DD")        
             }
         }
-
         if (Object.keys(property).length > 0) {
 
             if (propertyType == "hidden") {
@@ -41,158 +41,161 @@ const renderModalListForm = ({ context }, section, id, modalListConfig, where, p
 
             const multiple = property.multiple
 
-            /**
-             * Select
-             */
+            if (!disabled) {
 
-            if (propertyType == "select") {
-                html.push(`<div class="form-outline">
-                        <select class="form-select form-select-sm fl-modal-list-add-select" data-mdb-select-init="" id="${propertyId}" ${(multiple) ? "multiple" : ""} ${ disabled } ${ required }>
-                            ${ (required == "") ? "<option />" : "" }`
-                )
+                /**
+                 * Select
+                 */
 
-                for (let key of Object.keys(modalities)) {
-                    const labels = modalities[key]
-                    if (!labels.archive) {
-                        html.push(`<option value="${key}" ${(labels.archive) ? "disabled" : ""}>${context.localize(labels)}</option>`)
-                    }
-                }
+                if (propertyType == "select") {
+                    html.push(`<div class="form-outline">
+                            <select class="form-select form-select-sm fl-modal-list-add-select" data-mdb-select-init="" id="${propertyId}" ${(multiple) ? "multiple" : ""} ${ disabled } ${ required }>
+                                ${ (required == "") ? "<option />" : "" }`
+                    )
 
-                html.push(
-                    `       </select>
-                        <label class="form-label select-label">${label}</label>
-                    </div>`)
-            }
-
-            /**
-             * Tag
-             */
-
-            else if (propertyType == "tag") {
-
-                html.push(
-                    `<div class="form-outline" data-mdb-input-init data-mdb-inline="true">
-                        <input class="form-control form-control-sm fl-modal-list-add-datalist" id="${propertyId}" list="updateDataList-${propertyId}" placeholder="${ context.translate("Search") }" ${ required } />
-                        <datalist id="flModalListDataList-${propertyId}">
-                            <option value="-- ${ context.translate("Erase") } --" data-id="0" id="datalist-${propertyId}-0"></option>`)
-
-                for (let tag of property.tags) {
-                    html.push(`<option value="${tag.name}" data-id="${tag.id}" id="flDatalist-${propertyId}-${tag.id}"></option>`)
-                }
-
-                html.push(
-                    `    </datalist>
-                        <label class="form-label">${label}</label>
-                    </div>`
-                )
-            }
-
-            /**
-             * Source
-             */
-
-            else if (propertyType == "source") {
-
-                html.push(
-                    `<select class="fl-modal-list-add-select" data-mdb-select-init id="${propertyId}" ${ required } ${ disabled }>
-                            ${ (required == "") ? "<option />" : "" }`
-                )
-
-                const attributes = {}
-                for (const modality of modalities) {
-                    const modalityId = modality.id
-                    let label = []
-                    const format = property.format[0].split("%s"), args = property.format[1].split(",")
-                    for (let i = 0; i <= args.length; i++) {
-                        if (i != 0) {
-                            const config = context.config[`${property.entity}/property/${args[i-1]}`]
-                            let value = modality[args[i-1]]
-                            if (config && config.type == "percentage") value = `${ parseFloat(value) * 100 }%`
-                            label.push(value)
+                    for (let key of Object.keys(modalities)) {
+                        const labels = modalities[key]
+                        if (!labels.archive) {
+                            html.push(`<option value="${key}" ${(labels.archive) ? "disabled" : ""}>${context.localize(labels)}</option>`)
                         }
-                        label.push(format[i])
                     }
-                    for (const key of (property.options.attributes) ? (property.options.attributes) : []) {
-                        if (!attributes[key]) attributes[key] = []
-                        attributes[key].push(`${modalityId}:${modality[key]}`)
-                    }
-                    html.push(`<option value="${modalityId}" ${ (value == modalityId) ? "selected" : "" }>${label.join("")}</option>`)
+
+                    html.push(
+                        `       </select>
+                            <label class="form-label select-label">${label}</label>
+                        </div>`)
                 }
 
-                html.push(
-                    `       </select>
-                        <label class="form-label select-label">${label}</label>`
-                )
+                /**
+                 * Tag
+                 */
 
-                for (const [key, value] of Object.entries(attributes)) {
-                    html.push(`<input type="hidden" id="${propertyId}-${key}" value="${ value.join("|") }" />`)
+                else if (propertyType == "tag") {
+
+                    html.push(
+                        `<div class="form-outline" data-mdb-input-init data-mdb-inline="true">
+                            <input class="form-control form-control-sm fl-modal-list-add-datalist" id="${propertyId}" list="updateDataList-${propertyId}" placeholder="${ context.translate("Search") }" ${ required } />
+                            <datalist id="flModalListDataList-${propertyId}">
+                                <option value="-- ${ context.translate("Erase") } --" data-id="0" id="datalist-${propertyId}-0"></option>`)
+
+                    for (let tag of property.tags) {
+                        html.push(`<option value="${tag.name}" data-id="${tag.id}" id="flDatalist-${propertyId}-${tag.id}"></option>`)
+                    }
+
+                    html.push(
+                        `    </datalist>
+                            <label class="form-label">${label}</label>
+                        </div>`
+                    )
                 }
-            }
 
-            else if (["date"].includes(property.type)) {
-                html.push(`<div class="form-outline fl-modal-list-add-date-outline" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true">
-                        <input class="form-control form-control-sm fl-modal-list-add-date" id="${propertyId}" value="${context.decodeDate(value)}" ${ disabled } ${ required } placeholder="DD/MM/YYYY" autocomplete="off" />
-                        <label class="form-label">${label}</label>
-                    </div>`)
-            }
+                /**
+                 * Source
+                 */
 
-            else if (["datetime"].includes(property.type)) {
-                html.push(`<div class="form-outline fl-modal-list-add-date-outline" data-mdb-datetimepicker-init data-mdb-input-init data-mdb-inline="true">
-                        <input class="form-control form-control-sm fl-modal-list-add-date" id="${propertyId}" value="${ moment(value).format("DD/MM/YYYY HH:mm:ss") }" ${ disabled } ${ required } placeholder="DD/MM/YYYY" autocomplete="off" />
-                        <label class="form-label">${label}</label>
-                    </div>`)
-            }
+                else if (propertyType == "source") {
 
-            else if (property.type == "number") {
-                html.push(`
-                    <div class="form-outline fl-modal-list-add-form-outline" data-mdb-input-init>
+                    html.push(
+                        `<select class="fl-modal-list-add-select" data-mdb-select-init id="${propertyId}" ${ required } ${ disabled }>
+                                ${ (required == "") ? "<option />" : "" }`
+                    )
+
+                    const attributes = {}
+                    for (const modality of modalities) {
+                        const modalityId = modality.id
+                        let label = []
+                        const format = property.format[0].split("%s"), args = property.format[1].split(",")
+                        for (let i = 0; i <= args.length; i++) {
+                            if (i != 0) {
+                                const config = context.config[`${property.entity}/property/${args[i-1]}`]
+                                let value = modality[args[i-1]]
+                                if (config && config.type == "percentage") value = `${ parseFloat(value) * 100 }%`
+                                label.push(value)
+                            }
+                            label.push(format[i])
+                        }
+                        for (const key of (property.options.attributes) ? (property.options.attributes) : []) {
+                            if (!attributes[key]) attributes[key] = []
+                            attributes[key].push(`${modalityId}:${modality[key]}`)
+                        }
+                        html.push(`<option value="${modalityId}" ${ (value == modalityId) ? "selected" : "" }>${label.join("")}</option>`)
+                    }
+
+                    html.push(
+                        `       </select>
+                            <label class="form-label select-label">${label}</label>`
+                    )
+
+                    for (const [key, value] of Object.entries(attributes)) {
+                        html.push(`<input type="hidden" id="${propertyId}-${key}" value="${ value.join("|") }" />`)
+                    }
+                }
+
+                else if (["date"].includes(property.type)) {
+                    html.push(`<div class="form-outline fl-modal-list-add-date-outline" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true">
+                            <input class="form-control form-control-sm fl-modal-list-add-date" id="${propertyId}" value="${context.decodeDate(value)}" ${ disabled } ${ required } placeholder="DD/MM/YYYY" autocomplete="off" />
+                            <label class="form-label">${label}</label>
+                        </div>`)
+                }
+
+                else if (["datetime"].includes(property.type)) {
+                    html.push(`<div class="form-outline fl-modal-list-add-date-outline" data-mdb-datetimepicker-init data-mdb-input-init data-mdb-inline="true">
+                            <input class="form-control form-control-sm fl-modal-list-add-date" id="${propertyId}" value="${ moment(value).format("DD/MM/YYYY HH:mm:ss") }" ${ disabled } ${ required } placeholder="DD/MM/YYYY" autocomplete="off" />
+                            <label class="form-label">${label}</label>
+                        </div>`)
+                }
+
+                else if (property.type == "number") {
+                    html.push(`
                         <div class="form-outline fl-modal-list-add-form-outline" data-mdb-input-init>
-                            <input class="form-control form-control-sm is-valid fl-modal-list-add-input" id="${propertyId}" value="${value}" ${ disabled } ${ required } />
+                            <div class="form-outline fl-modal-list-add-form-outline" data-mdb-input-init>
+                                <input class="form-control form-control-sm is-valid fl-modal-list-add-input" id="${propertyId}" value="${value}" ${ disabled } ${ required } />
+                                <label class="form-label">${label}</label>
+                            </div>
+                        </div>`)
+                }
+
+                else if (property.type == "percentage") {
+                    html.push(`<div class="form-outline fl-modal-list-add-form-outline" data-mdb-input-init>
+                        <div class="form-outline fl-modal-list-add-form-outline" data-mdb-input-init>
+                            <input class="form-control form-control-sm is-valid fl-modal-list-add-input" data-fl-type="percentage" id="${propertyId}" value="${value}" ${ disabled } ${ required } />
                             <label class="form-label">${label}</label>
                         </div>
                     </div>`)
-            }
+                }
 
-            else if (property.type == "percentage") {
-                html.push(`<div class="form-outline fl-modal-list-add-form-outline" data-mdb-input-init>
-                    <div class="form-outline fl-modal-list-add-form-outline" data-mdb-input-init>
-                        <input class="form-control form-control-sm is-valid fl-modal-list-add-input" data-fl-type="percentage" id="${propertyId}" value="${value}" ${ disabled } ${ required } />
-                        <label class="form-label">${label}</label>
-                    </div>
-                </div>`)
-            }
+                else if (property.type == "email") {
+                    html.push(` <div class="form-outline fl-modal-list-add-form-outline" data-mdb-input-init>
+                            <input class="form-control form-control-sm is-valid fl-modal-list-add-email" id="${propertyId}" value="${value}" ${ disabled } ${ required } maxlength="255" />
+                            <label class="form-label">${label}</label>
+                        </div>`)
+                }              
 
-            else if (property.type == "email") {
-                html.push(` <div class="form-outline fl-modal-list-add-form-outline" data-mdb-input-init>
-                        <input class="form-control form-control-sm is-valid fl-modal-list-add-email" id="${propertyId}" value="${value}" ${ disabled } ${ required } maxlength="255" />
-                        <label class="form-label">${label}</label>
-                    </div>`)
-            }              
+                else if (property.type == "phone") {
+                    html.push(`<div class="form-outline fl-modal-list-add-form-outline" data-mdb-input-init>
+                            <input class="form-control form-control-sm is-valid fl-modal-list-add-phone" id="${propertyId}" value="${value}" ${ disabled } ${ required } maxlength="255" />
+                            <label class="form-label">${label}</label>
+                        </div>`)
+                }
 
-            else if (property.type == "phone") {
-                html.push(`<div class="form-outline fl-modal-list-add-form-outline" data-mdb-input-init>
-                        <input class="form-control form-control-sm is-valid fl-modal-list-add-phone" id="${propertyId}" value="${value}" ${ disabled } ${ required } maxlength="255" />
-                        <label class="form-label">${label}</label>
-                    </div>`)
-            }
-
-            else {
-                html.push(`
-                    <div 
-                      class="form-outline fl-modal-list-add-form-outline ${ (property.autocomplete) ? "fl-modal-list-add-autocomplete" : "" }"
-                      data-mdb-input-init
-                      ${ (property.autocomplete) ? `data-fl-values="${ property.values.join(",") }"`: "" }
-                    >
-                        <input 
-                          type="text"
-                          class="form-control form-control-sm is-valid fl-modal-list-add-input"
-                          id="${propertyId}"
-                          value="${value}"
-                          ${ disabled }
-                          ${ required }
-                          maxlength="255" />
-                        <label class="form-label" for="${propertyId}">${label}</label>
-                    </div>`)
+                else {
+                    html.push(`
+                        <div 
+                        class="form-outline fl-modal-list-add-form-outline ${ (property.autocomplete) ? "fl-modal-list-add-autocomplete" : "" }"
+                        data-mdb-input-init
+                        ${ (property.autocomplete) ? `data-fl-values="${ property.values.join(",") }"`: "" }
+                        >
+                            <input 
+                            type="text"
+                            class="form-control form-control-sm is-valid fl-modal-list-add-input"
+                            id="${propertyId}"
+                            value="${value}"
+                            ${ disabled }
+                            ${ required }
+                            maxlength="255" />
+                            <label class="form-label" for="${propertyId}">${label}</label>
+                        </div>`)
+                }
             }
 
             html.push("</td>")

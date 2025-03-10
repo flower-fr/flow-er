@@ -1,3 +1,4 @@
+import { triggerList } from "/flBo/cli/controller/triggerList.js"
 
 const triggerSearch = async ({ context, entity, view }, param = false) => {
     
@@ -130,3 +131,5 @@ const triggerSearch = async ({ context, entity, view }, param = false) => {
 
     triggerList({ context, entity, view })
 }
+
+export { triggerSearch }

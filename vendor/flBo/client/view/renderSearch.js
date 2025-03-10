@@ -11,8 +11,8 @@ const renderSearch = ({ context, entity, view }, data) => {
             html.push(`<input type="hidden" class="fl-search-change" data-property-id="${propertyId}" value="mdb/search/${entity}?view=${view}" />`)
         }
     }
-
-    return `${html.join("\n")}
+    
+    html.push(`
     <ul class="sidenav-menu">
         <li class="sidenav-item">
             <div class="container">
@@ -31,36 +31,40 @@ const renderSearch = ({ context, entity, view }, data) => {
                                 </button>                
                             </div>
                         </div>
+
+                        ${renderGlobalActions(context, entity, view, data)}
+
                     </div>
                 </form>
             </div>
         </li>
-    </ul>`
+    </ul>`)
+
+    return html.join("\n")
 }
 
 const renderFilters = (context, entity, view, properties, data) => {
     let filters = []
-    for (let propertyId of Object.keys(properties)) {
-        const property = properties[propertyId]
+    for (const [propertyId, property] of Object.entries(properties)) {
         const options = (property.options) ? property.options : []
         const propertyType = (options.type) ? options.type : property.type
 
         let input
         
         if (["date", "time", "datetime"].includes(propertyType)) {
-            input = renderFilterDateTime(context, propertyId, property)
+            input = renderFilterDateTime(context, propertyId, property, data)
         }
 
         else if (["age"].includes(propertyType)) {
             input = renderFilterAge(context, propertyId, property)
         }
 
-        else if (["select", "multiselect", "source", "tags"].includes(propertyType)) {
+        else if (["select", "multiselect", "source"].includes(propertyType)) {
             input = renderFilterSelect(context, propertyId, property, options, data.where)
         }        
 
         else if (["tag"].includes(propertyType)) {
-            input = renderFilterTag(context, propertyId, property, options)
+            input = renderFilterTag(context, propertyId, property, options, data.where)
         }        
 
         else if (["number"].includes(propertyType)) {
@@ -77,17 +81,27 @@ const renderFilters = (context, entity, view, properties, data) => {
     return filters.join("\n")
 }
 
-const renderFilterDateTime = (context, propertyId, property) => {
+const renderFilterDateTime = (context, propertyId, property, data) => {
+
+    let valueMin, valueMax
+    if (data.where && data.where[propertyId]) {
+        const where = data.where[propertyId].split(",")
+        console.log(where)
+        if (where[0] == "between") {
+            valueMin = moment(where[1]).format("DD/MM/YYYY")
+            valueMax = moment(where[2]).format("DD/MM/YYYY")
+        }
+    }
 
     return `<div class="form-outline fl-search-date-outline mb-1" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true">
-            <input type="text" class="form-control form-control-sm fl-search-item fl-search-min" id="flSearchMin-${propertyId}" data-property-id="${propertyId}"/>
-            <label for="flSearchMin-${propertyId}" class="form-label">${context.localize(property.labels)} - Min</label>
-        </div>
-        <div class="form-outline fl-search-date-outline mb-3" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true">
-            <input type="text" class="form-control form-control-sm fl-search-item fl-search-max" id="flSearchMax-${propertyId}" data-property-id="${propertyId}"/>
-            <label for="flSearchMax-${propertyId}" class="form-label">Max</label>
-        </div>`
-} 
+                <input type="text" class="form-control form-control-sm fl-search-item fl-search-date-min" data-property-id="${propertyId}" id="flSearchMin-${propertyId}" ${ (valueMin) ? `value="${ valueMin }"` : "" } />
+                <label for="flSearchMin-${propertyId}" class="form-label">${context.localize(property.labels)} - Min</label>
+            </div>
+            <div class="form-outline fl-search-date-outline mb-3" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true">
+                <input type="text" class="form-control form-control-sm fl-search-item fl-search-date-max" data-property-id="${propertyId}" id="flSearchMax-${propertyId}" ${ (valueMax) ? `value="${ valueMax }"` : "" } />
+                <label for="searchMax-${propertyId}" class="form-label">Max</label>
+            </div>`
+}
 
 const renderFilterSelect = (context, propertyId, property, options, where) => {
 
@@ -117,14 +131,18 @@ const renderFilterSelect = (context, propertyId, property, options, where) => {
     </div>`
 }
 
-
-const renderFilterTag = (context, propertyId, property) => {
+const renderFilterTag = (context, propertyId, property, options, where) => {
 
     const renderModalities = () => {
 
         let options = []
         for (let { id, name } of property.tags) {
-            options.push(`<option value="${id}" id="search-${propertyId}-${id}">${name}</option>`)
+            let selected = false
+            if (Object.keys(where).length > 0 && Object.keys(where).includes(propertyId)) {
+                const checked = where[propertyId].split(",")
+                if (checked.includes(id)) selected = true
+            }
+            options.push(`<option value="${id}" ${ (selected) ? "selected" : "" } id="search-${propertyId}-${id}">${name}</option>`)
         }
         return options.join("\n")
     }
@@ -154,11 +172,32 @@ const renderFilterNumber = (context, propertyId, property) => {
 }
 
 const renderFilterInput = (context, propertyId, property, options, properties) => {
-
+    console.log(propertyId)
     const values = (properties[propertyId].distribution) ? Object.keys(properties[propertyId].distribution) : []
     return `
-        <div class="form-outline fl-search-form-Outline mb-3" data-mdb-input-init data-values="${ values.join(",") }">
+        <div class="form-outline fl-search-form-outline mb-3" data-mdb-input-init data-values="${ values.join(",") }">
             <input type="text" class="form-control form-control-sm fl-search-item fl-search-input" data-property-id="${propertyId}" id="flSearch-${propertyId}" />
-            <label class="form-label" for="flSearch-${propertyId}">${context.localize(property.labels)}</label>
+            <label class="form-label" for="search-${propertyId}">${context.localize(property.labels)}</label>
         </div>`
+}
+
+const renderGlobalActions = (context, entity, view, data) => {
+    let actions = []
+    console.log(data.actions)
+    if (data.actions) {
+        actions.push("<hr />")
+        for (let action of Object.values(data.actions)) {
+            actions.push(
+                `<div class="col-md-12">    
+                    <div class="input-group mb-2 text-center">
+                        <button type="button" class="btn btn-outline-primary fl-global" data-route="${ (action.route) ? action.route : `/${action.controller}/${action.action}/${action.entity}${ (action.id) ? `/${action.id}` : "" }?${ (action.view) ? `view=${action.view}` : "" }` }" data-mdb-target="#flGlobalModalForm" data-mdb-modal-init>
+                            <i ${ (action.glyph) ? `class="fa ${action.glyph}` : "" }"></i> ${ context.localize(action.labels) }
+                        </button>
+                    </div>
+                </div>`
+            )
+        }    
+    }
+
+    return actions.join("\n")
 }

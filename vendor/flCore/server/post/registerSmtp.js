@@ -1,3 +1,5 @@
+const moment = require("moment")
+
 const { insert } = require("../model/insert")
 const { renderMail } = require("../view/renderMail")
 
@@ -46,10 +48,13 @@ const registerSmtp = async ({ req }, context, rows, { connection }) => {
          */
 
         data = {
+            status: "done",
+            date: moment().format("YYYY-MM-DD"),
+            time: moment().format("HH:mm:ss"),
             chanel: "email",
             direction: "outbound",
             account_id: row.id,
-            text: row.email_subject
+            summary: `${ context.translate("Email sent") } - ${row.email_subject}`
         }
         await connection.execute(insert(context, "crm_contact", data, context.config["crm_contact/model"]))
     }

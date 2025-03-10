@@ -5,14 +5,11 @@ const triggerDetail = ({ context, entity, view }, searchParams) => {
         const id = $(this).attr("data-id")
         const route = ($(this).attr("data-fl-controller")) ? `/${ $(this).attr("data-fl-controller") }/${ $(this).attr("data-fl-action") }/${ $(this).attr("data-fl-entity") }/${ $(this).attr("data-id") }` : `${$("#detailRoute").val()}/${id}?view=${view}`
         $(this).removeClass("btn-outline-primary").addClass("btn-primary")
-        $("#flListDetailModal").html("")
         getDetail(context, entity, view, route, id, searchParams)
     })
 }
 
 const getDetail = async (context, entity, view, route, id, searchParams) => {
-
-    //const route = `${$("#detailRoute").val()}/${id}?view=${view}`
 
     const response = await fetch(route)
     if (!response.ok) {

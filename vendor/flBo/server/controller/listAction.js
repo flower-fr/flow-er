@@ -23,7 +23,7 @@ const listAction = async ({ req }, context, db) => {
         const keyValue = param.split(":")
         const key = keyValue[0], value = keyValue[1]
         whereParam[key] = value.split(",")
-        if (!propertyDefs[key]) propertyDefs[key] = {}
+        //if (!propertyDefs[key]) propertyDefs[key] = {}
     }
     if (Object.values(whereParam).length == 0) {
         restriction = (listConfig.defaultWhere) ? listConfig.defaultWhere : {}

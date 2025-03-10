@@ -3,7 +3,9 @@ const { join } = require("./join")
 const { selectColumns } = require("./selectColumns")
 const { selectWhere } = require("./selectWhere")
 
-const select = (context, table, columns, where, order = [], limit = null, model = [], debug = false) => {
+const select = (context, entity, columns, where, order = [], limit = null, model = [], debug = false) => {
+
+    const table = (model.entities[entity]) ? model.entities[entity].table : entity
 
     if (model.properties.visibility && (!where.visibility || where.visibility == "deleted") /* deleted never visible */) where.visibility = 'active'
 
@@ -11,15 +13,13 @@ const select = (context, table, columns, where, order = [], limit = null, model 
         columns = []
         for (let propertyId of Object.keys(model.properties)) {
             const property = model.properties[propertyId]
-            if (property.entity == table) columns.push(propertyId)
+            if (property.entity == entity) columns.push(propertyId)
         }
     }
 
-    const joins = join(table, columns, where, order, model)
+    const joins = join(entity, columns, where, order, model)
 
-    const qTable = qi(table)
-
-    const { columnDict, groupBy } = selectColumns(context, table, columns, model, joins)
+    const { columnDict, groupBy } = selectColumns(context, entity, columns, model, joins)
 
     const select = []
     for (let propertyId of Object.keys(columnDict)) {
@@ -27,11 +27,11 @@ const select = (context, table, columns, where, order = [], limit = null, model 
         select.push(`${column} AS ${propertyId}`)
     }
 
-    let request = `SELECT ${select.join(", ")} FROM ${table}\n`
+    let request = `SELECT ${select.join(", ")} FROM ${table} AS ${entity}\n`
 
     request += `${Object.values(joins).join("\n")}\n`
 
-    const predicates = selectWhere(context, table, where, model, joins)
+    const predicates = selectWhere(context, entity, where, model, joins)
     if (predicates.length > 0) request += `WHERE ${predicates.join("\nAND ")}\n`
 
     if (groupBy) request += `GROUP BY ${groupBy.join(", ")}\n`

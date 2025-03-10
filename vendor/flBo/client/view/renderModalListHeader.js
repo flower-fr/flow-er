@@ -117,7 +117,7 @@ const renderModalListHeader = ({ context }, section, modalListConfig, properties
             <thead class="datatable-header" id="flModalListSearchHead">
                 <tr>
                     <th/>`)
-
+console.log(properties)
     for (const [propertyId, property] of Object.entries(properties)) {
         if (property.type != "hidden" && Object.keys(property).length > 0) {
     

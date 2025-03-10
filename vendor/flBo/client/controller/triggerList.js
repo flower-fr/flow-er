@@ -1,3 +1,5 @@
+import { triggerGroup } from "/flBo/cli/controller/triggerGroup.js"
+
 const triggerList = async ({ context, entity, view }, order = $("#flListOrderHidden").val()) => {		
 
     // Route with params
@@ -125,8 +127,11 @@ const triggerList = async ({ context, entity, view }, order = $("#flListOrderHid
 
     triggerTaskAdd({ context, entity, view }, params)
 
+    triggerGroup({ context, entity, view }, params)
     // Connect the grouped actions anchors
-    $(".fl-list-group").click(function () {
-        getGroup(context, entity, view, params)
-    })
+    // $(".fl-list-group").click(function () {
+    //     getGroup(context, entity, view, params)
+    // })
 }
+
+export { triggerList }
