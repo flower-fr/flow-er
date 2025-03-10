@@ -41,8 +41,6 @@ const registerSms = async ({ req }, context, rows, { connection, sms }) => {
         model = context.config["crm_contact/model"]
         data = {
             status: "done",
-            date: moment().format("YYYY-MM-DD"),
-            time: moment().format("HH:mm:ss"),
             chanel: "sms",
             direction: "outbound",
             account_id: row.id,

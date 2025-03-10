@@ -49,8 +49,6 @@ const registerSmtp = async ({ req }, context, rows, { connection }) => {
 
         data = {
             status: "done",
-            date: moment().format("YYYY-MM-DD"),
-            time: moment().format("HH:mm:ss"),
             chanel: "email",
             direction: "outbound",
             account_id: row.id,
