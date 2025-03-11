@@ -77,7 +77,6 @@ const authTokenMiddleware = (config, context) => async (req, res, next) => {
             const payload = getTokenPayload(token)
             context.user.formattedName = `${payload.n_first} ${payload.n_last}`
             context.user.roles = (payload.role) ? payload.role.split(",") : []
-            console.log(context.user)
             next()
         }
         else {

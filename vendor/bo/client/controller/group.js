@@ -173,7 +173,6 @@ const postGroupTab = async ({ context, entity, view }, tab, searchParams) => {
                         rows.push({ ...row })
                     }
                 })
-                console.log(payload)
                 const body = { 
                     payload: payload,
                     rows: rows 

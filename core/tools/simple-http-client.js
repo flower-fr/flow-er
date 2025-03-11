@@ -35,8 +35,7 @@ const createOptions = ({ config, path, method, headers }) => {
 };
 
 const execute = ({ config, path, method, body, headers, redirects = 0 }) => {
-    console.log({ config, path, method, body, headers, redirects  });
-    const options = createOptions({ config, path, method, headers}) ;
+    const options = createOptions({ config, path, method, headers})
     return new Promise((resolve, reject) => {
         const content = [];
         const scheme = config.scheme === "https" ? https : http;

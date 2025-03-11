@@ -114,7 +114,6 @@ const requestPasswordReset = async ({ req, config }, context, db, mailClient) =>
             resetPasswordLink: `${origin}user/reinitialisation-mot-de-passe/${Buffer(token).toString("base64")}`,
             registrationLink: context.instance.fqdn
         }
-        console.log(data)
         const content = renderResetPassword(context, data)
         await mailClient.sendMail({
             type: "html",
