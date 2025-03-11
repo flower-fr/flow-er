@@ -44,15 +44,8 @@ const loginPost = async ({ req, res }, context, config, db) => {
     // New token
 
     const payloadModel = config.tokenPayloadModel
-    const filters = {}
-    filters[payloadModel.key] = user.id
-    const profileModel = {
-        "entities": {},
-        "properties": {}
-    }
-    for (let propertyId of payloadModel.columns) {
-        profileModel.properties[propertyId] = { "entity": payloadModel.entity, "column": propertyId }
-    }
+    const filters = { "user_id": user.id }
+    const profileModel = context.config[payloadModel.model]
     const [rows] = await db.execute(select(context, payloadModel.entity, payloadModel.columns, filters, null, null, profileModel))
     const profile = rows[0]
 

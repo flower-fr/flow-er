@@ -119,7 +119,7 @@ const selectWhere = (context, table, where, model, joins) => {
                     }
                 }
                 else {
-                    value = qv(value)
+                    if (typeof(value) === "string") value = qv(value)
                     if (property.type && ["primary", "foreign", "int", "float", "modality"].includes(property.type)) predicates.push(`${qEntity}${qColumn} = ${value}\n`)
                     else predicates.push(`${qEntity}${qColumn} LIKE ${value}\n`)
                 }
