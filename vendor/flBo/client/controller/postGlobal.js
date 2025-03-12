@@ -158,7 +158,7 @@ const postGlobal = async ({ context, entity, view }, data) => {
                 }
             
                 data = await response.json()
-                const renderer = (data.layout.renderer) ? { "renderGlobal": renderGlobal}[data.layout.renderer] : renderGlobal
+                const renderer = (data.layout && data.layout.renderer) ? { "renderGlobal": renderGlobal}[data.layout.renderer] : renderGlobal
                 if (data.layout.title) $("#flGlobalModalLabel").text(context.localize(data.layout.title))
                 $("#flGlobalModal").html(renderer({ context, entity, view }, data))
             

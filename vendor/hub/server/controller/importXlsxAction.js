@@ -5,7 +5,11 @@ const moment = require("moment")
 const { select } = require("../../../flCore/server/model/select")
 const { insert } = require("../../../flCore/server/model/insert")
 const { update } = require("../../../flCore/server/model/update")
-const { mergePayload, dataToStore, entitiesToStore, storeEntities, auditCells } = require("../../../flCore/server/post/save")
+const { mergePayload } = require("../../../flCore/server/post/save")
+const { dataToStore } = require("../../../flCore/server/post/dataToStore")
+const { entitiesToStore } = require("../../../flCore/server/post/entitiesToStore")
+const { storeEntities } = require("../../../flCore/server/post/storeEntities")
+const { auditCells } = require("../../../flCore/server/post/auditCells")
 
 /**
  * Convert the formData file to JSON
@@ -154,7 +158,7 @@ const getImportXlsxAction = async ({ req }, context, db) => {
             template: { 
                 type: "html",
                 labels: { default: ".xlsx file template", fr_FR: "Modèle de fichier .xlsx" },
-                value: "<a href=\"/client-eq/template/Monportefeuilleinvestisseurscommandes.xlsx\">Monportefeuilleinvestisseurscommandes.xlsx</a>",
+                value: "<a href=\"/client-savoiria/template/savoiria.xlsx\">savoiria.xlsx</a>",
                 options: {}
             },
             xlsxFile: { 
