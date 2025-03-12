@@ -43,7 +43,7 @@ const mergePayload = async (context, entity, model, form, config, connection) =>
     for (let formRow of form) {
         for (let id of config.identifier) {
             if (!where[id]) where[id] = ["in"]
-            where[id].push(formRow[id])
+            if (formRow[id]) where[id].push(formRow[id])
         }
     }
 
