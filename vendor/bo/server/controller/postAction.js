@@ -1,4 +1,5 @@
 const util = require("util")
+const { throwBadRequestError } = require("../../../../core/api-utils")
 
 const { assert, throwConflictError } = require("../../../../core/api-utils")
 const { select } = require("../../../flCore/server/model/select")
@@ -213,36 +214,42 @@ const postAction = async ({ req }, context, db) => {
     const id = (req.query.id) ? req.query.id : 0
 
     const connection = await db.getConnection()
-
-    const model = context.config[`${entity}/model`]
-
-    await connection.beginTransaction()
-
-    const form = req.body
-
-    /**
-     * Find out the data to actually store in the database 
-     */
-
-    let { rowsToStore, rowsToReject } = dataToStore(entity, model, form)
-
-    if (rowsToReject.length > 0) {
-        return JSON.stringify({ "status": "ko", "errors": rowsToReject })
-    }
+    try {
+        const model = context.config[`${entity}/model`]
     
-    /**
-     * Find out the entities to insert vs update in the database 
-     */
-
-    rowsToStore = entitiesToStore(entity, model, rowsToStore)
-    await storeEntities(context, entity, rowsToStore, model, connection)
-    await auditCells(context, rowsToStore, connection)
-
-    await connection.commit()
+        await connection.beginTransaction()
+    
+        const form = req.body
+    
+        /**
+         * Find out the data to actually store in the database 
+         */
+    
+        let { rowsToStore, rowsToReject } = dataToStore(entity, model, form)
+    
+        if (rowsToReject.length > 0) {
+            return JSON.stringify({ "status": "ko", "errors": rowsToReject })
+        }
         
-    connection.release()
-
-    return JSON.stringify({ "status": "ok", "stored": rowsToStore })
+        /**
+         * Find out the entities to insert vs update in the database 
+         */
+    
+        rowsToStore = entitiesToStore(entity, model, rowsToStore)
+        await storeEntities(context, entity, rowsToStore, model, connection)
+        await auditCells(context, rowsToStore, connection)
+    
+        await connection.commit()
+            
+        connection.release()
+    
+        return JSON.stringify({ "status": "ok", "stored": rowsToStore })    
+    }
+    catch {
+        await connection.rollback()
+        connection.release()
+        throw throwBadRequestError()
+    }
 }
 
 module.exports = {
