@@ -40,6 +40,7 @@ const listAction = async ({ req }, context, db) => {
                 }
                 whereParam[propertyId] = value
             }
+            else if (restriction[propertyId] === "profile_id") whereParam[propertyId] = context.user.profile_id
             else whereParam[propertyId] = restriction[propertyId]
         }    
     }

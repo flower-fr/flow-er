@@ -1,7 +1,7 @@
 const { createToken, checkToken, checkPassword, getTokenPayload } = require("../../../../core/tools/security")
 const { executeService, assert } = require("../../../../core/api-utils")
 
-const sessionCookieMiddleware = config => async (req, res, next) => {
+const sessionCookieMiddleware = (config, context) => async (req, res, next) => {
 
     const session = req.cookies["session"]
     if (!session) {
@@ -15,7 +15,7 @@ const sessionCookieMiddleware = config => async (req, res, next) => {
     }
 
     try {
-        const { status } = await checkToken(token, config.apiKey)
+        const { status, payload } = await checkToken(token, config.apiKey)
         if (status === "invalid") {
             return res.redirect("/user/login")
         }
@@ -23,6 +23,7 @@ const sessionCookieMiddleware = config => async (req, res, next) => {
             return res.redirect("/user/login")
         }
         else if (status === "ok") {
+            if (context) context.user = payload
             next()
         }
         else {

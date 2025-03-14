@@ -167,6 +167,7 @@ const storeEntities = async (context, mainEntity, rowsToStore, model, db) => {
         const columns = columnsToUpdate[table]
         for (let column of Object.keys(columns)) {
             const pairs = columns[column]
+            console.log(updateCase(context, table, column, pairs, model))
             await db.execute(updateCase(context, table, column, pairs, model))
         }
     }
@@ -178,6 +179,7 @@ const auditCells = async (context, rowsToStore, db) => {
         const insertedEntities = row.entitiesToInsert, updatedEntities = row.entitiesToUpdate
 
         const insertAudit = async (entity, data, model) => {
+            console.log(entity, data, model)
             const auditTable = (model.audit) ? model.audit : "audit", auditModel = context.config[`${auditTable}/model`]
             for (let propertyId of Object.keys(data.cells)) {
                 const property = model.properties[propertyId]

@@ -15,7 +15,7 @@ const renderTasks = ({ context, entity, view }, data) => {
         html.push(`
             <tr>
                 <th>
-                    ${ context.decodeDate(row.date) }&nbsp;&nbsp;&nbsp;&nbsp;${ (row.time) ? row.time : "" }
+                    ${ context.decodeDate(row.date) }&nbsp;&nbsp;&nbsp;&nbsp;${ (row.time) ? row.time : "" }&nbsp;&nbsp;&nbsp;&nbsp;${ (row.owner_n_fn && row.owner_n_fn.trim()) ? `${ context.translate("Assigned to")} ${ row.owner_n_fn }` : "" }
                 </th>
             </tr>
             <tr>

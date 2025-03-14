@@ -4,7 +4,9 @@
         "properties": {
             "id": { "entity": "user", "column": "id", "type": "int" },
             "status": { "entity": "user", "column": "status", "audit": true },
+            "n_fn": { "entity": "user", "column": "n_fn", "audit": true },
             "email": { "entity": "user", "column": "email", "audit": true },
+            "locale": { "entity": "user", "column": "locale", "audit": true },
             "password": { "entity": "user", "column": "password" },
             "last_login": { "entity": "user", "column": "last_login", "type": "datetime" },
             "last_updated": { "entity": "user", "column": "last_updated", "type": "datetime" },

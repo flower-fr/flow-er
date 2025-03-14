@@ -52,7 +52,7 @@ const loadContext = (settings, logger) => {
     }
 
     const translate = (str) => {
-        if (translations[user.locale][str]) {
+        if (translations[user.locale] && translations[user.locale][str]) {
             return translations[user.locale][str]
         }
         else return str

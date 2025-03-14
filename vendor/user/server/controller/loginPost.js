@@ -16,12 +16,13 @@ const loginPost = async ({ req, res }, context, config, db) => {
         footer: context.config.footer,
     }
 
-    const [result] = (await db.execute(select(context, "user", ["id", "email", "password", "last_login", "last_updated", "login_failed"], { "email": email }, null, null, model)))
+    const [result] = (await db.execute(select(context, "user", ["id", "email", "locale", "password", "last_login", "last_updated", "login_failed"], { "email": email }, null, null, model)))
     const user = result[0]
     if (!user) {
         data.status = "403"
         return renderLogin({ context }, data)
     }
+    context.user.id = user.id
 
     const userData = {}
     const authorized = await checkPassword(password, user.password)
@@ -46,11 +47,12 @@ const loginPost = async ({ req, res }, context, config, db) => {
     const payloadModel = config.tokenPayloadModel
     const filters = { "user_id": user.id }
     const profileModel = context.config[payloadModel.model]
-    const [rows] = await db.execute(select(context, payloadModel.entity, payloadModel.columns, filters, null, null, profileModel))
-    const profile = rows[0]
+    const [rows] = await db.execute(select(context, payloadModel.entity, Object.keys(payloadModel.columns), filters, null, null, profileModel))
+    user.user_id = user.id // Deprecated
+    for (const [key, value] of Object.entries(rows[0])) user[payloadModel.columns[key]] = value
 
     const expiresIn = config.tokenExpirationTime
-    const token = createToken(profile, config.apiKey, expiresIn)
+    const token = createToken(user, config.apiKey, expiresIn)
 
     res.cookie("session", `Bearer ${token}`, {
         path: "/", 

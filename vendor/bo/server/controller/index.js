@@ -55,7 +55,7 @@ const registerBo = async ({ context, config, logger, app }) => {
     app.get(`${config.prefix}language`, execute(() => { return JSON.stringify(context.translations) }))
     app.get(`${config.prefix}user`, execute(() => { return JSON.stringify(context.user) }))
 
-    app.use(`${config.prefix}`, sessionCookieMiddleware(config))
+    app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
     
     app.get(`${config.prefix}index/:entity`, execute(index, context, db))
     app.get(`${config.prefix}dashboard/:entity`, execute(dashboardAction, context, db))

@@ -21,7 +21,6 @@ const renderModalListForm = ({ context }, section, id, modalListConfig, where, p
         if (Array.isArray(value) && value.length == 1) value = value[0]
         if (options.value && !Array.isArray(options.value)) {
             value = options.value
-            console.log(propertyId, value)
             if (value == "?id") value = id
             else if (value.substring(0, 5) == "today") {
                 if (value && value.charAt(5) == "+") value = moment().add(value.substring(6), "days").format("YYYY-MM-DD")
@@ -29,6 +28,7 @@ const renderModalListForm = ({ context }, section, id, modalListConfig, where, p
                 else if (property.type == "datetime") value = moment().format("YYYY-MM-DD HH:mm:ss")    
                 else value = moment().format("YYYY-MM-DD")        
             }
+            else if (value == "profile_id") value = context.user.profile_id
         }
         if (Object.keys(property).length > 0) {
 

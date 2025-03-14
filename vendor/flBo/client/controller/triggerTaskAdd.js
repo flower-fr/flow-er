@@ -36,7 +36,7 @@ const getTaskAdd = async ({ context, entity, view }, searchParams) => {
             $(".fl-task-submit").prop("disabled", true)
             const submit = event.submitter
 
-            const payload = {}
+            const payload = { "owner_id": context.user.profile_id }
             payload.formJwt = $("#formJwt").val()
             payload.touched_at = $("#touched_at").val()
 

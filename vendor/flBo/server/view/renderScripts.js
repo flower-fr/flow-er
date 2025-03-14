@@ -3,7 +3,7 @@ const { renderCore } = require("./renderCore")
 
 const renderScripts = ({ context, entity, view }, data) => {
 
-    const user = data.user, indexConfig = data.indexConfig
+    const indexConfig = data.indexConfig
 
     return `<!-- Scripts -->
     <script src="/flBo/cli/resources/jquery/jquery-3.6.3.min.js" ></script>

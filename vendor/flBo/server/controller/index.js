@@ -18,7 +18,7 @@ const registerFlBo = async ({ context, config, logger, app }) => {
 
     const db = await createDbClient(config.db, context.dbName)
     const execute = executeService(context, config, logger)
-    app.use(`${config.prefix}`, sessionCookieMiddleware(config))
+    app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
     app.get(`${config.prefix}detailTab/:entity/:id`, execute(detailTabAction, context, db))
     app.get(`${config.prefix}group/:entity`, execute(groupAction, context, db))
     app.get(`${config.prefix}index/:entity`, execute(index, context, config, db))
