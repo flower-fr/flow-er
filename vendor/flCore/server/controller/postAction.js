@@ -38,6 +38,7 @@ const postAction = async ({ req }, context, { db }) => {
         await auditCells(context, rowsToStore, connection)
 
         await connection.commit()
+        connection.release()
         return JSON.stringify({ "status": "ok", "stored": rowsToStore })
     }
     catch {
