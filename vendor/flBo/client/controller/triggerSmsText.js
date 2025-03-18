@@ -1,5 +1,5 @@
 
-const triggerSmsText = () => {
+const triggerSmsText = (context) => {
 
     const formatLinks = function () {
 
@@ -37,7 +37,9 @@ const triggerSmsText = () => {
                 }
                 body = body.join("")
 
-                html.push(template.replaceAll("{addresses}", r.tel_cell.split(" ").join("")).replace("{body}", body).replace("{text}", body))
+                const addresses = (r.tel_cell) ? r.tel_cell.split(" ").join("") : context.translate("Missing phone")
+                const disabled = (r.tel_cell) ? "" : "disabled"
+                html.push(template.replaceAll("{addresses}", addresses).replace("{disabled}", disabled).replace("{body}", body).replace("{text}", body))
             }
         }
         else {
@@ -53,8 +55,7 @@ const triggerSmsText = () => {
 
         $(`#${div}`).html(html.join("\n"))
         $(".fl-sms-template").click(function () {
-            console.log("ici")
-            document.location = `sms:/open?addresses=${ $(this).attr("data-fl-addresses") }&body=${ $(this).attr("data-fl-body") }`
+            document.location = `sms:${ $(this).attr("data-fl-addresses") }&body=${ $(this).attr("data-fl-body") }`
             $(this).prop("disabled", true)
         })
     }

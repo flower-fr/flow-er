@@ -136,7 +136,7 @@ const getGroupTab = async ({ context, entity, view }, tab, searchParams) => {
         $(".fl-group-tab-message").hide()
     })
 
-    triggerSmsText()
+    triggerSmsText(context)
 
     postGroupTab({ context, entity, view }, tab, searchParams)
 }
