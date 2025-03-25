@@ -4,8 +4,6 @@ const { select } = require("../../../flCore/server/model/select")
 const { updateCase } = require("../../../flCore/server/model/updateCase")
 const { insert } = require("../../../flCore/server/model/insert")
 
-const util = require("util")
-
 const updateColumns = async (context, columnsToUpdate, model, db) => {
     
     const columnsToRetrieve = {}
@@ -46,8 +44,9 @@ const updateColumns = async (context, columnsToUpdate, model, db) => {
     /**
      * Update existing entities
      */
-    for (const [table, columns] of Object.entries(cellsToUpdate)) {
-        const model = context.config[`${ table }/model`]
+    for (const [entity, columns] of Object.entries(cellsToUpdate)) {
+        const model = context.config[`${ entity }/model`]
+        const table = model.entities[entity].table
         const auditTable = (model.audit) ? model.audit : "audit", auditModel = context.config[`${auditTable}/model`]
 
         for (const [column, map] of Object.entries(columns)) {

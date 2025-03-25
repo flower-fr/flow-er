@@ -1,13 +1,14 @@
 const util = require("util")
-const { assert } = require("../../../../core/api-utils")
+const { assert, throwBadRequestError } = require("../../../../core/api-utils")
+
 const xlsxParser = require("node-xlsx").default
 const moment = require("moment")
 const { select } = require("../../../flCore/server/model/select")
 const { insert } = require("../../../flCore/server/model/insert")
 const { update } = require("../../../flCore/server/model/update")
 const { mergePayload } = require("../../../flCore/server/post/save")
-const { dataToStore } = require("../../../flCore/server/post/dataToStore")
-const { entitiesToStore } = require("../../../flCore/server/post/entitiesToStore")
+const { dataToStore } = require("../../../flCore/server/model/dataToStore")
+const { entitiesToStore } = require("../../../flCore/server/model/entitiesToStore")
 const { storeEntities } = require("../../../flCore/server/post/storeEntities")
 const { auditCells } = require("../../../flCore/server/post/auditCells")
 
@@ -22,13 +23,13 @@ const parse = (sheet) => {
         if (!header) {
             header = []
             for (let i = 0; i < row.length; i++) {
-                header[i] = (typeof(row[i]) == "string") ? row[i].split("\r").join("").split("\n").join("") : row[i]
+                header[i] = (typeof(row[i]) == "string") ? row[i].split("\r").join("").split("\n").join("").split("\"").join("\\\"") : row[i]
             }
             continue
         }
         const resRow = {}
         for (let i = 0; i < row.length; i++) {
-            resRow[header[i]] = (typeof(row[i]) == "string") ? row[i].split("\r").join("").split("\n").join("") : row[i]
+            resRow[header[i]] = (typeof(row[i]) == "string") ? row[i].split("\r").join("").split("\n").join("").split("\"").join("\\\"") : row[i]
         }
         if (Object.values(resRow).length > 0) payload.push(resRow)
     }
@@ -129,7 +130,7 @@ const getImportXlsxAction = async ({ req }, context, db) => {
         post: {
             controller: "hub",
             action: "import-xlsx",
-            entity: "crm_account",
+            entity: entity,
             id: 0,
             labels: { default: "import", fr_FR: "Importer" },
             renderer: "renderImportXlsx"
@@ -158,7 +159,7 @@ const getImportXlsxAction = async ({ req }, context, db) => {
             template: { 
                 type: "html",
                 labels: { default: ".xlsx file template", fr_FR: "Modèle de fichier .xlsx" },
-                value: "<a href=\"/client-savoiria/template/savoiria.xlsx\">savoiria.xlsx</a>",
+                value: `<a href="/${ context.instance.caption }/template/${ importConfig.template }">${ importConfig.template }</a>`,
                 options: {}
             },
             xlsxFile: { 
@@ -190,103 +191,108 @@ const postImportXlsxAction = async ({ req }, context, db) => {
     }
 
     const connection = await db.getConnection()
+    try {
+        const interactionModel = context.config["interaction/model"]
 
-    const interactionModel = context.config["interaction/model"]
+        if (interactionId == 0) {
 
-    if (interactionId == 0) {
+            // Convert the formData file to JSON
+            
+            const workSheetsFromStream = xlsxParser.parse(req.file.buffer, { cellDates: true })
+            const sheet = workSheetsFromStream[(importConfig.sheetNumber) ? importConfig.sheetNumber : 0].data
+            const payload = parse(sheet)
+            const { valid, invalid } = match(payload, importConfig)
 
-        // Convert the formData file to JSON
+            /**
+             * Store the content as interaction in DB
+             */
+
+            const interactionData = {
+                "status": "new",
+                "provider": "flow-er",
+                "endpoint": `hub/import-xlsx/${entity}`,
+                "method": "POST",
+                "body": JSON.stringify({ payload, valid, invalid }),
+                "authorization": "bearer",
+                "status_code": "200"
+            }
+            const [insertedRow] = (await connection.execute(insert(context, "interaction", interactionData, interactionModel)))
+
+            const result = {
+                layout: {
+                    title: { default: "Import an XLSX file", fr_FR: "Importer un fichier XLSX" },
+                    formJwt: "To be defined",
+                    renderer: "renderGlobal"
+                },
+                properties: {
+                    jsonPayload: {
+                        type: "table", 
+                        labels: { default: "XLSX content", fr_FR: "Contenu XLSX" },
+                        value: payload,
+                        options: { disabled: true }
+                    }
+                },
+                post: {
+                    controller: "hub",
+                    action: "import-xlsx",
+                    entity: entity,
+                    id: insertedRow.insertId,
+                    labels: { default: "import", fr_FR: "Importer" },
+                    renderer: "renderImportXlsx"
+                }
+            }
         
-        const workSheetsFromStream = xlsxParser.parse(req.file.buffer, { cellDates: true })
-        const sheet = workSheetsFromStream[importConfig.sheetNumber].data
-        const payload = parse(sheet)
-        const { valid, invalid } = match(payload, importConfig)
+            return result
+        }
 
         /**
-         * Store the content as interaction in DB
+         * Read the previously loaded interaction
          */
 
-        const interactionData = {
-            "status": "new",
-            "provider": "flow-er",
-            "endpoint": `hub/import-xlsx/${entity}`,
-            "method": "POST",
-            "body": JSON.stringify({ payload, valid, invalid }),
-            "authorization": "bearer",
-            "status_code": "200"
+        const [cursor] = await connection.execute(select(context, "interaction", ["status", "endpoint", "body"], { "id": interactionId }, null, null, interactionModel))
+        if (cursor.length == 0) return JSON.stringify({ "status": "ko", "message": "Unknown interaction" })
+        const interaction = cursor[0]
+        if (interaction.endpoint != `hub/import-xlsx/${entity}`) return JSON.stringify({ "status": "ko", "message": "Not an import-xlsx interaction or entity not matching" })
+        if (interaction.status != "new") return JSON.stringify({ "status": "ko", "message": "Already processed interaction" })
+
+        const body = JSON.parse(interaction.body)
+        const { payload, valid, invalid } = body
+        if (!payload || !valid || !invalid) return JSON.stringify({ "status": "ko", "message": "Invalid JSON data in interaction" })
+        
+        const targetModel = context.config[`${entity}/model`]
+        const mergedPayload = await mergePayload(context, entity, targetModel, valid, importConfig, connection)
+
+        /**
+         * Find out the data to actually store in the database 
+         */
+
+        await connection.beginTransaction()
+
+        let { rowsToStore, rowsToReject } = dataToStore(targetModel, mergedPayload)
+
+        if (rowsToReject.length > 0) {
+            return JSON.stringify({ "status": "ko", "errors": rowsToReject })
         }
-        const [insertedRow] = (await connection.execute(insert(context, "interaction", interactionData, interactionModel)))
+        
+        /**
+         * Find out the entities to insert vs update in the database 
+         */
 
-        const result = {
-            layout: {
-                title: { default: "Import an XLSX file", fr_FR: "Importer un fichier XLSX" },
-                formJwt: "To be defined",
-                renderer: "renderGlobal"
-            },
-            properties: {
-                jsonPayload: {
-                    type: "table", 
-                    labels: { default: "XLSX content", fr_FR: "Contenu XLSX" },
-                    value: payload,
-                    options: { disabled: true }
-                }
-            },
-            post: {
-                controller: "hub",
-                action: "import-xlsx",
-                entity: "crm_account",
-                id: insertedRow.insertId,
-                labels: { default: "import", fr_FR: "Importer" },
-                renderer: "renderImportXlsx"
-            }
-        }
-    
-        return result
+        rowsToStore = entitiesToStore(entity, targetModel, rowsToStore)
+        await storeEntities(context, entity, rowsToStore, targetModel, connection)
+        await auditCells(context, rowsToStore, connection)
+
+        await connection.execute(update(context, "interaction", [interactionId], { "status": "processed"}, interactionModel))
+
+        await connection.commit()
+        await connection.release()
+        return JSON.stringify({ "status": "ok", "stored": rowsToStore })
     }
-
-    /**
-     * Read the previously loaded interaction
-     */
-
-    const [cursor] = await connection.execute(select(context, "interaction", ["status", "endpoint", "body"], { "id": interactionId }, null, null, interactionModel))
-    if (cursor.length == 0) return JSON.stringify({ "status": "ko", "message": "Unknown interaction" })
-    const interaction = cursor[0]
-    if (interaction.endpoint != `hub/import-xlsx/${entity}`) return JSON.stringify({ "status": "ko", "message": "Not an import-xlsx interaction or entity not matching" })
-    if (interaction.status != "new") return JSON.stringify({ "status": "ko", "message": "Already processed interaction" })
-
-    const body = JSON.parse(interaction.body)
-    const { payload, valid, invalid } = body
-    if (!payload || !valid || !invalid) return JSON.stringify({ "status": "ko", "message": "Invalid JSON data in interaction" })
-    
-    const targetModel = context.config[`${entity}/model`]
-    const mergedPayload = await mergePayload(context, entity, targetModel, valid, importConfig, connection)
-
-    /**
-     * Find out the data to actually store in the database 
-     */
-
-    await connection.beginTransaction()
-
-    let { rowsToStore, rowsToReject } = dataToStore(entity, targetModel, mergedPayload)
-
-    if (rowsToReject.length > 0) {
-        return JSON.stringify({ "status": "ko", "errors": rowsToReject })
+    catch {
+        await connection.rollback()
+        await connection.release()
+        return JSON.stringify({ "status": "ko", "errors": "Bad request" })
     }
-    
-    /**
-     * Find out the entities to insert vs update in the database 
-     */
-
-    rowsToStore = entitiesToStore(entity, targetModel, rowsToStore)
-    await storeEntities(context, entity, rowsToStore, targetModel, connection)
-    await auditCells(context, rowsToStore, connection)
-
-    await connection.execute(update(context, "interaction", [interactionId], { "status": "processed"}, interactionModel))
-
-    await connection.commit()
-    await connection.release()
-
-    return JSON.stringify({ "status": "ok", "stored": rowsToStore })
 }
 
 module.exports = {

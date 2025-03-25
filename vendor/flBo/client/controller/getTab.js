@@ -1,4 +1,6 @@
 
+import { triggerDetailTab } from "/flBo/cli/controller/triggerDetailTab.js"
+
 const getTab = async ({ context, entity, view }, tab, route, id, message, searchParams, order) => {
 
     route = $(`#detailTabRoute-${tab}`).val()
@@ -190,3 +192,5 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
         getPanel(tab, panel, id)
     })
 }
+
+export { getTab }

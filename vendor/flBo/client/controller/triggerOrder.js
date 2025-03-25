@@ -1,3 +1,5 @@
+import { triggerList } from "/flBo/cli/controller/triggerList.js"
+
 const triggerOrder = ({ context, entity, view }) => {
 
     $(".fl-list-order-button").click(function() {
@@ -8,3 +10,5 @@ const triggerOrder = ({ context, entity, view }) => {
         triggerList({ context, entity, view }, `${direction}${propertyId}`)
     })    
 }
+
+export { triggerOrder }

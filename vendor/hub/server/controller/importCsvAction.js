@@ -6,8 +6,8 @@ const { select } = require("../../../flCore/server/model/select")
 const { insert } = require("../../../flCore/server/model/insert")
 const { update } = require("../../../flCore/server/model/update")
 const { mergePayload } = require("../../../flCore/server/post/save")
-const { dataToStore } = require("../../../flCore/server/post/dataToStore")
-const { entitiesToStore } = require("../../../flCore/server/post/entitiesToStore")
+const { dataToStore } = require("../../../flCore/server/model/dataToStore")
+const { entitiesToStore } = require("../../../flCore/server/model/entitiesToStore")
 const { storeEntities } = require("../../../flCore/server/post/storeEntities")
 const { auditCells } = require("../../../flCore/server/post/auditCells")
 
@@ -33,7 +33,7 @@ const match = (payload, importConfig) => {
                 if (value.includes("today")) {
                     if (value && value.charAt(5) == "+") value = moment().add(value.substring(6), "days").format("YYYY-MM-DD")
                     else if (value && value.charAt(5) == "-") value = moment().subtract(value.substring(6), "days").format("YYYY-MM-DD")
-                    else value = moment().format("YYYY-MM-DD")        
+                    else value = moment().format("YYYY-MM-DD")
                 }
                 validRow[propertyId] = value
             }
@@ -265,7 +265,7 @@ const postImportCsvAction = async ({ req }, context, db) => {
 
     await connection.beginTransaction()
 
-    let { rowsToStore, rowsToReject } = dataToStore(entity, targetModel, mergedPayload)
+    let { rowsToStore, rowsToReject } = dataToStore(targetModel, mergedPayload)
 
     if (rowsToReject.length > 0) {
         return JSON.stringify({ "status": "ko", "errors": rowsToReject })

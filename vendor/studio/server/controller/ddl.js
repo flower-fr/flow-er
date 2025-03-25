@@ -1,5 +1,3 @@
-const { assert } = require("../../../../core/api-utils")
-
 const ddlProperty = (entity, propertyId, property) => {
     const maxLength = (property.max_length) ? property.max_length : 255
     let type = (property.length) ? `CHAR(${property.length}) DEFAULT ''` : `VARCHAR(${maxLength}) DEFAULT ''`
@@ -26,11 +24,9 @@ const ddlProperty = (entity, propertyId, property) => {
     return ""
 }
 
-const ddl = async ({ req }, context, db) => {
-    const entity = assert.notEmpty(req.params, "entity")
-    const propertyId = req.params.property
+const ddlEntity = (context, entity, propertyId) => {
     const model = context.config[`${entity}/model`]
-    const ddl = []
+    let ddl = []
 
     if (propertyId) {
         let previous
@@ -40,31 +36,30 @@ const ddl = async ({ req }, context, db) => {
                 ddl.push(`ALTER TABLE \`${entity}\` ADD `)
                 ddl.push(ddlProperty(entity, propertyId, property))
                 ddl.push(`AFTER \`${previous}\`;`)
-                return ddl.join(" ")
+                ddl.push("\n")
+                return ddl
             }
             if (property.entity == entity && property.type != "tag") previous = id
         }
     }
 
-    ddl.push("SET SQL_MODE = \"NO_AUTO_VALUE_ON_ZERO\";")
-    ddl.push("START TRANSACTION;")
-    ddl.push("SET time_zone = \"+00:00\";\n")
     ddl.push(`CREATE TABLE \`${entity}\` (`)
-
     const propDdl = []
-    for (let propertyId of Object.keys(model.properties)) {
-        const property = model.properties[propertyId]
+    for (const [propertyId, property] of Object.entries(model.properties)) {
         const propertyDdl = ddlProperty(entity, propertyId, property)
         if (propertyDdl) propDdl.push(propertyDdl)
     }
     ddl.push(propDdl.join(",\n"))
     ddl.push(") ENGINE=InnoDB DEFAULT CHARSET=utf8;")
-    ddl.push(`\nALTER TABLE \`${entity}\` ADD PRIMARY KEY (\`id\`);`)
+    ddl = [ddl.join("\n")]
+
+    ddl.push(`ALTER TABLE \`${entity}\` ADD PRIMARY KEY (\`id\`);`)
+
     ddl.push(`ALTER TABLE \`${entity}\` MODIFY \`id\` int(11) NOT NULL AUTO_INCREMENT;`)
-    ddl.push("COMMIT;")
-    return ddl.join("\n")
+
+    return ddl
 }
 
 module.exports = {
-    ddl
+    ddlEntity
 }

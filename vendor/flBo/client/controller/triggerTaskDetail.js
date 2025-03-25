@@ -114,3 +114,5 @@ const getTaskDetail = async (context, entity, view, id, searchParams) => {
         })
     })
 }
+
+export { triggerTaskDetail }

@@ -1,3 +1,5 @@
+import { getTab } from "/flBo/cli/controller/getTab.js"
+
 const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, message, searchParams, order) => {
 
     /**
@@ -359,3 +361,5 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
         }
     }
 }
+
+export { triggerDetailTab }

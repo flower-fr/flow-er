@@ -82,6 +82,7 @@ const listAction = async ({ req }, context, db) => {
     if (listConfig.crossEntity) {
 
         const crossEntity = listConfig.crossEntity
+        const ids = rows.map(x => x.id)
 
         /**
          * Cross entity
@@ -102,7 +103,8 @@ const listAction = async ({ req }, context, db) => {
         }
     
         const crossOrder = listConfig.crossOrder || order
-        result.crossRows = await getList(db, context, crossEntity, crossColumns, crossProperties, whereParam, crossOrder, limit)
+        const crossWhere = { [listConfig.crossKey]: ["in"].concat(ids) }
+        result.crossRows = await getList(db, context, crossEntity, crossColumns, crossProperties, crossWhere, crossOrder, limit)
         result.crossProperties = crossProperties
         result.crossOrder = crossOrder
     }

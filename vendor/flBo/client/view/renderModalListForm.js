@@ -30,6 +30,7 @@ const renderModalListForm = ({ context }, section, id, modalListConfig, where, p
             }
             else if (value == "profile_id") value = context.user.profile_id
         }
+        console.log(propertyId, value)
         if (Object.keys(property).length > 0) {
 
             if (propertyType == "hidden") {

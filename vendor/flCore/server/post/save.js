@@ -1,10 +1,9 @@
 const { assert } = require("../../../../core/api-utils")
 const { select } = require("../../../flCore/server/model/select")
 
-const { dataToStore } = require("./dataToStore")
-const { entitiesToStore } = require("./entitiesToStore")
+const { dataToStore } = require("../model/dataToStore")
+const { entitiesToStore } = require("../model/entitiesToStore")
 const { storeEntities } = require("./storeEntities")
-const { updateColumns } = require("./updateColumns")
 const { auditCells } = require("./auditCells")
 
 /**
@@ -51,7 +50,16 @@ const mergePayload = async (context, entity, model, form, config, connection) =>
      * Index the current data
      */
 
-    const [cursor] = await connection.execute(select(context, entity, columns, where, null, null, model))
+    let cursor
+    const request = select(context, entity, columns, where, null, null, model)
+    try {
+        [cursor] = await connection.execute(request)
+    }
+    catch {
+        console.log(request)
+        throw (new Error("Bad request"))
+    }
+
     const rows = {}
     for (const row of cursor) {
         const identifier = []
@@ -122,26 +130,23 @@ const save = async ({ req }, context, rows, { connection }) => {
     const entity = assert.notEmpty(req.params, "entity")
 
     const model = context.config[`${entity}/model`]
-
-    const form = req.body
     
     /**
      * Find out the data to actually store in the database 
      */
     
-    let { rowsToStore, rowsToReject } = dataToStore(entity, model, rows)
+    let { rowsToStore, rowsToReject } = dataToStore(model, rows)
 
-    // if (rowsToReject.length > 0) {
-    //     return JSON.stringify({ "status": "ko", "errors": rowsToReject })
-    // }
+    if (rowsToReject.length > 0) {
+        return JSON.stringify({ "status": "ko", "errors": rowsToReject })
+    }
     
     /**
      * Find out the entities to insert vs update in the database 
      */
     
     rowsToStore = entitiesToStore(entity, model, rowsToStore)
-    const columnsToUpdate = await storeEntities(context, entity, rowsToStore, model, connection)
-    await updateColumns(context, columnsToUpdate, model, connection)
+    await storeEntities(context, entity, rowsToStore, model, connection)
     await auditCells(context, rowsToStore, connection)
 
     return JSON.stringify({ "status": "ok", "stored": rowsToStore })

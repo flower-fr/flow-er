@@ -26,7 +26,6 @@ const renderList = ({ context, entity, view }, data) => {
                 let keep = true
                 if (column.restriction) {
                     for (const [k, v] of Object.entries(column.restriction)) {
-                        console.log(crossRow[k], v)
                         if (v.substring(0, 1) == "!") {
                             if (crossRow[k] == v.substring(1)) {
                                 keep = false
@@ -40,7 +39,8 @@ const renderList = ({ context, entity, view }, data) => {
                     }
                 }
                 if (keep) {
-                    if (data.crossProperties[property.property].modalities) value = context.localize(data.crossProperties[property.property].modalities[value])
+                    const modalities = data.crossProperties[property.property].modalities
+                    if (modalities && modalities[value]) value = context.localize(modalities[value])
                     row[propertyId].push(value)
                 }
             }
@@ -48,7 +48,6 @@ const renderList = ({ context, entity, view }, data) => {
 
         columns[propertyId] = property
     }
-    console.log(rows)
     
     const html = []
 

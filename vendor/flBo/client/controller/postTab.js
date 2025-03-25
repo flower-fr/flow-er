@@ -6,6 +6,9 @@ const postTab = async ({ context, entity, view }, tab, id, searchParams) => {
         
             event.preventDefault()
             form.checkValidity()
+
+            const submit = event.submitter
+
             var validity = true
 
             // IBAN check
@@ -195,8 +198,8 @@ const postTab = async ({ context, entity, view }, tab, id, searchParams) => {
                     }
                 })
 
-                let route = $(`#detailTabRoute-${tab}`).val()
-
+                const route = `/${$(submit).attr("data-controller")}/${$(submit).attr("data-action")}/${$(submit).attr("data-entity")}/${$(submit).attr("data-transaction")}${ ($(submit).attr("data-id")) ? `/${ $(submit).attr("data-id") }` : "" }${ ($(submit).attr("data-view")) ? `?view=${ $(submit).attr("data-view") }` : "" }`
+                console.log(route)
                 const xhttp = await fetch(route, {
                     method: "POST",
                     headers: new Headers({"content-type": "application/json"}),
