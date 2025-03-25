@@ -61,17 +61,18 @@ const selectWhere = (context, table, where, model, joins) => {
                     if (["like", "contains", "startsWith", "endsWith"].includes(value[0])) {
                         value = value.map(x => { return x.split(" ").join("") })
                     }
-                    else if (!["in", "ni", "between", "=", "!=", ">", ">=", "<lt>", "<=>", "null", "not_null"].includes(value[0])) {
+                    else if (!["in", "ni", "between", "=", "!=", ">", ">=", "<", "<=", "null", "not_null"].includes(value[0])) {
                         value = ["in"].concat(value)
                     }
                     const operator = value[0]
+
                     if (operator == "in") {
                         value.shift()
-                        predicates.push(`${qEntity}${qColumn} IN (${value.map(qv).join(", ")})`)
+                        predicates.push(`${qEntity}${qColumn} IN (${value.map(x => (isNaN(x)) ? qv(x) : x).join(", ")})`)
                     }
                     else if (operator == "ni") {
                         value.shift()
-                        predicates.push(`${qEntity}${qColumn} NOT IN (${value.map(qv).join(", ")})`)
+                        predicates.push(`${qEntity}${qColumn} NOT IN (${value.map(x => (isNaN(x)) ? qv(x) : x).join(", ")})`)
                     }
                     else if (operator == "between") {
                         if (property.type && property.type == "datetime") {
@@ -108,7 +109,7 @@ const selectWhere = (context, table, where, model, joins) => {
                     else if (operator == "<") {
                         predicates.push(`${qEntity}${qColumn} < ${qv(`${value[1]}`)}`)
                     }
-                    else if (operator == "<=>") {
+                    else if (operator == "<=") {
                         predicates.push(`${qEntity}${qColumn} <= ${qv(`${value[1]}`)}`)
                     }
                     else if (operator == "null") {

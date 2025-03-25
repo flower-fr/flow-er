@@ -1,3 +1,7 @@
+import { triggerOrder } from "/flBo/cli/controller/triggerOrder.js"
+import { triggerDetail } from "/flBo/cli/controller/triggerDetail.js"
+import { triggerTaskDetail } from "/flBo/cli/controller/triggerTaskDetail.js"
+import { triggerTaskAdd } from "/flBo/cli/controller/triggerTaskAdd.js"
 import { triggerGroup } from "/flBo/cli/controller/triggerGroup.js"
 
 const triggerList = async ({ context, entity, view }, order = $("#flListOrderHidden").val()) => {		

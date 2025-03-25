@@ -5,6 +5,7 @@
 
     "vcard/model": {
         "entities": {
+            "vcard": { "table": "vcard" }
         },
         "properties": {
             "id": { "entity": "vcard", "column": "id", "type": "primary" },

@@ -1,4 +1,5 @@
 import { triggerSmsText } from "/flBo/cli/controller/triggerSmsText.js"
+import { triggerEmailText } from "/flBo/cli/controller/triggerEmailText.js"
 
 const triggerGroup = ({ context, entity, view }, searchParams) => {
 
@@ -136,6 +137,7 @@ const getGroupTab = async ({ context, entity, view }, tab, searchParams) => {
         $(".fl-group-tab-message").hide()
     })
 
+    triggerEmailText({ context })
     triggerSmsText()
 
     postGroupTab({ context, entity, view }, tab, searchParams)

@@ -1,6 +1,9 @@
 const { qi, qv } = require("./quote")
 
-const insert = (context, table, data, model) => {
+const insert = (context, entity, data, model) => {
+
+    const table = (model.entities[entity]) ? model.entities[entity].table : entity
+
     const pairs = {}
     for (let key of Object.keys(data)) {
         if (!["instance_id", "touched_at", "touched_by"].includes(key)) {

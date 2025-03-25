@@ -1,17 +1,16 @@
 /**
- * Check for integrity of the given data to store (either insert or update as determined later)
+ * Check for integrity of the given data to store (either insert or update which is determined later)
  */
-const dataToStore = (entity, model, form) => {
+const dataToStore = (model, rows) => {
 
     const rowsToStore = [], rowsToReject = []
 
-    for (const row of form) {
+    for (const row of rows) {
         const cellsToStore = {}, cellsToReject = {}
         for (let propertyId of Object.keys(row)) {
             if (propertyId != "formJwt") {
                 const property = model.properties[propertyId]
                 if (!property) cellsToReject[propertyId] = "unknown"
-                //else if (property.type == "primary") cellsToReject[propertyId] = "primary"
                 else {
                     let value = row[propertyId]
                     if (property.type == "int") {

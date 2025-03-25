@@ -1,6 +1,7 @@
+const { updateColumns } = require("./updateColumns")
 const { insert } = require("../../../flCore/server/model/insert")
 
-const storeEntities = async (context, mainEntity, rowsToStore, model, db) => {
+const storeEntities = async (context, mainEntity, rowsToStore, model, connection) => {
 
     const columnsToUpdate = {}
 
@@ -9,7 +10,7 @@ const storeEntities = async (context, mainEntity, rowsToStore, model, db) => {
         const insertEntity = async (entityId, entity) => {
             const entityToInsert = entitiesToInsert[entityId]
             const insertModel = context.config[`${entity.table}/model`]
-            const [insertedRow] = (await db.execute(insert(context, entity.table, entityToInsert.cells, insertModel)))
+            const [insertedRow] = (await connection.execute(insert(context, entity.table, entityToInsert.cells, insertModel)))
             entityToInsert.rowId = insertedRow.insertId
             if (entity.foreignEntity) {
                 if (entitiesToInsert[entity.foreignEntity]) {
@@ -55,12 +56,12 @@ const storeEntities = async (context, mainEntity, rowsToStore, model, db) => {
                     if (!columnsToUpdate[entityId][columnId]) columnsToUpdate[entityId][columnId] = {}
                     columnsToUpdate[entityId][columnId][entityToUpdate.rowId] = value
                 }
-                //await db.execute(update(context, table, [entityToUpdate.rowId], entityToUpdate.cells, updateModel))
+                //await connection.execute(update(context, table, [entityToUpdate.rowId], entityToUpdate.cells, updateModel))
             }
         }
     }
 
-    return columnsToUpdate
+    await updateColumns(context, columnsToUpdate, model, connection)
 }
 
 module.exports = {

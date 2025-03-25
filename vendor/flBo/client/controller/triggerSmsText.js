@@ -54,7 +54,7 @@ const triggerSmsText = () => {
         $(`#${div}`).html(html.join("\n"))
         $(".fl-sms-template").click(function () {
             console.log("ici")
-            document.location = `sms:/open?addresses=${ $(this).attr("data-fl-addresses") }&body=${ $(this).attr("data-fl-body") }`
+            document.location = `sms:addresses=${ $(this).attr("data-fl-addresses") }&body=${ $(this).attr("data-fl-body") }`
             $(this).prop("disabled", true)
         })
     }

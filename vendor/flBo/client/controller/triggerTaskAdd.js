@@ -105,3 +105,5 @@ const getTaskAdd = async ({ context, entity, view }, searchParams) => {
         }
     }
 }
+
+export { triggerTaskAdd }
