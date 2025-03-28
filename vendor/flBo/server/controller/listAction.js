@@ -8,7 +8,7 @@ const listAction = async ({ req }, context, db) => {
     const entity = assert.notEmpty(req.params, "entity")
     const view = (req.query.view) ? req.query.view : "default"
     const where = (req.query.where) ? req.query.where : null
-    const order = (req.query.order) ? req.query.order : "-touched_by"
+    const order = (req.query.order) ? req.query.order : "-touched_at"
     const limit = (req.query.limit) ? req.query.limit : 1000
     
     let listConfig = context.config[`${entity}/list/${view}`]

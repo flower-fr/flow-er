@@ -257,6 +257,7 @@ const postImportXlsxAction = async ({ req }, context, db) => {
 
         const body = JSON.parse(interaction.body)
         const { payload, valid, invalid } = body
+console.log(valid)
         if (!payload || !valid || !invalid) return JSON.stringify({ "status": "ko", "message": "Invalid JSON data in interaction" })
         
         const targetModel = context.config[`${entity}/model`]
@@ -269,7 +270,8 @@ const postImportXlsxAction = async ({ req }, context, db) => {
         await connection.beginTransaction()
 
         let { rowsToStore, rowsToReject } = dataToStore(targetModel, mergedPayload)
-
+console.log(rowsToStore)
+return
         if (rowsToReject.length > 0) {
             return JSON.stringify({ "status": "ko", "errors": rowsToReject })
         }

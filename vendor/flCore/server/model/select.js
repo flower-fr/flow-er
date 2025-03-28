@@ -32,7 +32,21 @@ const select = (context, entity, columns, where, order = [], limit = null, model
     request += `${Object.values(joins).join("\n")}\n`
 
     const predicates = selectWhere(context, entity, where, model, joins)
-    if (predicates.length > 0) request += `WHERE ${predicates.join("\nAND ")}\n`
+
+    /**
+     * Access control
+     */
+    if (model.access) {
+        console.log(model.access, context.user)
+        for (const [modelProp, profileProp] of Object.entries(model.access)) {
+            if (context.user[profileProp]) {
+                const property = model.properties[modelProp], qEntity = `${qi(property.entity)}.`, qColumn = qi(property.column)
+                predicates.push(`${qEntity}${qColumn} = ${ context.user[profileProp] }`)
+            }
+        }
+    }
+
+    if (predicates.length > 0) request += `WHERE ${predicates.join("\nAND ")}\n`    
 
     if (groupBy) request += `GROUP BY ${groupBy.join(", ")}\n`
     

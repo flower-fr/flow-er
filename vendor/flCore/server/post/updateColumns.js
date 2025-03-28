@@ -52,6 +52,7 @@ const updateColumns = async (context, columnsToUpdate, model, db) => {
         for (const [column, map] of Object.entries(columns)) {
             if (map.size > 0) {
                 const pairs = Array.from(map).map(([key, values]) => [key, values.new])
+                console.log(updateCase(context, table, column, Object.fromEntries(pairs), model))
                 await db.execute(updateCase(context, table, column, Object.fromEntries(pairs), model))
 
                 const property = model.properties[column]
