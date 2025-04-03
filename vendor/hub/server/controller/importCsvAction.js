@@ -186,8 +186,8 @@ const postImportCsvAction = async ({ req }, context, db) => {
         const headers = sheet[start].split(",")
         const payload = []
         for (let i = start + 1; i < sheet.length; i++) {
-            let row = sheet[i].split("\"\"").join(""), corrected = [], pairs = {}
-            row = sheet[i].split("\"")
+            let row = sheet[i].split("\\").join("/"), corrected = [], pairs = {}
+            row = row.split("\"")
             for (let i = 0; i < row.length; i++) {
                 const comp = (i % 2 == 1) ? row[i].split(",").join("") : row[i]
                 corrected.push(comp)
