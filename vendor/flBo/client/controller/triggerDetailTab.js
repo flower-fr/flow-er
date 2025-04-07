@@ -182,7 +182,6 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
                 const payload = {}
                 var formData = new FormData()
                 payload.formJwt = $("#formJwt").val()
-                formData.append("formJwt", $("#formJwt").val())
 
                 $(".fl-modal-form-input").each(function () {
                     if ($(this).attr("data-fl-disabled") != "disabled") {
@@ -209,7 +208,21 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
     
                         else if (type == "number") value = value.replace(",", ".")
     
-                        payload[propertyId] = value    
+                        payload[propertyId] = value
+                    }
+                })
+                
+                $(".fl-modal-form-file").each(function () {
+                    if ($(this).attr("data-fl-disabled") != "disabled") {
+                        const propertyId = $(this).attr("data-fl-property")
+                        const fileSelect = document.getElementById(propertyId)
+                        if (fileSelect) {
+                            var files = fileSelect.files
+                            for (var i = 0; i < files.length; i++) {
+                                var file = files[i]
+                                formData.append(propertyId, file, file.name)
+                            }
+                        }
                     }
                 })
 
@@ -340,14 +353,22 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
                     formData.append(propertyId, $(this).html())
                 })
 
-                const route = `/${$(submit).attr("data-fl-controller")}/${$(submit).attr("data-fl-action")}/${$(submit).attr("data-fl-entity")}`
+                // const route = `/${$(submit).attr("data-fl-controller")}/${$(submit).attr("data-fl-action")}/${$(submit).attr("data-fl-entity")}`
 
+                // const response = await fetch(route, {
+                //     headers: {
+                //         "Content-Type": "application/json"
+                //     },
+                //     method: "POST",
+                //     body: JSON.stringify([payload])
+                // })
+
+                const route = `/${$(submit).attr("data-fl-controller")}/file/${$(submit).attr("data-fl-entity")}`
+
+                for (const [key, value] of Object.entries(payload)) formData.append(key, value)
                 const response = await fetch(route, {
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
                     method: "POST",
-                    body: JSON.stringify([payload])
+                    body: formData
                 })
 
                 if (response.status == 200) {

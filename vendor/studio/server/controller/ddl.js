@@ -50,7 +50,7 @@ const ddlEntity = (context, entity, propertyId) => {
         if (propertyDdl) propDdl.push(propertyDdl)
     }
     ddl.push(propDdl.join(",\n"))
-    ddl.push(") ENGINE=InnoDB DEFAULT CHARSET=utf8;")
+    ddl.push(") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
     ddl = [ddl.join("\n")]
 
     ddl.push(`ALTER TABLE \`${entity}\` ADD PRIMARY KEY (\`id\`);`)

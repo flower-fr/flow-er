@@ -22,6 +22,7 @@ const updateCase = (context, table, column, pairs, model) => {
             value = qv(value.trim())
         }
         else if (["longtext", "mediumtext"].includes(type)) value = qv(value.trim())
+        else if (["longblob", "mediumblob"].includes(type)) value = "?"
 
         ids.push(id)
         request.push(`WHEN id = ${id} THEN ${value}`)

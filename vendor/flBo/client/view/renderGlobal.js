@@ -364,7 +364,7 @@ const renderSection = ({ context, entity }, config ) => {
             html.push(
                 `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3">
                     <div class="">
-                       <label class="form-label" for="customFile">${ label }</label>
+                        <label class="form-label" for="customFile">${ label }</label>
                         <input type="file" class="form-control form-control-sm globalFile" id="global-${propertyId}" ${(readonly) ? "disabled" : ""} ${ required } />
                     </div>
                 </div>`
