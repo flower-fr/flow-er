@@ -11,7 +11,7 @@ const renderList = ({ context, entity, view }, data) => {
         const property = properties[propertyId] || column
 
         if (column.cross) {
-            for (const crossRow of data.crossRows) {
+            for (const crossRow of (data.crossRows) ? data.crossRows : []) {
                 let row = dictionary[crossRow[property.foreignKey]]
                 if (!row) {
                     row = {}

@@ -1,4 +1,4 @@
-const { qv } = require("./quote")
+const { qi, qv } = require("./quote")
 
 const updateCase = (context, table, column, pairs, model) => {
 
@@ -6,7 +6,7 @@ const updateCase = (context, table, column, pairs, model) => {
 
     const request = []
     request.push(`UPDATE ${table}`)
-    request.push(`SET ${column} = CASE`)
+    request.push(`SET ${qi(column)} = CASE`)
     const ids = []
     for (let id of Object.keys(pairs)) {
         let value = pairs[id]

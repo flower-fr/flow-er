@@ -40,9 +40,8 @@ const parse = (sheet) => {
  * Map the payload to the model
  */
 
-const match = (payload, importConfig) => {
+const match = (payload, importConfig, { valid, invalid }) => {
 
-    const valid = [], invalid = []
     for (const row of payload) {
         const validRow = {}
         const invalidRow = {}
@@ -68,8 +67,13 @@ const match = (payload, importConfig) => {
 
         for (let [key, value] of Object.entries(row)) {
             key = key.split(" ").join("")
-            key = key.split("\n").join("")
-            key = key.toLowerCase()
+                .split("\n").join("")
+                .split("-").join("")
+                .split("_").join("")
+                .split("/").join("")
+                .split("\n").join("")
+                .toLowerCase()
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
 
             // Matching key
             if (importConfig.mapping[key]) {
@@ -108,7 +112,6 @@ const match = (payload, importConfig) => {
         valid.push(validRow)
         invalid.push(invalidRow)
     }
-    return { valid, invalid }
 }
 
 /**
@@ -199,9 +202,12 @@ const postImportXlsxAction = async ({ req }, context, db) => {
             // Convert the formData file to JSON
             
             const workSheetsFromStream = xlsxParser.parse(req.file.buffer, { cellDates: true })
-            const sheet = workSheetsFromStream[(importConfig.sheetNumber) ? importConfig.sheetNumber : 0].data
-            const payload = parse(sheet)
-            const { valid, invalid } = match(payload, importConfig)
+            let payload = [], valid = [], invalid = [] 
+            for (const sheet of workSheetsFromStream) {
+                const p = parse(sheet.data)
+                match(p, importConfig, { valid, invalid })    
+                payload = payload.concat(p)
+            }
 
             /**
              * Store the content as interaction in DB
@@ -269,7 +275,6 @@ const postImportXlsxAction = async ({ req }, context, db) => {
         await connection.beginTransaction()
 
         let { rowsToStore, rowsToReject } = dataToStore(targetModel, mergedPayload)
-
         if (rowsToReject.length > 0) {
             return JSON.stringify({ "status": "ko", "errors": rowsToReject })
         }

@@ -20,6 +20,7 @@ const renderListHeader = ({ context }, listConfig, properties, order = "-touched
         <th />`)
 
     for (let [propertyId, property] of Object.entries(properties)) {
+        console.log(propertyId, property)
         result.push(`
         <th>
             ${ (property.options.anchor) ? `<button type="button" class="btn btn-link fl-list-order-button" data-fl-property="${propertyId}" ${ (propertyId == order) ? `data-fl-direction="${direction}"` : "" } data-mdb-ripple-init data-mdb-ripple-color="dark">` : "<div>" }
