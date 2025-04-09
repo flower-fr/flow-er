@@ -5,6 +5,8 @@ const triggerEmailText = ({ context }) => {
 
         const html = [], rows = [], template = decodeURI($(`#${ $("#email_body").attr("data-fl-template") }`).val()), div = $("#email_body").attr("data-fl-div")
         
+        const subject = $("#email_subject").val()
+
         let value
         $(".wysiwyg").each(function () { value = $(this).children(".wysiwyg-content").html().trim() })
 
@@ -38,12 +40,12 @@ const triggerEmailText = ({ context }) => {
                 else body.push(s)
             }
             body = body.join("")
-            html.push(template.replaceAll("{addresses}", r.email.split(" ").join("")).replace("{body}", body.replaceAll("<p>", "").replaceAll("</p>", "%0D%0A%0D%0A").replace(/<\/?[^>]+(>|$)/g, "")).replace("{text}", body))
+            html.push(template.replaceAll("{addresses}", r.email.split(" ").join("")).replace("{subject}", subject).replace("{body}", body.replaceAll("<p>", "").replaceAll("</p>", "%0D%0A%0D%0A").replace(/<\/?[^>]+(>|$)/g, "")).replace("{text}", body))
         }
 
         $(`#${div}`).html(html.join("\n"))
         $(".fl-email-template").click(function () {
-            document.location = `mailto:${ $(this).attr("data-fl-addresses") }?body=${ $(this).attr("data-fl-body") }`
+            document.location = `mailto:${ $(this).attr("data-fl-addresses") }?subject=${ $(this).attr("data-fl-subject") }&body=${ $(this).attr("data-fl-body") }`
             $(this).prop("disabled", true)
         })
     }
