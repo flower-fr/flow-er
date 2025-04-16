@@ -13,15 +13,17 @@ const sendSmtp = async ({ req }, context, rows, { connection, smtp }) => {
 
     const attachments = {}
     for (const row of rows) {
-        for (const attachmentId of (row.attachments !== "") ? row.attachments.split(",") : []) {
+        for (const attachmentId of (row.attachments) ? row.attachments.split(",") : []) {
             attachments[attachmentId] = null
         }
     }
-    const where = ["in"].concat(Object.keys(attachments))
-    const documentModel = context.config["document_binary/model"]
-    const cursor = (await connection.execute(select(context, "document_binary", null, { "id": where }, null, null, documentModel)))[0]
-    for (const attachment of cursor) {
-        attachments[attachment.id] = attachment
+    if (Object.values(attachments).length > 0) {
+        const where = ["in"].concat(Object.keys(attachments))
+        const documentModel = context.config["document_binary/model"]
+        const cursor = (await connection.execute(select(context, "document_binary", null, { "id": where }, null, null, documentModel)))[0]
+        for (const attachment of cursor) {
+            attachments[attachment.id] = attachment
+        }    
     }
 
     /**
