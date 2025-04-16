@@ -4,6 +4,8 @@
         },
         "properties": {
             "id": { "entity": "document_binary", "column": "id", "type": "primary" },
+            "name": { "entity": "document_binary", "column": "name" },
+            "mime": { "entity": "document_binary", "column": "mime" },
             "data": { "entity": "document_binary", "column": "data", "type": "mediumblob" },
 
             "visibility": { "entity": "document_binary", "column": "visibility", "audit": true },

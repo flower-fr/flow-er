@@ -74,6 +74,7 @@ const registerBo = async ({ context, config, logger, app }) => {
     app.get(`${config.prefix}modalListForm/:entity/:id`, execute(modalListFormAction, context, db))
     app.get(`${config.prefix}group/:entity`, execute(groupAction, context, db))
     app.get(`${config.prefix}groupTab/:entity`, execute(groupTabAction, context, db))
+    app.get(`${config.prefix}groupTab/:entity/:id`, execute(groupTabAction, context, db))
     app.post(`${config.prefix}groupTab/:entity`, execute(postGroupTabAction, context, db))
     app.get(`${config.prefix}history/:entity/:id`, execute(historyAction, context, db))
     app.get(`${config.prefix}api/:entity`, execute(apiAction, context, db)) // Deprecated

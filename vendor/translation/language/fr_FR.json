@@ -14,6 +14,7 @@
     "Current password": "Mot de passe actuel",
     "Day": "Jour",
     "DD/MM/YYYY": "JJ/MM/AAAA",
+    "Delete": "Supprimer",
     "Descending order": "Ordre décroissant",
     "Done task": "Tâche réalisée",
     "Email or identifier": "Email ou identifiant",
@@ -70,7 +71,7 @@
     "Update": "Modifier",
     "Week": "Semaine",
     "You are well logged out": "Vous êtes bien déconnecté",
-    "Your request has been registered": "Votre demande a été prise en compte",
+    "Your request has been registered": "Demande enregistrée",
 
     "Su": "Di",
     "Mo": "Lu",

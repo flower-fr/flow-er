@@ -1,3 +1,4 @@
+import { getTab } from "/flBo/cli/controller/getTab.js"
 
 const postTab = async ({ context, entity, view }, tab, id, searchParams) => {
     const form = document.getElementById("tabForm")
@@ -199,7 +200,7 @@ const postTab = async ({ context, entity, view }, tab, id, searchParams) => {
                 })
 
                 const route = `/${$(submit).attr("data-controller")}/${$(submit).attr("data-action")}/${$(submit).attr("data-entity")}/${$(submit).attr("data-transaction")}${ ($(submit).attr("data-id")) ? `/${ $(submit).attr("data-id") }` : "" }${ ($(submit).attr("data-view")) ? `?view=${ $(submit).attr("data-view") }` : "" }`
-                console.log(route)
+
                 const xhttp = await fetch(route, {
                     method: "POST",
                     headers: new Headers({"content-type": "application/json"}),
@@ -223,3 +224,5 @@ const postTab = async ({ context, entity, view }, tab, id, searchParams) => {
         }
     }
 }
+
+export { postTab }

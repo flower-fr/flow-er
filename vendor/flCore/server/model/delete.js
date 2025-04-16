@@ -1,7 +1,7 @@
 const { qi, qv } = require("./quote")
 
 const dElete = (context, table, ids) => {
-    const pairs = { visibility: "deleted" }
+    const pairs = { visibility: qv("deleted") }
 
     pairs[qi("touched_at")] = `'${new Date().toISOString().slice(0, 19).replace("T", " ")}'`
     pairs[qi("touched_by")] = context.user.id

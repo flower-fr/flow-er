@@ -147,7 +147,7 @@ const renderRows = (context, listConfig, columns, rows) => {
         <tr class="listRow">
             <td>
                 <div class="text-center">
-                    <input type="checkbox" class="fl-list-check" data-row-id="${i}" data-properties="${ checkData.join("|") }"></input>
+                    <input type="checkbox" class="fl-list-check" id="flListCheck-${ row.id }" data-row-id="${i}" data-properties="${ checkData.join("|") }"></input>
                 </div>
             </td>
 

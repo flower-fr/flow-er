@@ -24,7 +24,8 @@ const registerSmtp = async ({ req }, context, rows, { connection }) => {
         for (let split of row.email_body.split("{")) {
             const split2 = split.split("}")
             if (split2.length == 2) {
-                const [propertyId, html] = split2
+                let [propertyId, html] = split2
+                if (propertyId == "prenom") propertyId = "n_first"
                 email_body.push(`${ row[propertyId] }${html}`)
             }
             else email_body.push(split)
@@ -38,7 +39,8 @@ const registerSmtp = async ({ req }, context, rows, { connection }) => {
             endpoint: "sendMail",
             method: "POST",
             params: JSON.stringify({ "type": type, "to": row.email, "subject": row.email_subject }),
-            body: row.email_body
+            body: row.email_body,
+            attachments: row.attachments
         }
         const [insertedRow] = (await connection.execute(insert(context, "interaction", data, context.config["interaction/model"])))
         row.insertId = insertedRow.insertId   

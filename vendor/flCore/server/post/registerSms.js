@@ -26,7 +26,7 @@ const registerSms = async ({ req }, context, rows, { connection, sms }) => {
 
         let data = {
             status: "new",
-            provider: "rest.nexmo.com",
+            provider: "smspartner.fr",
             endpoint: "/sms/json",
             method: "POST",
             params: JSON.stringify({ "from": sms.from, "text": body, "to": row.tel_cell, "api_key": sms.apiKey, "api_secret": sms.apiSecret })

@@ -26,7 +26,7 @@ const transactionAction = async ({ req }, context, { db, smtp, sms }) => {
     if (id) rows = [{"id": id}] 
     else rows = req.body.rows
     for (let row of rows) {
-        for (const [propertyId, value] of Object.entries(req.body.payload)) {
+        for (const [propertyId, value] of Object.entries((req.body.payload) ? req.body.payload : req.body)) {
             if (value) row[propertyId] = value
         }    
     }

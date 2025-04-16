@@ -37,7 +37,6 @@ const select = (context, entity, columns, where, order = [], limit = null, model
      * Access control
      */
     if (model.access) {
-        console.log(model.access, context.user)
         for (const [modelProp, profileProp] of Object.entries(model.access)) {
             if (context.user[profileProp]) {
                 const property = model.properties[modelProp], qEntity = `${qi(property.entity)}.`, qColumn = qi(property.column)

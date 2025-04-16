@@ -1,26 +1,29 @@
 
-const triggerEmailText = ({ context }) => {
+const triggerEmailText = ({ context }, rows) => {
 
     const formatLinks = function () {
 
-        const html = [], rows = [], template = decodeURI($(`#${ $("#email_body").attr("data-fl-template") }`).val()), div = $("#email_body").attr("data-fl-div")
+        const html = [], template = decodeURI($(`#${ $("#email_body").attr("data-fl-template") }`).val()), div = $("#email_body").attr("data-fl-div")
         
         const subject = $("#email_subject").val()
 
         let value
         $(".wysiwyg").each(function () { value = $(this).children(".wysiwyg-content").html().trim() })
 
-        $(".fl-list-check").each(function () {
-            if ($(this).prop("checked")) {
-                const checkData = $(this).attr("data-properties").split("|")
-                const row = {}
-                for (let pair of checkData) {
-                    pair = pair.split(":")
-                    row[pair[0]] = pair[1]
+        if (!rows) {
+            rows = []
+            $(".fl-list-check").each(function () {
+                if ($(this).prop("checked")) {
+                    const checkData = $(this).attr("data-properties").split("|")
+                    const row = {}
+                    for (let pair of checkData) {
+                        pair = pair.split(":")
+                        row[pair[0]] = pair[1]
+                    }
+                    rows.push({ ...row })
                 }
-                rows.push({ ...row })
-            }
-        })
+            })    
+        }
     
         const split = value.split("{")
 

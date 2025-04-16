@@ -137,15 +137,16 @@ const save = async ({ req }, context, rows, { connection }) => {
     
     let { rowsToStore, rowsToReject } = dataToStore(model, rows)
 
-    if (rowsToReject.length > 0) {
-        return JSON.stringify({ "status": "ko", "errors": rowsToReject })
-    }
+    // if (rowsToReject.length > 0) {
+    //     return JSON.stringify({ "status": "ko", "errors": rowsToReject })
+    // }
     
     /**
      * Find out the entities to insert vs update in the database 
      */
     
     rowsToStore = entitiesToStore(entity, model, rowsToStore)
+
     await storeEntities(context, entity, rowsToStore, model, connection)
     await auditCells(context, rowsToStore, connection)
 

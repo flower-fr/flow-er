@@ -1,5 +1,8 @@
 
 import { triggerDetailTab } from "/flBo/cli/controller/triggerDetailTab.js"
+import { triggerSmsText } from "/flBo/cli/controller/triggerSmsText.js"
+import { triggerEmailText } from "/flBo/cli/controller/triggerEmailText.js"
+import { postTab } from "/flBo/cli/controller/postTab.js"
 
 const getTab = async ({ context, entity, view }, tab, route, id, message, searchParams, order) => {
 
@@ -51,6 +54,7 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
             $("#detailPanel").html(renderDetailTab({ context, entity, view }, data))
             modalListCallback({ context, entity, view }, data)
         }
+        postTab({ context, entity, view }, tab, id, searchParams)
     })
 
     $(".renderUpdate").each(function () { 
@@ -59,6 +63,7 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
             $("#detailPanel").html(renderUpdate({ context, entity, view }, data))
             updateCallback({ context, entity, view }, data)
         }
+        postTab({ context, entity, view }, tab, id, searchParams)
     })
 
     $(".renderModalList").each(function () {
@@ -67,7 +72,38 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
             $("#detailPanel").html(renderModalList({ context, entity, view }, data)) 
             modalListCallback({ context, entity, view }, data)
         }
+        postTab({ context, entity, view }, tab, id, searchParams)
     })
+
+    const rows = []
+    $(`#flListCheck-${ id }`).each(function () {
+        const checkData = $(this).attr("data-properties").split("|")
+        const row = {}
+        for (let pair of checkData) {
+            pair = pair.split(":")
+            row[pair[0]] = pair[1]
+        }
+        rows.push({ ...row })
+    })    
+    $(".renderGroupTab").each(function () { 
+        const tabId = $(this).attr("id").split("-")[1]
+        if (tabId == tab) {
+            $("#detailPanel").html(renderGroupTabCards({ context, entity, view }, data))
+            updateCallback({ context, entity, view }, data)
+        }
+        postGroupTab({ context, entity, view }, tab, searchParams, rows)
+    })
+    $(".fl-group-tab-message").hide()
+    $(".form-change").each(function () {
+        const propertyId = $(this).attr("data-property-id")
+        $(`#${propertyId}`).change(function () {
+            const value = $(this).val()
+            searchParams[propertyId] = value
+            getTab({ context, entity, view }, tab, route, id, message, searchParams, order )
+        })
+    })
+    triggerSmsText(context, rows)
+    triggerEmailText({ context }, rows)
 
     $(".renderGlobalTable").each(function () {
         const tabId = $(this).attr("id").split("-")[1]
@@ -184,8 +220,6 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
             }
         })
     })
-
-    postTab({ context, entity, view }, tab, id, searchParams)
 
     $(".detailPanel").each(function () {
         const panel = $(this).attr("id")

@@ -1,21 +1,24 @@
 
-const triggerSmsText = (context) => {
+const triggerSmsText = (context, rows) => {
 
     const formatLinks = function () {
 
-        const html = [], rows = [], value = $("#sms").val(), template = decodeURI($(`#${ $("#sms").attr("data-fl-template") }`).val()), div = $("#sms").attr("data-fl-div")
+        const html = [], value = $("#sms").val(), template = decodeURI($(`#${ $("#sms").attr("data-fl-template") }`).val()), div = $("#sms").attr("data-fl-div")
 
-        $(".fl-list-check").each(function () {
-            if ($(this).prop("checked")) {
-                const checkData = $(this).attr("data-properties").split("|")
-                const row = {}
-                for (let pair of checkData) {
-                    pair = pair.split(":")
-                    row[pair[0]] = pair[1]
+        if (!rows) {
+            rows = []
+            $(".fl-list-check").each(function () {
+                if ($(this).prop("checked")) {
+                    const checkData = $(this).attr("data-properties").split("|")
+                    const row = {}
+                    for (let pair of checkData) {
+                        pair = pair.split(":")
+                        row[pair[0]] = pair[1]
+                    }
+                    rows.push({ ...row })
                 }
-                rows.push({ ...row })
-            }
-        })
+            })
+        }
     
         const split = value.split("{")
         if (true) {

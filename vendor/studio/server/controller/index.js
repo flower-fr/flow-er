@@ -1,9 +1,11 @@
+const { assert } = require("../../../../core/api-utils")
 const { createDbClient } = require("../../../utils/db-client")
-const { executeService, assert } = require("../../../../core/api-utils")
+const { executeService } = require("../../../../core/api-utils")
 const { throwBadRequestError } = require("../../../../core/api-utils")
 
 const { ddlEntity } = require("./ddl")
 const { modelRelease } = require("./model")
+const { getNotifRules, postNotifRules } = require("./notifRules")
 
 const registerStudio = async ({ context, config, logger, app }) => {
     const db = await createDbClient(config.db, context.dbName)
@@ -12,6 +14,9 @@ const registerStudio = async ({ context, config, logger, app }) => {
     app.get(`${config.prefix}ddl/:entity/:property`, execute(ddl, context, db))
     app.get(`${config.prefix}model/:module/:release`, execute(model, context, db))
     app.post(`${config.prefix}model/:module/:release`, execute(postModel, context, db))
+
+    app.get(`${config.prefix}notifRules/:entity`, execute(getNotifRules, context, db))
+    app.post(`${config.prefix}notifRules/:entity`, execute(postNotifRules, context, db))
 }
 
 const ddl = async ({ req }, context, db) => {

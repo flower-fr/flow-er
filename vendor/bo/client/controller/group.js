@@ -1,6 +1,6 @@
 
 
-const postGroupTab = async ({ context, entity, view }, tab, searchParams) => {
+const postGroupTab = async ({ context, entity, view }, tab, searchParams, rows) => {
     const form = document.getElementById("tabForm")
     if (form) {
         form.onsubmit = async function (event) {
@@ -161,18 +161,20 @@ const postGroupTab = async ({ context, entity, view }, tab, searchParams) => {
                  * Retrieve the properties related to checked rows
                  */
 
-                const rows = []
-                $(".fl-list-check").each(function () {
-                    if ($(this).prop("checked")) {
-                        const checkData = $(this).attr("data-properties").split("|")
-                        const row = {}
-                        for (let pair of checkData) {
-                            pair = pair.split(":")
-                            row[pair[0]] = pair[1]
+                if (!rows) {
+                    rows = []
+                    $(".fl-list-check").each(function () {
+                        if ($(this).prop("checked")) {
+                            const checkData = $(this).attr("data-properties").split("|")
+                            const row = {}
+                            for (let pair of checkData) {
+                                pair = pair.split(":")
+                                row[pair[0]] = pair[1]
+                            }
+                            rows.push({ ...row })
                         }
-                        rows.push({ ...row })
-                    }
-                })
+                    })
+                }
                 const body = { 
                     payload: payload,
                     rows: rows 

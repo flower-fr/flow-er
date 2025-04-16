@@ -8,7 +8,7 @@ const getProperties = async (db, context, entity, view, propertyDefs, whereParam
         let property
         if (context.config[`${entity}/property/${propertyId}`]) {
             property = { ...context.config[`${entity}/property/${propertyId}`] }
-            if (property.definition != "inline") property = { ...context.config[property.definition] }    
+            if (property.definition && property.definition != "inline") property = { ...context.config[property.definition] }    
         }
         else property = {}
         if (options) {

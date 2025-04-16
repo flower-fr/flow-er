@@ -6,9 +6,18 @@
     },
 
     "menu/studio": {
-        "tabs": ["tab/configView"],
-        "defaultTab": "tab/configView",
-        "labels": { "default": "Flow-ER Studio" }
+        "tabs": ["tab/notifRules"],
+        "defaultTab": "tab/notifRules",
+        "labels": { "default": "Le Studio" }
+    },
+
+    "tab/notifRules": {
+        "menu": "menu/studio",
+        "controller": "studio",
+        "action": "notifRules",
+        "entity": "crm_notif_rule",
+        "view": "notifRules",
+        "labels": { "default": "Le Studio" }
     },
 
     "tab/configView": {
