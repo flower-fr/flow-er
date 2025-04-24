@@ -34,7 +34,6 @@ const registerHub = async ({ context, config, logger, app }) => {
     }
     const upload = multer()
     
-    app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
     app.get(`${config.prefix}send`, execute(getAction, context, db))
     app.post(`${config.prefix}send`, execute(postAction, context, db))
     app.get(`${config.prefix}send-mail`, execute(sendMailAction, context, mailClient))
@@ -69,27 +68,29 @@ const postReminder = async ({ req, res }, context, db, mailClient) => {
     const date = (req.query.date) ? req.query.date : moment().format("YYYY-MM-DD")
     const viewModel = context.config[`${entity}/reminder/${view}`]
 
+    let reminders = []
     const connection = await db.getConnection()
     try {
  
         /**
          * Synchronously register as interaction the reminders to send
          */
-        const reminders = await registerReminders(context, entity, date, viewModel, connection)
+        reminders = await registerReminders(context, entity, date, viewModel, connection)
         await connection.commit()
-
-        /**
-         * Asynchronously send the reminders
-         */
-        sendReminders(context, reminders, connection, mailClient)
-
-        return JSON.stringify({ "status": "ok" })
+        await connection.release()
     }
     catch {
         await connection.rollback()
         await connection.release()
         return JSON.stringify({ "status": "ko", "errors": "Bad request" })
     }
+
+    /**
+     * Asynchronously send the reminders
+     */
+    sendReminders(context, reminders, connection, mailClient)
+
+    return JSON.stringify({ "status": "ok" })
 }
 
 const sendMailAction = async ({ req }, context, mailClient) => {

@@ -1,12 +1,16 @@
 const bodyParser = require("body-parser");
 const { executeService, assert } = require("../../../../core/api-utils")
 const { createDbClient } = require("../../../utils/db-client")
+
+const { sessionCookieMiddleware } = require("../../../user/server/controller/sessionCookieMiddleware");
 const { getAction } = require("./getAction")
 const { postJsonAction } = require("./postJsonAction")
 
 const registerDocument = async ({ context, config, logger, app, renderer }) => {
     const db = await createDbClient(config.db, context.dbName)
     const execute = executeService(config, logger)
+
+    app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
     app.get(`${config.prefix}json/:entity/:name/:version`, execute(getAction, context, db))
     //app.get(`${config.prefix}json/:entity/:name`, execute(getAction, context, db))
     app.get(`${config.prefix}json/:entity/:id`, execute(getAction, context, db))

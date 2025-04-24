@@ -17,6 +17,19 @@ const renderIndexMdb = ({ context, entity, view }, data) => {
     ${ renderStyle({ context, entity, view }, data) }
 
     <body>
+        ${ (formConfig.header) ? `
+            <header>
+                <nav class="navbar navbar-expand-lg bg-body-tertiary">
+                    <div class="container-fluid">
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <a class="navbar-brand" href="#">	
+                                <img height="40" src="${ formConfig.header.logo }" alt="DOUBLE CREAM" title="DOUBLE CREAM" />
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+            </header>` : "" }
+
         <div id="form">
         ${ renderFormMdb({ context, entity, view}, data) }
         </div>

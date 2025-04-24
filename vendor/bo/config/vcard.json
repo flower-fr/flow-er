@@ -25,8 +25,10 @@
             "adr_state": { "entity": "vcard", "column": "adr_state", "audit": true },
             "adr_country": { "entity": "vcard", "column": "adr_country", "audit": true },
             "birth_date": { "entity": "vcard", "column": "birth_date", "type": "date", "audit": true },
+            "birth_place": { "entity": "vcard", "column": "birth_place", "audit": true },
             "gender": { "entity": "vcard", "column": "gender", "type": "int", "audit": true },
             "nationality": { "entity": "vcard", "column": "nationality", "type": "tinyint", "audit": true },
+            "profession": { "entity": "vcard", "column": "profession", "audit": true },
             "opt_in_out": { "entity": "vcard", "column": "opt_in_out", "type": "tinyint", "audit": true },
 
             "visibility": { "entity": "vcard", "column": "visibility", "audit": true },

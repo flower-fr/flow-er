@@ -9,7 +9,7 @@ const tableView = ({ context, entity }, rows, properties) => {
     html.push(`
         <table class="table table-sm table-hover table-responsive">
 
-            ${ tableHeaderView({ context }) }
+            ${ tableHeaderView({ context }, properties) }
 
             <tbody class="table-group-divider table-divider-color" id="flJsonBody">
                 <tr class="fl-json-form">

@@ -1,6 +1,7 @@
 {
     "document_binary/model": {
         "entities": {
+            "document_binary": { "table": "document_binary" }
         },
         "properties": {
             "id": { "entity": "document_binary", "column": "id", "type": "primary" },
@@ -12,5 +13,32 @@
             "touched_at": { "entity": "document_binary", "column": "touched_at", "type": "datetime" },
             "touched_by": { "entity": "document_binary", "column": "touched_by", "type": "int" }
        }
+    },
+
+    "document_binary/property/name": { "labels": { "default": "Nom" }},
+
+    "document_binary/property/mime": { 
+        "labels": { "default": "Type" },
+        "modalities": { 
+            "application/pdf": { "default": "PDF" },
+            "image/jpeg": { "default": "JPEG" },
+            "image/png": { "default": "PNG" },
+            "image/gif": { "default": "GIF" },
+            "application/ms-word": { "default": "MS Word .doc" },
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document": { "default": "OpenXML .docx" },
+            "application/vnd.ms-excel": { "default": "MS Excel .xls" },
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": { "default": "OpenXML .xlsx" }
+        }
+    },
+
+    "document_binary/property/data": { "labels": { "default": "" }, "type": "file" },
+
+	"document_binary/list/default": {
+        "order": "name",
+        "properties": {
+            "name": {},
+            "mime": {},
+            "data": {}
+        }
     }
 }

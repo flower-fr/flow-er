@@ -1,3 +1,5 @@
+const moment = require("moment")
+
 const { createDbClient } = require("../../../utils/db-client")
 const { checkPassword, getTokenPayload, checkToken, createToken, encryptPassword } = require("../../../../core/tools/security")
 const { assert, throwUnauthorized } = require("../../../../core/api-utils")
@@ -108,7 +110,7 @@ const requestPasswordReset = async ({ req, config }, context, db, mailClient) =>
     const user = result[0]
 
     if (user && user.status === "active") {
-        const hashKey = `${user.password}-${ user.last_updated.substring(11) }`
+        const hashKey = `${user.password}-${ moment(user.last_updated).format("YYYY-MM-DD") }`
         const token = createToken({ email }, hashKey, config.tokenExpirationTime)
         const data = {
             resetPasswordLink: `${origin}user/reinitialisation-mot-de-passe/${Buffer(token).toString("base64")}`,
@@ -136,7 +138,7 @@ const resetPassword = async ({ req }, context, db) => {
     const model = context.config["user/model"]
     const [result, fields] = (await db.execute(select(context, "user", ["id", "email", "password", "last_login", "last_updated", "login_failed"], { "email": email }, null, null, model)))
     const user = result[0]
-    const hashKey = `${user.password}-${user.last_updated.substring(11)}`
+    const hashKey = `${user.password}-${moment(user.last_updated).format("YYYY-MM-DD")}`
     const { status, payload } = await checkToken(token, hashKey)
     if (status === "expired") {
         return throwUnauthorized("token expired")

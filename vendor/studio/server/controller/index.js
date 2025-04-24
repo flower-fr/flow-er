@@ -1,4 +1,7 @@
 const { assert } = require("../../../../core/api-utils")
+const multer = require("multer")
+
+const { sessionCookieMiddleware } = require("../../../user/server/controller/sessionCookieMiddleware");
 const { createDbClient } = require("../../../utils/db-client")
 const { executeService } = require("../../../../core/api-utils")
 const { throwBadRequestError } = require("../../../../core/api-utils")
@@ -10,6 +13,14 @@ const { getNotifRules, postNotifRules } = require("./notifRules")
 const registerStudio = async ({ context, config, logger, app }) => {
     const db = await createDbClient(config.db, context.dbName)
     const execute = executeService(context.clone(), config, logger)
+    const executeImport = async (req, res) => {
+        if (!context.isAllowed("document_binary")) return res.status(403).send({message: "unauthorized"})
+        const result = await postImportAction({ req }, context, db)
+        return res.status(200).send(result)
+    }
+    const upload = multer()
+    
+    app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
     app.get(`${config.prefix}ddl/:entity`, execute(ddl, context, db))
     app.get(`${config.prefix}ddl/:entity/:property`, execute(ddl, context, db))
     app.get(`${config.prefix}model/:module/:release`, execute(model, context, db))
@@ -17,6 +28,7 @@ const registerStudio = async ({ context, config, logger, app }) => {
 
     app.get(`${config.prefix}notifRules/:entity`, execute(getNotifRules, context, db))
     app.post(`${config.prefix}notifRules/:entity`, execute(postNotifRules, context, db))
+    app.post(`${config.prefix}notifRules/:entity`, upload.single("file"), executeImport)
 }
 
 const ddl = async ({ req }, context, db) => {

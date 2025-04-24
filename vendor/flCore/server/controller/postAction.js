@@ -55,12 +55,12 @@ const postFormAction = async ({ req }, context, { db }) => {
     const id = (req.query.id) ? req.query.id : 0
 
     const connection = await db.getConnection()
-    //try {
+    try {
         await connection.beginTransaction()
 
         const model = context.config[`${entity}/model`]
         const form = [req.body]
-console.log(form)
+
         const file = req.file && req.file.buffer
         if (file) form[0].logo = file
 
@@ -89,12 +89,12 @@ console.log(form)
         await connection.commit()
         connection.release()
         return JSON.stringify({ "status": "ok", "stored": rowsToStore })
-    // }
-    // catch {
-    //     await connection.rollback()
-    //     connection.release()
-    //     throw throwBadRequestError()
-    // }
+    }
+    catch {
+        await connection.rollback()
+        connection.release()
+        throw throwBadRequestError()
+    }
 }
 
 module.exports = {

@@ -15,10 +15,10 @@ const ddlProperty = (entity, propertyId, property) => {
         else if (property.type == "json") type = "MEDIUMTEXT"
         
         if (property.type == "primary") {
-            return `  \`${propertyId}\` ${type}`
+            return `  \`${ property.column }\` ${type}`
         }
         else {
-            return `  \`${propertyId}\` ${type}`
+            return `  \`${ property.column }\` ${type}`
         }
     }
     return ""

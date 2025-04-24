@@ -54,7 +54,7 @@ const renderCsrMdb = ({ context, entity, view}, data) => {
         const html = []
 
         for (let propertyId of Object.keys(section)) {
-            const property = properties[propertyId]
+            const property = (properties[propertyId]) ? properties[propertyId] : section[propertyId]
             const options = property.options
             const label = (options.labels) ? context.localize(options.labels) : context.localize(property.labels)
             const propertyType = (options.type) ? options.type : property.type
@@ -73,6 +73,14 @@ const renderCsrMdb = ({ context, entity, view}, data) => {
             }
             value = value.replace(/(<([^>]+)>)/ig, "")
     
+            if (["title"].includes(propertyType)) {
+                html.push(`<h5 class="my-3">${ label }</h5>`)
+            }
+    
+            else if (["paragraph"].includes(propertyType)) {
+                html.push(`<p class="my-3">${ label }</p>`)
+            }
+
             if (["input", "email", "phone", "number"].includes(propertyType)) {
                 html.push(`
                     <div class="form-outline csr-form-outline-input mb-2" data-mdb-input-init>
@@ -89,7 +97,22 @@ const renderCsrMdb = ({ context, entity, view}, data) => {
                         <label class="form-label" for="form12">${label}</label>
                     </div>`)
             }
-   
+
+            else if (["date"].includes(propertyType)) {
+
+                html.push(
+                    `<div class="form-outline csr-form-outline-date mb-2 dateOutline" ${ (property.options.startDate) ? `startDate="${ property.options.startDate }"` : "" } }>
+                        <input 
+                            type="text" 
+                            class="form-control form-control-sm property updateInput"
+                            name="${propertyId}" id="${propertyId}" value="${value}" 
+                            ${ (required) ? "required" : "" }
+                            placeholder="${ context.translate("DD/MM/YYYY") }" />
+                        <label class="form-label">${label}</label>
+                    </div>`
+                )
+            }
+       
             else if (propertyType == "textarea") {
                 html.push(`
                     <div class="form-outline csr-form-outline-textarea" data-mdb-input-init>
@@ -210,9 +233,9 @@ const renderCsrMdb = ({ context, entity, view}, data) => {
 
     const html = []
 
-    let addConfig = context.config[`${entity}/form/${view}`], section = addConfig.layout.csr
+    let addConfig = context.config[`${entity}/form/${view}`], sectionId = "csr", section = addConfig.layout.csr
     if (section.labels) {
-        html.push(`<h5 id="${sectionId}" class="text-center my-4 col-lg-12">${ context.localize(section.labels) }</h5>`)
+        html.push(`<h3 id="${sectionId}" class="text-center my-4 col-lg-12">${ context.localize(section.labels) }</h3>`)
     }
 
     html.push(renderProperty(section.properties))

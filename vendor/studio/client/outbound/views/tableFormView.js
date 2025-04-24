@@ -147,6 +147,22 @@ const tableFormView = ({ context }, properties) => {
                 </div>`)
         }
 
+        else if (property.type === "file") {
+            html.push(`
+                <div class="form-outline" data-mdb-input-init>
+                    <input
+                        type="file"
+                        class="form-control form-control-sm fl-json-input"
+                        id="${propertyId}"
+                        ${ required }
+                        data-fl-property="${propertyId}"
+                        data-fl-type="file"
+                        value="${value}"
+                    />
+                    <label class="form-label" for="${propertyId}">${ context.localize(property.labels) }</label>
+                </div>`)
+        }
+
         else {
             html.push(`
                 <div class="form-outline" data-mdb-input-init>

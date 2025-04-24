@@ -1,6 +1,4 @@
-const tableHeaderView = ({ context }) => {
-
-    const properties = context.config["studio/outbound"]["properties"]
+const tableHeaderView = ({ context }, properties) => {
 
     const html = []
 

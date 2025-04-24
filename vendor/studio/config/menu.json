@@ -6,7 +6,7 @@
     },
 
     "menu/studio": {
-        "tabs": ["tab/notifRules"],
+        "tabs": ["tab/notifRules", "tab/binaryDocument"],
         "defaultTab": "tab/notifRules",
         "labels": { "default": "Le Studio" }
     },
@@ -17,7 +17,22 @@
         "action": "notifRules",
         "entity": "crm_notif_rule",
         "view": "notifRules",
-        "labels": { "default": "Le Studio" }
+        "labels": {
+            "default": "Notification rules",
+            "fr_FR": "Règles de notifications"
+        }
+    },
+
+    "tab/binaryDocument": {
+        "menu": "menu/studio",
+        "controller": "studio",
+        "action": "notifRules",
+        "entity": "document_binary",
+        "view": "binaryDocument",
+        "labels": { 
+            "default": "Documents",
+            "fr_FR": "Documents"
+        }
     },
 
     "tab/configView": {

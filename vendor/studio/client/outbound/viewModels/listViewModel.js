@@ -1,6 +1,6 @@
 const getList = async ({ entity }) => {		
 
-    const response = await fetch(`/flBo/list/${ entity }?order=label`)
+    const response = await fetch(`/flBo/list/${ entity }`)
     if (!response.ok) {
         switch (response.status) {
         case 401:
@@ -28,6 +28,8 @@ const postList = async ({ entity }) =>
 
             const body = {}
             body["formJwt"] = $("#formJwt").val()
+            const formData = new FormData()
+            formData.append("formJwt", $("#formJwt").val())
 
             $(".fl-json-input").each(function () {
 
@@ -55,14 +57,16 @@ const postList = async ({ entity }) =>
                 else if (type === "number") value = value.replace(",", ".")
 
                 body[propertyId] = value
+                formData.append(propertyId, value)
             })
 
             let route = `/studio/notifRules/${ entity }`
 
             const response = await fetch(route, {
                 method: "POST",
-                headers: new Headers({"content-type": "application/json"}),
-                body: JSON.stringify(body)
+                body: formData
+                // headers: new Headers({"content-type": "application/json"}),
+                // body: JSON.stringify(body)
             })
 
             if (response.status == 200) {

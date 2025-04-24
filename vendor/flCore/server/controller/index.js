@@ -1,4 +1,5 @@
 const multer = require("multer")
+const { sessionCookieMiddleware } = require("../../../user/server/controller/sessionCookieMiddleware");
 
 const { postAction, postFormAction } = require("./postAction")
 const { deleteAction } = require("./deleteAction")
@@ -20,6 +21,8 @@ const registerCore = async ({ context, config, logger, app }) => {
     const upload = multer()
 
     const execute = executeService(context.clone(), config, logger)
+    
+    app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
     app.post(`${config.prefix}v1/:entity`, execute(postAction, context, { db }))
     app.post(`${config.prefix}file/:entity`, upload.single("logo"), executeFile)
     app.post(`${config.prefix}v1/:entity/:transaction/:id`, execute(transactionAction, context, { db, smtp, sms }))

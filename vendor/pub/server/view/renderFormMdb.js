@@ -93,36 +93,40 @@ const renderFormMdb = ({ context, entity, view} , data) => {
     html.push(`
 
     <div class="container">
-    <form method="post" id="customForm" class="contactForm" enctype="multipart/form-data">
-        <input id="lead_origin" type="hidden" name="flower-identifier" value="">
-        <div class="row mt-3">
-            ${ renderSsrMdb({ context, entity, view }, data) }
-        </div>
+        <div class="row d-flex justify-content-center">
+            <div class="${ (config.layout.class) ? config.layout.class : "" }">
+                <form method="post" id="customForm" class="contactForm" enctype="multipart/form-data">
+                    <input id="lead_origin" type="hidden" name="flower-identifier" value="">
+                    <div class="row mt-3">
+                        ${ renderSsrMdb({ context, entity, view }, data) }
+                    </div>
 
-        <div class="row mt-2" id="csr"></div>
+                    <div class="row mt-2" id="csr"></div>
 
-        ${ (config["hidden"]) ? renderHidden(config["hidden"]) : "" }
- 
-        <div class="updateMessage" id="updateMessageOk">
-            <div class="alert alert-success my-3 text-center">${context.translate("Your request has been registered")}</div>
-        </div>
+                    ${ (config["hidden"]) ? renderHidden(config["hidden"]) : "" }
+            
+                    <div class="updateMessage" id="updateMessageOk">
+                        <div class="alert alert-success my-3 text-center">${context.translate("Your request has been registered")}</div>
+                    </div>
 
-        <div class="updateMessage" id="updateMessageExpired">
-            <div class="alert alert-danger my-3 text-center">${context.translate("The form has expired, please input again")}</div>
-        </div>
+                    <div class="updateMessage" id="updateMessageExpired">
+                        <div class="alert alert-danger my-3 text-center">${context.translate("The form has expired, please input again")}</div>
+                    </div>
 
-        <div class="updateMessage" id="updateMessageServerError">
-            <div class="alert alert-danger my-3 text-center">${context.translate("A technical error has occured. PLease try again later")}</div>
-        </div>
+                    <div class="updateMessage" id="updateMessageServerError">
+                        <div class="alert alert-danger my-3 text-center">${context.translate("A technical error has occured. PLease try again later")}</div>
+                    </div>
 
-        <div class="col-md-12">
-            <div class="form-group">
+                    <div class="col-md-12">
+                        <div class="form-group">
 
-                <input type="submit" value="Envoyer" class="updateSubmit ${ (config.layout.submit) ? config.layout.submit.class : ""}">
+                            <input type="submit" value="Envoyer" class="updateSubmit ${ (config.layout.submit) ? config.layout.submit.class : ""}">
 
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
-    </form>
     </div>`)
 
     return html.join("\n")
