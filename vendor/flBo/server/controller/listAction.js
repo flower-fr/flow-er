@@ -4,13 +4,13 @@ const { assert } = require("../../../../core/api-utils")
 const { getProperties } = require("./getProperties")
 const { getList } = require("./getList")
 
-const listAction = async ({ req }, context, db) => {
+const listAction = async ({ req }, context, db, listConfig) => {
     const entity = assert.notEmpty(req.params, "entity")
     const view = (req.query.view) ? req.query.view : "default"
     const where = (req.query.where) ? req.query.where : null
     const limit = (req.query.limit) ? req.query.limit : 1000
     
-    let listConfig = context.config[`${entity}/list/${view}`]
+    if (!listConfig) listConfig = context.config[`${entity}/list/${view}`]
     if (!listConfig) listConfig = context.config[`${entity}/list/default`]
 
     const order = (req.query.order) ? req.query.order : listConfig.order

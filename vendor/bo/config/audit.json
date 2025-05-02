@@ -1,6 +1,7 @@
 {
     "audit/model": {
         "entities": {
+            "audit": { "table": "audit" }
         },
         "properties": {
             "id": { "entity": "audit", "column": "id", "type": "primary" },
@@ -14,5 +15,90 @@
             "touched_at": { "entity": "audit", "column": "touched_at", "type": "datetime" },
             "touched_by": { "entity": "audit", "column": "touched_by", "type": "int" }
        }
+    },
+
+    "audit/property/id": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Audit ID"
+        }
+    },
+
+    "audit/property/entity": {
+        "definition": "inline",
+        "type": "select",
+        "modalities": {
+            "crm_account": { "default": "crm_account" }
+        },
+        "labels": {
+            "default": "Entity"
+        }
+    },
+
+    "audit/property/row_id": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Row ID"
+        }
+    },
+
+    "audit/property/property": {
+        "definition": "inline",
+        "type": "select",
+        "modalities": {
+            "status": { "default": "status" }
+        },
+        "labels": {
+            "default": "Property"
+        }
+    },
+
+    "audit/property/value": {
+        "definition": "inline",
+        "type": "select",
+        "modalities": {
+            "new": { "default": "Prise de contact" },
+            "appointment": { "default": "Rendez-vous" },
+            "proposal": { "default": "Proposition" },
+            "relance": { "default": "Relance" },
+            "active": { "default": "Contrat" },
+            "gone": { "default": "Parti" }
+        },
+        "labels": {
+            "default": "Value"
+        }
+    },
+
+    "audit/property/touched_at": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "touched_at"
+        }
+    },
+	
+	"audit/index/default": {
+        "order": "-touched_at"
+    }, 
+
+	"audit/search/default": { 
+        "properties": { 
+            "entity": {},
+            "property": {},
+            "value": {}
+        }
+    },
+	
+	"audit/list/default": { 
+        "properties": {
+            "entity": {},
+            "row_id": {},
+            "property": {},
+            "value": {},
+            "touched_at": {}
+        },
+        "defaultWhere": { "entity": "crm_account", "property": "status" }
     }
 }

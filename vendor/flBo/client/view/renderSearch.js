@@ -183,16 +183,19 @@ const renderFilterInput = (context, propertyId, property, options, properties) =
 
 const renderGlobalActions = (context, entity, view, data) => {
     let actions = []
-    console.log(data.actions)
     if (data.actions) {
         actions.push("<hr />")
         for (let action of Object.values(data.actions)) {
             actions.push(
                 `<div class="col-md-12">    
                     <div class="input-group mb-2 text-center">
+                        ${ ( !action.type || action.type == "modal" ) ? `
                         <button type="button" class="btn btn-outline-primary fl-global" data-route="${ (action.route) ? action.route : `/${action.controller}/${action.action}/${action.entity}${ (action.id) ? `/${action.id}` : "" }?${ (action.view) ? `view=${action.view}` : "" }` }" data-mdb-target="#flGlobalModalForm" data-mdb-modal-init>
                             <i ${ (action.glyph) ? `class="fa ${action.glyph}` : "" }"></i> ${ context.localize(action.labels) }
-                        </button>
+                        </button>` : `
+                        <a type="button" class="btn btn-outline-primary" href="/${action.controller}/${action.action}/${action.entity}${ (action.id) ? `/${action.id}` : "" }?${ (action.view) ? `view=${action.view}` : "" }">
+                            <i ${ (action.glyph) ? `class="fa ${action.glyph}` : "" }"></i> ${ context.localize(action.labels) }
+                        </a>` }
                     </div>
                 </div>`
             )

@@ -92,3 +92,5 @@ const getSearchParams = () => {
     }
     return params
 }
+
+export { getSearchParams }

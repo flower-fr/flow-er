@@ -47,7 +47,7 @@ const renderScripts = ({ context, entity, view }, data) => {
         yearSuffix: ""
     }
     
-    ${(user.locale.substring(0, 2) == "fr") ? "$.datepicker.setDefaults($.datepicker.regional[\"fr\"])" : ""}
+    ${(data.user.locale.substring(0, 2) == "fr") ? "$.datepicker.setDefaults($.datepicker.regional[\"fr\"])" : ""}
     </script>
 
     <!-- FullCalendar -->

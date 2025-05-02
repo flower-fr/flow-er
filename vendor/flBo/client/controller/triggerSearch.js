@@ -1,3 +1,4 @@
+import { getGlobal } from "/flBo/cli/controller/getGlobal.js"
 import { triggerList } from "/flBo/cli/controller/triggerList.js"
 
 const triggerSearch = async ({ context, entity, view }, param = false) => {

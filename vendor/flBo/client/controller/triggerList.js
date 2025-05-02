@@ -1,3 +1,4 @@
+import { getSearchParams } from "/flBo/cli/controller/getSearchParams.js"
 import { triggerOrder } from "/flBo/cli/controller/triggerOrder.js"
 import { triggerDetail } from "/flBo/cli/controller/triggerDetail.js"
 import { triggerTaskDetail } from "/flBo/cli/controller/triggerTaskDetail.js"
@@ -17,8 +18,8 @@ const triggerList = async ({ context, entity, view }, order = $("#flListOrderHid
 
     if (order) route += `&order=${order}`
 
-    let limit = parseInt($("#flListLimitHidden").val())
-    route += `&limit=${limit}`
+    let limit = $("#flListLimitHidden").val()
+    if (limit) route += `&limit=${ parseInt(limit) }`
 
     // Fetch
 

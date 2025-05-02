@@ -1,40 +1,11 @@
-const { executeService, assert } = require("../../../../core/api-utils")
-const { sessionCookieMiddleware } = require("../../../user/server/controller/sessionCookieMiddleware");
-const { createDbClient } = require("../../../utils/db-client")
+const { assert } = require("../../../../core/api-utils")
 
 const { getProperties } = require("../../../../vendor/bo/server/controller/getProperties")
 const { getDistribution } = require("../../../../vendor/bo/server/controller/getDistribution")
 
-const { dashboardAction } = require("./dashboardAction")
-const { detailTabAction } = require("../../../flBo/server/controller/detailTabAction")
-const { exportAction } = require("./exportAction")
-const { groupAction } = require("./groupAction")
-const { listAction } = require("./listAction")
-const { searchAction } = require("./searchAction")
+const { renderDashboard } = require("../view/renderDashboard")
 
-const { notFoundAction } = require("./404")
-
-const { renderIndex } = require("../view/renderIndex")
-
-const registerFlBo = async ({ context, config, logger, app }) => {
-
-    const db = await createDbClient(config.db, context.dbName)
-    const execute = executeService(context, config, logger)
-    app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
-    app.get(`${config.prefix}dashboard/:entity`, execute(dashboardAction, context, db))
-    app.get(`${config.prefix}detailTab/:entity/:id`, execute(detailTabAction, context, db))
-    app.get(`${config.prefix}export/:entity`, execute(exportAction, context, db))
-    app.get(`${config.prefix}group/:entity`, execute(groupAction, context, db))
-    app.get(`${config.prefix}index/:entity`, execute(index, context, config, db))
-    app.get(`${config.prefix}list/:entity`, execute(listAction, context, db))
-    app.get(`${config.prefix}search/:entity`, execute(searchAction, context, db))
-    app.get(`${config.prefix}404`, execute(notFoundAction, context, config))
-
-    // fallback : send 404
-    app.use(`${config.prefix}`, notFoundMiddleware)
-}
-
-const index = async ({ req }, context, config, db) => {
+const dashboardAction = async ({ req }, context, config, db) => {
 
     const entity = assert.notEmpty(req.params, "entity")
     const view = (req.query.view) ? req.query.view : "default"
@@ -47,6 +18,9 @@ const index = async ({ req }, context, config, db) => {
         
     let listConfig = context.config[`${entity}/list/${view}`]
     if (!listConfig) listConfig = context.config[`${entity}/list/default`]
+
+    let dashboardConfig = context.config[`${entity}/dashboard/${view}`]
+    if (!dashboardConfig) dashboardConfig = context.config[`${entity}/dashboard/default`]
     
     const tab = context.config[`tab/${view}`]
     const menuId = tab.menu
@@ -68,14 +42,6 @@ const index = async ({ req }, context, config, db) => {
     }
     const properties = await getProperties(db, context, entity, view, propertyDefs, whereParam)
 
-    /**
-     * Retrieve distributions of the data
-     */
-    for (let propertyId of Object.keys(properties)) {
-        const property = properties[propertyId]
-        property.distribution = await getDistribution(db, context, entity, view, propertyId, properties, whereParam)
-    }
-    
     const applications = {}
     for (let applicationId of Object.keys(context.config.applications)) {
         const application = context.config.applications[applicationId]
@@ -95,24 +61,21 @@ const index = async ({ req }, context, config, db) => {
         user: context.user, 
         applications: context.config.applications,
         applicationName: menuDef.labels,
-        tab: tab, 
-        menu: menu,
-        where: where,
-        order: order,
-        limit: limit,
+        dashboardConfig,
+        tab, 
+        menu,
+        where,
+        order,
+        limit,
         footer: context.config.footer,
-        indexConfig: indexConfig,
-        searchConfig: searchConfig,
-        listConfig: listConfig,
-        properties: properties
+        indexConfig,
+        searchConfig,
+        listConfig,
+        properties
     }
-    return renderIndex({ context, entity, view }, data)
-}
-
-const notFoundMiddleware = (_req, res) => {
-    return res.redirect("/mdb/404")
+    return renderDashboard({ context, entity, view }, data)
 }
 
 module.exports = {
-    registerFlBo
+    dashboardAction
 }
