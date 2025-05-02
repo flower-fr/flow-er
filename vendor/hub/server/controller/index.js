@@ -68,29 +68,28 @@ const postReminder = async ({ req, res }, context, db, mailClient) => {
     const date = (req.query.date) ? req.query.date : moment().format("YYYY-MM-DD")
     const viewModel = context.config[`${entity}/reminder/${view}`]
 
-    let reminders = []
     const connection = await db.getConnection()
     try {
  
         /**
          * Synchronously register as interaction the reminders to send
          */
-        reminders = await registerReminders(context, entity, date, viewModel, connection)
+        const reminders = await registerReminders(context, entity, date, viewModel, connection)
         await connection.commit()
         await connection.release()
+
+        /**
+         * Asynchronously send the reminders
+         */
+        sendReminders(context, reminders, connection, mailClient)
+
+        return JSON.stringify({ "status": "ok" })
     }
     catch {
         await connection.rollback()
         await connection.release()
         return JSON.stringify({ "status": "ko", "errors": "Bad request" })
     }
-
-    /**
-     * Asynchronously send the reminders
-     */
-    sendReminders(context, reminders, connection, mailClient)
-
-    return JSON.stringify({ "status": "ok" })
 }
 
 const sendMailAction = async ({ req }, context, mailClient) => {
