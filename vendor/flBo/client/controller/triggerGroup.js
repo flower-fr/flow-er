@@ -1,5 +1,6 @@
 import { triggerSmsText } from "/flBo/cli/controller/triggerSmsText.js"
 import { triggerEmailText } from "/flBo/cli/controller/triggerEmailText.js"
+import { postGroupTab } from "/flBo/cli/controller/group.js"
 
 const triggerGroup = ({ context, entity, view }, searchParams) => {
 

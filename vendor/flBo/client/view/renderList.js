@@ -152,7 +152,7 @@ const renderRows = (context, listConfig, columns, rows) => {
             </td>
 
             <td class="text-center">
-                <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-list-detail" data-mdb-target="#flListDetailModalForm" data-mdb-modal-init title="${context.translate("Detail")}" data-id="${row.id}">
+                <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-list-detail" data-bs-toggle="modal" data-bs-target="#flListDetailModalForm" data-mdb-target="#flListDetailModalForm" data-mdb-modal-init title="${context.translate("Detail")}" data-id="${row.id}">
                   <i class="fas fa-search"></i>
                 </button>
             </td>

@@ -3,6 +3,7 @@ import { triggerDetailTab } from "/flBo/cli/controller/triggerDetailTab.js"
 import { triggerSmsText } from "/flBo/cli/controller/triggerSmsText.js"
 import { triggerEmailText } from "/flBo/cli/controller/triggerEmailText.js"
 import { postTab } from "/flBo/cli/controller/postTab.js"
+import { postGroupTab } from "/flBo/cli/controller/group.js"
 
 const getTab = async ({ context, entity, view }, tab, route, id, message, searchParams, order) => {
 

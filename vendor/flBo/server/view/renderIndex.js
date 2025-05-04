@@ -2,13 +2,13 @@ const { renderHead } = require("./renderHead")
 const { renderHeader } = require("./renderHeader")
 const { renderMenu } = require("./renderMenu")
 const { renderTable } = require("./renderTable")
-const { renderChips } = require("./renderChips")
+const { renderSearchInput } = require("./renderSearchInput")
 const { renderFooter } = require("./renderFooter")
 const { renderScripts } = require("./renderScripts")
 
 const renderIndex = ({ context, entity, view }, data) => {
     
-    const tab = data.tab
+    const tab = data.tab, indexConfig = data.indexConfig
 
     return `<!DOCTYPE html>
     <html lang="fr" ${ (tab.darkMode) ? "data-mdb-theme=\"dark\"" : "" }>
@@ -16,18 +16,22 @@ const renderIndex = ({ context, entity, view }, data) => {
     ${ renderHead({ context, entity, view }, data) }
     
     <body>
+        <input type="hidden" id="detailRoute" value="/bo/detail/${entity}" />
        
         <input type="hidden" id="flListOrderHidden" value="${data.order}" />
         <input type="hidden" id="flListLimitHidden" value="${data.limit}" />
     
-        <nav
-            id="sidenav"
-            data-mdb-sidenav-init
-            class="sidenav"
-            data-mdb-mode="push"
-            data-mdb-content="#content"
-        >
-        </nav>
+        <div class="modal fade" id="flNavModal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="flNavModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="flNavModalLabel"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" title="${context.localize("Cancel")}"></button>
+                    </div>
+                    <div class="modal-body" id="sidenav"></div>
+                </div>
+            </div>
+        </div>
 
         <div id="content">
 
@@ -39,19 +43,15 @@ const renderIndex = ({ context, entity, view }, data) => {
             <div class="m-3">
 
                 <div class="row">
-                    ${renderMenu({ context, entity, view }, data)}
-                </div>
-
-                <div class="row">
                     <section class="p-4 d-flex flex-wrap w-100">
                         <div>
-                            <button data-mdb-ripple-init="" data-mdb-toggle="sidenav" data-mdb-target="#sidenav" class="btn btn-primary" aria-controls="#sidenav" aria-haspopup="true" style="" aria-expanded="false">
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#flNavModal">
                                 <i class="fas fa-bars"></i>
                             </button>
                         </div>
                         &nbsp;&nbsp;&nbsp;&nbsp;
                         
-                        ${ renderChips({ context, entity, view }, data.properties) }
+                        ${ renderSearchInput({ context, entity, view }, indexConfig) }
 
                     </section>
 
@@ -60,14 +60,23 @@ const renderIndex = ({ context, entity, view }, data) => {
                     </div>
                 </div>
             </div>
+                                    
+            <!-- detailModal -->
             
+            <div class="modal fade" id="flModal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="flModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xl" role="document">
+                    <div class="modal-content" id="flModalContent">
+                    </div>
+                </div>
+            </div>
+
             <!-- listDetailModal -->
             
-            <div class="modal fade" id="listDetailModalForm" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="listDetailModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg" role="document">
+            <div class="modal fade" id="flListDetailModalForm" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="flListDetailModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xl" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="listDetailModalLabel"></h5>
+                            <h5 class="modal-title" id="flListDetailModalLabel"></h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" data-mdb-dismiss="modal" aria-label="Close" title="${context.localize("Cancel")}"></button>
                         </div>
                         <div class="modal-body">
@@ -81,7 +90,7 @@ const renderIndex = ({ context, entity, view }, data) => {
             <!-- globalModal -->
             
             <div class="modal fade" id="flGlobalModalForm" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="flGlobalModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-dialog modal-xl" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="flGlobalModalLabel">${ context.translate("Global actions") }</h5>
@@ -105,12 +114,23 @@ const renderIndex = ({ context, entity, view }, data) => {
 
     <!-- Pluggable renderers by index config -->
     <script src="/flbo/cli/view/renderSearch.js"></script>
+    <script src="/flBo/cli/view/renderListHeader.js"></script>
     <script src="/flbo/cli/view/renderList.js"></script>
-    <!-- TODO
     <script src="/flbo/cli/view/renderDetail.js"></script>
-    <script src="/flbo/cli/view/renderGroup.js"></script>
-    <script src="/flbo/cli/view/renderModalCalendar.js"></script>
+    <script src="/flBo/cli/view/renderDetailTab.js"></script>
     <script src="/flbo/cli/view/renderModalList.js"></script>
+    <script src="/flBo/cli/view/renderUpdate.js"></script>
+    <script src="/flBo/cli/view/renderDocumentSection.js"></script>
+    <script src="/flBo/cli/view/renderGlobalTable.js"></script>
+    <script src="/flBo/cli/view/renderModalListHeader.js"></script>
+    <script src="/flBo/cli/view/renderModalListForm.js"></script>
+    <script src="/flBo/cli/view/renderModalListRows.js"></script>
+    <script src="/flbo/cli/view/renderGroup.js"></script>
+    <script src="/flBo/cli/view/renderGroupTabCards.js"></script>
+    <script src="/flBo/cli/view/renderGroupTab.js"></script>
+
+    <!-- TODO
+    <script src="/flbo/cli/view/renderModalCalendar.js"></script>
 
     <script src="/flbo/cli/controller/searchCallback.js"></script>
     <script src="/flbo/cli/controller/ListCallback.js"></script>
@@ -132,10 +152,12 @@ const renderIndex = ({ context, entity, view }, data) => {
 
     const searchRenderer = renderSearch
     const listRenderer = renderList
-    const listCallback = () => {}
- 
-    loadPage({ entity: "${entity}", view: "${view}" })
 
+    const searchCallback = () => {}
+    const listCallback = () => {}
+    const modalListCallback = () => {}
+    const updateCallback = () => {}
+ 
     </script>
 
     </html>`

@@ -1,4 +1,5 @@
 import { getTab } from "/flBo/cli/controller/getTab.js"
+import { flModalRules } from "/flBo/cli/controller/modalRules.js"
 
 const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, message, searchParams, order) => {
 

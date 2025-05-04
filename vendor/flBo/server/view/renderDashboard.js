@@ -4,11 +4,11 @@ const { renderHead } = require("../../../mdb/server/view/renderHead")
 const { renderHeader } = require("./renderHeader")
 const { renderMenu } = require("./renderMenu")
 const { renderFooter } = require("./renderFooter")
-const { renderChips } = require("./renderChips")
+const { renderSearchInput } = require("./renderSearchInput")
 
 const renderDashboard = ({ context, entity, view }, data) => {
 
-    const tab = data.tab, indexConfig = data.indexConfig, dashboardConfig = data.dashboardConfig, leftConfig = dashboardConfig.left[0]
+    const tab = data.tab, indexConfig = data.indexConfig, dashboardConfig = data.dashboardConfig
 
     const html = []
 
@@ -52,13 +52,11 @@ const renderDashboard = ({ context, entity, view }, data) => {
                             </div>
                             &nbsp;&nbsp;&nbsp;&nbsp;
                             
-                            ${ (indexConfig) ? renderChips({ context, entity, view }, data.properties, indexConfig) : "" }
+                            ${ (indexConfig) ? renderSearchInput({ context, entity, view }, indexConfig) : "" }
 
                         </section>`)
 
-    let i = 0
-    for (const section of dashboardConfig.left) {
-        html.push(`
+    html.push(`
                         <div class="row d-flex justify-content-center">
                             <div class="col-md-8">
                                 <div class="calendar" id="calendar">
@@ -79,12 +77,12 @@ const renderDashboard = ({ context, entity, view }, data) => {
                                 </div>
                             </div>
                         </div>`)
-    }
                     
     html.push(`
                     </div>
                     <div class="col-md-2">`)
 
+    let i = 0
     for (const section of dashboardConfig.right) {
 
         const mapper = ([x, y]) => {
@@ -182,11 +180,11 @@ const renderDashboard = ({ context, entity, view }, data) => {
 
     <script type="module" src="/flBo/cli/controller/loadDashboard.js" data-json="${ encodeURI(JSON.stringify({ "entity": entity, "view": view }, dashboardConfig)) }" id="module-script"></script>
     <script>
-        const getSearchRoute = () => { return "/flBo/search/${ leftConfig.entity }?view=${ leftConfig.view }" }
+        const getSearchRoute = () => { return "/flBo/search/${ entity }?view=${ view }" }
         const searchRenderer = renderSearch
         searchCallback = mdbSearchCallback
 
-        const getListRoute = () => { return "/flBo/list/${ leftConfig.entity }?view=${ leftConfig.view }" }
+        const getListRoute = () => { return "/flBo/list/${ entity }?view=${ view }" }
         const listRenderer = renderTasks
         listCallback = mdbListCallback
     </script>

@@ -55,7 +55,7 @@ const loadPage = async ({ entity, view }) => {
         }
     }
     
-    $("#flListDetailModalForm").each(function () {
+    if (mdb) $("#flListDetailModalForm").each(function () {
         const modal = $(this)
         new mdb.Modal(modal)    
 

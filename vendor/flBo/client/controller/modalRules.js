@@ -74,3 +74,5 @@ const flModalRules = ({ context }) => {
         }
     })
 }
+
+export { flModalRules }
