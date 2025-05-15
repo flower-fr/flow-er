@@ -117,11 +117,11 @@ const renderGroupTab = ({ context, entity }, section, properties, row, payload )
          * Date or datetime
          */
 
-        else if (["date", "datetime", "closing_date"].includes(propertyType)) {
+        else if (["date", "closing_date"].includes(propertyType)) {
 
             html.push(
                 `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3 mb-3">
-                    <div class="form-outline dateOutline" ${(propertyType == "datetime" ? "data-mdb-datetimepicker-init" : "data-mdb-datepicker-init")} data-mdb-input-init data-mdb-inline="true">
+                    <div class="form-outline dateOutline" "data-mdb-datepicker-init" data-mdb-input-init data-mdb-inline="true">
                         <input class="form-control form-control-sm updateDate" id="${propertyId}" value="${context.decodeDate(value)}" data-fl-disabled="${ disabled }" ${ required } placeholder="DD/MM/YYYY" autocomplete="off" />
                         <label class="form-label">${label}</label>
                         <div class="invalid-feedback">${ context.translate("Invalid") }</div>
@@ -161,6 +161,23 @@ const renderGroupTab = ({ context, entity }, section, properties, row, payload )
                     <label class="col-sm-5 col-form-label col-form-label-sm">${ (required) ? "* " : "" }${label}</label>
                     <div class="col-sm-7">
                         <input class="form-control form-control-sm updateTime" id="${propertyId}" value="${value}" data-fl-disabled="${ disabled }" ${ required } />
+                        <div class="invalid-feedback">${ context.translate("Invalid") }</div>
+                    </div>
+                </div>`
+            )
+        }
+    
+        /**
+         * Datetime
+         */
+
+        else if (["datetime"].includes(propertyType)) {
+
+            html.push(
+                `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3 mb-3">
+                    <div class="form-outline datetimeOutline" "data-mdb-datetimepicker-init" data-mdb-input-init data-mdb-inline="true">
+                        <input class="form-control form-control-sm updateDatetime" id="${propertyId}" value="${context.decodeDate(value)}" data-fl-disabled="${ disabled }" ${ required } placeholder="DD/MM/YYYY" autocomplete="off" />
+                        <label class="form-label">${label}</label>
                         <div class="invalid-feedback">${ context.translate("Invalid") }</div>
                     </div>
                 </div>`

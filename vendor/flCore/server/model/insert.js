@@ -6,7 +6,7 @@ const insert = (context, entity, data, model) => {
 
     const pairs = {}
     for (let key of Object.keys(data)) {
-        if (!["instance_id", "touched_at", "touched_by"].includes(key)) {
+        if (!["instance_id"/*, "touched_at"*/, "touched_by"].includes(key)) {
             let value = data[key]
             if (key != "visibility" || value != "deleted") {
                 const type = (model.properties[key].type) ? model.properties[key].type : "text"
@@ -36,7 +36,7 @@ const insert = (context, entity, data, model) => {
     if (model.properties.creation_date) pairs[qi("creation_date")] = `'${new Date().toISOString().slice(0, 10)}'`
     if (model.properties.creation_month) pairs[qi("creation_month")] = `'${new Date().toISOString().slice(0, 7)}'`
     if (model.properties.creation_year) pairs[qi("creation_year")] = `'${new Date().toISOString().slice(0, 4)}'`
-    pairs[qi("touched_at")] = `'${new Date().toISOString().slice(0, 19).replace("T", " ")}'`
+    if (!pairs[qi("touched_at")]) pairs[qi("touched_at")] = `'${new Date().toISOString().slice(0, 19).replace("T", " ")}'`
     pairs[qi("touched_by")] = context.user.id
     
     return `INSERT INTO ${table} (${Object.keys(pairs).join(", ")})\n VALUES (${Object.values(pairs).join(", ")})\n`

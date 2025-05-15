@@ -19,7 +19,7 @@ const renderTasks = ({ context, entity, view }, data) => {
                 </th>
             </tr>
             <tr>
-                <td class="fl-task-detail" data-mdb-modal-init="" data-mdb-target="#flModal" data-fl-id="${ row.id }">
+                <td class="fl-task-detail" data-bs-toggle="modal" data-bs-target="#flModal" data-mdb-modal-init="" data-mdb-target="#flModal" data-fl-id="${ row.id }">
                     <i class="pe-2 fas fa-circle" style="color: ${ color }"></i>
                     <strong class="${ textClass }">
                         ${ row.summary }

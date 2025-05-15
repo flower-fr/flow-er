@@ -3,7 +3,7 @@ const triggerSmsText = (context, rows) => {
 
     const formatLinks = function () {
 
-        const html = [], value = $("#sms").val(), template = decodeURI($(`#${ $("#sms").attr("data-fl-template") }`).val()), div = $("#sms").attr("data-fl-div")
+        const html = ["<h5>Envoyer manuellement</h5>"], value = $("#sms").val(), template = decodeURI($(`#${ $("#sms").attr("data-fl-template") }`).val()), div = $("#sms").attr("data-fl-div")
 
         if (!rows) {
             rows = []

@@ -13,7 +13,7 @@ const renderTaskDetail = ({ context, entity, view }, data, formJwt) => {
 
             <div class="modal-header">
                 <h5 class="modal-title id="flModalTaskLabel">${ context.translate("Modify a task") }</h5>
-                <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" data-mdb-dismiss="modal" aria-label="Close"></button>
             </div>
 
             <div class="modal-body">
@@ -29,7 +29,7 @@ const renderTaskDetail = ({ context, entity, view }, data, formJwt) => {
                     </div>
                     <div class="text-center"><small> ${ (data.n_fn) ? data.n_fn : "" } ${ (data.business_name) ? data.business_name : "" } ${ (data.email) ? `<a href="mailto:${ data.email }"><i class="fa fa-at"></i>&nbsp;&nbsp;${ data.email }</a>` : "" }&nbsp;&nbsp;&nbsp;&nbsp;${ (data.tel_cell) ? `<a href="tel:${ data.tel_cell }"><i class="fa fa-mobile-screen-button"></i>&nbsp;&nbsp;${ data.tel_cell }</a>` : "" }</small></div>
                 </section>
-                <div class="form-outline my-3 formOutline" data-mdb-input-init="" data-mdb-input-initialized="true">
+                <div class="form-floating form-outline my-3 formOutline" data-mdb-input-init="" data-mdb-input-initialized="true">
                     <textarea type="text" class="form-control form-control-sm fl-modal-form-input" data-fl-property="description" data-fl-type="textarea">${ (data.description) ? data.description : "" }</textarea>
                     <label class="form-label" style="margin-left: 0px;">
                         Description
@@ -44,7 +44,7 @@ const renderTaskDetail = ({ context, entity, view }, data, formJwt) => {
                     </div>
                 </div>
                 <section class="long-event-section">
-                    <div class="form-outline my-3 fl-date-outline" data-fl-container="flModal" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true"> 
+                    <div class="form-floating form-outline my-3 fl-date-outline" data-fl-container="flModal" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true"> 
                         <input type="text" name="start.date" class="form-control form-control-sm calendar-date-input active form-icon-trailing fl-modal-form-input" data-fl-property="date" data-fl-type="date" value="${ context.decodeDate(data.date) }">
                         <label class="form-label" style="margin-left: 0px;">
                             ${ context.translate("Date") }
@@ -55,7 +55,7 @@ const renderTaskDetail = ({ context, entity, view }, data, formJwt) => {
                     </div>
                 </section>
                 <section class="long-event-section">
-                    <div class="form-outline my-3 fl-time-outline" data-fl-container="flModal" data-mdb-datepicker-init data-mdb-input-init> 
+                    <div class="form-floating form-outline my-3 fl-time-outline" data-fl-container="flModal" data-mdb-datepicker-init data-mdb-input-init> 
                         <input type="text" class="form-control form-control-sm fl-modal-form-input" data-fl-property="time" data-fl-type="time" value="${ (data.time) ? data.time : "" }" />
                         <label class="form-label" style="margin-left: 0px;">
                             ${ context.translate("Time") }

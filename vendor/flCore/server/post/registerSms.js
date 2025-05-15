@@ -25,12 +25,13 @@ const registerSms = async ({ req }, context, rows, { connection, sms }) => {
         body = body.join("")
 
         let data = {
-            status: "new",
+            status: (row.scheduled_at && row.scheduled_at !== "") ? "new" : "current",
             provider: "smspartner.fr",
             endpoint: "/sms/json",
             method: "POST",
             params: JSON.stringify({ "from": sms.from, "text": body, "to": row.tel_cell, "api_key": sms.apiKey, "api_secret": sms.apiSecret })
         }
+        if (row.scheduled_at && row.scheduled_at !== "") data.scheduled_at = row.scheduled_at
         const [insertedRow] = (await connection.execute(insert(context, "interaction", data, model)))
         row.insertId = insertedRow.insertId   
 
@@ -46,6 +47,7 @@ const registerSms = async ({ req }, context, rows, { connection, sms }) => {
             account_id: row.id,
             summary: `${ context.translate("SMS sent") } - ${body}`
         }
+        if (row.scheduled_at && row.scheduled_at !== "") data.touched_at = row.scheduled_at
         await connection.execute(insert(context, "crm_contact", data, model))
     }
 }

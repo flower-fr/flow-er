@@ -26,7 +26,7 @@ const getTaskDetail = async (context, entity, view, id, searchParams) => {
     const data = await response.json()
 
     $("#flModalContent").html(renderTaskDetail({ context, entity, view}, data.data[entity].rows[0] ))
-    mdbTasksCallback({ context, entity, view })
+    tasksCallback({ context, entity, view })
     $(".fl-modal-message").hide()
 
     const form = document.getElementById("flModalForm")

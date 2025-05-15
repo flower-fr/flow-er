@@ -13,7 +13,7 @@ const renderTaskAdd = ({ context, entity, view }, {properties }, formJwt) => {
 
             <div class="modal-header">
                 <h5 class="modal-title id="flModalTaskLabel">${ context.translate("Add a task") }</h5>
-                <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" data-mdb-dismiss="modal" aria-label="Close"></button>
             </div>
 
             <div class="modal-body">

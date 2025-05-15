@@ -92,6 +92,7 @@ const renderHeader = ({ context, entity, view }, data) => {
 
 const renderEntries = ({ context, entity, view }, menu) => {
     const html = []
+	console.log(menu)
     for (let menuTabId of Object.keys(menu)) {
         const menuTab = menu[menuTabId]
 	

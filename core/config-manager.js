@@ -34,7 +34,7 @@ const resolveValues = (configPath, originalConfig) => {
     return config
 }
 
-const loadConfig = filename => {
+const loadConfig = filename => { console.log(filename)
     const originalConfig = require(filename)
     const configPath = path.dirname(filename)
     const config = resolveValues(configPath, originalConfig)

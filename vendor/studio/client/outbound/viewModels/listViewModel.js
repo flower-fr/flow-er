@@ -64,9 +64,9 @@ const postList = async ({ entity }) =>
 
             const response = await fetch(route, {
                 method: "POST",
-                body: formData
-                // headers: new Headers({"content-type": "application/json"}),
-                // body: JSON.stringify(body)
+                // body: formData
+                headers: new Headers({"content-type": "application/json"}),
+                body: JSON.stringify(body)
             })
 
             if (response.status == 200) {

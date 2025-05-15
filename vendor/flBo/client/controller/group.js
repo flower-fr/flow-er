@@ -86,6 +86,12 @@ const postGroupTab = async ({ context, entity, view }, tab, searchParams, rows) 
                 payload[propertyId] = $(this).val()
                 formData.append(propertyId, $(this).val())
             })
+
+            $(".updateDatetime").each(function () {
+                const propertyId = $(this).attr("id")
+                payload[propertyId] = $(this).val().split(",").join("")
+                formData.append(propertyId, $(this).val().split(",").join(""))
+            })
             
             $(".updateSelect").each(function () {
                 const propertyId = $(this).attr("id")

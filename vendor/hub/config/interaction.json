@@ -5,8 +5,10 @@
         },
         "properties": {
             "id": { "entity": "interaction", "column": "id" },
+            "identifier": { "entity": "interaction", "column": "identifier" },
             "place_id": { "entity": "interaction", "column": "place_id" },
             "status": { "entity": "interaction", "column": "status" },
+            "scheduled_at": { "entity": "interaction", "column": "scheduled_at", "type": "datetime" },
             "provider": { "entity": "interaction", "column": "provider" },
             "endpoint": { "entity": "interaction", "column": "endpoint" },
             "method": { "entity": "interaction", "column": "method" },
@@ -56,6 +58,15 @@
             "default": "Status",
             "fr_FR": "Statut"
         }
+    },
+
+    "interaction/property/scheduled_at": {
+		"definition": "inline",
+		"type": "datetime",
+		"labels": {
+			"default": "Scheduled at",
+			"fr_FR": "Planifié à"
+		}
     },
 
     "interaction/property/provider": {

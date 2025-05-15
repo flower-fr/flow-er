@@ -56,7 +56,6 @@ const mergePayload = async (context, entity, model, form, config, connection) =>
         [cursor] = await connection.execute(request)
     }
     catch {
-        console.log(request)
         throw (new Error("Bad request"))
     }
 

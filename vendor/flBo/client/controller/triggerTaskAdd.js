@@ -25,7 +25,7 @@ const getTaskAdd = async ({ context, entity, view }, searchParams) => {
     const data = await response.json()
 
     $("#flModalContent").html(renderTaskAdd({ context, entity, view}, { properties: data.data[entity].properties } ))
-    mdbTasksCallback({ context, entity, view })
+    tasksCallback({ context, entity, view })
 
     $(".fl-modal-message").hide()
 

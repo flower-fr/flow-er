@@ -91,6 +91,7 @@ const index = async ({ req }, context, config, db) => {
 
     const data = {
         headerParams: context.config.headerParams,
+        helpMenu: context.config.helpMenu,
         instance: context.instance,
         user: context.user, 
         applications: context.config.applications,

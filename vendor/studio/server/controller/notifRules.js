@@ -43,18 +43,18 @@ const postNotifRules = async ({ req }, context, db) =>
     const form = req.body
     const connection = await db.getConnection()
 
-    //try {
+    try {
         const model = context.config[`${ entity }/model`]
         let { rowsToStore } = dataToStore(model, [form])
         rowsToStore = entitiesToStore(entity, model, rowsToStore)
         await storeEntities(context, entity, rowsToStore, model, connection)
         await auditCells(context, rowsToStore, connection)
         await connection.release()
-    // }
-    // catch {
-    //     connection.release()
-    //     throw throwBadRequestError()
-    // }
+    }
+    catch {
+        connection.release()
+        throw throwBadRequestError()
+    }
     return { "status": "ok" }
 }
 

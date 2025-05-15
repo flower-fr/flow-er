@@ -6,7 +6,7 @@
     },
 
     "menu/studio": {
-        "tabs": ["tab/notifRules", "tab/binaryDocument"],
+        "tabs": ["tab/notifRules", "tab/kpi", "tab/binaryDocument"],
         "defaultTab": "tab/notifRules",
         "labels": { "default": "Le Studio" }
     },
@@ -20,6 +20,18 @@
         "labels": {
             "default": "Notification rules",
             "fr_FR": "Règles de notifications"
+        }
+    },
+
+    "tab/kpi": {
+        "menu": "menu/studio",
+        "controller": "studio",
+        "action": "notifRules",
+        "entity": "crm_kpi",
+        "view": "kpi",
+        "labels": {
+            "default": "KPIs",
+            "fr_FR": "KPIs"
         }
     },
 

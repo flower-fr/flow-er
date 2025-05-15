@@ -34,7 +34,7 @@ const registerSmtp = async ({ req }, context, rows, { connection }) => {
         row.email_body = mailData.body // renderMail({ context }, mailData)
 
         let data = {
-            status: "new",
+            status: (row.scheduled_at && row.scheduled_at !== "") ? "new" : "current",
             provider: "smtp",
             endpoint: "sendMail",
             method: "POST",
@@ -42,6 +42,7 @@ const registerSmtp = async ({ req }, context, rows, { connection }) => {
             body: row.email_body,
             attachments: row.attachments
         }
+        if (row.scheduled_at && row.scheduled_at !== "") data.scheduled_at = row.scheduled_at
         const [insertedRow] = (await connection.execute(insert(context, "interaction", data, context.config["interaction/model"])))
         row.insertId = insertedRow.insertId   
 
@@ -56,6 +57,7 @@ const registerSmtp = async ({ req }, context, rows, { connection }) => {
             account_id: row.id,
             summary: `${ context.translate("Email sent") } - ${row.email_subject}`
         }
+        if (row.scheduled_at && row.scheduled_at !== "") data.touched_at = row.scheduled_at
         await connection.execute(insert(context, "crm_contact", data, context.config["crm_contact/model"]))
     }
 }

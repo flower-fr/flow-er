@@ -3,7 +3,7 @@ const triggerEmailText = ({ context }, rows) => {
 
     const formatLinks = function () {
 
-        const html = [], template = decodeURI($(`#${ $("#email_body").attr("data-fl-template") }`).val()), div = $("#email_body").attr("data-fl-div")
+        const html = ["<h5>Envoyer manuellement</h5>"], template = decodeURI($(`#${ $("#email_body").attr("data-fl-template") }`).val()), div = $("#email_body").attr("data-fl-div")
         
         const subject = $("#email_subject").val()
 

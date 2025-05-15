@@ -25,7 +25,7 @@ const triggerDoughnut = async ({ context, view }) => {
 
         const data = await response.json(), label = $(this).attr("data-fl-label"), id = `chart-${ $(this).attr("data-fl-identifier") }`
         $(this).html(await renderChart({ context, entity, view }, label, data, id))
-        mdbDashboardCallback({ context, entity, view }, id)
+        dashboardCallback({ context, entity, view }, id)
     })
 }
 

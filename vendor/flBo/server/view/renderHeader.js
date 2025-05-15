@@ -55,7 +55,7 @@ const renderHeader = ({ context, entity, view }, data) => {
 				<div class="d-flex align-items-center">
       				<div class="dropdown">
 						<a
-						  data-mdb-dropdown-init
+						  data-bs-toggle="dropdown"
 						  class="link-secondary me-3 dropdown-toggle hidden-arrow"
 						  href="#"
 						  id="navbarDropdownMenuLink"
@@ -64,7 +64,7 @@ const renderHeader = ({ context, entity, view }, data) => {
 						>
 							<span class="far fa-lg fa-user"></span>
 						</a>
-						<ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+						<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
 							<li>
 								<li><a class="dropdown-item" href="#">${user.n_fn}</a></li>
 								<a class="dropdown-item" href="/user/change-password">${ context.translate("Change password") }</a>
@@ -72,11 +72,7 @@ const renderHeader = ({ context, entity, view }, data) => {
 						</ul>
 					</div>
 
-					<!-- <div>
-						<a class="link-secondary me-3" title="${context.translate("Show the documentation")}">
-							<span class="far fa-lg fa-question-circle"> </span>
-						</a>
-					</div> -->
+					${ (data.helpMenu) ? renderHelpMenu(context, data.helpMenu) : "" }
 
 					<div>
 						<a href="/user/logout" class="link-secondary text-danger" title="${context.translate("Log out")}">
@@ -146,6 +142,38 @@ const renderApplications = (context, applications, applicationName, menu) => {
 			</li>`)
         }
     }
+    return html.join("\n")
+}
+	
+const renderHelpMenu = (context, helpMenu) => {
+    const html = []
+
+    html.push(`
+		<div class="dropdown">
+			<a
+				data-bs-toggle="dropdown"
+				class="nav-link link-success me-3 dropdown-toggle hidden-arrow"
+				href="#"
+				id="flHelpDropdownMenuLink"
+				role="button" 
+				aria-expanded="false"
+			>
+				<span class="far fa-lg fa-question-circle"></span>
+			</a>
+			<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="flHelpDropdownMenuLink">`)
+
+    for (const entry of helpMenu.entries) {
+
+        html.push(`
+					<li>
+						<a class="dropdown-item" href="${ context.localize(entry.href) }" target="_blank"><span class="fa fa-film"></span> ${ context.localize(entry.labels) }</a>
+					</li>`)
+    }
+
+    html.push(`
+		</ul>
+	</div>`)
+
     return html.join("\n")
 }
 
