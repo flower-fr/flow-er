@@ -15,7 +15,7 @@ const renderIndex = ({ context, entity, view }, data) => {
     ${ renderHead({ context, entity, view }, data) }
     
     <body>
-        <input type="hidden" id="detailRoute" value="/bo/detail/${entity}" />
+        <input type="hidden" id="detailRoute" value="/flBo/detail/${entity}" />
        
         <input type="hidden" id="flListOrderHidden" value="${data.order}" />
         <input type="hidden" id="flListLimitHidden" value="${data.limit}" />
@@ -157,11 +157,8 @@ const renderIndex = ({ context, entity, view }, data) => {
         $("#flSearchButton").click(showSearch)
 
         const mdb=false
-        const getShortcutsRoute = () => { return "/bo/shortcuts/${entity}?view=${view}" }
         const getSearchRoute = () => { return "/flBo/search/${entity}?view=${view}" }
-        const getListRoute = () => { return "${ (data.indexConfig && data.indexConfig.listView) ? data.indexConfig.listView : "/bo/list" }/${entity}?view=${view}" }
-        const getDetailRoute = () => { return "/bo/detail/${entity}" }
-        const getGroupRoute = () => { return "/bo/group/${entity}" }
+        const getListRoute = () => { return "${ (data.indexConfig && data.indexConfig.listView) ? data.indexConfig.listView : "/flBo/list" }/${entity}?view=${view}" }
 
         const searchRenderer = renderSearch
         const listRenderer = renderList

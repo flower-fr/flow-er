@@ -57,8 +57,8 @@ const loginPost = async ({ req, res }, context, config, db) => {
     res.cookie("session", `Bearer ${token}`, {
         path: "/", 
         domain: config.cookieDomain, 
-        secure: true, 
-        httpOnly: true
+        secure: (config.cookieSecure !== undefined) ? config.cookieSecure : true, 
+        httpOnly: (config.cookieHttpOnly !== undefined) ? config.cookieHttpOnly : true
     })
 
     res.redirect("/")

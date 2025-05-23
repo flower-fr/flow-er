@@ -125,6 +125,7 @@ const defaultTab = async ({ req, res }, context) => {
     const defaultTabConfig = context.config["application/defaultTab"]
     if (defaultTabConfig) {
         const tab = context.config[defaultTabConfig]
+console.log(tab)
         return res.redirect(`/${ tab.controller }/${ tab.action }/${ tab.entity }${ (tab.view) ? `?view=${ tab.view }` : "" }`)
     }
 }

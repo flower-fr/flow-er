@@ -1,6 +1,7 @@
-import { triggerSmsText } from "/flBo/cli/controller/triggerSmsText.js"
 import { triggerEmailText } from "/flBo/cli/controller/triggerEmailText.js"
 import { triggerGroup } from "/flBo/cli/controller/triggerGroup.js"
+import { triggerLinkedinText } from "/flBo/cli/controller/triggerLinkedinText.js"
+import { triggerSmsText } from "/flBo/cli/controller/triggerSmsText.js"
 import { postGroupTab } from "/flBo/cli/controller/group.js"
 
 const getGroupTab = async ({ context, entity, view }, tab, searchParams) => {
@@ -101,8 +102,14 @@ const getGroupTab = async ({ context, entity, view }, tab, searchParams) => {
         $(".fl-group-tab-message").hide()
     })
 
-    triggerSmsText(context)
     triggerEmailText({ context })
+    $("#email_body").change(() => { triggerEmailText({ context }) })
+
+    triggerLinkedinText(context)
+    $("#description").change(() => { triggerLinkedinText(context) })
+    
+    triggerSmsText(context)
+    $("#sms").change(() => { triggerSmsText(context) })
 
     postGroupTab({ context, entity, view }, tab, searchParams)
 }

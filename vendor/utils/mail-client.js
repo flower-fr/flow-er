@@ -43,7 +43,6 @@ const createImapClient = ({ config, logger }) => {
 
 const getMails = ({ config, logger }) => async () => 
 {
-    console.log(config.imapUser, config.imapPassword, config.imapServer, config.imapPort)
     const connection = await imaps.connect({
         imap: {
             user: config.imapUser,

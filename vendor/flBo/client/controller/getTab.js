@@ -1,5 +1,6 @@
 
 import { triggerDetailTab } from "/flBo/cli/controller/triggerDetailTab.js"
+import { triggerLinkedinText } from "/flBo/cli/controller/triggerLinkedinText.js"
 import { triggerSmsText } from "/flBo/cli/controller/triggerSmsText.js"
 import { triggerEmailText } from "/flBo/cli/controller/triggerEmailText.js"
 import { postTab } from "/flBo/cli/controller/postTab.js"
@@ -103,7 +104,12 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
             getTab({ context, entity, view }, tab, route, id, message, searchParams, order )
         })
     })
+
     triggerSmsText(context, rows)
+
+    triggerLinkedinText(context)
+    $("#description").change(() => { triggerLinkedinText(context) })
+
     triggerEmailText({ context }, rows)
 
     $(".renderGlobalTable").each(function () {
@@ -153,8 +159,6 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
             submitDelete({ context, entity, view }, id)
         })
     })
-    
-    checkForm()
 
     $(".input-iban").each(function () {
         const propertyId = $(this).attr("id")

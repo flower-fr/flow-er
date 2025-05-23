@@ -6,9 +6,11 @@ const { getProperties } = require("../../../../vendor/bo/server/controller/getPr
 const { getDistribution } = require("../../../../vendor/bo/server/controller/getDistribution")
 
 const { dashboardAction } = require("./dashboardAction")
-const { detailTabAction } = require("../../../flBo/server/controller/detailTabAction")
+const { detailAction } = require("./detailAction")
+const { detailTabAction } = require("./detailTabAction")
 const { exportAction } = require("./exportAction")
 const { groupAction } = require("./groupAction")
+const { groupTabAction } = require("./groupTabAction")
 const { listAction } = require("./listAction")
 const { searchAction } = require("./searchAction")
 
@@ -20,11 +22,24 @@ const registerFlBo = async ({ context, config, logger, app }) => {
 
     const db = await createDbClient(config.db, context.dbName)
     const execute = executeService(context, config, logger)
+
+    // Default tab
+    app.get("/", execute(defaultTab, context, config))
+
+    app.get(`${config.prefix}instance`, execute(() => { return JSON.stringify(context.instance) }))
+    app.get(`${config.prefix}config`, execute(() => { return JSON.stringify(context.config) }))
+    app.get(`${config.prefix}language`, execute(() => { return JSON.stringify(context.translations) }))
+    app.get(`${config.prefix}user`, execute(() => { return JSON.stringify(context.user) }))
+
     app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
+
     app.get(`${config.prefix}dashboard/:entity`, execute(dashboardAction, context, db))
+    app.get(`${config.prefix}detail/:entity/:id`, execute(detailAction, context, db))
     app.get(`${config.prefix}detailTab/:entity/:id`, execute(detailTabAction, context, db))
     app.get(`${config.prefix}export/:entity`, execute(exportAction, context, db))
     app.get(`${config.prefix}group/:entity`, execute(groupAction, context, db))
+    app.get(`${config.prefix}groupTab/:entity`, execute(groupTabAction, context, db))
+    app.get(`${config.prefix}groupTab/:entity/:id`, execute(groupTabAction, context, db))
     app.get(`${config.prefix}index/:entity`, execute(index, context, config, db))
     app.get(`${config.prefix}list/:entity`, execute(listAction, context, db))
     app.get(`${config.prefix}search/:entity`, execute(searchAction, context, db))
@@ -34,8 +49,8 @@ const registerFlBo = async ({ context, config, logger, app }) => {
     app.use(`${config.prefix}`, notFoundMiddleware)
 }
 
-const index = async ({ req }, context, config, db) => {
-
+const index = async ({ req, logger }, context, config, db) => 
+{
     const entity = assert.notEmpty(req.params, "entity")
     const view = (req.query.view) ? req.query.view : "default"
 
@@ -112,6 +127,15 @@ const index = async ({ req }, context, config, db) => {
 
 const notFoundMiddleware = (_req, res) => {
     return res.redirect("/mdb/404")
+}
+
+const defaultTab = async ({ req, res }, context) => {
+
+    const defaultTabConfig = context.config["application/defaultTab"]
+    if (defaultTabConfig) {
+        const tab = context.config[defaultTabConfig]
+        return res.redirect(`/${ tab.controller }/${ tab.action }/${ tab.entity }${ (tab.view) ? `?view=${ tab.view }` : "" }`)
+    }
 }
 
 module.exports = {

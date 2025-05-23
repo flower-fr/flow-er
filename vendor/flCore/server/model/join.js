@@ -33,15 +33,12 @@ const join = (entity, columns, where, order, model) => {
 
     // Refine entities to join depending on other entities to join. Ex vcard to join with commitment needs account for contact_1_id as foreign key
     for (let entityId of Object.keys(entitiesToJoin)) {
-        console.log(entityId)
-        while (true) {
-            if (!model.entities[entityId].foreignEntity) break
-            const foreignEntityId = model.entities[entityId].foreignEntity
-            if (foreignEntityId == entity) break
-            if (!model.entities[foreignEntityId]) break;
-            entitiesToJoin[foreignEntityId] = []
-            entityId = foreignEntityId
-        }
+        if (!model.entities[entityId].foreignEntity) break
+        const foreignEntityId = model.entities[entityId].foreignEntity
+        if (foreignEntityId == entity) break
+        if (!model.entities[foreignEntityId]) break;
+        entitiesToJoin[foreignEntityId] = []
+        entityId = foreignEntityId
     }
 
     let joins = {}

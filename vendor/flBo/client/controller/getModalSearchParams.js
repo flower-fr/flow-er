@@ -90,6 +90,5 @@ const getModalSearchParams = () => {
         }
         params[key] = value
     }
-    console.log(params)
     return params
 }
