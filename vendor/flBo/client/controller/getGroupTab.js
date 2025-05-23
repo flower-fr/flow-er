@@ -44,7 +44,7 @@ const getGroupTab = async ({ context, entity, view }, tab, searchParams) => {
             const row = {}
             for (let pair of checkData) {
                 pair = pair.split(":")
-                row[pair[0]] = pair[1]
+                row[pair[0]] = decodeURIComponent(pair[1])
             }
             rows.push({ ...row })
         }
