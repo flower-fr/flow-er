@@ -23,21 +23,23 @@ const triggerLinkedinText = (context, rows) => {
         const split = value.split("{")
 
         for (const r of rows) {
-            let body = []
-            for (let s of split) {
-                const s2 = s.split("}")
-                if (s2.length == 2) {
-                    let [propertyId, rest] = s2
-                    if (propertyId == "prenom") propertyId = "n_first"
-                    body.push(`${ r[propertyId] }${rest}`)
+            if (r.linkedin) {
+                let body = []
+                for (let s of split) {
+                    const s2 = s.split("}")
+                    if (s2.length == 2) {
+                        let [propertyId, rest] = s2
+                        if (propertyId == "prenom") propertyId = "n_first"
+                        body.push(`${ r[propertyId] }${rest}`)
+                    }
+                    else body.push(s)
                 }
-                else body.push(s)
+                body = body.join("")
+    
+                const addresses = decodeURIComponent(r.linkedin)
+                const disabled = (r.linkedin) ? "" : "disabled"
+                html.push(template.replaceAll("{addresses}", addresses).replace("{disabled}", disabled).replace("{body}", body).replace("{text}", body))    
             }
-            body = body.join("")
-
-            const addresses = (r.linkedin) ? decodeURIComponent(r.linkedin) : context.translate("Missing Linkedind link")
-            const disabled = (r.linkedin) ? "" : "disabled"
-            html.push(template.replaceAll("{addresses}", addresses).replace("{disabled}", disabled).replace("{body}", body).replace("{text}", body))
         }
 
         $(`#${div}`).html(html.join("\n"))

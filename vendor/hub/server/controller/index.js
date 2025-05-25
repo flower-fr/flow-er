@@ -14,9 +14,14 @@ const { getImportXlsxAction, postImportXlsxAction } = require("./importXlsxActio
 const { getImportCsvAction, postImportCsvAction } = require("./importCsvAction")
 const { notificationAction } = require("./notificationAction")
 const { registerReminders, sendReminders } = require("../view/remind")
+const { sendSms } = require("../post/sendSms")
+
+const { select } = require("../../../flCore/server/model/select")
+const { update } = require("../../../flCore/server/model/update")
 
 const registerHub = async ({ context, config, logger, app }) => {
     const db = await createDbClient(config.db, context.dbName)
+    const smsClient = config.sms
     const mailClient = createMailClient({ config: config.smtp, logger })
     const xlsxClient = createXlsxClient({ logger })
     const pdfClient = createPdfClient({ logger })
@@ -43,6 +48,7 @@ const registerHub = async ({ context, config, logger, app }) => {
     app.get(`${config.prefix}import-csv/:entity`, execute(getImportCsvAction, context, db))
     app.post(`${config.prefix}import-csv/:entity/:id`, upload.single("global-csvFile"), executeImportCsv)
     app.post(`${config.prefix}remind/:entity`, execute(postReminder, context, db, mailClient))
+    app.get(`${config.prefix}send-sms`, execute(postSmsAction, context, db, smsClient))
 
     app.get(`${config.prefix}notification/:entity`, execute(notificationAction, context, db, mailClient))
 
@@ -90,6 +96,40 @@ const postReminder = async ({ req, res }, context, db, mailClient) => {
         await connection.release()
         return JSON.stringify({ "status": "ko", "errors": "Bad request" })
     }
+}
+
+const postSmsAction = async ({ req, res }, context, db, smsClient) => {
+
+    if (!context.isAllowed("interaction")) return res.status(403).send({message: "unauthorized"})
+
+    /**
+     * Retrieve the interactions as sms to send
+     */
+
+    const connection = await db.getConnection()
+
+    const model = context.config["interaction/model"]
+    const where = { "status": "ko", "provider": "api.smspartner.fr" }
+    const body = req.body
+    let ids = body && body.ids
+    if (ids) where.id = ids
+    const rows = (await connection.execute(select(context, "interaction", ["id", "scheduled_at", "body"], where, null, 500, model)))[0]
+    ids = []
+    for (let row of rows) ids.push(row.id)
+
+    //try {
+        await sendSms({ context, rows, smsClient })
+        await connection.execute(update(context, "interaction", [ids], { status: "ok" }, model))
+        await connection.commit()
+        await connection.release()
+        return JSON.stringify({ "status": "ok" })
+    // }
+    // catch {
+    //     await connection.execute(update(context, "interaction", [ids], { status: "ko" }, model))
+    //     await connection.rollback()
+    //     await connection.release()
+    //     return JSON.stringify({ "status": "ko", "errors": "Bad request" })
+    // }
 }
 
 const sendMailAction = async ({ req }, context, mailClient) => {

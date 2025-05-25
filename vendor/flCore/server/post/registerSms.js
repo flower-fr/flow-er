@@ -12,26 +12,27 @@ const registerSms = async ({ req }, context, rows, { connection, sms }) => {
     for (let row of req.body.rows) {
 
         model = context.config["interaction/model"]
-        let body = []
+        let message = []
         for (let split of row.sms.split("{")) {
             const split2 = split.split("}")
             if (split2.length == 2) {
                 let [propertyId, rest] = split2
                 if (propertyId == "prenom") propertyId = "n_first"
-                body.push(`${ row[propertyId] }${rest}`)
+                message.push(`${ row[propertyId] }${rest}`)
             }
-            else body.push(split)
+            else message.push(split)
         }
-        body = body.join("")
+        message = message.join("")
 
         let data = {
             status: (row.scheduled_at && row.scheduled_at !== "") ? "new" : "current",
-            provider: "smspartner.fr",
-            endpoint: "/sms/json",
+            provider: "api.smspartner.fr",
+            endpoint: "/v1/send",
             method: "POST",
-            params: JSON.stringify({ "from": sms.from, "text": body, "to": row.tel_cell, "api_key": sms.apiKey, "api_secret": sms.apiSecret })
+            body: JSON.stringify({ SMSList: [{ phoneNumber: row.tel_cell, message: message }] })
         }
         if (row.scheduled_at && row.scheduled_at !== "") data.scheduled_at = row.scheduled_at
+        console.log(data)
         const [insertedRow] = (await connection.execute(insert(context, "interaction", data, model)))
         row.insertId = insertedRow.insertId   
 
@@ -45,7 +46,7 @@ const registerSms = async ({ req }, context, rows, { connection, sms }) => {
             chanel: "sms",
             direction: "outbound",
             account_id: row.id,
-            summary: `${ context.translate("SMS sent") } - ${body}`
+            summary: `${ context.translate("SMS sent") } - ${message}`
         }
         if (row.scheduled_at && row.scheduled_at !== "") data.touched_at = row.scheduled_at
         await connection.execute(insert(context, "crm_contact", data, model))
