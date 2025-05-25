@@ -109,7 +109,7 @@ const postSmsAction = async ({ req, res }, context, db, smsClient) => {
     const connection = await db.getConnection()
 
     const model = context.config["interaction/model"]
-    const where = { "status": "ko", "provider": "api.smspartner.fr" }
+    const where = { "status": "current", "provider": "api.smspartner.fr" }
     const body = req.body
     let ids = body && body.ids
     if (ids) where.id = ids
