@@ -1,5 +1,7 @@
 const renderGroupTab = ({ context, entity }, section, properties, row, payload ) => {
 
+    console.log("In renderGroupTab (flBo)")
+
     const html = []
 
     for (let propertyId of Object.keys(section.properties)) {
@@ -170,10 +172,10 @@ const renderGroupTab = ({ context, entity }, section, properties, row, payload )
         else if (propertyType == "time") {
 
             html.push(
-                `<div class="input-group row mb-2">
-                    <label class="col-sm-5 col-form-label col-form-label-sm">${ (required) ? "* " : "" }${label}</label>
-                    <div class="col-sm-7">
+                `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3 mb-3">
+                    <div class="form-outline timeOutline" "data-mdb-timepicker-init" data-mdb-input-init data-mdb-inline="true">
                         <input class="form-control form-control-sm updateTime" id="${propertyId}" value="${value}" data-fl-disabled="${ disabled }" ${ required } />
+                        <label class="form-label">${label}</label>
                         <div class="invalid-feedback">${ context.translate("Invalid") }</div>
                     </div>
                 </div>`
