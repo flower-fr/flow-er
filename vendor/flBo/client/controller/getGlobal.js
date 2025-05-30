@@ -1,4 +1,5 @@
 import { getSearchParams } from "/flBo/cli/controller/getSearchParams.js"
+import { postGlobal } from "/flBo/cli/controller/postGlobal.js"
 
 const getGlobal = async ({context, entity, view }, route, message = null) => {
 

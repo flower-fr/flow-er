@@ -39,12 +39,12 @@ const mergePayload = async (context, entity, model, form, config, connection) =>
     }
 
     const where = {}
-    for (let formRow of form) {
-        for (let id of config.identifier) {
-            if (!where[id]) where[id] = ["in"]
-            if (formRow[id]) where[id].push(formRow[id])
-        }
-    }
+    // for (let formRow of form) {
+    //     for (let id of config.identifier) {
+    //         if (!where[id]) where[id] = ["in"]
+    //         if (formRow[id]) where[id].push(formRow[id])
+    //     }
+    // }
 
     /**
      * Index the current data
@@ -145,7 +145,6 @@ const save = async ({ req }, context, rows, { connection }) => {
      */
     
     rowsToStore = entitiesToStore(entity, model, rowsToStore)
-
     await storeEntities(context, entity, rowsToStore, model, connection)
     await auditCells(context, rowsToStore, connection)
 
