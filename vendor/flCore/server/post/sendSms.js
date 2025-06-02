@@ -82,14 +82,13 @@ const resendSms = async ({ context, connection, smsClient, ids }) => {
                 selectedIds.push(row.id)
             }
         }
-console.log(body)
+
         if (selectedIds.length > 0) {
             const response = await fetch("https://api.smspartner.fr/v1/bulk-send", {
                 method: "POST",
                 headers: new Headers({"content-type": "application/json"}),
                 body: JSON.stringify(body)
             })
-console.log(response)
             await connection.execute(update(context, "interaction", [selectedIds], { status: (response.status === 200) ? "ok" : "ko" }, model))
         }
 
