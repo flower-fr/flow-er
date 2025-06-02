@@ -20,12 +20,13 @@ const createMailClient = ({ config, logger }) => {
 }
 
 const sendMail = ({ logger, transporter, from, forcedTo }) => async options => {
-    const { to, subject, type, content, attachments } = options
+    const { to, cc, bcc, subject, type, content, attachments } = options
     if (!to) throw new Error("missing mail to")
     if (!subject) throw new Error("missing mail subject")
     if (!content) throw new Error("missing mail content")
 
-    const mailOptions = { from, to: forcedTo || to, subject, attachments }
+    const mailOptions = { from, cc, bcc, to: forcedTo || to, subject, attachments }
+console.log(mailOptions)
     if (type === "html") mailOptions.html = content
     else mailOptions.text = content
 

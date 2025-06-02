@@ -119,6 +119,8 @@ const resendSmtp = async ({ context, connection, smtp, ids }) =>
                 subject: params.subject,
                 content: row.body
             }
+            if (params.cc) data.cc = params.cc
+            if (params.cci) data.bcc = params.cci
             if (attachmentsToSend.length > 0) data.attachments = attachmentsToSend
 
             try {
