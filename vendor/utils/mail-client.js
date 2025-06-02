@@ -26,7 +26,6 @@ const sendMail = ({ logger, transporter, from, forcedTo }) => async options => {
     if (!content) throw new Error("missing mail content")
 
     const mailOptions = { from, cc, bcc, to: forcedTo || to, subject, attachments }
-console.log(mailOptions)
     if (type === "html") mailOptions.html = content
     else mailOptions.text = content
 
