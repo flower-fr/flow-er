@@ -48,7 +48,7 @@ const registerHub = async ({ context, config, logger, app }) => {
     app.get(`${config.prefix}import-csv/:entity`, execute(getImportCsvAction, context, db))
     app.post(`${config.prefix}import-csv/:entity/:id`, upload.single("global-csvFile"), executeImportCsv)
     app.post(`${config.prefix}remind/:entity`, execute(postReminder, context, db, mailClient))
-    app.get(`${config.prefix}send-sms`, execute(postSmsAction, context, db, smsClient))
+    app.post(`${config.prefix}send-sms`, execute(postSmsAction, context, db, smsClient))
 
     app.get(`${config.prefix}notification/:entity`, execute(notificationAction, context, db, mailClient))
 
@@ -117,19 +117,19 @@ const postSmsAction = async ({ req, res }, context, db, smsClient) => {
     ids = []
     for (let row of rows) ids.push(row.id)
 
-    //try {
+    try {
         await sendSms({ context, rows, smsClient })
         await connection.execute(update(context, "interaction", [ids], { status: "ok" }, model))
         await connection.commit()
         await connection.release()
         return JSON.stringify({ "status": "ok" })
-    // }
-    // catch {
-    //     await connection.execute(update(context, "interaction", [ids], { status: "ko" }, model))
-    //     await connection.rollback()
-    //     await connection.release()
-    //     return JSON.stringify({ "status": "ko", "errors": "Bad request" })
-    // }
+    }
+    catch {
+        await connection.execute(update(context, "interaction", [ids], { status: "ko" }, model))
+        await connection.rollback()
+        await connection.release()
+        return JSON.stringify({ "status": "ko", "errors": "Bad request" })
+    }
 }
 
 const sendMailAction = async ({ req }, context, mailClient) => {
