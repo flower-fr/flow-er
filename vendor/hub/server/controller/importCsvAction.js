@@ -47,6 +47,7 @@ const match = (payload, importConfig) => {
             key = key.split(" ").join("")
             key = key.split("\n").join("")
             key = key.toLowerCase()
+            if (!value) value = ""
 
             // Matching key
             if (importConfig.mapping[key]) {
@@ -207,9 +208,9 @@ const postImportCsvAction = async ({ req }, context, db) => {
         const interactionData = {
             "status": "new",
             "provider": "flow-er",
-            "endpoint": `hub/import-xlsx/${entity}`,
+            "endpoint": `hub/import-csv/${entity}`,
             "method": "POST",
-            "body": JSON.stringify({ valid, invalid }),
+            "body": JSON.stringify({ payload, valid, invalid }),
             "authorization": "bearer",
             "status_code": "200"
         }
@@ -249,7 +250,7 @@ const postImportCsvAction = async ({ req }, context, db) => {
     const [cursor] = await connection.execute(select(context, "interaction", ["status", "endpoint", "body"], { "id": interactionId }, null, null, interactionModel))
     if (cursor.length == 0) return JSON.stringify({ "status": "ko", "message": "Unknown interaction" })
     const interaction = cursor[0]
-    if (interaction.endpoint != `hub/import-xlsx/${entity}`) return JSON.stringify({ "status": "ko", "message": "Not an import-xlsx interaction or entity not matching" })
+    if (interaction.endpoint != `hub/import-csv/${entity}`) return JSON.stringify({ "status": "ko", "message": "Not an import-csv interaction or entity not matching" })
     if (interaction.status != "new") return JSON.stringify({ "status": "ko", "message": "Already processed interaction" })
 
     const body = JSON.parse(interaction.body)

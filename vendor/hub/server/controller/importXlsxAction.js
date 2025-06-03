@@ -150,20 +150,20 @@ const getImportXlsxAction = async ({ req }, context, db) => {
 
     const interactionModel = context.config["interaction/model"]
     const [cursor] = await connection.execute(select(context, "interaction", ["id", "status", "endpoint", "body"], { "status": "new", "endpoint": `hub/import-xlsx/${entity}` }, null, null, interactionModel))
-    // if (cursor.length > 0) {
-    //     result.message = { default: "A previous import is pending", "fr_FR": "Un précédent import est en attente", level: "warning" }
-    //     const interaction = cursor[0]
-    //     result.properties = {
-    //         jsonPayload: {
-    //             type: "table", 
-    //             labels: { default: "XLSX content", fr_FR: "Contenu XLSX" },
-    //             value: JSON.parse(interaction.body).payload,
-    //             options: { disabled: true }
-    //         }
-    //     }
-    //     result.post.id = interaction.id
-    // }
-    // else {
+    if (cursor.length > 0) {
+        result.message = { default: "A previous import is pending", "fr_FR": "Un précédent import est en attente", level: "warning" }
+        const interaction = cursor[0]
+        result.properties = {
+            jsonPayload: {
+                type: "table", 
+                labels: { default: "XLSX content", fr_FR: "Contenu XLSX" },
+                value: JSON.parse(interaction.body).payload,
+                options: { disabled: true }
+            }
+        }
+        result.post.id = interaction.id
+    }
+    else {
         result.properties = { 
             template: { 
                 type: "html",
@@ -177,7 +177,7 @@ const getImportXlsxAction = async ({ req }, context, db) => {
                 options: { required: true }
             }
         }
-    //}
+    }
     
     return result
 }
