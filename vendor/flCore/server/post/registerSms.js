@@ -32,7 +32,6 @@ const registerSms = async ({ req }, context, rows, { connection, sms }) => {
             body: JSON.stringify({ SMSList: [{ phoneNumber: row.tel_cell, message: message }] })
         }
         if (row.scheduled_at && row.scheduled_at !== "") data.scheduled_at = row.scheduled_at
-        console.log(data)
         const [insertedRow] = (await connection.execute(insert(context, "interaction", data, model)))
         row.insertId = insertedRow.insertId   
 
@@ -46,7 +45,7 @@ const registerSms = async ({ req }, context, rows, { connection, sms }) => {
             chanel: "sms",
             direction: "outbound",
             account_id: row.id,
-            summary: `${ context.translate("SMS sent") } - ${message}`
+            summary: `${ context.translate("SMS sent") } - ${ row.summary }`
         }
         if (row.scheduled_at && row.scheduled_at !== "") data.touched_at = row.scheduled_at
         await connection.execute(insert(context, "crm_contact", data, model))
