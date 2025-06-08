@@ -36,7 +36,8 @@ const transactionAction = async ({ req }, context, { db, smtp, sms }) => {
         await connection.beginTransaction()
     
         for (const [stepId, step] of Object.entries(steps)) {
-            if (!step.async) await (availableSteps[stepId])({ req }, context, rows, { connection, smtp, sms })
+            const stepFunction = context.config.stepFuncs[stepId]
+            if (!step.async) await stepFunction({ req }, context, rows, { connection, smtp, sms })
         }
     
         await connection.commit()

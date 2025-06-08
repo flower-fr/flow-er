@@ -1,4 +1,4 @@
-const { update } = require("../model/update")
+const { update } = require("../../../flCore/server/model/update")
 const { throwBadRequestError, throwInternalError } = require("../../../../core/api-utils")
 
 const sendHttp = async ({ req }, context, interactions, { connection }) => {

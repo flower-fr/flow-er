@@ -1,7 +1,6 @@
 const moment = require("moment")
 
 const { insert } = require("../model/insert")
-const { renderMail } = require("../view/renderMail")
 
 const registerSmtp = async ({ req }, context, rows, { connection }) => {
 
@@ -31,7 +30,7 @@ const registerSmtp = async ({ req }, context, rows, { connection }) => {
             else email_body.push(split)
         }
         mailData.body = email_body.join("")
-        row.email_body = mailData.body // renderMail({ context }, mailData)
+        row.email_body = mailData.body
 
         let data = {
             status: (row.scheduled_at && row.scheduled_at !== "") ? "new" : "current",

@@ -11,12 +11,24 @@ const { createMailClient, createImapClient } = require("../../../utils/mail-clie
 const { executeService, assert } = require("../../../../core/api-utils")
 const { resendSmtp } = require("../post/sendSmtp")
 
+const { registerSmtp } = require("../post/registerSmtp")
+const { registerSms } = require("../post/registerSms")
+const { save } = require("../post/save")
+const { sendSmtp } = require("../post/sendSmtp")
+const { sendSms } = require("../post/sendSms")
+
 const registerCore = async ({ context, config, logger, app }) => {
     const db = await createDbClient(config.db, context.dbName)
     const smtp = createMailClient({ config: config.smtp, logger })
     const imap = createImapClient({ config: config.imap, logger })
     const sms = config.sms
 
+    context.config.postSteps.registerSmtp = registerSmtp
+    context.config.postSteps.registerSms = registerSms
+    context.config.postSteps.save = save
+    context.config.postSteps.sendSmtp = sendSmtp
+    context.config.postSteps.sendSms = sendSms
+ 
     const executeFile = async (req, res) => {
         const result = await postFormAction({ req }, context, { db })
         return res.status(200).send(result)
@@ -30,31 +42,31 @@ const registerCore = async ({ context, config, logger, app }) => {
     app.post(`${config.prefix}file/:entity`, upload.single("logo"), executeFile)
     app.post(`${config.prefix}v1/:entity/:transaction/:id`, execute(transactionAction, context, { db, smtp, sms }))
     app.post(`${config.prefix}v1/:entity/:transaction`, execute(transactionAction, context, { db, smtp, sms }))
-    app.post(`${config.prefix}resendSmtp`, execute(postSmtpAction, context, { db, smtp }))
-    app.get(`${config.prefix}getMails`, execute(getMailsAction, context, { db, imap }))
+    //app.post(`${config.prefix}resendSmtp`, execute(postSmtpAction, context, { db, smtp }))
+    //app.get(`${config.prefix}getMails`, execute(getMailsAction, context, { db, imap }))
     app.delete(`${config.prefix}v1/:entity/:id`, execute(deleteAction, context, { db }))
 }
 
-const postSmtpAction = async ({ req }, context, { db: connection, smtp }) => 
-{
-    const ids = ["in"].concat(req.body.ids)
-    resendSmtp({ context, connection, smtp, ids })
-    return JSON.stringify({ "status": "ok" })
-}
+// const postSmtpAction = async ({ req }, context, { db: connection, smtp }) => 
+// {
+//     const ids = ["in"].concat(req.body.ids)
+//     resendSmtp({ context, connection, smtp, ids })
+//     return JSON.stringify({ "status": "ok" })
+// }
 
-const getMailsAction = async ({ req }, context, { db, imap }) => {
-    const connection = await db.getConnection()
-    try {
-        await getMails({ context, connection, imap })
-        connection.release()
-        return JSON.stringify({ "status": "ok" })
-    }
-    catch {
-        await connection.rollback()
-        connection.release()
-        throw throwBadRequestError()
-    }
-}
+// const getMailsAction = async ({ req }, context, { db, imap }) => {
+//     const connection = await db.getConnection()
+//     try {
+//         await getMails({ context, connection, imap })
+//         connection.release()
+//         return JSON.stringify({ "status": "ok" })
+//     }
+//     catch {
+//         await connection.rollback()
+//         connection.release()
+//         throw throwBadRequestError()
+//     }
+//}
 
 module.exports = {
     registerCore

@@ -3,13 +3,14 @@
         {
             "class": "row mt-5",
             "rows": [
-                { "default": "<h5>Settings</h5>" },
+                { "default": "<h5>Flow-ER settings</h5>" },
                 { "default": "<p>The file <code>etc/settings.json</code> sets the global parameters:</p>"},
-                { "default": "<ul><li>The log file name, max size per file, max files number, debug mode and console mode.</li>"},
-                { "default": "<li>The server ip address and port.</li>"},
+                { "default": "<ul><li>The server ip address and port.</li>"},
                 { "default": "<li>The access control list on routes by user roles.</li>"},
                 { "default": "<li>The config file to use, allowing to switch, in development environment typically, among several client configurations.</li>"},
-                { "default": "<li>The middlewares that activate the features provided by vendor and proprietary modules (see <a href=\"/doc/index/flow-er/modules\">Modules</a>).</li></ul>"}
+                { "default": "<li>The middlewares that activate the features provided by vendor and proprietary modules (see <a href=\"/doc/index/flow-er/modules\">Modules</a>).</li></ul>"},
+                { "default": "<p>Flow-ER comes with the winston logger. See <a href=\"https://github.com/winstonjs/winston\">https://github.com/winstonjs/winston</p>."},
+                { "default": "<ul><li>The winston logger settings also take place in the Flow-ER’s settings file : log file dir, name, size and number of rotations (optional) and the console boolean.</li>"}
             ]
         }
     ]
