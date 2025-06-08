@@ -21,6 +21,7 @@ const parse = (sheet) => {
     const payload = []
     for (let row of sheet) {
         if (!header) {
+            if (!row[0] || row[0] === "" || row[0] === "Tableau 1") continue
             header = []
             for (let i = 0; i < row.length; i++) {
                 header[i] = (typeof(row[i]) == "string") ? row[i].split("\r").join("").split("\n").join("").split("\"").join("\\\"") : row[i]
@@ -64,44 +65,47 @@ const match = (payload, importConfig, { valid, invalid }) => {
         /**
          * Match and load the data from the form
          */
-
         for (let [key, value] of Object.entries(row)) {
             key = key.split(" ").join("")
                 .split("\n").join("")
                 .split("-").join("")
                 .split("_").join("")
                 .split("/").join("")
+                .split(":").join("")
                 .split("\n").join("")
                 .toLowerCase()
                 .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
 
+            
             // Matching key
             if (importConfig.mapping[key]) {
                 const matched = importConfig.mapping[key]
-                if (matched.type == "select") {
-                    if (Number.isInteger(value)) value = value.toString()
-                    else if (value) {
-                        value = value.split(" ").join("")
-                        value = value.toLowerCase()    
+                if (!validRow[matched["propertyId"]]) {
+                    if (matched.type == "select") {
+                        if (Number.isInteger(value)) value = value.toString()
+                        else if (value) {
+                            value = value.split(" ").join("")
+                            value = value.toLowerCase()    
+                        }
+    
+                        if (value && matched.modalities[value]) {
+                            validRow[matched["propertyId"]] = matched.modalities[value]
+                        }
+                        else invalidRow[matched["propertyId"]] = value
                     }
-
-                    if (value && matched.modalities[value]) {
-                        validRow[matched["propertyId"]] = matched.modalities[value]
+                    else if (matched.type == "date") {
+                        if (value) {
+                            value = new Date(value)
+                            validRow[matched["propertyId"]] = moment(value).format("YYYY-MM-DD")
+                        }
+                        else validRow[matched["propertyId"]] = value
                     }
-                    else invalidRow[matched["propertyId"]] = value
-                }
-                else if (matched.type == "date") {
-                    if (value) {
-                        value = new Date(value)
-                        validRow[matched["propertyId"]] = moment(value).format("YYYY-MM-DD")
+                    else if (matched.type == "text") {
+                        if (Number.isInteger(value)) value = value.toString()
+                        validRow[matched["propertyId"]] = value
                     }
-                    else validRow[matched["propertyId"]] = value
+                    else validRow[matched["propertyId"]] = value    
                 }
-                else if (matched.type == "text") {
-                    if (Number.isInteger(value)) value = value.toString()
-                    validRow[matched["propertyId"]] = value
-                }
-                else validRow[matched["propertyId"]] = value
             }
 
             // Unmatching key
@@ -122,7 +126,8 @@ const getImportXlsxAction = async ({ req }, context, db) => {
     const entity = assert.notEmpty(req.params, "entity")
     const view = (req.query.view) ? req.query.view : "default"
 
-    const importConfig = context.config[`${entity}/import/default`]
+    let importConfig = context.config[`${entity}/import/${view}`]
+    if (!importConfig) importConfig = context.config[`${entity}/import/default`]
 
     const result = {
         layout: {
@@ -135,6 +140,7 @@ const getImportXlsxAction = async ({ req }, context, db) => {
             action: "import-xlsx",
             entity: entity,
             id: 0,
+            view,
             labels: { default: "import", fr_FR: "Importer" },
             renderer: "renderImportXlsx"
         }
@@ -179,8 +185,10 @@ const getImportXlsxAction = async ({ req }, context, db) => {
 const postImportXlsxAction = async ({ req }, context, db) => {
     const entity = assert.notEmpty(req.params, "entity")
     const interactionId = req.params.id
+    const view = (req.query.view) ? req.query.view : "default"
 
-    const importConfig = context.config[`${entity}/import/default`]
+    let importConfig = context.config[`${entity}/import/${view}`]
+    if (!importConfig) importConfig = context.config[`${entity}/import/default`]
     
     for (const [propertyId, property] of Object.entries(importConfig.properties)) {
         const propertyDef = context.config[`${entity}/property/${propertyId}`]
@@ -205,7 +213,7 @@ const postImportXlsxAction = async ({ req }, context, db) => {
             let payload = [], valid = [], invalid = [] 
             for (const sheet of workSheetsFromStream) {
                 const p = parse(sheet.data)
-                match(p, importConfig, { valid, invalid })    
+                match(p, importConfig, { valid, invalid })
                 payload = payload.concat(p)
             }
 
@@ -243,6 +251,7 @@ const postImportXlsxAction = async ({ req }, context, db) => {
                     action: "import-xlsx",
                     entity: entity,
                     id: insertedRow.insertId,
+                    view,
                     labels: { default: "import", fr_FR: "Importer" },
                     renderer: "renderImportXlsx"
                 }

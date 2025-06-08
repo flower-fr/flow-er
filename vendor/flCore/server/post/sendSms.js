@@ -1,4 +1,9 @@
+const moment = require("moment")
+
+const { select } = require("../model/select")
 const { update } = require("../model/update")
+
+const { throwBadRequestError } = require("../../../../core/api-utils")
 
 const sendSms = async ({ req }, context, rows, { connection, sms }) => {
 
@@ -52,6 +57,53 @@ const sendSms = async ({ req }, context, rows, { connection, sms }) => {
     }
 }
 
+const resendSms = async ({ context, connection, smsClient, ids }) => {
+
+    /**
+     * Retrieve the interactions as sms to send
+     */
+
+    const model = context.config["interaction/model"]
+    const where = { "status": "current", "provider": "api.smspartner.fr" }
+    if (ids) where.id = ids
+    const rows = (await connection.execute(select(context, "interaction", ["id", "scheduled_at", "body"], where, null, 500, model)))[0]
+    ids = []
+    for (let row of rows) ids.push(row.id)
+
+    const selectedIds = []
+    try {
+        const body = { apiKey: smsClient.apiSecret, sender: smsClient.sender, SMSList: [] }
+        if (smsClient.sandbox) body.sandbox = 1
+        for (let row of rows)
+        {
+            if (!row.scheduled_at || moment(row.scheduled_at).format("YYYY-MM-DD HH:mm:ss") < moment().format("YYYY-MM-DD HH:mm:ss")) {
+                const rowBody = JSON.parse(row.body)
+                body.SMSList.push(rowBody.SMSList[0])
+                selectedIds.push(row.id)
+            }
+        }
+
+        if (selectedIds.length > 0) {
+            const response = await fetch("https://api.smspartner.fr/v1/bulk-send", {
+                method: "POST",
+                headers: new Headers({"content-type": "application/json"}),
+                body: JSON.stringify(body)
+            })
+            await connection.execute(update(context, "interaction", [selectedIds], { status: (response.status === 200) ? "ok" : "ko" }, model))
+        }
+
+        await connection.commit()
+        await connection.release()
+    }
+    catch {
+        if (selectedIds.length > 0) await connection.execute(update(context, "interaction", [selectedIds], { status: "ko" }, model))
+        await connection.rollback()
+        await connection.release()
+        throw throwBadRequestError()
+    }
+}
+
 module.exports = {
-    sendSms
+    sendSms,
+    resendSms
 }

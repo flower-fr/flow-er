@@ -71,7 +71,7 @@ const renderAccordionRows = ({ context, entity }, listConfig, properties, rows, 
             const checkData = []
             if (listConfig && listConfig.checkData) {
                 for (let propertyId of listConfig.checkData) {
-                    checkData.push(`${propertyId}:${row[propertyId]}`)
+                    checkData.push(`${propertyId}:${ encodeURIComponent(row[propertyId]) }`)
                 }
             }
 

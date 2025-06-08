@@ -104,7 +104,7 @@ const renderUpdate = ({ context }, section, properties, row ) => {
             html.push(
                 `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" }">
                     <div class="form-outline formOutline" data-mdb-input-init>
-                        <input class="form-control form-control-sm is-valid fl-modal-form-input" data-fl-property="${propertyId}" data-fl-type="email" value="${value}"  data-fl-disabled="${ disabled }" ${ required } maxlength="255" />
+                        <input type="email" class="form-control form-control-sm is-valid fl-modal-form-input" data-fl-property="${propertyId}" data-fl-type="email" value="${value}"  data-fl-disabled="${ disabled }" ${ required } maxlength="255" />
                         <label class="form-label">${label}</label>
                     </div>
                 </div>`

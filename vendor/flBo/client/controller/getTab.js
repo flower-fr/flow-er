@@ -1,5 +1,6 @@
 
 import { triggerDetailTab } from "/flBo/cli/controller/triggerDetailTab.js"
+import { triggerLinkedinText } from "/flBo/cli/controller/triggerLinkedinText.js"
 import { triggerSmsText } from "/flBo/cli/controller/triggerSmsText.js"
 import { triggerEmailText } from "/flBo/cli/controller/triggerEmailText.js"
 import { postTab } from "/flBo/cli/controller/postTab.js"
@@ -7,7 +8,7 @@ import { postGroupTab } from "/flBo/cli/controller/group.js"
 
 const getTab = async ({ context, entity, view }, tab, route, id, message, searchParams, order) => {
 
-    route = $(`#detailTabRoute-${tab}`).val()
+    if (!route) route = $(`#detailTabRoute-${tab}`).val()
     route = route.split("?")
     let query = (route[1]) ? route[1].split("&").map((x) => { return x.split("=") }) : []
     query = Object.fromEntries((new Map(query)).entries())
@@ -82,7 +83,7 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
         const row = {}
         for (let pair of checkData) {
             pair = pair.split(":")
-            row[pair[0]] = pair[1]
+            row[pair[0]] = decodeURIComponent(pair[1])
         }
         rows.push({ ...row })
     })    
@@ -103,7 +104,12 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
             getTab({ context, entity, view }, tab, route, id, message, searchParams, order )
         })
     })
+
     triggerSmsText(context, rows)
+
+    triggerLinkedinText(context)
+    $("#description").change(() => { triggerLinkedinText(context) })
+
     triggerEmailText({ context }, rows)
 
     $(".renderGlobalTable").each(function () {
@@ -153,8 +159,6 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
             submitDelete({ context, entity, view }, id)
         })
     })
-    
-    checkForm()
 
     $(".input-iban").each(function () {
         const propertyId = $(this).attr("id")

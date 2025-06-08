@@ -39,12 +39,12 @@ const mergePayload = async (context, entity, model, form, config, connection) =>
     }
 
     const where = {}
-    for (let formRow of form) {
-        for (let id of config.identifier) {
-            if (!where[id]) where[id] = ["in"]
-            if (formRow[id]) where[id].push(formRow[id])
-        }
-    }
+    // for (let formRow of form) {
+    //     for (let id of config.identifier) {
+    //         if (!where[id]) where[id] = ["in"]
+    //         if (formRow[id]) where[id].push(formRow[id])
+    //     }
+    // }
 
     /**
      * Index the current data
@@ -62,7 +62,7 @@ const mergePayload = async (context, entity, model, form, config, connection) =>
     const rows = {}
     for (const row of cursor) {
         const identifier = []
-        for (let item of config.identifier) identifier.push(row[item])
+        for (let item of config.identifier) identifier.push(row[item].toLowerCase())
         rows[identifier.join("|")] = row
     }
 
@@ -73,7 +73,7 @@ const mergePayload = async (context, entity, model, form, config, connection) =>
     const formData = {}
     for (const formRow of form) {
         const identifier = []
-        for (let item of config.identifier) identifier.push(formRow[item])
+        for (let item of config.identifier) identifier.push( (formRow[item]) ? formRow[item].toLowerCase() : "" )
         formData[identifier.join("|")] = formRow
     }
 
@@ -145,7 +145,6 @@ const save = async ({ req }, context, rows, { connection }) => {
      */
     
     rowsToStore = entitiesToStore(entity, model, rowsToStore)
-
     await storeEntities(context, entity, rowsToStore, model, connection)
     await auditCells(context, rowsToStore, connection)
 

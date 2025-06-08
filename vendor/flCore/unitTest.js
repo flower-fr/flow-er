@@ -7,9 +7,9 @@ const registerBoUnitTest = async ({ context, config, logger, app }) => {
     app.get(`${config.prefix}unit-test`, execute(test, context))
 }
 
-const test = (context) => {
-    console.log(qi("a'b`cde"))
-    console.log(qv("abc'de"))
+const test = ({ logger }, context) => {
+    logger.verbose(qi("a'b`cde"))
+    logger.verbose(qv("abc'de"))
 
     const model = {
         entities: {
@@ -20,7 +20,7 @@ const test = (context) => {
             email: { entity: "vcard", column: "email", type: "email" }
         }
     }
-    console.log(select(context, "account", ["id", "email"], { email: "a.b@test.com" }, { email: "ASC" }, 100, model))
+    logger.verbose(select(context, "account", ["id", "email"], { email: "a.b@test.com" }, { email: "ASC" }, 100, model))
 }
 
 module.exports = {

@@ -45,7 +45,7 @@ const renderDetailRoutes = ({ context, entity, view }, detailConfig, id) => {
             route = `/${tab.controller}/${tab.action}/${tab.entity}/${ (tab.id == "id") ? id : tab.id }`
         }
         if (route) {
-            const query = [`view=${view}`]
+            const query = []
             if (tab.query) {
                 for (let key of Object.keys(tab.query)) {
                     let value = tab.query[key]

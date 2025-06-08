@@ -69,7 +69,6 @@ const getTaskAdd = async ({ context, entity, view }, searchParams) => {
                     values = values.split(",")
                     ids = ids.split(",")
                     for (let i=0; i < values.length; i++) {
-                        console.log(values[i], value)
                         if (values[i] == value) {
                             value = ids[i]
                             break

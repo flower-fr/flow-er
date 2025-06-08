@@ -140,7 +140,7 @@ const postGlobal = async ({ context, entity, view }, data) => {
                     formData.append(propertyId, $(this).html())
                 })
 
-                let route = `/${data.post.controller}/${data.post.action}/${data.post.entity}/${data.post.id}`
+                let route = `/${data.post.controller}/${data.post.action}/${data.post.entity}/${data.post.id}${ (data.post.view) ? `?view=${ data.post.view }` : "" }`
 
                 const response = await fetch(route, {
                     method: "POST",
@@ -168,7 +168,7 @@ const postGlobal = async ({ context, entity, view }, data) => {
                     if (form) {
                         form.onsubmit = async function (event) {
                             event.preventDefault()
-                            let route = `/${data.post.controller}/${data.post.action}/${data.post.entity}/${data.post.id}`
+                            let route = `/${data.post.controller}/${data.post.action}/${data.post.entity}/${data.post.id}${ (data.post.view) ? `?view=${ data.post.view }` : "" }`
                             const response = await fetch(route, {
                                 method: "POST",
                                 //body: formData
@@ -194,3 +194,5 @@ const postGlobal = async ({ context, entity, view }, data) => {
         }
     }
 }
+
+export { postGlobal }

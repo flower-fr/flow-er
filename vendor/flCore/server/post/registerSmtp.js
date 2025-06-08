@@ -32,12 +32,15 @@ const registerSmtp = async ({ req }, context, rows, { connection }) => {
         mailData.body = email_body.join("")
         row.email_body = mailData.body
 
+        const params = { "type": type, "to": row.email, "subject": row.email_subject }
+        if (row.cc) params.cc = row.cc
+        if (row.cci) params.cci = row.cci
         let data = {
             status: (row.scheduled_at && row.scheduled_at !== "") ? "new" : "current",
             provider: "smtp",
             endpoint: "sendMail",
             method: "POST",
-            params: JSON.stringify({ "type": type, "to": row.email, "subject": row.email_subject }),
+            params,
             body: row.email_body,
             attachments: row.attachments
         }

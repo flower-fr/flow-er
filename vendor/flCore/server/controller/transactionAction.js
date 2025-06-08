@@ -1,5 +1,6 @@
 const { assert } = require("../../../../core/api-utils")
 const { throwBadRequestError } = require("../../../../core/api-utils")
+const { registerHistory } = require("../post/registerHistory")
 const { registerSmtp } = require("../post/registerSmtp")
 const { registerSms } = require("../post/registerSms")
 const { save } = require("../post/save")
@@ -9,6 +10,7 @@ const { sendSms } = require("../post/sendSms")
 const availableSteps = {
     registerSmtp: registerSmtp,
     registerSms: registerSms,
+    registerHistory: registerHistory,
     save: save,
     sendSmtp: sendSmtp,
     sendSms: sendSms

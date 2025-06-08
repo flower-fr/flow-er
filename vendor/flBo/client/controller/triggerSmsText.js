@@ -13,7 +13,7 @@ const triggerSmsText = (context, rows) => {
                     const row = {}
                     for (let pair of checkData) {
                         pair = pair.split(":")
-                        row[pair[0]] = pair[1]
+                        row[pair[0]] = decodeURIComponent(pair[1])
                     }
                     rows.push({ ...row })
                 }
@@ -40,7 +40,7 @@ const triggerSmsText = (context, rows) => {
                 }
                 body = body.join("")
 
-                const addresses = (r.tel_cell) ? r.tel_cell.split(" ").join("") : context.translate("Missing phone")
+                const addresses = (r.tel_cell) ? decodeURIComponent(r.tel_cell).split(" ").join("") : context.translate("Missing phone")
                 const disabled = (r.tel_cell) ? "" : "disabled"
                 html.push(template.replaceAll("{addresses}", addresses).replace("{disabled}", disabled).replace("{body}", body).replace("{text}", body))
             }

@@ -1,5 +1,7 @@
 const renderGroupTab = ({ context, entity }, section, properties, row, payload ) => {
 
+    console.log("In renderGroupTab (flBo)")
+
     const html = []
 
     for (let propertyId of Object.keys(section.properties)) {
@@ -109,8 +111,21 @@ const renderGroupTab = ({ context, entity }, section, properties, row, payload )
             )
 
             html.push(`<input type="hidden" id="flSmsTemplate-${propertyId}" value="${ encodeURI("<p><i class=\"fas fa-message-alt\"></i></button>&nbsp;&nbsp;<button type=\"button\" class=\"btn btn-sm btn-outline-primary index-btn fl-sms-template\" {disabled} data-fl-addresses=\"{addresses}\" data-fl-body=\"{body}\">{addresses}</button>&nbsp;&nbsp;{text}</p>") }" />`)
-
             html.push(`<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } fl-submit-div" id="flSmsDiv-${propertyId}"></div>`)
+        }
+
+        else if (propertyType == "linkedin") {
+
+            html.push(
+                `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3">
+                    <div class="form-outline formOutline" data-mdb-input-init>
+                        <textarea class="form-control form-control-sm updateTextarea fl-linkedin-text" rows="5" id="${propertyId}" data-fl-template="flLinkedinTemplate-${propertyId}" data-fl-div="flLinkedinDiv-${propertyId}" data-fl-disabled="${ disabled }" ${ required }${label} maxlength="${(property.options.max_length) ? property.options.max_length : 2047}">${value}</textarea>
+                        <label class="form-label">${ (required) ? "* " : "" }${label}</label>
+                    </div>
+                </div>`
+            )
+            html.push(`<input type="hidden" id="flLinkedinTemplate-${propertyId}" value="${ encodeURI("<p><i class=\"fas fa-message-alt\"></i>&nbsp;&nbsp;<a href=\"{addresses}\" target=\"_blank\" type=\"button\" class=\"btn btn-sm btn-outline-primary index-btn fl-linkedin-template\" {disabled} data-fl-addresses=\"{addresses}\" data-fl-body=\"{body}\">{addresses}</a>&nbsp;&nbsp;{text}</p>") }" />`)
+            html.push(`<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } fl-submit-div" id="flLinkedinDiv-${propertyId}"></div>`)
         }
     
         /**
@@ -157,10 +172,10 @@ const renderGroupTab = ({ context, entity }, section, properties, row, payload )
         else if (propertyType == "time") {
 
             html.push(
-                `<div class="input-group row mb-2">
-                    <label class="col-sm-5 col-form-label col-form-label-sm">${ (required) ? "* " : "" }${label}</label>
-                    <div class="col-sm-7">
+                `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3 mb-3">
+                    <div class="form-outline timeOutline" "data-mdb-timepicker-init" data-mdb-input-init data-mdb-inline="true">
                         <input class="form-control form-control-sm updateTime" id="${propertyId}" value="${value}" data-fl-disabled="${ disabled }" ${ required } />
+                        <label class="form-label">${label}</label>
                         <div class="invalid-feedback">${ context.translate("Invalid") }</div>
                     </div>
                 </div>`

@@ -18,7 +18,7 @@ const triggerEmailText = ({ context }, rows) => {
                     const row = {}
                     for (let pair of checkData) {
                         pair = pair.split(":")
-                        row[pair[0]] = pair[1]
+                        row[pair[0]] = decodeURIComponent(pair[1])
                     }
                     rows.push({ ...row })
                 }
@@ -43,7 +43,7 @@ const triggerEmailText = ({ context }, rows) => {
                 else body.push(s)
             }
             body = body.join("")
-            html.push(template.replaceAll("{addresses}", r.email.split(" ").join("")).replace("{subject}", subject).replace("{body}", body.replaceAll("<p>", "").replaceAll("</p>", "%0D%0A%0D%0A").replace(/<\/?[^>]+(>|$)/g, "")).replace("{text}", body))
+            html.push(template.replaceAll("{addresses}", decodeURIComponent(r.email).split(" ").join("")).replace("{subject}", subject).replace("{body}", body.replaceAll("<p>", "").replaceAll("</p>", "%0D%0A%0D%0A").replace(/<\/?[^>]+(>|$)/g, "")).replace("{text}", body))
         }
 
         $(`#${div}`).html(html.join("\n"))

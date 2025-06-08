@@ -20,12 +20,12 @@ const createMailClient = ({ config, logger }) => {
 }
 
 const sendMail = ({ logger, transporter, from, forcedTo }) => async options => {
-    const { to, subject, type, content, attachments } = options
+    const { to, cc, bcc, subject, type, content, attachments } = options
     if (!to) throw new Error("missing mail to")
     if (!subject) throw new Error("missing mail subject")
     if (!content) throw new Error("missing mail content")
 
-    const mailOptions = { from, to: forcedTo || to, subject, attachments }
+    const mailOptions = { from, cc, bcc, to: forcedTo || to, subject, attachments }
     if (type === "html") mailOptions.html = content
     else mailOptions.text = content
 
@@ -43,7 +43,6 @@ const createImapClient = ({ config, logger }) => {
 
 const getMails = ({ config, logger }) => async () => 
 {
-    console.log(config.imapUser, config.imapPassword, config.imapServer, config.imapPort)
     const connection = await imaps.connect({
         imap: {
             user: config.imapUser,
