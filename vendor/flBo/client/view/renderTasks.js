@@ -1,9 +1,11 @@
 const renderTasks = ({ context, entity, view }, data) => {
 
+    moment.locale("fr")
+    
     let date, formatted
     if (!data.where || data.where == null) {
         date = moment()
-        formatted = `Jusqu’au ${ date.format("DD MMM") }`
+        formatted = `Jusqu’au ${ date.format("DD MMMM") }`
     }
     else {
         let where = data.where.split(":")
