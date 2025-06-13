@@ -42,6 +42,18 @@ const triggerList = async ({ context, entity, view }, order = $("#flListOrderHid
 
     triggerOrder({ context, entity, view })
 
+    $(".fl-search-yesterday").click(function () {
+        $("#flSearchMin-date").val($(this).attr("data-fl-value"))
+        $("#flSearchMax-date").val($(this).attr("data-fl-value"))
+        triggerList({ context, entity, view })
+    })
+
+    $(".fl-search-tomorrow").click(function () {
+        $("#flSearchMin-date").val($(this).attr("data-fl-value"))
+        $("#flSearchMax-date").val($(this).attr("data-fl-value"))
+        triggerList({ context, entity, view })
+    })
+
     // Extend the displayed list
 
     $(".fl-list-more").click(function () {

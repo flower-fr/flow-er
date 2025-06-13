@@ -1,4 +1,4 @@
-const renderTaskDetail = ({ context, entity, view }, data, formJwt) => {
+const renderTaskDetail = ({ context, entity, view }, data, properties, formJwt) => {
 
     console.log("In renderTaskDetail (flBo)")
 
@@ -61,7 +61,26 @@ const renderTaskDetail = ({ context, entity, view }, data, formJwt) => {
                             ${ context.translate("Time") }
                         </label>
                     </div>
-                </section>
+                </section>`)
+
+    if (properties.accounts && properties.accounts.modalities.length > 0) {
+
+        html.push(`
+            <h5 class="mb-3">Participants</h5>`)
+
+        for (const [modalityId, modality] of Object.entries(properties.accounts.modalities)) {
+            const name = `${ modality.n_fn } ${ (modality.business_name) ? ` (${ modality.business_name })` : "" } ${ (modality.email) ? `<a href="mailto:${ modality.email }"><i class="fa fa-at"></i>&nbsp;&nbsp;${ modality.email }</a>` : "" }&nbsp;&nbsp;&nbsp;&nbsp;${ (modality.tel_cell) ? `<a href="tel:${ modality.tel_cell }"><i class="fa fa-mobile-screen-button"></i>&nbsp;&nbsp;${ modality.tel_cell }</a>` : "" }`
+            html.push(`
+                <div class="mb-1">
+                    <span class="badge badge-light p-2 rounded-4" data-badge-id="${ modalityId }" data-badge-property="accounts">
+                        ${ name }&nbsp;&nbsp;<a role="button"><i class="fas fa-times fa-sm"></i></a>
+                    </span>
+                </div>`)
+        }
+    }
+
+
+    html.push(`
             </div>
             <div class="modal-footer">
                 <input type="submit" class="btn btn-warning fl-task-submit" data-fl-controller="core" data-fl-action="v1" data-fl-entity="${entity}" value="${ context.translate("Modify") }" />
@@ -69,7 +88,6 @@ const renderTaskDetail = ({ context, entity, view }, data, formJwt) => {
                     <span class="fas fa-trash-alt"></span>
                 </button>
             </div>
-            
         </form>`)
 
     return html.join("\n")

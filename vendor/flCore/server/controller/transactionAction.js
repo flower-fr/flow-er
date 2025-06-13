@@ -1,25 +1,13 @@
 const { assert } = require("../../../../core/api-utils")
 const { throwBadRequestError } = require("../../../../core/api-utils")
-const { registerHistory } = require("../post/registerHistory")
-const { registerSmtp } = require("../post/registerSmtp")
-const { registerSms } = require("../post/registerSms")
-const { save } = require("../post/save")
-const { sendSmtp } = require("../post/sendSmtp")
-const { sendSms } = require("../post/sendSms")
-
-const availableSteps = {
-    registerSmtp: registerSmtp,
-    registerSms: registerSms,
-    registerHistory: registerHistory,
-    save: save,
-    sendSmtp: sendSmtp,
-    sendSms: sendSms
-}
 
 const transactionAction = async ({ req }, context, { db, smtp, sms }) => {
 
     const entity = assert.notEmpty(req.params, "entity")
-    const config = context.config[`${entity}/groupTab/default`]
+    const view = req.query.view
+    let config 
+    if (view) config = context.config[`${entity}/groupTab/${ view }`]
+    if (!config) config = context.config[`${entity}/groupTab/default`]
     const transaction = assert.notEmpty(req.params, "transaction")
     const id = req.params.id
     const steps = config.layout.posts[transaction].steps
@@ -38,15 +26,16 @@ const transactionAction = async ({ req }, context, { db, smtp, sms }) => {
         await connection.beginTransaction()
     
         for (const [stepId, step] of Object.entries(steps)) {
-            const stepFunction = context.config.stepFuncs[stepId]
-            if (!step.async) await stepFunction({ req }, context, rows, { connection, smtp, sms })
+            const stepFunction = context.config.postSteps[stepId]
+            if (!step.async) await stepFunction({ req, entity }, context, rows, { connection, smtp, sms })
         }
     
         await connection.commit()
     
         for (let stepId of Object.keys(steps)) {
             const step = steps[stepId]
-            if (step.async) (availableSteps[stepId])({ req }, context, rows, { connection, smtp, sms })
+            const stepFunction = context.config.postSteps[stepId]
+            if (step.async) stepFunction({ req, entity }, context, rows, { connection, smtp, sms })
         }
     
         connection.release()

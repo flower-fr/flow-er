@@ -11,6 +11,8 @@ const { createMailClient, createImapClient } = require("../../../utils/mail-clie
 const { executeService, assert } = require("../../../../core/api-utils")
 const { resendSmtp } = require("../post/sendSmtp")
 
+const { addEvent } = require("../post/addEvent")
+const { registerHistory } = require("../post/registerHistory")
 const { registerSmtp } = require("../post/registerSmtp")
 const { registerSms } = require("../post/registerSms")
 const { save } = require("../post/save")
@@ -23,6 +25,8 @@ const registerCore = async ({ context, config, logger, app }) => {
     const imap = createImapClient({ config: config.imap, logger })
     const sms = config.sms
 
+    context.config.postSteps.addEvent = addEvent
+    context.config.postSteps.registerHistory = registerHistory
     context.config.postSteps.registerSmtp = registerSmtp
     context.config.postSteps.registerSms = registerSms
     context.config.postSteps.save = save
