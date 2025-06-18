@@ -62,7 +62,7 @@ const mergePayload = async (context, entity, model, form, config, connection) =>
     const rows = {}
     for (const row of cursor) {
         const identifier = []
-        for (let item of config.identifier) identifier.push(row[item].toLowerCase())
+        for (let item of config.identifier) identifier.push(row[item].toLowerCase().trim())
         rows[identifier.join("|")] = row
     }
 
@@ -73,7 +73,7 @@ const mergePayload = async (context, entity, model, form, config, connection) =>
     const formData = {}
     for (const formRow of form) {
         const identifier = []
-        for (let item of config.identifier) identifier.push( (formRow[item]) ? formRow[item].toLowerCase() : "" )
+        for (let item of config.identifier) identifier.push( (formRow[item]) ? formRow[item].toLowerCase().trim() : "" )
         formData[identifier.join("|")] = formRow
     }
 

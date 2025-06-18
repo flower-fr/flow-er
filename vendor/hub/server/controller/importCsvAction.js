@@ -116,7 +116,8 @@ const getImportCsvAction = async ({ req }, context, db) => {
         post: {
             controller: "hub",
             action: "import-csv",
-            entity: "crm_account",
+            entity: entity,
+            view: view,
             id: 0,
             labels: { default: "import", fr_FR: "Importer" },
             renderer: "renderImportCsv"
@@ -162,9 +163,11 @@ const getImportCsvAction = async ({ req }, context, db) => {
 const postImportCsvAction = async ({ req }, context, db) => {
     const entity = assert.notEmpty(req.params, "entity")
     const interactionId = req.params.id
+    const view = req.query.view
 
-    const importConfig = context.config[`${entity}/import/linkedin`]
-    
+    let importConfig = context.config[`${entity}/import/${view}`]
+    if (!importConfig) importConfig = context.config[`${entity}/import/default`]
+
     for (const [propertyId, property] of Object.entries(importConfig.properties)) {
         const propertyDef = context.config[`${entity}/property/${propertyId}`]
         if (propertyDef) property.labels = propertyDef.labels
@@ -183,17 +186,24 @@ const postImportCsvAction = async ({ req }, context, db) => {
     if (interactionId == 0) {
         
         const sheet = req.file.buffer.toString("utf8").split("\n")
-        const start = (importConfig.headersRowNumber) ? importConfig.headersRowNumber : 0, end = sheet.length
-        const headers = sheet[start].split(",")
-        const payload = []
-        for (let i = start + 1; i < sheet.length; i++) {
-            let row = sheet[i].split("\\").join("/"), corrected = [], pairs = {}
+
+        const rows = []
+        for (let i = 0; i < sheet.length; i++) {
+            let row = sheet[i].split("\\").join("/").split("\t").join(""), corrected = []
             row = row.split("\"")
-            for (let i = 0; i < row.length; i++) {
-                const comp = (i % 2 == 1) ? row[i].split(",").join("") : row[i]
+            for (let j = 0; j < row.length; j++) {
+                const comp = (j % 2 == 1) ? row[j].split(",").join("") : row[j]
                 corrected.push(comp)
             }
             row = corrected.join("").split(",")
+            rows.push(row)
+        }
+
+        const start = (importConfig.headersRowNumber) ? importConfig.headersRowNumber : 0, end = sheet.length
+        const headers = rows[start]
+        const payload = []
+        for (let i = start + 1; i < end; i++) {
+            let row = rows[i], pairs = {}
             
             for (let j = 0; j < headers.length; j++) pairs[headers[j]] = row[j]
             payload.push(pairs)
@@ -210,7 +220,7 @@ const postImportCsvAction = async ({ req }, context, db) => {
             "provider": "flow-er",
             "endpoint": `hub/import-csv/${entity}`,
             "method": "POST",
-            "body": JSON.stringify({ payload, valid, invalid }),
+            "body": JSON.stringify({ payload: [], valid, invalid }),
             "authorization": "bearer",
             "status_code": "200"
         }
