@@ -243,7 +243,8 @@ const postImportCsvAction = async ({ req }, context, db) => {
             post: {
                 controller: "hub",
                 action: "import-csv",
-                entity: "crm_account",
+                entity,
+                view,
                 id: insertedRow.insertId,
                 labels: { default: "import", fr_FR: "Importer" },
                 renderer: "renderImportCsv"
@@ -266,7 +267,24 @@ const postImportCsvAction = async ({ req }, context, db) => {
     const body = JSON.parse(interaction.body)
     const { valid, invalid } = body
     if (!valid || !invalid) return JSON.stringify({ "status": "ko", "message": "Invalid JSON data in interaction" })
-    
+
+    /**
+     * Merge multiple rows on same keys
+     */
+
+    const payload = new Map()
+    for (const formRow of valid) {
+        const identifier = importConfig.identifier.map( x => (formRow[x]) ? formRow[x].toLowerCase().trim() : "").join("|")
+        const existingRow = payload.get(identifier)
+        if (!existingRow) {
+            payload.set(identifier, formRow)
+            continue
+        }
+        for (const [key, value] of Object.entries(existingRow)) {
+            if (!value) existingRow[value] = formRow[key]
+        }        
+    }
+
     const targetModel = context.config[`${entity}/model`]
     const mergedPayload = await mergePayload(context, entity, targetModel, valid, importConfig, connection)
 
