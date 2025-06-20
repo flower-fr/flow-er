@@ -48,8 +48,7 @@ const select = (context, entity, columns, where, order = [], limit = null, model
     if (predicates.length > 0) request += `WHERE ${predicates.join("\nAND ")}\n`    
 
     if (groupBy) request += `GROUP BY ${groupBy.join(", ")}\n`
-    
-    if (order != null) {
+    if (order != null && Object.keys(order).length != 0) {
         request += "ORDER BY "
         const orderArray = []
         for (let orderSpecifier of Object.keys(order)) {

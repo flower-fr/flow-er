@@ -1,22 +1,14 @@
 const renderTasks = ({ context, entity, view }, data) => {
 
     moment.locale("fr")
-    
-    let date, formatted
-    if (!data.where || data.where == null) {
-        date = moment()
-        formatted = `Jusqu’au ${ date.format("DD MMMM") }`
-    }
-    else {
-        let where = data.where.split(":")
-        if (where.length === 2) {
-            where = where[1].split(",")
-            if (where[0] === "between" && where[1] === where[2]) {
-                date = moment(where[1])
-            }    
+    const where = (data.where && data.where != null) ? data.where.split("|") : []
+    let date = moment(), formatted =  context.translate("Current tasks") // `Jusqu’au ${ date.format("DD MMMM") }`
+    for (let predicate of where) {
+        const [key, value] = predicate.split(":")
+        if (key === "date") {
+            date = moment(value.split(",")[1])
+            formatted = date.format("DD MMM")
         }
-        else date = moment()
-        formatted = date.format("DD MMM")
     }
 
     const html = []

@@ -25,7 +25,7 @@ const renderTaskDetail = ({ context, entity, view }, data, properties, formJwt) 
                 <section class="summary-section">
                     <div class="form-outline my-3 formOutline" data-mdb-input-init="" data-mdb-input-initialized="true">
                         <input type="text" class="form-control form-control-sm calendar-summary-input fl-modal-form-input" data-fl-property="summary" data-fl-type="input" value="${ data.summary }">
-                        <label class="form-label" style="margin-left: 0px;">Résumé</label>
+                        <label class="form-label" style="margin-left: 0px;">Titre</label>
                     </div>
                     <div class="text-center"><small> ${ (data.n_fn) ? data.n_fn : "" } ${ (data.business_name) ? data.business_name : "" } ${ (data.email) ? `<a href="mailto:${ data.email }"><i class="fa fa-at"></i>&nbsp;&nbsp;${ data.email }</a>` : "" }&nbsp;&nbsp;&nbsp;&nbsp;${ (data.tel_cell) ? `<a href="tel:${ data.tel_cell }"><i class="fa fa-mobile-screen-button"></i>&nbsp;&nbsp;${ data.tel_cell }</a>` : "" }</small></div>
                 </section>

@@ -2,8 +2,8 @@ const { executeService, assert } = require("../../../../core/api-utils")
 const { sessionCookieMiddleware } = require("../../../user/server/controller/sessionCookieMiddleware");
 const { createDbClient } = require("../../../utils/db-client")
 
-const { getProperties } = require("../../../../vendor/bo/server/controller/getProperties")
-const { getDistribution } = require("../../../../vendor/bo/server/controller/getDistribution")
+const { getProperties } = require("../../../../vendor/flBo/server/controller/getProperties")
+//const { getDistribution } = require("../../../../vendor/flbo/server/controller/getDistribution")
 
 const { dashboardAction } = require("./dashboardAction")
 const { detailAction } = require("./detailAction")
@@ -86,10 +86,10 @@ const index = async ({ req, logger }, context, config, db) =>
     /**
      * Retrieve distributions of the data
      */
-    for (let propertyId of Object.keys(properties)) {
-        const property = properties[propertyId]
-        property.distribution = await getDistribution(db, context, entity, view, propertyId, properties, whereParam)
-    }
+    // for (let propertyId of Object.keys(properties)) {
+    //     const property = properties[propertyId]
+    //     property.distribution = await getDistribution(db, context, entity, view, propertyId, properties, whereParam)
+    // }
     
     const applications = {}
     for (let applicationId of Object.keys(context.config.applications)) {

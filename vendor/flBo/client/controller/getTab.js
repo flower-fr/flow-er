@@ -107,8 +107,10 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
 
     triggerSmsText(context, rows)
 
-    triggerLinkedinText(context)
-    $("#description").change(() => { triggerLinkedinText(context) })
+    triggerLinkedinText(context, rows)
+    $("#description").change(() => {
+        triggerLinkedinText(context, rows)
+    })
 
     triggerEmailText({ context }, rows)
 

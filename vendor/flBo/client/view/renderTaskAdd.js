@@ -10,6 +10,7 @@ const renderTaskAdd = ({ context, entity, view }, {properties }, formJwt) => {
 
             <input type="hidden" id="formJwt" value="${ formJwt }" />
             <input type="hidden" class="fl-modal-form-input" data-fl-property="status" data-fl-type="input" value="todo" />
+            <input type="hidden" class="fl-modal-form-input" data-fl-property="chanel" data-fl-type="input" value="tâche" />
 
             <div class="modal-header">
                 <h5 class="modal-title id="flModalTaskLabel">${ context.translate("Add a task") }</h5>
@@ -61,7 +62,7 @@ const renderTaskAdd = ({ context, entity, view }, {properties }, formJwt) => {
                 </section>
             </div>
             <div class="modal-footer">
-                <input type="submit" class="btn btn-warning fl-task-submit" data-fl-controller="bo" data-fl-action="v1" data-fl-entity="${entity}" value="${ context.translate("Add") }" />
+                <input type="submit" class="btn btn-warning fl-task-submit" data-fl-controller="core" data-fl-action="v1" data-fl-entity="${entity}" value="${ context.translate("Add") }" />
             </div>
         
         </form>`)
