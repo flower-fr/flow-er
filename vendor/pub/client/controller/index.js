@@ -16,11 +16,11 @@ const getForm = async ({ context, entity, view }) => {
 }
 
 const loadPage = async ({ entity, view }) => {
-    let response = await fetch("/bo/config")
+    let response = await fetch("/flBo/config")
     const config = await response.json()
-    response = await fetch("/bo/language")
+    response = await fetch("/flBo/language")
     const translations = await response.json()
-    response = await fetch("/bo/user")
+    response = await fetch("/flBo/user")
     const user = await response.json()
 
     const context = {

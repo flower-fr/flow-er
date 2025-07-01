@@ -101,7 +101,22 @@ const renderGroupTabCards = ({ context, entity }, { groupTabConfig, properties, 
         }
         html.push(
             `   <div>
-                    <input name="submit-${postId}" type="submit" id="submitButton-${postId}" class="btn btn-warning fl-group-tab-submit mt-3" value="${ context.localize(post.labels) }" data-controller=${post.controller} data-action=${post.action} data-entity=${post.entity} data-transaction=${postId} ${ (id) ? `data-id="${id}"` : "" } ${ (post.view) ? `data-view=${post.view}` : "" }>
+                    <input 
+                        name="submit-${postId}" 
+                        type="submit" 
+                        id="submitButton-${postId}" 
+                        class="btn btn-warning fl-group-tab-submit mt-3" 
+                        value="${ context.localize(post.labels) }" 
+                        data-controller=${post.controller} 
+                        data-action=${post.action} 
+                        data-entity=${post.entity} 
+                        data-transaction=${postId}
+                        ${ (post.key) ? `
+                            data-key=${ post.key }
+                            data-key-initial-value="${ row[post.key] }"` : "" }
+                        ${ (id) ? `data-id="${id}"` : "" } ${ (post.view) ? `data-view=${post.view}` : "" }
+                        data-payload="${ encodeURI(JSON.stringify(post.payload)) }"
+                    >
                 </div>`)
     }
     html.push(

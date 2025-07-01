@@ -27,6 +27,7 @@ const insert = (context, entity, data, model) => {
                         }
                     }
                     else if (["mediumtext", "longtext"].includes(type)) value = qv(value.trim())    
+                    else if (["longblob", "mediumblob"].includes(type)) value = "?"
                 }
                 pairs[qi(key)] = value
             }

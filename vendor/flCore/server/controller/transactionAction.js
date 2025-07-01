@@ -13,8 +13,10 @@ const transactionAction = async ({ req }, context, { db, smtp, sms }) => {
     const steps = config.layout.posts[transaction].steps
     
     let rows
-    if (id) rows = [{"id": id}] 
-    else rows = req.body.rows
+    if (req.body.rows) rows = req.body.rows // Batch upsert
+    else if (id) rows = [{"id": id}] // unitary update
+    else rows = [{}] // unitary insert
+
     for (let row of rows) {
         for (const [propertyId, value] of Object.entries((req.body.payload) ? req.body.payload : req.body)) {
             if (value) row[propertyId] = value

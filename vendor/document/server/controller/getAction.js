@@ -1,6 +1,6 @@
 const { assert } = require("../../../../core/api-utils")
-const { getProperties } = require("../../../bo/server/controller/getProperties")
-const { getList } = require("../../../bo/server/controller/getList")
+const { getProperties } = require("../../../flBo/server/controller/getProperties")
+const { getList } = require("../../../flBo/server/controller/getList")
 const { select } = require("../../../flCore/server/model/select")
 
 const util = require('util')

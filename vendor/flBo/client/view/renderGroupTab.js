@@ -7,8 +7,8 @@ const renderGroupTab = ({ context, entity }, section, properties, row, payload )
     for (let propertyId of Object.keys(section.properties)) {
         const property = properties[propertyId]
         const options = property.options
-        const label = (options.labels) ? context.localize(options.labels) : context.localize(property.labels)
         const propertyType = (options.type) ? options.type : property.type
+        const label = propertyType !== "hidden" && ((options.labels) ? context.localize(options.labels) : context.localize(property.labels))
         const disabled = (property.options.readonly /* deprecated */ || property.options.disabled) ? "disabled" : ""
         const required = (options.mandatory) ? "required" : ""
         const modalities = (options.modalities) ? options.modalities : property.modalities
@@ -21,7 +21,7 @@ const renderGroupTab = ({ context, entity }, section, properties, row, payload )
             //else value = options.value
         }
 
-        if (options.change) {
+        if (options.change && !value) {
 
             html.push(`<input type="hidden" class="form-change" data-property-id="${propertyId}" value="mdb/groupTab/${entity}" />`)
         }
@@ -323,25 +323,62 @@ const renderGroupTab = ({ context, entity }, section, properties, row, payload )
 
         else if (propertyType == "source") {
 
-            html.push(
-                `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3">
-                    <div class="form-outline">
-                        <select class="updateSelect" data-mdb-select-init id="${propertyId}" data-fl-disabled="${ disabled }" ${ required }>
-                            <option />`
-            )
+            if (property.options.autocomplete) {
+                html.push(
+                    `<div 
+                        class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } ${ (!value) ? "fl-modal-list-add-autocomplete" : "" }"
+                        data-mdb-input-init
+                        data-fl-values="${ Object.values(modalities).join(",") }"
+                    >
+                        <div class="input-group mb-3">
+                            <div class="form-outline formOutline" data-mdb-input-init>
+                                <input class="form-control form-control-sm is-valid fl-modal-form-input updateInput" id="${propertyId}" data-fl-property="${propertyId}" data-fl-type="input" value="${value}" data-fl-disabled="${ disabled }" ${ required } maxlength="${(property.options.max_length) ? property.options.max_length : 255}" />
+                                <label class="form-label">${label}</label>
+                            </div>
 
-            for (let modalityId of Object.keys(modalities)) {
-                const modality = modalities[modalityId]
-                html.push(`<option value="${modalityId}" ${(value == modalityId) ? "selected" : ""}>${modality}</option>`)
+                            ${ (!value) ? `
+                                <button 
+                                    class="btn btn-primary fl-group-tab-search"
+                                    type="button"
+                                    data-fl-property="${propertyId}"
+                                    data-fl-key-property="${ property.options.columns.id }"
+                                    data-fl-keys="${ Object.keys(modalities).join(",") }"
+                                    data-fl-values="${ Object.values(modalities).join(",") }"
+                                    data-mdb-ripple-init data-mdb-ripple-color="dark"
+                                >
+                                    <i class="fas fa-search"></i>
+                                </button>` : "" }                            
+                        </div>
+                    </div>`
+                )    
             }
-
-            html.push(
-                `       </select>
-                        <label class="form-label select-label">${(required) ? "* " : ""}${label}</label>
-                        <div class="invalid-feedback">${ context.translate("Invalid") }</div>
-                    </div>
-                </div>`
-            )
+            else {
+                html.push(
+                    `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3">
+                        <div class="form-outline">
+                            <select 
+                                class="updateSelect"
+                                data-mdb-select-init
+                                id="${propertyId}"
+                                data-fl-disabled="${ disabled }" ${ required }
+                                data-fl-key-property="${ property.options.columns && property.options.columns.id }"
+                            >
+                                <option />`
+                )
+    
+                for (let modalityId of Object.keys(modalities)) {
+                    const modality = modalities[modalityId]
+                    html.push(`<option value="${modalityId}" ${(value == modalityId) ? "selected" : ""}>${modality}</option>`)
+                }
+    
+                html.push(
+                    `       </select>
+                            <label class="form-label select-label">${(required) ? "* " : ""}${label}</label>
+                            <div class="invalid-feedback">${ context.translate("Invalid") }</div>
+                        </div>
+                    </div>`
+                )    
+            }
         }
 
         /**

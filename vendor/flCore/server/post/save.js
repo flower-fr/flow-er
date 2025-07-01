@@ -145,6 +145,7 @@ const save = async ({ req }, context, rows, { connection }) => {
      */
     
     rowsToStore = entitiesToStore(entity, model, rowsToStore)
+
     await storeEntities(context, entity, rowsToStore, model, connection)
     await auditCells(context, rowsToStore, connection)
 

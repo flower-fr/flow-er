@@ -1,8 +1,44 @@
-import { triggerEmailText } from "/flBo/cli/controller/triggerEmailText.js"
-import { triggerGroup } from "/flBo/cli/controller/triggerGroup.js"
-import { triggerLinkedinText } from "/flBo/cli/controller/triggerLinkedinText.js"
 import { triggerSmsText } from "/flBo/cli/controller/triggerSmsText.js"
+import { triggerEmailText } from "/flBo/cli/controller/triggerEmailText.js"
 import { postGroupTab } from "/flBo/cli/controller/group.js"
+
+const triggerGroup = ({ context, entity, view }, searchParams) => {
+
+    $(".fl-list-group").click(function () {
+        const route = `/${ $(this).attr("data-fl-controller") }/${ $(this).attr("data-fl-action") }/${ entity }${ (view) ? `?view=${view}` : "" }`
+        $(this).removeClass("btn-outline-primary").addClass("btn-primary")
+        getGroup({ context, entity, view }, route,  searchParams)
+    })
+}
+
+const getGroup = async ({ context, entity, view }, route, searchParams) => {
+
+    const response = await fetch(route)
+    if (!response.ok) {
+        switch (response.status) {
+        case 401:
+            getLogin(loadPage)
+            return
+        case 500:
+            toastr.error("A technical error has occured. PLease try again later")
+            return
+        }
+    }
+    
+    const data = await response.json()
+
+    $("#flListDetailModalLabel").text(context.translate("Grouped actions"))
+    $("#flListDetailModal").html(renderGroup({ context, entity, view}, data))
+
+    $(".fl-group-tab").click(function () {
+        const tabId = $(this).attr("id").split("-")[1]
+        $(".fl-group-tab").removeClass("active")
+        $(this).addClass("active")
+        getGroupTab({ context, entity, view }, tabId, searchParams)
+    })
+
+    getGroupTab({ context, entity, view }, $("#flDefaultTab").val(), searchParams)
+}
 
 const getGroupTab = async ({ context, entity, view }, tab, searchParams) => {
 
@@ -44,7 +80,7 @@ const getGroupTab = async ({ context, entity, view }, tab, searchParams) => {
             const row = {}
             for (let pair of checkData) {
                 pair = pair.split(":")
-                row[pair[0]] = decodeURIComponent(pair[1])
+                row[pair[0]] = pair[1]
             }
             rows.push({ ...row })
         }
@@ -76,17 +112,10 @@ const getGroupTab = async ({ context, entity, view }, tab, searchParams) => {
     $(".form-change").each(function () {
         const propertyId = $(this).attr("data-property-id")
         $(`#${propertyId}`).change(function () {
-            const value = $(this).val(), keyProperty = $(this).attr("data-fl-key-property")
-            searchParams[keyProperty] = value
+            const value = $(this).val()
+            searchParams[propertyId] = value
             getGroupTab({ context, entity, view }, tab, searchParams )
         })
-    })
-
-    $(".fl-group-tab-search").click(function () {
-        const propertyId = $(this).attr("data-fl-property")
-        const value = $(`#${propertyId}`).val(), keyProperty = $(this).attr("data-fl-key-property"), keys = $(this).attr("data-fl-keys").split(","), values = $(this).attr("data-fl-values").split(",")
-        searchParams[keyProperty] = keys[values.indexOf(value)]
-        getGroupTab({ context, entity, view }, tab, searchParams )
     })
 
     $(".fl-group-tab-message").hide()
@@ -109,16 +138,10 @@ const getGroupTab = async ({ context, entity, view }, tab, searchParams) => {
         $(".fl-group-tab-message").hide()
     })
 
-    triggerEmailText({ context })
-    $("#email_body").change(() => { triggerEmailText({ context }) })
-
-    triggerLinkedinText(context)
-    $("#description").change(() => { triggerLinkedinText(context) })
-    
     triggerSmsText(context)
-    $("#sms").change(() => { triggerSmsText(context) })
+    triggerEmailText({ context })
 
     postGroupTab({ context, entity, view }, tab, searchParams)
 }
 
-export { getGroupTab }
+export { triggerGroup }

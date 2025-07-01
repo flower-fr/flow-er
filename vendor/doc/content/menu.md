@@ -1,7 +1,6 @@
 À faire
 =======
 
-- npm
 - config view > json
 - Requêtes SQL paramétrées
 

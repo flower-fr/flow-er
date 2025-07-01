@@ -170,12 +170,19 @@ const postGroupTab = async ({ context, entity, view }, tab, searchParams, rows) 
                     }
                 })
             }
-            const body = { 
-                payload: payload,
-                rows: rows 
+
+            const key = $(submit).attr("data-key"), keyInitialValue = $(submit).attr("data-key-initial-value"), keyCurrentValue = $(`#${ key }`).val()
+            const dataId = $(submit).attr("data-id"), paramId = (dataId && key && keyInitialValue === keyCurrentValue) ? `/${ dataId }` : ""
+            
+            const route = `/${$(submit).attr("data-controller")}/${$(submit).attr("data-action")}/${$(submit).attr("data-entity")}/${$(submit).attr("data-transaction")}${ paramId }${ ($(submit).attr("data-view")) ? `?view=${ $(submit).attr("data-view") }` : "" }`
+
+            const dataPayload = {}
+            for (const [key, options] of Object.entries(JSON.parse(decodeURI($(submit).attr("data-payload"))))) {
+                dataPayload[key] = (options.value) ? payload[options.value] : payload[key]
             }
 
-            const route = `/${$(submit).attr("data-controller")}/${$(submit).attr("data-action")}/${$(submit).attr("data-entity")}/${$(submit).attr("data-transaction")}${ ($(submit).attr("data-id")) ? `/${ $(submit).attr("data-id") }` : "" }${ ($(submit).attr("data-view")) ? `?view=${ $(submit).attr("data-view") }` : "" }`
+            const body = { payload: dataPayload }
+            if (!dataId) body.rows = rows
 
             const xhttp = await fetch(route, {
                 method: "POST",

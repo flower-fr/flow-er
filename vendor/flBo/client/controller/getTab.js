@@ -86,7 +86,7 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
             row[pair[0]] = decodeURIComponent(pair[1])
         }
         rows.push({ ...row })
-    })    
+    })
     $(".renderGroupTab").each(function () { 
         const tabId = $(this).attr("id").split("-")[1]
         if (tabId == tab) {
@@ -103,6 +103,13 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
             searchParams[propertyId] = value
             getTab({ context, entity, view }, tab, route, id, message, searchParams, order )
         })
+    })
+
+    $(".fl-group-tab-search").click(function () {
+        const propertyId = $(this).attr("data-fl-property")
+        const value = $(`#${propertyId}`).val(), keyProperty = $(this).attr("data-fl-key-property"), keys = $(this).attr("data-fl-keys").split(","), values = $(this).attr("data-fl-values").split(",")
+        searchParams[keyProperty] = keys[values.indexOf(value)]
+        getTab({ context, entity, view }, tab, route, id, message, searchParams, order )
     })
 
     triggerSmsText(context, rows)
@@ -228,10 +235,10 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
         })
     })
 
-    $(".detailPanel").each(function () {
-        const panel = $(this).attr("id")
-        getPanel(tab, panel, id)
-    })
+    // $(".detailPanel").each(function () {
+    //     const panel = $(this).attr("id")
+    //     getPanel(tab, panel, id)
+    // })
 }
 
 export { getTab }

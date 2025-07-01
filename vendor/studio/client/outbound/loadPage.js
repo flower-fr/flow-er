@@ -6,13 +6,13 @@ import { mdbCreate, mdbInitSelect, mdbDispose } from "/studio/cli/outbound/trigg
 const [entity] = Object.values(JSON.parse(decodeURI(document.getElementById("module-script").dataset.json)))
 
 const loadPage = async ({ entity }) => {
-    let response = await fetch("/bo/config")
+    let response = await fetch("/flBo/config")
     const config = await response.json()
-    response = await fetch("/bo/instance")
+    response = await fetch("/flBo/instance")
     const instance = await response.json()
-    response = await fetch("/bo/language")
+    response = await fetch("/flBo/language")
     const translations = await response.json()
-    response = await fetch("/bo/user")
+    response = await fetch("/flBo/user")
     const user = await response.json()
 
     const context = {

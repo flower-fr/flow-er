@@ -10,7 +10,12 @@ const storeEntities = async (context, mainEntity, rowsToStore, model, connection
         const insertEntity = async (entityId, entity) => {
             const entityToInsert = entitiesToInsert[entityId]
             const insertModel = context.config[`${entity.table}/model`]
-            const [insertedRow] = (await connection.execute(insert(context, entity.table, entityToInsert.cells, insertModel)))
+            const params = []
+            for (const key of Object.keys(entityToInsert.cells)) {
+                const value = insertModel.properties[key]
+                if (["longblob", "mediumblob"].includes(value.type)) params.push(entityToInsert.cells[key])
+            }
+            const [insertedRow] = (await connection.execute(insert(context, entity.table, entityToInsert.cells, insertModel), params))
             entityToInsert.rowId = insertedRow.insertId
             if (entity.foreignEntity) {
                 if (entitiesToInsert[entity.foreignEntity]) {
