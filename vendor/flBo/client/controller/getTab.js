@@ -96,14 +96,14 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
         postGroupTab({ context, entity, view }, tab, searchParams, rows)
     })
     $(".fl-group-tab-message").hide()
-    $(".form-change").each(function () {
-        const propertyId = $(this).attr("data-property-id")
-        $(`#${propertyId}`).change(function () {
-            const value = $(this).val()
-            searchParams[propertyId] = value
-            getTab({ context, entity, view }, tab, route, id, message, searchParams, order )
-        })
-    })
+    // $(".form-change").each(function () {
+    //     const propertyId = $(this).attr("data-property-id")
+    //     $(`#${propertyId}`).change(function () {
+    //         const value = $(this).val()
+    //         searchParams[propertyId] = value
+    //         getTab({ context, entity, view }, tab, route, id, message, searchParams, order )
+    //     })
+    // })
 
     $(".fl-group-tab-search").click(function () {
         const propertyId = $(this).attr("data-fl-property")

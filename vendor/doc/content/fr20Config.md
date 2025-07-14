@@ -1,3 +1,5 @@
+[[Main menu](menu.md)]
+
 Config
 ======
 

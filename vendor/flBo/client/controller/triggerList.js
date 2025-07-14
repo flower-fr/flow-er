@@ -11,7 +11,16 @@ const triggerList = async ({ context, entity, view }, order = $("#flListOrderHid
 
     let route = getListRoute()
 
-    const params = getSearchParams()
+    //const params = getSearchParams()
+    let params = []
+    for (const [key, value] of Object.entries(getSearchParams())) {
+        if (Array.isArray(value)) {
+            if (value[0] == null) value = `<=,${value[1]}`
+            else if (value[1] == null) value = `>=,${value[0]}`
+            else value = `between,${value[0]},${value[1]}`
+        }
+        params.push(key + ":" + value)
+    }
 
     const where = params.join("|")
     if (where) route += `&where=${where}`

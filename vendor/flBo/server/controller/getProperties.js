@@ -2,15 +2,31 @@ const { select } = require("../../../flCore/server/model/select")
 
 const getProperties = async (db, context, entity, view, propertyDefs, whereParam = {}) => {
     const properties = {}, propertyList = Object.keys(propertyDefs)
-    
+    const dataModel = context.config[`${entity}/model`]
     for (let propertyId of propertyList) {
         const options = propertyDefs[propertyId]
-        let property
+
+        /**
+         * Retrieve the view model entry for the property. 
+         * Try using the main entity
+         * If no view model definition found, try retrieving the property definition using the joined entity 
+         */
+        let property = {}
         if (context.config[`${entity}/property/${propertyId}`]) {
             property = { ...context.config[`${entity}/property/${propertyId}`] }
-            if (property.definition && property.definition != "inline") property = { ...context.config[property.definition] }    
+            if (property.definition && property.definition != "inline") property = { ...context.config[property.definition] }    
         }
-        else property = {}
+        else {
+            const modelProperty = dataModel.properties[propertyId]
+            if (modelProperty) {
+                const propertyEntity = modelProperty.entity
+                if (context.config[`${propertyEntity}/property/${propertyId}`]) {
+                    property = { ...context.config[`${propertyEntity}/property/${propertyId}`] }
+                    if (property.definition && property.definition != "inline") property = { ...context.config[property.definition] }    
+                }        
+            }
+        }
+
         if (options) {
             if (options.type) property.type = options.type
             if (options.labels) property.labels = options.labels    

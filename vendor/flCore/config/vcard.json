@@ -50,6 +50,15 @@
         }
     },
 
+    "vcard/property/n_title": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "First name",
+            "fr_FR": "Titre"
+        }
+    },
+
     "vcard/property/n_first": {
         "definition": "inline",
         "type": "input",

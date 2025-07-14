@@ -80,17 +80,17 @@ const getSearchParams = () => {
         }
     })
 
-    let params = []
-    for (const key of Object.keys(searchParams)) {
-        let value = searchParams[key]
-        if (Array.isArray(value)) {
-            if (value[0] == null) value = `<=,${value[1]}`
-            else if (value[1] == null) value = `>=,${value[0]}`
-            else value = `between,${value[0]},${value[1]}`
-        }
-        params.push(key + ":" + value)
-    }
-    return params
+    // let params = []
+    // for (const key of Object.keys(searchParams)) {
+    //     let value = searchParams[key]
+    //     if (Array.isArray(value)) {
+    //         if (value[0] == null) value = `<=,${value[1]}`
+    //         else if (value[1] == null) value = `>=,${value[0]}`
+    //         else value = `between,${value[0]},${value[1]}`
+    //     }
+    //     params.push(key + ":" + value)
+    // }
+    return searchParams
 }
 
 export { getSearchParams }

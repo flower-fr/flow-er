@@ -20,7 +20,7 @@ Framework
 Model
 =====
 
-1. [Entities](mo05Entities)
+1. [Data models](mo05Entities)
 2. [Properties](mo10Properties)
 3. [Data types](mo15DataTypes)
 4. [Data sources](mo20DataSources)

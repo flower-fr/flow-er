@@ -95,10 +95,11 @@ const renderGroupTabCards = ({ context, entity }, { groupTabConfig, properties, 
     html.push("<div class=\"form-group row my-4 fl-submit-div\">")
 
     for (let [postId, post] of Object.entries(layout.posts)) {
-        let id
+        let id = post.id
         if (post.id && post.id[0] == "?" && where[post.id.substring(1)]) {
             id = where[post.id.substring(1)][0]
         }
+        console.log(postId, post.id, id)
         html.push(
             `   <div>
                     <input 
@@ -114,7 +115,8 @@ const renderGroupTabCards = ({ context, entity }, { groupTabConfig, properties, 
                         ${ (post.key) ? `
                             data-key=${ post.key }
                             data-key-initial-value="${ row[post.key] }"` : "" }
-                        ${ (id) ? `data-id="${id}"` : "" } ${ (post.view) ? `data-view=${post.view}` : "" }
+                        ${ (id || id == 0) ? `data-id="${ (id) ? id : 0 }"` : "" }
+                        ${ (post.view) ? `data-view=${post.view}` : "" }
                         data-payload="${ encodeURI(JSON.stringify(post.payload)) }"
                     >
                 </div>`)
