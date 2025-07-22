@@ -141,8 +141,7 @@ const getImportXlsxAction = async ({ req }, context, db) => {
             entity: entity,
             id: 0,
             view,
-            labels: { default: "import", fr_FR: "Importer" },
-            renderer: "renderImportXlsx"
+            labels: { default: "import", fr_FR: "Importer" }
         }
     }
 
@@ -252,8 +251,7 @@ const postImportXlsxAction = async ({ req }, context, db) => {
                     entity: entity,
                     id: insertedRow.insertId,
                     view,
-                    labels: { default: "import", fr_FR: "Importer" },
-                    renderer: "renderImportXlsx"
+                    labels: { default: "import", fr_FR: "Importer" }
                 }
             }
         
@@ -284,9 +282,9 @@ const postImportXlsxAction = async ({ req }, context, db) => {
         await connection.beginTransaction()
 
         let { rowsToStore, rowsToReject } = dataToStore(targetModel, mergedPayload)
-        if (rowsToReject.length > 0) {
-            return JSON.stringify({ "status": "ko", "errors": rowsToReject })
-        }
+        // if (rowsToReject.length > 0) {
+        //     return JSON.stringify({ "status": "ko", "errors": rowsToReject })
+        // }
         
         /**
          * Find out the entities to insert vs update in the database 

@@ -28,7 +28,7 @@ For columns of type char or varchar, the optional _max_length_ attribute, defaul
 
 When not specified, the type attributes defaults to a varchar of a maximum size of 255.
 
-The special type _concat_ defines a derived (not materialized in the database) columns which is the concatenation of other columns. The _components_ attributes, mandatory in his case, lists the columns to concatenate, separated with a space character.
+The special type _concat_ defines a derived (not materialized in the database) columns which is the concatenation of other columns. The _components_ attribute, mandatory in his case, lists the columns to concatenate, separated with a space character.
 
     "contact/entity": {
         "entities": {

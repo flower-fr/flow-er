@@ -5,10 +5,21 @@ const getGlobal = async ({context, entity, view }, route, message = null) => {
 
     const searchParams = getSearchParams()
     
+    let params = []
+    for (const key of Object.keys(searchParams)) {
+        let value = searchParams[key]
+        if (Array.isArray(value)) {
+            if (value[0] == null) value = `<=,${value[1]}`
+            else if (value[1] == null) value = `>=,${value[0]}`
+            else value = `between,${value[0]},${value[1]}`
+        }
+        params.push(key + ":" + value)
+    }
+
     const columns = $("#columns").val()
     if (columns) route += "columns=" + columns
 
-    const where = searchParams.join("|")
+    const where = params.join("|")
     if (where) route += "&where=" + where
 
     const order = $("#listOrderHidden").val()

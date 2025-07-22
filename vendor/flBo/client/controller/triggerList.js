@@ -13,7 +13,7 @@ const triggerList = async ({ context, entity, view }, order = $("#flListOrderHid
 
     //const params = getSearchParams()
     let params = []
-    for (const [key, value] of Object.entries(getSearchParams())) {
+    for (let [key, value] of Object.entries(getSearchParams())) {
         if (Array.isArray(value)) {
             if (value[0] == null) value = `<=,${value[1]}`
             else if (value[1] == null) value = `>=,${value[0]}`
