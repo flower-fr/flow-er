@@ -196,8 +196,10 @@ const postImportXlsxAction = async ({ req }, context, db) => {
 
     for (const property of Object.values(importConfig.mapping)) {
         const propertyDef = context.config[`${entity}/property/${property.propertyId}`]
-        importConfig.properties[property.propertyId] = propertyDef
-        importConfig.properties[property.propertyId].update = true
+        if (propertyDef) {
+            importConfig.properties[property.propertyId] = propertyDef
+            importConfig.properties[property.propertyId].update = true    
+        }
     }
 
     const connection = await db.getConnection()

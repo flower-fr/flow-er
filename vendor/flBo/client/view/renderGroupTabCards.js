@@ -99,7 +99,6 @@ const renderGroupTabCards = ({ context, entity }, { groupTabConfig, properties, 
         if (post.id && post.id[0] == "?" && where[post.id.substring(1)]) {
             id = where[post.id.substring(1)][0]
         }
-        console.log(postId, post.id, id)
         html.push(
             `   <div>
                     <input 

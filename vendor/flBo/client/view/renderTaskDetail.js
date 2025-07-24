@@ -29,7 +29,7 @@ const renderTaskDetail = ({ context, entity, view }, data, properties, formJwt) 
                     </div>
                     <div class="text-center"><small> ${ (data.n_fn) ? data.n_fn : "" } ${ (data.business_name) ? data.business_name : "" } ${ (data.email) ? `<a href="mailto:${ data.email }"><i class="fa fa-at"></i>&nbsp;&nbsp;${ data.email }</a>` : "" }&nbsp;&nbsp;&nbsp;&nbsp;${ (data.tel_cell) ? `<a href="tel:${ data.tel_cell }"><i class="fa fa-mobile-screen-button"></i>&nbsp;&nbsp;${ data.tel_cell }</a>` : "" }</small></div>
                 </section>
-                <div class="form-floating form-outline my-3 formOutline" data-mdb-input-init="" data-mdb-input-initialized="true">
+                <div class="form-outline my-3 formOutline" data-mdb-input-init="" data-mdb-input-initialized="true">
                     <textarea type="text" class="form-control form-control-sm fl-modal-form-input" data-fl-property="description" data-fl-type="textarea">${ (data.description) ? data.description : "" }</textarea>
                     <label class="form-label" style="margin-left: 0px;">
                         Description

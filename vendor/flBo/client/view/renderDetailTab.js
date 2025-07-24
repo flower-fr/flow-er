@@ -136,7 +136,19 @@ const renderDetailTab = ({ context, entity }, { data, detailTabConfig, formJwt }
             html.push(`
                     <div class="col-md-2 fl-submit-div">
                         <input type="hidden" id="flDetailTabSubmitRefresh-${postId}" data-fl-route="/${ detailTabConfig.controller }/${ detailTabConfig.action }/${ detailTabConfig.entity }/${ data.id }?where=${ where.join("|") }&order=${ data.order }" />
-                        <button name="submit-${postId}" class="btn ${ (post.danger) ? "btn-outline-primary" : "btn-warning" } fl-detail-tab-submit" ${ (post.danger) ? "data-fl-danger=\"danger\"" : "" } ${ (post.method) ? `data-fl-method=${post.method}`: "" } data-fl-controller=${post.controller} data-fl-action=${post.action} data-fl-entity=${post.entity} ${ (post.id) ? `data-fl-id=${ data[post.id] }`: "" } data-fl-transaction=${postId} ${ (post.view) ? `data-fl-view=${post.view}` : "" } ${ (post.glyph) ? `title=${  context.localize(post.labels) }` : "" }>${ (post.glyph) ? `<i class="fas ${ post.glyph }"></i>` : context.localize(post.labels) }</button>
+                        <button 
+                            name="submit-${postId}" 
+                            class="btn ${ (post.danger) ? "btn-outline-primary" : "btn-warning" } fl-detail-tab-submit"
+                            ${ (post.danger) ? "data-fl-danger=\"danger\"" : "" }
+                            ${ (post.method) ? `data-fl-method=${post.method}`: "" }
+                            data-fl-controller=${post.controller}
+                            data-fl-action=${post.action}
+                            data-fl-entity=${post.entity}
+                            ${ (post.id) ? `data-fl-id=${ data[post.id] }`: "" }
+                            data-fl-transaction=${postId}
+                            ${ (post.view) ? `data-fl-view=${post.view}` : "" }
+                            ${ (post.glyph) ? `title=${  context.localize(post.labels) }` : "" }>${ (post.glyph) ? `<i class="fas ${ post.glyph }"></i>` : context.localize(post.labels) }
+                        </button>
                     </div>`)
         }
     }
