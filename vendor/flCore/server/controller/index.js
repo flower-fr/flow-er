@@ -12,6 +12,8 @@ const { createMailClient, createImapClient } = require("../../../utils/mail-clie
 const { executeService, assert } = require("../../../../core/api-utils")
 const { resendSmtp } = require("../post/sendSmtp")
 
+//const { encrypt, decrypt } = require("../model/encrypt")
+
 const { addEvent } = require("../post/addEvent")
 const { registerHistory } = require("../post/registerHistory")
 const { registerSmtp } = require("../post/registerSmtp")
@@ -25,6 +27,17 @@ const registerCore = async ({ context, config, logger, app }) => {
     const smtp = createMailClient({ config: config.smtp, logger })
     const imap = createImapClient({ config: config.imap, logger })
     const sms = config.sms
+
+    context.encrypt_secret = config.encrypt.secret
+    context.encrypt_iv = config.encrypt.iv
+
+    // // Encrypt
+    // const encryptedData = encrypt(context, "This is a secret message")
+    // console.log("Encrypted:", encryptedData)
+
+    // // Decrypt
+    // const decrypted = decrypt(context, encryptedData)
+    // console.log("Decrypted:", decrypted)
 
     context.config.postSteps.addEvent = addEvent
     context.config.postSteps.registerHistory = registerHistory

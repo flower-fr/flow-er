@@ -1,5 +1,7 @@
 const { qi, qv } = require("./quote")
 
+const { encrypt, decrypt } = require("./encrypt")
+
 const insert = (context, entity, data, model) => {
 
     const table = (model.entities[entity]) ? model.entities[entity].table : entity
@@ -17,18 +19,25 @@ const insert = (context, entity, data, model) => {
                     else value = "''"
                 }
                 else {
+
+                    // Encryption
+                    if (model.properties[key].sensitive && value) {
+                        value = encrypt(context, value)
+                    }
+
                     if (["date", "datetime", "time"].includes(type)) value = `'${value}'`
                     else if (type === "json") value = qv(JSON.stringify(value))
                     else if (type === "text") {
                         if (typeof value === "string") {
                             const maxLength = (model.properties[key].max_length) ? model.properties[key].max_length : 255
-                            //value = value.replace(/(<([^>]+)>)/ig, '').substring(0, maxLength)
-                            value = qv(value.trim())    
+                            value = value.substring(0, maxLength) // Protect against string overflow
+                            value = qv(value.trim()) 
                         }
                     }
                     else if (["mediumtext", "longtext"].includes(type)) value = qv(value.trim())    
                     else if (["longblob", "mediumblob"].includes(type)) value = "?"
                 }
+
                 pairs[qi(key)] = value
             }
         }
