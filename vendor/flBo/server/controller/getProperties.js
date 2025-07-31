@@ -14,7 +14,7 @@ const getProperties = async (db, context, entity, view, propertyDefs, whereParam
         let property = {}
         if (context.config[`${entity}/property/${propertyId}`]) {
             property = { ...context.config[`${entity}/property/${propertyId}`] }
-            if (property.definition && property.definition != "inline") property = { ...context.config[property.definition] }    
+            if (property.definition && property.definition != "inline") property = { ...context.config[property.definition] }
         }
         else {
             const modelProperty = dataModel.properties[propertyId]
@@ -80,7 +80,8 @@ const getProperties = async (db, context, entity, view, propertyDefs, whereParam
             let order = {}
             if (property.order[0] == "-") order[property.order.substr(1)] = "DESC" 
             else order[property.order] = "ASC"
-            const rows = (await db.execute(select(context, property.entity, tagColumns, where, order, null, context.config[`${property.entity}/model`])))[0]
+console.log(`${property.entity}/model`)
+            const rows = (await db.execute(select(context, property.entity, tagColumns, where, order, null, context.config[`${property.entity}/model`], true)))[0]
             const modalities = []
             for (let row of rows) {
                 if (property.type == "tag") {

@@ -10,15 +10,15 @@ const join = (entity, columns, where, order, model) => {
         const property = model.properties[propertyId]
         if (!property) continue
         if (property.type == "CONCAT") {
-            const components = []
             for (let component of property.components) {
                 if (model.properties[component]) {
-                    involvedProperties[model.properties[component].column] = null
+                    involvedProperties[component] = null
                 }
             }
         }
         involvedProperties[propertyId] = null
     }
+
     for (let propertyId of Object.keys(where)) involvedProperties[propertyId] = null
     if (order != null) for (let propertyId of Object.keys(order)) involvedProperties[propertyId] = null
     involvedProperties = Object.keys(involvedProperties)

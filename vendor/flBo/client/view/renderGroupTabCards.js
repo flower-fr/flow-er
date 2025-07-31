@@ -95,6 +95,7 @@ const renderGroupTabCards = ({ context, entity }, { groupTabConfig, properties, 
     html.push("<div class=\"form-group row my-4 fl-submit-div\">")
 
     for (let [postId, post] of Object.entries(layout.posts)) {
+console.log(postId, post)
         let id = post.id
         if (post.id && post.id[0] == "?" && where[post.id.substring(1)]) {
             id = where[post.id.substring(1)][0]

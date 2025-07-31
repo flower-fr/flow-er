@@ -100,7 +100,18 @@ const renderList = ({ context, entity, view }, data) => {
             <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-list-detail fl-list-add" title="${context.translate("Add")}" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#flListDetailModalForm" data-id="0">
                 <span class="fas fa-plus"></span>
             </button>
-            <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-list-group" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#flListDetailModalForm" data-toggle="tooltip" data-placement="top" title="${context.translate("Grouped actions")}">
+            <button 
+              type="button"
+              class="btn btn-sm btn-outline-primary index-btn fl-list-group"
+              data-fl-controller="flBo"
+              data-fl-action="group"
+              data-mdb-ripple-init
+              data-mdb-modal-init
+              data-mdb-target="#flListDetailModalForm"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="${context.translate("Grouped actions")}"
+            >
                 <span class="fas fa-list"></span>
             </button>
             ${(rows.length == limit) ? 
@@ -152,7 +163,16 @@ const renderRows = (context, listConfig, columns, rows) => {
             </td>
 
             <td class="text-center">
-                <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-list-detail" data-bs-toggle="modal" data-bs-target="#flListDetailModalForm" data-mdb-target="#flListDetailModalForm" data-mdb-modal-init title="${context.translate("Detail")}" data-id="${row.id}">
+                <button 
+                    type="button"
+                    class="btn btn-sm btn-outline-primary index-btn fl-list-detail"
+                    data-bs-toggle="modal"
+                    data-bs-target="#flListDetailModalForm"
+                    data-mdb-target="#flListDetailModalForm"
+                    data-mdb-modal-init
+                    title="${context.translate("Detail")}"
+                    data-id="${row.id}"
+                >
                   <i class="fas fa-search"></i>
                 </button>
             </td>

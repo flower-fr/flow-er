@@ -4,7 +4,12 @@ const triggerDetail = ({ context, entity, view }, searchParams) => {
 
     $(".fl-list-detail").click(function () {
         const id = $(this).attr("data-id")
-        const route = ($(this).attr("data-fl-controller")) ? `/${ $(this).attr("data-fl-controller") }/${ $(this).attr("data-fl-action") }/${ $(this).attr("data-fl-entity") }/${ $(this).attr("data-id") }` : `${$("#detailRoute").val()}/${id}?view=${view}`
+        let route
+        if (id != 0) {
+            route = ($(this).attr("data-fl-controller")) ? `/${ $(this).attr("data-fl-controller") }/${ $(this).attr("data-fl-action") }/${ $(this).attr("data-fl-entity") }/${ $(this).attr("data-id") }` : `${$("#detailRoute").val()}/${id}?view=${view}`
+        } else {
+            route = ($(this).attr("data-fl-controller")) ? `/${ $(this).attr("data-fl-controller") }/${ $(this).attr("data-fl-action") }/${ $(this).attr("data-fl-entity") }/${ $(this).attr("data-id") }` : `${$("#detailRoute").val()}/0?view=add`
+        }
         $(this).removeClass("btn-outline-primary").addClass("btn-primary")
         getDetail(context, entity, view, route, id, searchParams)
     })

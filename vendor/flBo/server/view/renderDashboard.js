@@ -7,6 +7,8 @@ const { renderSearchInput } = require("./renderSearchInput")
 
 const renderDashboard = ({ context, entity, view }, data) => {
 
+    console.log("In renderDashboard (flBo)")
+    
     const tab = data.tab, indexConfig = data.indexConfig, dashboardConfig = data.dashboardConfig
 
     const html = []

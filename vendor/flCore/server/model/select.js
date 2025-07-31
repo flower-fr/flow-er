@@ -17,6 +17,17 @@ const select = (context, entity, columns, where, order = [], limit = null, model
         }
     }
 
+    /**
+     * Access control
+     */
+    if (model.access) {
+        for (const [modelProp, profileProp] of Object.entries(model.access)) {
+            if (context.user[profileProp]) {
+                if (!columns.includes(modelProp)) columns.push(modelProp)
+            }
+        }
+    }
+
     const joins = join(entity, columns, where, order, model)
 
     const { columnDict, groupBy } = selectColumns(context, entity, columns, model, joins)
