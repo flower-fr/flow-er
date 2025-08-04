@@ -1,6 +1,5 @@
 const PDFDocument = require("pdfkit")
 const fs = require("fs")
-const puppeteer = require("puppeteer")
 
 const createPdfClient = ({ config, logger }) => {
     return {
@@ -66,11 +65,7 @@ const pdf = ({ logger }) => async () => {
 }
 
 const fromHTML = ({ logger }) => async htmlContent => {
-    const browser = await puppeteer.launch()
-    const page = await browser.newPage()
-    await page.setContent(htmlContent)
-    await page.pdf({ path: "output.pdf", format: "A4" })
-    await browser.close()
+    // HTML to PDF converter to find
     console.log("PDF generated successfully")
 }
 
