@@ -49,6 +49,7 @@ const registerHub = async ({ context, config, logger, app }) => {
     app.get(`${config.prefix}notification/:entity`, execute(notificationAction, context, db, mailClient))
 
     app.get(`${config.prefix}pdf`, execute(pdfAction, context, pdfClient))
+    app.get(`${config.prefix}html-to-pdf`, execute(htmlToPdfAction, context, pdfClient))
 }
 
 // const getAction = async ({ req }, context, db) => {
@@ -140,6 +141,53 @@ const sendMailAction = async ({ req }, context, mailClient) => {
 
 const pdfAction = async ({ req }, context, pdfClient) => {
     await pdfClient.pdf()
+}
+
+const htmlToPdfAction = async ({ req }, context, pdfClient) => {
+    const html = `<html>
+        <head>
+        <style>
+            body { font-family: 'Helvetica'; }
+            .invoice-header { text-align: center; margin-bottom: 20px; }
+            .invoice-details { width: 100%; margin-bottom: 20px; }
+            .item-table { width: 100%; border-collapse: collapse; }
+            .item-table th, .item-table td { border: 1px solid #ddd; padding: 8px; }
+        </style>
+        </head>
+        <body>
+        <div class="invoice-header">
+            <h1>Invoice #12345</h1>
+            <p>Date: 2024-10-01</p>
+        </div>
+        <div class="invoice-details">
+            <p>Customer: John Doe</p>
+            <p>Address: 1234 Street Name, City, State</p>
+        </div>
+        <table class="item-table">
+            <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Price</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Product 1</td>
+                <td>2</td>
+                <td>$50</td>
+            </tr>
+            <tr>
+                <td>Product 2</td>
+                <td>1</td>
+                <td>$30</td>
+            </tr>
+            </tbody>
+        </table>
+        </body>
+        </html>`
+
+    await pdfClient.fromHTML(html)
 }
 
 module.exports = {
