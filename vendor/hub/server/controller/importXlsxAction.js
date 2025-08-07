@@ -30,7 +30,8 @@ const parse = (sheet) => {
         }
         const resRow = {}
         for (let i = 0; i < row.length; i++) {
-            resRow[header[i]] = (typeof(row[i]) == "string") ? row[i].split("\r").join("").split("\n").join("").split("\"").join("\\\"") : row[i]
+            const value = (row[i]) ? row[i] : null
+            resRow[header[i]] = (typeof(value) == "string") ? value.split("\r").join("").split("\n").join("").split("\"").join("\\\"") : value
         }
         if (Object.values(resRow).length > 0) payload.push(resRow)
     }

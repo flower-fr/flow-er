@@ -4,11 +4,11 @@ const moment = require("moment")
 const { sessionCookieMiddleware } = require("../../../user/server/controller/sessionCookieMiddleware")
 const { createDbClient } = require("../../../utils/db-client")
 const { createMailClient } = require("../../../utils/mail-client")
-const { createPdfClient } = require("../../../utils/pdf-client")
 const { executeService, assert } = require("../../../../core/api-utils")
 
 const { getImportXlsxAction, postImportXlsxAction } = require("./importXlsxAction")
 const { getImportCsvAction, postImportCsvAction } = require("./importCsvAction")
+const { getPdfAction, postPdfAction } = require("./pdfAction")
 const { notificationAction } = require("./notificationAction")
 const { registerReminders, sendReminders } = require("../post/remind")
 const { sendSms } = require("../post/sendSms")
@@ -20,7 +20,6 @@ const registerHub = async ({ context, config, logger, app }) => {
     const db = await createDbClient(config.db, context.dbName)
     const smsClient = config.sms
     const mailClient = createMailClient({ config: config.smtp, logger })
-    const pdfClient = createPdfClient({ logger })
 
     const execute = executeService(context.clone(), config, logger)
     const executeImportXlsx = async (req, res) => {
@@ -34,7 +33,10 @@ const registerHub = async ({ context, config, logger, app }) => {
         return res.status(200).send(result)
     }
     const upload = multer()
-    
+
+    // Routes bypassing standard authentication should check a query token !!!
+    app.get(`${config.prefix}pdf/:entity/:id`, execute(getPdfAction, context, db))
+
     app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
     // app.get(`${config.prefix}send`, execute(getAction, context, db))
     // app.post(`${config.prefix}send`, execute(postAction, context, db))
@@ -45,10 +47,8 @@ const registerHub = async ({ context, config, logger, app }) => {
     app.post(`${config.prefix}import-csv/:entity/:id`, upload.single("global-csvFile"), executeImportCsv)
     app.post(`${config.prefix}remind/:entity`, execute(postReminder, context, db, mailClient))
     app.post(`${config.prefix}send-sms`, execute(postSmsAction, context, db, smsClient))
-
     app.get(`${config.prefix}notification/:entity`, execute(notificationAction, context, db, mailClient))
-
-    app.get(`${config.prefix}pdf`, execute(pdfAction, context, pdfClient))
+    app.post(`${config.prefix}pdf/:entity/:id`, execute(postPdfAction, context, db))
 }
 
 // const getAction = async ({ req }, context, db) => {
@@ -136,10 +136,6 @@ const sendMailAction = async ({ req }, context, mailClient) => {
         content: `Bonjour,
         Contenu du message...`
     })
-}
-
-const pdfAction = async ({ req }, context, pdfClient) => {
-    await pdfClient.pdf()
 }
 
 module.exports = {
