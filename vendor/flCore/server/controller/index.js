@@ -28,8 +28,8 @@ const registerCore = async ({ context, config, logger, app }) => {
     const imap = createImapClient({ config: config.imap, logger })
     const sms = config.sms
 
-    context.encrypt_secret = config.encrypt.secret
-    context.encrypt_iv = config.encrypt.iv
+    // context.encrypt_secret = config.encrypt.secret
+    // context.encrypt_iv = config.encrypt.iv
 
     // // Encrypt
     // const encryptedData = encrypt(context, "This is a secret message")
