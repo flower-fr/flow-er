@@ -14,7 +14,7 @@ const createPdf = async ({ entity, type, owner_entity, owner_id, payload }, cont
 
     const connection = await db.getConnection()
     await connection.beginTransaction()
-    // try {
+    try {
         const data = payload.data, folder = payload.folder || "", name = payload.name || ""
         const documentData = {
             type,
@@ -89,7 +89,7 @@ const createPdf = async ({ entity, type, owner_entity, owner_id, payload }, cont
 
                 let options = {}
                 if (variable.displayRule === "capitalizedLetters") {
-                    value = value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()
+                    if (value) value = value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()
                 } else if (variable.displayRule === "date") {
                     value = moment(value).format("DD/MM/YYYY")
                 } else if (variable.displayRule === "amount") {
@@ -116,22 +116,23 @@ const createPdf = async ({ entity, type, owner_entity, owner_id, payload }, cont
             }
         }
 
+        connection.commit()
+        connection.release()
+
         let writeStream = new WritableBufferStream()
         doc.pipe(writeStream)
         writeStream.on("finish", () => {
             const content = writeStream.toBuffer().toString("base64")
-            connection.execute(update(context, entity, [id], { content }, documentModel))
-            connection.commit()
-            connection.release()
+            db.execute(update(context, entity, [id], { content }, documentModel))
         })
 
         doc.end()
 
-    // } catch {
-    //     await connection.rollback()
-    //     connection.release()
-    //     throw throwBadRequestError()
-    // }
+    } catch {
+        await connection.rollback()
+        connection.release()
+        throw throwBadRequestError()
+    }
 }
 
 module.exports = {
