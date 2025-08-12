@@ -7,6 +7,7 @@ const { executeService } = require("../../../../core/api-utils")
 const { throwBadRequestError } = require("../../../../core/api-utils")
 
 const { ddlEntity } = require("./ddl")
+const { loadAll } = require("./load")
 const { modelRelease } = require("./model")
 const { getNotifRules, postNotifRules } = require("./notifRules")
 
@@ -39,6 +40,7 @@ const ddl = async ({ req }, context, db) => {
     ddl.push("START TRANSACTION;")
     ddl.push("SET time_zone = \"+00:00\";\n")
     ddl = ddl.concat(ddlEntity(context, entity, propertyId))
+    ddl = ddl.concat(loadAll(context, entity))
     ddl.push("COMMIT;")
     return ddl.join("\n")
 }

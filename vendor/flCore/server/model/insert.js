@@ -1,8 +1,8 @@
 const { qi, qv } = require("./quote")
 
-const { encrypt, decrypt } = require("./encrypt")
+const { encrypt } = require("./encrypt")
 
-const insert = (context, entity, data, model) => {
+const insert = (context, entity, data, model, debug = false) => {
 
     const table = (model.entities[entity]) ? model.entities[entity].table : entity
 
@@ -23,6 +23,10 @@ const insert = (context, entity, data, model) => {
                     // Encryption
                     if (model.properties[key].sensitive && value) {
                         value = encrypt(context, value)
+                    }
+                    // Hash
+                    if (model.properties[key].hash && value) {
+                        pairs[qi(model.properties[key].hash)] = qv(encrypt(context, value))
                     }
 
                     if (["date", "datetime", "time"].includes(type)) value = `'${value}'`
@@ -48,8 +52,10 @@ const insert = (context, entity, data, model) => {
     if (model.properties.creation_year) pairs[qi("creation_year")] = `'${new Date().toISOString().slice(0, 4)}'`
     if (!pairs[qi("touched_at")]) pairs[qi("touched_at")] = `'${new Date().toISOString().slice(0, 19).replace("T", " ")}'`
     pairs[qi("touched_by")] = context.user.id
-    
-    return `INSERT INTO ${table} (${Object.keys(pairs).join(", ")})\n VALUES (${Object.values(pairs).join(", ")})\n`
+
+    const request = `INSERT INTO ${table} (${Object.keys(pairs).join(", ")})\n VALUES (${Object.values(pairs).join(", ")})\n`
+    if (debug) console.log(request)
+    return request
 }
 
 module.exports = {

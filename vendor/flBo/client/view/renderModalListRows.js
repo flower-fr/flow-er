@@ -79,6 +79,19 @@ const renderModalListProperties = ({ context, entity }, section, modalListConfig
                 html.push(`<td><a href="tel:${row[propertyId]}">${row[propertyId]}</a></td>`)
             }
 
+            else if (property.type == "route") {
+                let route = `/${ property.controller }/${ property.action }/${ property.entity }`
+                if (property.id) route += `/${ row[property.id] }`
+                if (property.query) {
+                    const query = []
+                    for (const [key, value] of Object.entries(property.query)) {
+                        query.push(`${ key }=${ row[value] }`)
+                    }
+                    route += `?${ query.join("&") }`
+                }
+                html.push(`<td><a href="${ route }">${ context.translate("Click for downloading") }</a></td>`)
+            }
+
             else if (["tags", "source"].includes(property.type)) {
                 let label = []
                 for (const modality of property.modalities) {

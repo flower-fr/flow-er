@@ -15,18 +15,23 @@ function encrypt(context, text) {
 
 // Function to decrypt data
 function decrypt(context, encryptedData) {
-    // Create decipher
-    const decipher = crypto.createDecipheriv(
-        "aes-256-cbc",
-        context.encrypt_secret,
-        Buffer.from(context.encrypt_iv, "hex")
-    )
+    try {
+        // Create decipher
+        const decipher = crypto.createDecipheriv(
+            "aes-256-cbc",
+            context.encrypt_secret,
+            Buffer.from(context.encrypt_iv, "hex")
+        )
 
-    // Decrypt the data
-    let decrypted = decipher.update(encryptedData, "hex", "utf8")
-    decrypted += decipher.final("utf8")
+        // Decrypt the data
+        let decrypted = decipher.update(encryptedData, "hex", "utf8")
+        decrypted += decipher.final("utf8")
 
-    return decrypted
+        return decrypted
+    }
+    catch {
+        return false
+    }
 }
 
 module.exports = {

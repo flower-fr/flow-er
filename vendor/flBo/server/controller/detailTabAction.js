@@ -22,6 +22,7 @@ const detailTabAction = async ({ req }, context, db) => {
     if (!detailTabConfig) detailTabConfig = context.config[`${entity}/detailTab/default`]
 
     const data = { id, where, order, limit }
+    for (const [key, value] of Object.entries(where)) data[key] = value
     for (let entityId of Object.keys(detailTabConfig.data)) {
 
         const dataConfig = detailTabConfig.data[entityId]

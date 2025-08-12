@@ -36,6 +36,7 @@ const registerHub = async ({ context, config, logger, app }) => {
 
     // Routes bypassing standard authentication should check a query token !!!
     app.get(`${config.prefix}pdf/:entity/:id`, execute(getPdfAction, context, db))
+    app.post(`${config.prefix}pdf/:entity/:type/:owner_entity/:owner_id`, execute(postPdfAction, context, db))
 
     app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
     // app.get(`${config.prefix}send`, execute(getAction, context, db))
@@ -48,7 +49,6 @@ const registerHub = async ({ context, config, logger, app }) => {
     app.post(`${config.prefix}remind/:entity`, execute(postReminder, context, db, mailClient))
     app.post(`${config.prefix}send-sms`, execute(postSmsAction, context, db, smsClient))
     app.get(`${config.prefix}notification/:entity`, execute(notificationAction, context, db, mailClient))
-    app.post(`${config.prefix}pdf/:entity/:id`, execute(postPdfAction, context, db))
 }
 
 // const getAction = async ({ req }, context, db) => {

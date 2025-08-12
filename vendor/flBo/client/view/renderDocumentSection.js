@@ -97,9 +97,13 @@ const formatHtmlProperty = ({ context }, row, format, properties) => {
     const result = [split[0]]
     for (let i = 1; i < split.length; i++) {
         const [propertyId, text] = split[i].split("}")
+        const property = properties[propertyId]
         let value
-        if (propertyId == "instance_caption") value = context.instance.caption
-        else value = (row[propertyId]) ? row[propertyId] : ""
+        if (propertyId == "instance_caption") {
+            value = context.instance.caption
+        } else if (property && property.type == "date") {
+            value = (row[propertyId]) ? moment(row[propertyId]).format("DD/MM/YYYY") : ""
+        } else value = (row[propertyId]) ? row[propertyId] : ""
         result.push(value)
         result.push(text)
     }
