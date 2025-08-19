@@ -17,7 +17,7 @@ const postForm = async ({ req }, context, config, db) => {
     const connection = await db.getConnection()
     let status = "ok"
 
-    //try {
+    try {
 
         /**
          * Recaptcha
@@ -107,12 +107,12 @@ const postForm = async ({ req }, context, config, db) => {
 
         await connection.commit()
         await connection.release()
-    // }
-    // catch {
-    //     await connection.rollback()
-    //     connection.release()
-    //     throw throwBadRequestError()
-    // }
+    }
+    catch {
+        await connection.rollback()
+        connection.release()
+        throw throwBadRequestError()
+    }
 
     return JSON.stringify({ status: "ok"})
 }

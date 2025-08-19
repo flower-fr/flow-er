@@ -55,7 +55,7 @@ const registerCore = async ({ context, config, logger, app }) => {
 
     const execute = executeService(context.clone(), config, logger)
     
-    //app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
+    app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
     app.get(`${config.prefix}v1/:entity`, execute(getAction, context, { db }))
     app.get(`${config.prefix}v1/:entity/:id`, execute(getAction, context, { db }))
     app.post(`${config.prefix}v1/:entity`, execute(postAction, context, { db }))

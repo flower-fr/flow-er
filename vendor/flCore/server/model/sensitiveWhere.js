@@ -1,6 +1,6 @@
-const { select } = require("../select")
+const { select } = require("./select")
 
-const retrieve = async (context, db, entity, model, columns, where, order = [], limit = null, debug = false) =>
+const sensitiveWhere = async (context, db, entity, model, columns, where, order = [], limit = null, debug = false) =>
 {
     const unsensitiveWhere = {}, sensitiveWhere = {}, requests = {}
     for (const [propertyId, rule] of Object.entries(where)) {
@@ -21,13 +21,14 @@ const retrieve = async (context, db, entity, model, columns, where, order = [], 
      */
     const idsToKeep = {}
     for (const [table, columns] of requests) {
+        idsToKeep[table] = ["in"]
         const vector = (await db.execute(select(context, table, columns, [], null, null, context.config[`model/${ table }`])))[0]
         for (const row of vector) {
 
             let keep = true // initialization
 
             for (let [column, rule] of sensitiveWhere[table]) {
-                const cell = row[column]
+                let cell = row[column]
                 rule = [...rule]
 
                 if (Array.isArray(rule)) {
@@ -42,7 +43,7 @@ const retrieve = async (context, db, entity, model, columns, where, order = [], 
     
                     if (operator == "in") {
                         rule.shift()
-                        const match = false
+                        let match = false
                         for (const modality of rule) {
                             if (cell == modality) {
                                 match = true
@@ -56,35 +57,105 @@ const retrieve = async (context, db, entity, model, columns, where, order = [], 
                     }
                     else if (operator == "ni") {
                         rule.shift()
+                        for (const modality of rule) {
+                            if (cell == modality) {
+                                keep = false
+                                break
+                            }
+                        }
+                        if (!keep) {
+                            break
+                        }
                     }
                     else if (operator == "between") {
+                        if (cell < rule[1] || cell > rule[2]) {
+                            keep = false
+                            break
+                        }
                     }
                     else if (operator == "like") {
+                        cell = cell.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                        if (cell != rule) {
+                            keep = false
+                            break
+                        }
                     }
                     else if (operator == "contains") {
+                        cell = cell.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                        if (!(new RegExp(rule[1])).test(cell)) {
+                            keep = false
+                            break
+                        }
                     }
                     else if (operator == "startsWith") {
+                        cell = cell.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                        if (!cell.startsWith(rule[1])) {
+                            keep = false
+                            break
+                        }
                     }
                     else if (operator == "endsWith") {
+                        cell = cell.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                        if (!cell.endsWith(rule[1])) {
+                            keep = false
+                            break
+                        }
                     }
                     else if (operator == "=") {
+                        if (!cell === rule[1]) {
+                            keep = false
+                            break
+                        }
                     }
                     else if (operator == "!=") {
+                        if (cell === rule[1]) {
+                            keep = false
+                            break
+                        }
                     }
                     else if (operator == ">") {
+                        if (cell <= rule[1]) {
+                            keep = false
+                            break
+                        }
                     }
                     else if (operator == ">=") {
+                        if (cell < rule[1]) {
+                            keep = false
+                            break
+                        }
                     }
                     else if (operator == "<") {
+                        if (cell >= rule[1]) {
+                            keep = false
+                            break
+                        }
                     }
                     else if (operator == "<=") {
+                        if (cell > rule[1]) {
+                            keep = false
+                            break
+                        }
                     }
                     else if (operator == "null") {
+                        if (!cell === null) {
+                            keep = false
+                            break
+                        }
                     }
                     else if (operator == "not_null") {
+                        if (cell === null) {
+                            keep = false
+                            break
+                        }
                     }
                 }
                 else {
+                    cell = cell.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                    if (cell !== rule) {
+                        keep = false
+                        break
+                    }
                 }
             }
             if (keep) {
@@ -97,11 +168,11 @@ const retrieve = async (context, db, entity, model, columns, where, order = [], 
         unsensitiveWhere[model.entities[table].foreignKey] = ids
     }
 
-    const rows = await db.execute(select(context, entity, columns, where, order, limit, model))
+    const rows = (await db.execute(select(context, entity, columns, where, order, limit, model)))[0]
     if (debug) console.log(rows)
     return rows
 }
 
 module.exports = {
-    retrieve
+    sensitiveWhere
 }
