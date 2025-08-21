@@ -7,7 +7,7 @@ const select = (context, entity, columns, where, order = [], limit = null, model
 {
     const table = (model.entities[entity]) ? model.entities[entity].table : entity
 
-    if (model.properties.visibility && (!where.visibility || where.visibility == "deleted") /* deleted never visible */) where.visibility = 'active'
+    if (model.properties.visibility && (!where.visibility || where.visibility == "deleted") /* deleted never visible */) where.visibility = "active"
 
     if (!columns) {
         columns = []

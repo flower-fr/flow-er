@@ -43,6 +43,7 @@ const update = (context, entity, ids, data, model = []) => {
     request += sets.join(",\n") + "\n"
     
     request += `WHERE id IN (${ids.join(", ")})\n`
+    if (model.properties.visibility) request += "AND visibility != 'deleted'\n"
     
     return request
 }

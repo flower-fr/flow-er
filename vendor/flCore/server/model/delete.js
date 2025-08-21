@@ -16,7 +16,8 @@ const dElete = (context, table, ids) => {
     request += sets.join(",\n") + "\n"
     
     request += `WHERE id IN (${ids.join(", ")})\n`
-    
+    request += "AND visibility != 'deleted'\n"
+
     return request
 }
 
