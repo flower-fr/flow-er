@@ -1,10 +1,10 @@
 const { qi, qv } = require("./quote")
 
-const updateCase = (context, table, column, pairs, model) => {
+const updateCase = (context, table, column, pairs, model, debug = false) => {
 
     const type = (model && model.properties[column].type) ? model.properties[column].type : "text"
 
-    const request = []
+    let request = []
     request.push(`UPDATE ${table}`)
     request.push(`SET ${qi(column)} = CASE`)
     const ids = []
@@ -33,7 +33,9 @@ const updateCase = (context, table, column, pairs, model) => {
     const user_id = context.user.id
     request.push(`touched_by = ${user_id}`)
     request.push(`WHERE id IN (${ids.join(",")})`)
-    return request.join("\n")
+    request = request.join("\n")
+    if (debug) console.log(request)
+    return request
 }
 
 module.exports = {

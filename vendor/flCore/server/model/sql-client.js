@@ -1,11 +1,13 @@
 const mysql2 = require("mysql2/promise")
+const util = require("util")
 
 const { dElete } = require("./delete")
 const { insert } = require("./insert")
 const { select } = require("./select")
 const { update } = require("./update")
+const { updateCase } = require("./updateCase")
 
-const createSqlClient = ({ config, logger, dbName }) => 
+const createSqlClient = async ({ config, logger, dbName }) => 
 {
     const db = mysql2.createPool({
         connectionLimit: 100,
@@ -15,24 +17,61 @@ const createSqlClient = ({ config, logger, dbName }) =>
         password: config.password, 
         database : (dbName) ? dbName : config.database
     })
+    const closure = {
+        connection: db
+    } 
     return {
-        execute: execute({ logger, db })
+        getConnection: getConnection({ logger, closure }),
+        beginTransaction: beginTransaction({ logger, closure }),
+        execute: execute({ logger, closure }),
+        commit: commit({ logger, closure }),
+        rollback: rollback({ logger, closure }),
+        releaseConnection: releaseConnection({ logger, closure })
     }
 }
 
-const execute = ({ logger, db }) => async (options) => 
+const beginTransaction = ({ logger, closure }) => async () => 
 {
-    const connection = await db.getConnection()
+    await closure.connection.beginTransaction()
+    logger && logger.debug("Transaction initiated")
+}
+
+const commit = ({ logger, closure }) => async () => 
+{
+    await closure.connection.commit()
+    logger && logger.debug("Transaction committed")
+}
+
+const getConnection = ({ logger, closure }) => async () => 
+{
+    closure.connection = await closure.connection.getConnection()
+    logger && logger.debug("Connection to db obtained")
+}
+            
+const execute = ({ logger, closure }) => async (options) => 
+{
     const { context, type, entity } = options
     if (!context) throw new Error("missing context")
     if (!type) throw new Error("missing type")
     if (!entity) throw new Error("missing entity")
     logger && logger.debug(`request ${ type } executed on entity ${ entity }`)
-    const result = await sql(options, connection, logger)
+    const result = await sql(options, closure.connection, logger)
     return result
 }
 
-const sql = async ({ context, type, entity, columns, where, order, limit, ids, data, debug }, connection, logger) =>
+const releaseConnection = ({ logger, closure }) => async () => 
+{
+    await closure.connection.rollback()
+    logger && logger.debug("Connection released")
+}
+    
+const rollback = ({ logger, closure }) => async () => 
+{
+    await closure.connection.rollback()
+    logger && logger.debug("Transaction rolled back")
+}
+
+const sql = async ({ context, type, entity, columns, where, order, limit, ids, data, column, pairs, debug }, connection, logger) =>
 {
     const model = context.config[`${ entity }/model`]
     if (type === "select") {
@@ -51,25 +90,31 @@ const sql = async ({ context, type, entity, columns, where, order, limit, ids, d
             }
             result.push(data)
         }
-        logger && logger.debug(result)
+        logger && logger.debug(util.inspect(result))
         return result
     } else if (type === "insert") {
         const request = insert(context, entity, data, model, debug)
         logger && logger.debug(request)
         const insertedRows = await connection.execute(request)
-        logger && logger.debug(insertedRows)
+        logger && logger.debug(util.inspect(insertedRows))
         return insertedRows[0].insertId
     } else if (type === "update") {
         const request = update(context, entity, ids, data, model, debug)
         logger && logger.debug(request)
         const result = await connection.execute(request)
-        logger && logger.debug(result[0])
+        logger && logger.debug(util.inspect(result[0]))
+        return
+    } else if (type === "updateCase") {
+        const request = updateCase(context, entity, column, pairs, model, debug)
+        logger && logger.debug(request)
+        const result = await connection.execute(request)
+        logger && logger.debug(util.inspect(result[0]))
         return
     } else if (type === "delete") {
         const request = dElete(context, entity, ids, model, debug)
         logger && logger.debug(request)
         const result = await connection.execute(request)
-        logger && logger.debug(result)
+        logger && logger.debug(util.inspect(result))
         return
     }
 }

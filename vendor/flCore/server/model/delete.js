@@ -1,6 +1,6 @@
 const { qi, qv } = require("./quote")
 
-const dElete = (context, table, ids) => {
+const dElete = (context, table, ids, debug = false) => {
     const pairs = { visibility: qv("deleted") }
 
     pairs[qi("touched_at")] = `'${new Date().toISOString().slice(0, 19).replace("T", " ")}'`
@@ -17,7 +17,7 @@ const dElete = (context, table, ids) => {
     
     request += `WHERE id IN (${ids.join(", ")})\n`
     request += "AND visibility != 'deleted'\n"
-
+    if (debug) console.log(request)
     return request
 }
 

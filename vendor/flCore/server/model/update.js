@@ -1,6 +1,6 @@
 const { qi, qv } = require("./quote")
 
-const update = (context, entity, ids, data, model = []) => {
+const update = (context, entity, ids, data, model = [], debug = false) => {
 
     const table = (model.entities[entity]) ? model.entities[entity].table : entity
 
@@ -44,7 +44,7 @@ const update = (context, entity, ids, data, model = []) => {
     
     request += `WHERE id IN (${ids.join(", ")})\n`
     if (model.properties.visibility) request += "AND visibility != 'deleted'\n"
-    
+    if (debug) console.log(request)
     return request
 }
 
