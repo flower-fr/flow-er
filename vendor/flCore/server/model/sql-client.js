@@ -18,6 +18,7 @@ const createSqlClient = async ({ config, logger, dbName }) =>
         database : (dbName) ? dbName : config.database
     })
     const closure = {
+        db,
         connection: db
     } 
     return {
@@ -61,7 +62,8 @@ const execute = ({ logger, closure }) => async (options) =>
 
 const releaseConnection = ({ logger, closure }) => async () => 
 {
-    await closure.connection.rollback()
+    await closure.connection.release()
+    closure.connection = closure.db
     logger && logger.debug("Connection released")
 }
     
