@@ -108,7 +108,7 @@ const loadAppConfig = middlewares => {
                             }
                         }
                         else appConfig[key] = configFile[key]
-                    }    
+                    }     
                 }
             }    
         }

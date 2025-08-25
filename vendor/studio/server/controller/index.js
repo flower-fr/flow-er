@@ -21,7 +21,7 @@ const registerStudio = async ({ context, config, logger, app }) => {
     }
     const upload = multer()
     
-    app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
+    // app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
     app.get(`${config.prefix}ddl/:entity`, execute(ddl, context, db))
     app.get(`${config.prefix}ddl/:entity/:property`, execute(ddl, context, db))
     app.get(`${config.prefix}model/:module/:release`, execute(model, context, db))

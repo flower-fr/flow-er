@@ -19,6 +19,7 @@ const update = (context, entity, ids, data, model = [], debug = false) => {
                 else if (type == "json") value = qv(JSON.stringify(value))
                 else if (type == "text") {
                     const maxLength = (model.properties[key].max_length) ? model.properties[key].max_length : 255
+                    console.log("problematic value : ", value)
                     value = value.replace(/(<([^>]+)>)/ig, '').substring(0, maxLength)
                     value = qv(value.trim())
                 }

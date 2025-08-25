@@ -1,6 +1,8 @@
 {
     "user/model": {
-        "entities": {},
+        "entities": {
+            "user": { "table": "user" }
+        },
         "properties": {
             "id": { "entity": "user", "column": "id", "type": "int" },
             "status": { "entity": "user", "column": "status", "audit": true },
@@ -11,9 +13,10 @@
             "last_login": { "entity": "user", "column": "last_login", "type": "datetime" },
             "last_updated": { "entity": "user", "column": "last_updated", "type": "datetime" },
             "login_failed": { "entity": "user", "column": "login_failed", "type": "int" },
+            "touched_at": { "entity": "user", "column": "touched_at", "type": "datetime" },
+            "touched_by": { "entity": "user", "column": "touched_by", "type": "int" },
             "creation_time": {},
             "creation_user": {},
-            "touched_at": {},
             "update_user": {}
         }
     },
@@ -21,7 +24,7 @@
     "user/password": {
         "rule": "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d@.#$!%*?&]{8,15}$/",
         "ruleText": { 
-            "default": "The password should contain between 8 and 15 characters mixing lowercases, uppercases and digits. Allowed special characters are: @ . # $ ! % * ? &",
+            "default": "The password should contain between 8 and 15 characters mixing lowercases, uppercases and digits. Allowed special characters are: @ . # $ ! % * ? &", 
             "fr_FR": "Le mot de passe doit contenir entre 8 et 15 caractères mélangeant minuscules, majuscules et chiffres. Les caractères spéciaux autorisés sont : @ . # $ ! % * ? &"
         }
     }
