@@ -33,7 +33,7 @@ const ddlEntity = (context, entity, propertyId) => {
         for (let id of Object.keys(model.properties)) {
             const property = model.properties[id]
             if (id == propertyId) {
-                ddl.push(`ALTER TABLE \`${entity}\` ADD `)
+                ddl.push(`ALTER TABLE \`${ model.entities[entity].table }\` ADD `)
                 ddl.push(ddlProperty(entity, propertyId, property))
                 ddl.push(`AFTER \`${previous}\`;`)
                 ddl.push("\n")
@@ -43,7 +43,7 @@ const ddlEntity = (context, entity, propertyId) => {
         }
     }
 
-    ddl.push(`CREATE TABLE \`${entity}\` (`)
+    ddl.push(`CREATE TABLE \`${ model.entities[entity].table }\` (`)
     const propDdl = []
     for (const [propertyId, property] of Object.entries(model.properties)) {
         const propertyDdl = ddlProperty(entity, propertyId, property)
@@ -53,9 +53,9 @@ const ddlEntity = (context, entity, propertyId) => {
     ddl.push(") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;")
     ddl = [ddl.join("\n")]
 
-    ddl.push(`ALTER TABLE \`${entity}\` ADD PRIMARY KEY (\`id\`);`)
+    ddl.push(`ALTER TABLE \`${ model.entities[entity].table }\` ADD PRIMARY KEY (\`id\`);`)
 
-    ddl.push(`ALTER TABLE \`${entity}\` MODIFY \`id\` int(11) NOT NULL AUTO_INCREMENT;`)
+    ddl.push(`ALTER TABLE \`${ model.entities[entity].table }\` MODIFY \`id\` int(11) NOT NULL AUTO_INCREMENT;`)
 
     return ddl
 }
