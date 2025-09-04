@@ -10,6 +10,17 @@ const renderModalListRows = ({ context, entity }, section, id, modalListConfig, 
             ${renderModalListProperties({ context, entity }, section, modalListConfig, row, properties)}
 
         </tr>`)
+
+        if (Object.values(properties).some((x) => x.type == "textarea")) {
+            const [textareaId, textarea] = Object.entries(properties).find(([key, value]) => value.type == "textarea")
+            result.push(`
+        <tr class="fl-modal-list-row">
+            <td/>
+            <td colspan="${ Object.entries(properties).length }">
+                ${ row[textareaId] && row[textareaId].split("\n").join("<br>") }
+            </td>
+        </tr>`)
+        }
     }
 
     return result.join("\n")
@@ -39,7 +50,7 @@ const renderModalListProperties = ({ context, entity }, section, modalListConfig
 
     for (const [propertyId, property] of Object.entries(properties)) {
 
-        if (property.type != "hidden" && Object.keys(property).length > 0) {
+        if (!["hidden", "textarea"].includes(property.type) && Object.keys(property).length > 0) {
 
             if (property.type == "select") {
                 html.push(`<td class="${(property.options.class) ? property.options.class[row[propertyId]] : "" }">

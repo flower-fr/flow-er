@@ -1,14 +1,18 @@
-const renderModalListForm = ({ context }, section, id, modalListConfig, where, properties) => {
-
+const renderModalListForm = ({ context }, section, id, modalListConfig, where, properties) => 
+{
     const html = []
 
     html.push(`
-        <td class="text-center">
-            <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-modal-list-close-button" id="flModalListCloseButton" data-mdb-ripple-init>
-                <span class="fas fa-close"></span>
-            </button>
-        </td>`)
+        <tr class="fl-modal-list-form">`)
 
+    html.push(`
+            <td class="text-center">
+                <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-modal-list-close-button" id="flModalListCloseButton" data-mdb-ripple-init>
+                    <span class="fas fa-close"></span>
+                </button>
+            </td>`)
+
+    let textareaId, textarea, colspan = 0
     for (const [propertyId, property] of Object.entries(properties)) {
         const options = property.options
         const label = (options && options.labels) ? context.localize(options.labels) : ((property.labels) ? context.localize(property.labels) : "")
@@ -32,10 +36,17 @@ const renderModalListForm = ({ context }, section, id, modalListConfig, where, p
         }
         if (Object.keys(property).length > 0) {
 
+            if (property.type === "textarea") {
+                [textareaId, textarea] = [propertyId, property]
+                continue
+            }
+
             if (propertyType == "hidden") {
                 html.push(`<input type="hidden" class="fl-modal-list-add-input" id="${propertyId}" value="${value}" />`)
                 continue
             }
+
+            colspan++
 
             html.push("<td>")
 
@@ -215,6 +226,33 @@ const renderModalListForm = ({ context }, section, id, modalListConfig, where, p
 
     for (const [target, rule] of Object.entries((section.rules) ? section.rules : {})) {
         html.push(`<input type="hidden" class="fl-modal-rule" data-fl-target="${ target }" data-fl-function="${ rule.function }" data-fl-params="${ rule.params.join(",") }" />`)
+    }
+
+    html.push(`
+        </tr>`)
+
+    if (textareaId) {
+
+        const options = textarea.options
+        const disabled = (options && options.disabled) ? "disabled" : ""
+        const required = (options && options.required) ? "required" : ""
+        let value = (where[textareaId]) ? where[textareaId] : ""
+
+        html.push(`
+            <tr class="fl-modal-list-form">`)
+
+        html.push(`
+                <td/>
+                <td class="text-center" colspan="${colspan}">`)
+    
+        html.push(`
+                    <div class="form-outline fl-modal-list-add-form-outline" data-mdb-input-init>
+                        <textarea class="form-control form-control-sm is-valid fl-modal-list-add-input" rows="8" id="${textareaId}" ${ disabled } ${ required }>${value}</textarea>
+                    </div>`)
+
+        html.push(`
+                </td>
+            </tr>`)
     }
 
     return html.join("\n")

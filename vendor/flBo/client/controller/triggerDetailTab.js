@@ -77,6 +77,15 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
         //$(".fl-modal-list-row").hide()
         $(".fl-submit-div").show()
         $(".fl-modal-list-form").show()
+        $(".fl-modal-list-add-input").each(function () {
+            console.log($(this).prop("type"))
+            if ($(this).prop("type") !== "hidden") $(this).val("")
+        })
+        $(".fl-modal-list-add-select").val("")
+        $(".fl-modal-list-add-date").val("")
+        $(".fl-modal-list-add-email").val("")
+        $(".fl-modal-list-add-phone").val("")
+        $("#id").val("0")
 
         // Deprecated
         $(".fl-modal-list-add-button").removeClass("btn-primary").addClass("btn-outline-primary")
@@ -359,6 +368,7 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
 
             let route = `/${$(submit).attr("data-fl-controller")}/${$(submit).attr("data-fl-action")}/${$(submit).attr("data-fl-entity")}`
             if ($(submit).attr("data-fl-id")) route += `/${ $(submit).attr("data-fl-id") }`
+            if ($(submit).attr("data-fl-view")) route += `?view=${ $(submit).attr("data-fl-view") }`
 
             const response = await fetch(route, {
                 headers: {

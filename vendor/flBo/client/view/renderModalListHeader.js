@@ -119,7 +119,7 @@ const renderModalListHeader = ({ context }, section, modalListConfig, properties
                     <th/>`)
 
     for (const [propertyId, property] of Object.entries(properties)) {
-        if (property.type != "hidden" && Object.keys(property).length > 0) {
+        if (!["hidden", "textarea"].includes(property.type) && Object.keys(property).length > 0) {
     
             head.push(`
                 <th scope="col" ${ (property.options.width) ? `style="width: ${ property.options.width }"` : "" }>

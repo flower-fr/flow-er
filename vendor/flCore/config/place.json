@@ -1,11 +1,24 @@
 {
     "place/model": {
-        "entities": {},
+        "entities": {
+            "place": { "table": "place" }
+        },
         "properties": {
             "id": { "entity": "place", "column": "id" },
             "status": { "entity": "place", "column": "status", "audit": true },
             "name": { "entity": "place", "column": "name" },
             "region": { "entity": "place", "column": "region" },
+            "logo": { "entity": "place", "column": "logo" },
+            "adr_street": { "entity": "place", "column": "adr_street" },
+            "adr_extended": { "entity": "place", "column": "adr_extended" },
+            "adr_post_office_box": { "entity": "place", "column": "adr_post_office_box" },
+            "adr_zip": { "entity": "place", "column": "adr_zip" },
+            "adr_city": { "entity": "place", "column": "adr_city" },
+            "adr_state": { "entity": "place", "column": "adr_state" },
+            "adr_country": { "entity": "place", "column": "adr_country" },
+            "bank_name": { "entity": "place", "column": "bank_name" },
+            "bank_account": { "entity": "place", "column": "bank_account" },
+            "bank_identifier": { "entity": "place", "column": "bank_identifier" },
 
             "visibility": { "entity": "place", "column": "visibility", "audit": true },
             "touched_at": { "entity": "place", "column": "touched_at", "type": "datetime" },

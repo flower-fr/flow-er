@@ -24,11 +24,9 @@ const renderModalList = ({ context, entity, view }, data) => {
             <tbody class="table-group-divider" id="flModalListBody">
 
             ${ (section.disposition != "ascending" ) 
-        ? `     <tr class="fl-modal-list-form">
+        ? `     
+                ${renderModalListForm({ context }, section, data.id, modalListConfig, data.where, properties)}
         
-                    ${renderModalListForm({ context }, section, data.id, modalListConfig, data.where, properties)}
-        
-                </tr>
                 <tr class="fl-modal-list-row">
                     <td class="text-center">
                         <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-modal-list-add-button" title="${context.translate("Add")}" id="flModalListAddButton" data-mdb-ripple-init>
@@ -60,7 +58,7 @@ const renderModalList = ({ context, entity, view }, data) => {
                     <th />`)
 
         for (const [propertyId, property] of Object.entries(properties)) {
-            if (property.type != "hidden" && Object.keys(property).length > 0) {
+            if (!["hidden", "textarea"].includes(property.type) && Object.keys(property).length > 0) {
                 html.push(`
                     <th>${ ((property.options.sum)) ? `${ sum.toLocaleString("fr-FR", { minimumFractionDigits: 2 }) }€` : "" }</th>`)
             }
@@ -79,11 +77,8 @@ const renderModalList = ({ context, entity, view }, data) => {
                     </td>
                     <td colspan="${ Object.entries(properties).length }" />
                 </tr>
-                <tr class="fl-modal-list-form">
                 
-                    ${renderModalListForm({ context }, section, data.id, modalListConfig, data.where, properties)}
-        
-                </tr>`)
+                ${renderModalListForm({ context }, section, data.id, modalListConfig, data.where, properties)}`)
     }
 
     html.push(`

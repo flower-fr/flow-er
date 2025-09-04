@@ -65,6 +65,7 @@ const registerCore = async ({ context, config, logger, app }) => {
     //app.post(`${config.prefix}resendSmtp`, execute(postSmtpAction, context, { db, smtp }))
     //app.get(`${config.prefix}getMails`, execute(getMailsAction, context, { db, imap }))
     app.delete(`${config.prefix}v1/:entity/:id`, execute(deleteAction, context, { db }))
+    app.delete(`${config.prefix}v1/:entity`, execute(deleteAction, context, { db }))
 }
 
 // const postSmtpAction = async ({ req }, context, { db: connection, smtp }) => 

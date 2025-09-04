@@ -35,7 +35,7 @@ const registerFlBo = async ({ context, config, logger, app }) => {
 
     app.get(`${config.prefix}dashboard/:entity`, execute(dashboardAction, context, db))
     app.get(`${config.prefix}detail/:entity/:id`, execute(detailAction, context, db))
-    app.get(`${config.prefix}detailTab/:entity/:id`, execute(detailTabAction, context, db))
+    app.get(`${config.prefix}detailTab/:entity/:id`, execute(detailTabAction, context, db, logger))
     app.get(`${config.prefix}export/:entity`, execute(exportAction, context, db))
     app.get(`${config.prefix}group/:entity`, execute(groupAction, context, db))
     app.get(`${config.prefix}groupTab/:entity`, execute(groupTabAction, context, db))

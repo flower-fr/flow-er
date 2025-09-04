@@ -134,8 +134,8 @@ const renderDetailTab = ({ context, entity }, { data, detailTabConfig, formJwt }
                 where.push(`${key}:${ Array.isArray(value) ? value.join(",") : value }`)
             }
             html.push(`
-                    <div class="col-md-2 fl-submit-div">
-                        <input type="hidden" id="flDetailTabSubmitRefresh-${postId}" data-fl-route="/${ detailTabConfig.controller }/${ detailTabConfig.action }/${ detailTabConfig.entity }/${ data.id }?where=${ where.join("|") }&order=${ data.order }" />
+                    <div class="col-md-3 fl-submit-div">
+                        <input type="hidden" id="flDetailTabSubmitRefresh-${postId}" data-fl-route="/${ detailTabConfig.controller }/${ detailTabConfig.action }/${ detailTabConfig.entity }/${ data.id }?${ (post.view) ? `&view=${post.view}` : "" }&where=${ where.join("|") }&order=${ data.order }" />
                         <button 
                             name="submit-${postId}" 
                             class="btn ${ (post.danger) ? "btn-outline-primary" : "btn-warning" } fl-detail-tab-submit"
