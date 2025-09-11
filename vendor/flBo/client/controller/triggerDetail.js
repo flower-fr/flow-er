@@ -4,18 +4,26 @@ const triggerDetail = ({ context, entity, view }, searchParams) => {
 
     $(".fl-list-detail").click(function () {
         const id = $(this).attr("data-id")
-        let route
+        let route, callback
         if (id != 0) {
             route = ($(this).attr("data-fl-controller")) ? `/${ $(this).attr("data-fl-controller") }/${ $(this).attr("data-fl-action") }/${ $(this).attr("data-fl-entity") }/${ $(this).attr("data-id") }` : `${$("#detailRoute").val()}/${id}?view=${view}`
         } else {
             route = ($(this).attr("data-fl-controller")) ? `/${ $(this).attr("data-fl-controller") }/${ $(this).attr("data-fl-action") }/${ $(this).attr("data-fl-entity") }/${ $(this).attr("data-id") }` : `${$("#detailRoute").val()}/0?view=add`
+            callback = {
+                controller: $(this).attr("data-fl-controller"),
+                action: $(this).attr("data-fl-action"),
+                entity: $(this).attr("data-fl-entity"),
+                detailRoute: $("#detailRoute").val(),
+                view,
+                searchParams
+            }
         }
         $(this).removeClass("btn-outline-primary").addClass("btn-primary")
-        getDetail(context, entity, view, route, id, searchParams)
+        getDetail(context, entity, view, route, id, searchParams, callback)
     })
 }
 
-const getDetail = async (context, entity, view, route, id, searchParams) => {
+const getDetail = async (context, entity, view, route, id, searchParams, callback) => {
 
     const response = await fetch(route)
     if (!response.ok) {
@@ -45,11 +53,11 @@ const getDetail = async (context, entity, view, route, id, searchParams) => {
         $(this).addClass("active")
         const route = $(`#detailTabRoute-${tabId}`).val()
 
-        getTab({ context, entity, view }, tabId, route, id, "", { ...searchParams })
+        getTab({ context, entity, view }, tabId, route, id, "", { ...searchParams }, null, callback)
     })
 
     const tab = $("#defaultTab").val(), tabRoute = $(`#detailTabRoute-${tab}`).val()
-    getTab({ context, entity, view }, tab, tabRoute, id, "", { ...searchParams })
+    getTab({ context, entity, view }, tab, tabRoute, id, "", { ...searchParams }, null, callback)
 }
 
-export { triggerDetail }
+export { triggerDetail, getDetail }

@@ -2,6 +2,8 @@ const multer = require("multer")
 const { sessionCookieMiddleware } = require("../../../user/server/controller/sessionCookieMiddleware");
 const { throwBadRequestError } = require("../../../../core/api-utils")
 
+const { describeAuditModel } = require("../model/config/audit")
+
 const { getAction } = require("./getAction")
 const { postAction, postFormAction } = require("./postAction")
 const { deleteAction } = require("./deleteAction")
@@ -56,6 +58,9 @@ const registerCore = async ({ context, config, logger, app }) => {
     const execute = executeService(context.clone(), config, logger)
     
     app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
+
+    app.get(`${config.prefix}describe-audit-model`, execute(describeAuditModel, context))
+
     app.get(`${config.prefix}v1/:entity`, execute(getAction, context, { db }))
     app.get(`${config.prefix}v1/:entity/:id`, execute(getAction, context, { db }))
     app.post(`${config.prefix}v1/:entity`, execute(postAction, context, { db }))

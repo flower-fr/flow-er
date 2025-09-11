@@ -41,6 +41,9 @@ const detailTabAction = async ({ req }, context, db, logger) => {
 
         const propertyDefs = dataConfig.properties
         const properties = await getProperties(db, context, entityId, view, propertyDefs, where)
+
+        logger && logger.debug(`properties for ${entityId}: ${util.inspect(properties, { colors: true, depth: null })}`)
+
         data[entityId].properties = properties    
 
         /**

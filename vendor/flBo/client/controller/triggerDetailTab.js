@@ -1,7 +1,8 @@
+import { getDetail } from "/flBo/cli/controller/triggerDetail.js"
 import { getTab } from "/flBo/cli/controller/getTab.js"
 import { flModalRules } from "/flBo/cli/controller/modalRules.js"
 
-const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, message, searchParams, order) => {
+const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, message, searchParams, order, callback) => {
 
     /**
      * trigger links
@@ -78,7 +79,6 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
         $(".fl-submit-div").show()
         $(".fl-modal-list-form").show()
         $(".fl-modal-list-add-input").each(function () {
-            console.log($(this).prop("type"))
             if ($(this).prop("type") !== "hidden") $(this).val("")
         })
         $(".fl-modal-list-add-select").val("")
@@ -174,6 +174,23 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
         $(".fl-modal-form-input").prop("disabled", true)
         $(".fl-detail-tab-message").hide()
 
+    })
+
+    $(".fl-detail-tab-action").click(async function () {
+        let route = `/${$(this).attr("data-fl-controller")}/${$(this).attr("data-fl-action")}/${$(this).attr("data-fl-entity")}`
+        if ($(this).attr("data-fl-id")) route += `/${ $(this).attr("data-fl-id") }`
+        if ($(this).attr("data-fl-view")) route += `?view=${ $(this).attr("data-fl-view") }`
+
+        const response = await fetch(route, {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            method: $(this).attr("data-fl-method") || "POST"
+        })
+
+        if (response.status == 200) {
+            getTab({ context, entity, view }, tab, null, id, "ok", searchParams)
+        }
     })
 
     const form = document.getElementById("flModalForm")
@@ -389,7 +406,17 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
             if (response.status == 200) {
                 $(".fl-modal-list-close-button").hide()
                 $("#flDetailTabMessageOk").show()
-                getTab({ context, entity, view }, tab, null, id, "ok", searchParams)
+
+                const body = await response.json()
+
+                if (callback) {
+                    const id = body.stored[0].entitiesToInsert[entity].rowId
+                    const detailRoute = (callback.controller) ? `/${ callback.controller }/${ callback.action }/${ callback.entity }/${ id }` : `${ callback.detailRoute }/${ id }?view=${ callback.view }`
+                    getDetail(context, entity, view, detailRoute, id, callback.searchParams)
+                }
+                else {
+                    getTab({ context, entity, view }, tab, null, id, "ok", searchParams)
+                }
             }
             else if (response.status == 401) triggerDetailTab = ({ context, entity, view }, data, tab, route, id, "expired", searchParams, order)
         }

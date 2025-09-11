@@ -10,7 +10,7 @@ const { select } = require("../../../flCore/server/model/select")
 const { insert } = require("../../../flCore/server/model/insert")
 const { update } = require("../../../flCore/server/model/update")
 
-const createPdf = async ({ entity, type, reference, owner_entity, owner_id, folder, name, data, template }, context, db, logger) => {
+const createPdf = async ({ entity, type, reference, owner_entity, owner_id, owner_document_id, folder, name, data, template }, context, db, logger) => {
     const documentModel = context.config[`${ entity }/model`]
     const pageNumber = 1
 
@@ -34,6 +34,13 @@ const createPdf = async ({ entity, type, reference, owner_entity, owner_id, fold
     
         const [insertedRow] = (await connection.execute(insert(context, entity, documentData, documentModel)))
         const id = insertedRow.insertId
+
+        // Save the document id in the owner entity
+        if (owner_document_id) {
+            const ownerData = {}
+            ownerData[owner_document_id] = id
+            await connection.execute(update(context, owner_entity, [owner_id], ownerData, context.config[`${ owner_entity }/model`]))
+        }
 
         // Generate PDF binary and store in DB as a base64 content
         const doc = new PDFDocument({

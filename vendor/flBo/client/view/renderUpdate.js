@@ -9,6 +9,7 @@ const renderUpdate = ({ context }, section, properties, row ) => {
     for (let propertyId of section.properties) {
         const property = properties[propertyId]
         const options = property.options
+        console.log(propertyId, options)
         const label = (options.labels) ? context.localize(options.labels) : context.localize(property.labels)
         const propertyType = (options.type) ? options.type : property.type
         const disabled = (property.options.readonly /* deprecated */ || property.options.disabled) ? "disabled" : ""
@@ -325,16 +326,17 @@ const renderUpdate = ({ context }, section, properties, row ) => {
             html.push(
                 `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3">
                     <div class="form-outline">
-                        <select class=" fl-modal-form-input fl-modal-form-select" data-fl-property="${propertyId}" data-fl-type="select" data-fl-container="flModalForm" data-mdb-select-init  data-fl-disabled="${ disabled }">
+                        <select class=" fl-modal-form-input fl-modal-form-select" data-fl-property="${propertyId}" data-fl-type="select" data-fl-container="flModalForm" data-mdb-select-init  data-fl-disabled="${ disabled }" ${ required } ${ (required) ? "data-mdb-validation=\"true\" data-mdb-invalid-feedback=\" \" data-mdb-valid-feedback=\" \"" : "" }>
                             <option />`
             )
 
             for (let modalityId of Object.keys(modalities)) {
                 const modality = modalities[modalityId]
                 let formatted = [], i = 1
+                const args = (property.format[1]) ? property.format[1].split(",") : []
                 for (let sub of property.format[0].split("%s")) {
                     formatted.push(sub)
-                    if (modality[property.format[i]]) formatted.push(modality[property.format[i]])
+                    if (modality[args[i-1]]) formatted.push(modality[args[i-1]])
                     i++
                 }
                 html.push(`<option value="${modality.id}" ${(value == modality.id) ? "selected" : ""}>${formatted.join("")}</option>`)

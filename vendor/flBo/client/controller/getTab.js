@@ -6,7 +6,7 @@ import { triggerEmailText } from "/flBo/cli/controller/triggerEmailText.js"
 import { postTab } from "/flBo/cli/controller/postTab.js"
 import { postGroupTab } from "/flBo/cli/controller/group.js"
 
-const getTab = async ({ context, entity, view }, tab, route, id, message, searchParams, order) => {
+const getTab = async ({ context, entity, view }, tab, route, id, message, searchParams, order, callback) => {
 
     if (!route) route = $(`#detailTabRoute-${tab}`).val()
     route = route.split("?")
@@ -56,7 +56,7 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
             $("#detailPanel").html(renderDetailTab({ context, entity, view }, data))
             modalListCallback({ context, entity, view }, data)
         }
-        postTab({ context, entity, view }, tab, id, searchParams)
+        postTab({ context, entity, view }, tab, id, searchParams, callback)
     })
 
     $(".renderUpdate").each(function () { 
@@ -65,7 +65,7 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
             $("#detailPanel").html(renderUpdate({ context, entity, view }, data))
             updateCallback({ context, entity, view }, data)
         }
-        postTab({ context, entity, view }, tab, id, searchParams)
+        postTab({ context, entity, view }, tab, id, searchParams, callback)
     })
 
     $(".renderModalList").each(function () {
@@ -136,7 +136,7 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
         }
     })
 
-    triggerDetailTab({ context, entity, view }, data, tab, route, id, message, searchParams, order)
+    triggerDetailTab({ context, entity, view }, data, tab, route, id, message, searchParams, order, callback)
 
     $(".document-cancel-btn").hide()
 
