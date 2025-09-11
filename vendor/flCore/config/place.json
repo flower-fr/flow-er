@@ -20,6 +20,12 @@
             "bank_account": { "entity": "place", "column": "bank_account" },
             "bank_identifier": { "entity": "place", "column": "bank_identifier" },
 
+            "keywords": { 
+                "column": "keywords",
+                "type": "CONCAT",
+                "components": ["name", "region", "adr_city"] 
+            },
+
             "visibility": { "entity": "place", "column": "visibility", "audit": true },
             "touched_at": { "entity": "place", "column": "touched_at", "type": "datetime" },
             "touched_by": { "entity": "place", "column": "touched_by", "type": "int" }
@@ -62,11 +68,91 @@
             "fr_FR": "Région"
         }
     },
-		
+    
+    "place/property/adr_street": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Address street",
+            "fr_FR": "Adresse rue"
+        }
+    },
+
+    "place/property/adr_extended": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Address extended",
+            "fr_FR": "Adresse complément"
+        }
+    },
+
+    "place/property/adr_zip": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Address zip",
+            "fr_FR": "Adresse code postal"
+        }
+    },
+
+    "place/property/adr_city": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Address city",
+            "fr_FR": "Adresse ville"
+        }
+    },
+
+    "place/property/adr_country": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Address country",
+            "fr_FR": "Adresse pays"
+        }
+    },
+
+    "place/property/bank_name": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Bank name",
+            "fr_FR": "Nom de la banque"
+        }
+    },
+
+    "place/property/bank_account": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Bank identifier",
+            "fr_FR": "IBAN"
+        }
+    },
+
+    "place/property/bank_identifier": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Bank code",
+            "fr_FR": "Domiciliation bancaire"
+        }
+    },
+
+    "crm_account/property/keywords": {
+        "type": "input",
+        "labels": {
+            "default": "Keywords",
+            "fr_FR": "Mots-clés"
+        }
+    },
+
 	"place/index/place": {
-        "body": "/bo/cli/bootstrap/renderBody10.js",
-        "searchRenderer": "renderSearch",
-        "listRenderer": "renderColumns"
+        "order": "name",
+        "modalRenderers": {},
+        "keywords": { "placeholder": { "default": "region, name, city", "fr_FR": "région, nom, ville" }}
     }, 
 
     "place/search/default": {
@@ -78,38 +164,83 @@
     },
 
     "place/list/default": {
-        "distribution": {
-            "variable": "status",
-            "modalities": "new,archived"
-        },
+        "checkData": ["id"],
         "properties": {
             "status": {},
             "region": {},
             "name": {}
-        },
-        "title": [
-            { "format": "<h5 class=\"card-title mb-0\">%s</h5>", "params": "n_last" }
-        ],
-        "layout": [
-            { "format": "<h5 class=\"card-title\">%s</h5>", "params": "name" },
-            { "format": "<p>%s</p>", "params": "region" }
-        ]
+        }
     },
 
     "place/detail/default": {
         "tabs": {
-            "contact_1": {
+            "place": {
                 "definition": "inline",
-                "route": "/bo/update/place",
-                "labels": {"en_US": "Place", "fr_FR": "Établissement"}
+                "controller": "flBo",
+                "action": "detailTab",
+                "entity": "place",
+                "id": "id",
+                "query": {
+                    "where": { "id": "id" }
+                },
+                "labels": {"default": "Place", "fr_FR": "Établissement"},
+                "renderer": "renderDetailTab"
             }
         }
+    },
+
+    "place/detailTab/default": {
+        "controller": "flBo",
+        "action": "detailTab",
+        "entity": "place",
+        "layout": {
+            "sections": {
+                "identification": {
+                    "entity": "place",
+                    "properties": ["name", "region", "adr_street", "adr_extended", "adr_zip", "adr_city", "bank_name", "bank_account", "bank_identifier"],
+                    "renderer": "renderUpdate",
+                    "labels": { "default": "Signalétique" }
+                }    
+            },
+            "posts": {
+                "update": {
+                    "condition": "id",
+                    "controller": "core",
+                    "action": "v1",
+                    "entity": "place",
+                    "labels": { "default": "Save", "fr_FR": "Enregistrer" }
+                }
+            }
+        },
+        "data": {
+            "place": { 
+                "where": {
+                    "id": "id"
+                },
+                "properties": {
+                    "name": { "required": true },
+                    "region": {},
+                    "adr_street": { "required": true },
+                    "adr_extended": {},
+                    "adr_zip": { "required": true },
+                    "adr_city": { "required": true },
+                    "bank_name": {},
+                    "bank_account": {},
+                    "bank_identifier": {}
+                }
+            }
+        },
+        "properties": {}
     },
 
 	"place/global/default": {
 		"actions": {
 			"export": {
-				"route": "generic/export/place",
+                "type": "link",
+				"controller": "flBo",
+				"action": "export",
+				"entity": "place",
+                "view": "default",
 				"labels": { "default": "Export", "fr_FR": "Exporter" },
 				"glyph": "fa-cloud-download-alt"
             }
