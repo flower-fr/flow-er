@@ -16,7 +16,7 @@ const triggerPost = (recaptchaToken) => {
          * Recaptcha
          */
         let token
-        if (${recaptchaToken}) token = await grecaptcha.enterprise.execute("${ recaptchaToken }", {action: 'LOGIN'})
+        if ("${recaptchaToken}") token = await grecaptcha.enterprise.execute("${ recaptchaToken }", {action: 'LOGIN'})
 
         let body = {}
         body.n_first = $("#n_first").val()
