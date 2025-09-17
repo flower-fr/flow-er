@@ -36,7 +36,7 @@ const renderModalListHeader = ({ context }, section, modalListConfig, properties
                             <button class="btn btn-outline-primary fl-modal-list-search-refresh" type="button" data-mdb-ripple-init="" data-mdb-ripple-color="dark">
                                 <i class="fas fa-search"></i>
                             </button>
-                            <input type="search" class="form-control form-control-sm form-icon-trailing rounded fl-modal-list-search fl-modal-list-search-input" id="flModalListSearchInput" placeholder="ex ${ moment().format("YYYY") }, ${ moment().format("MMMM") }, mot-clé..." data-fl-property="keywords">
+                            <input type="search" class="form-control form-control-sm form-icon-trailing rounded fl-modal-list-search fl-modal-list-search-input" id="flModalListSearchInput" placeholder="Recherche par mot-clé" data-fl-property="keywords">
                             <!-- ${ searchInputs.join("\n") } -->
                         </div>
                     </section>

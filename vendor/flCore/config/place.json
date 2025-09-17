@@ -197,12 +197,18 @@
             "sections": {
                 "identification": {
                     "entity": "place",
-                    "properties": ["name", "region", "adr_street", "adr_extended", "adr_zip", "adr_city", "bank_name", "bank_account", "bank_identifier"],
+                    "properties": ["status", "name", "region", "adr_street", "adr_extended", "adr_zip", "adr_city", "bank_name", "bank_account", "bank_identifier"],
                     "renderer": "renderUpdate",
                     "labels": { "default": "Signalétique" }
                 }    
             },
             "posts": {
+                "add": {
+                    "controller": "core",
+                    "action": "v1",
+                    "entity": "place",
+                    "labels": { "default": "Add", "fr_FR": "Ajouter" }
+                },
                 "update": {
                     "condition": "id",
                     "controller": "core",
@@ -218,6 +224,7 @@
                     "id": "id"
                 },
                 "properties": {
+                    "status": { "required": true },
                     "name": { "required": true },
                     "region": {},
                     "adr_street": { "required": true },

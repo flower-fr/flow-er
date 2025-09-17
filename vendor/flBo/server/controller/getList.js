@@ -1,6 +1,6 @@
 const { select } = require("../../../flCore/server/model/select")
 
-const getList = async (db, context, entity, columns, properties, where, orderParam, limit) => {
+const getList = async (db, context, entity, columns, properties, where, orderParam, limit, debug = false) => {
 
     const whereTags = {}
     for (const [key, value] of Object.entries(where)) {
@@ -57,7 +57,7 @@ const getList = async (db, context, entity, columns, properties, where, orderPar
     }
     
     const model = context.config[`${entity}/model`]
-    const rows = (await db.execute(select(context, entity, columns, where, order, limit, model)))[0]
+    const rows = (await db.execute(select(context, entity, columns, where, order, limit, model, debug)))[0]
     if (rows.length > 0) {
         for (let propertyId of Object.keys(properties)) {
             const property = properties[propertyId]
