@@ -58,10 +58,24 @@
         "definition": "inline",
         "type": "select",
         "modalities": {
+            "auvergne_rhone_alpes": { "default": "Auvergne-Rhône-Alpes" },
+            "bourgogne_franche_comte": { "default": "Bourgogne-Franche-Comté" }, 
+            "bretagne": { "default": "Bretagne" }, 
+            "centre_val_de_loire": { "default": "Centre-Val de Loire" },
+            "corse": { "default": "Corse" },
             "grand_est": { "default": "Grand Est" },
-            "hauts_de_france": { "default": "Hauts de France" },
-            "idf": { "default": "Île de France" },
-            "paca": { "default": "PACA" }
+            "guadeloupe": { "default": "Guadeloupe" },
+            "guyane": { "default": "Guyane" },
+            "hauts_de_france": { "default": "Hauts-de-France" },
+            "ile_de_france": { "default": "Île-de-France" },
+            "la_reunion": { "default": "La Réunion" },
+            "martinique": { "default": "Martinique" },
+            "mayotte": { "default": "Mayotte" },
+            "normandie": { "default": "Normandie" },
+            "nouvelle_aquitaine": { "default": "Nouvelle-Aquitaine" },
+            "occitanie": { "default": "Occitanie" },
+            "pays_de_la_loire": { "default": "Pays de la Loire" },
+            "provence_alpes_cote_d_azur": { "default": "Provence-Alpes-Côte d'Azur" }
         },
         "labels": {
             "default": "Region",
