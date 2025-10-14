@@ -1,6 +1,6 @@
 const { insert } = require("../../../flCore/server/model/insert")
 
-const auditCells = async (context, rowsToStore, connection) => {
+const auditCells = async (context, rowsToStore, sql) => {
 
     for (let row of rowsToStore) {
         const insertedEntities = row.entitiesToInsert, updatedEntities = row.entitiesToUpdate
@@ -18,7 +18,8 @@ const auditCells = async (context, rowsToStore, connection) => {
                         value: value,
                         previous_value: null
                     }
-                    await connection.execute(insert(context, auditTable, auditToInsert, auditModel))
+                    // await connection.execute(insert(context, auditTable, auditToInsert, auditModel))
+                    await sql.execute({ context, type: "insert", entity: auditTable, data: auditToInsert})
                 }
             }
         }

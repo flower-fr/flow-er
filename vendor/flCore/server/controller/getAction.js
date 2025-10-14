@@ -1,16 +1,15 @@
 const { assert } = require("../../../../core/api-utils")
 const { throwBadRequestError } = require("../../../../core/api-utils")
+const util = require("util")
 
-const { select } = require("../model/select")
-
-const getAction = async ({ req }, context, { db }) => 
+const getAction = async ({ req }, context, { sql, logger }) => 
 {
     const entity = assert.notEmpty(req.params, "entity")
-    const model = context.config[`${entity}/model`]
 
     const columns = (req.query.columns) ? req.query.columns.split(",") : []
     const id = req.params.id
     if (id && !columns.includes("id")) columns.push("id")
+    logger && logger.debug(`columns: ${util.inspect(columns, {colors: true, depth: null})}`)
 
     const whereParam = ((req.query.where) ? req.query.where.split("|") : []).map( x => x.split(":"))
     const where = {}
@@ -27,19 +26,11 @@ const getAction = async ({ req }, context, { db }) =>
 
     const limit = (req.query.limit) ? req.query.limit : 1000
 
-    const debug = req.query.debug
-
-    const request = select(context, entity, columns, where, order, limit, model)
-    if (debug) return request
-
-    const connection = await db.getConnection()
     try {
-        const result = (await db.execute(request))[0]
-        connection.release()
+        const result = await sql.execute({ context, type: "select", entity, columns, where, order, limit })
         return JSON.stringify(result)
     }
     catch {
-        connection.release()
         throw throwBadRequestError()
     }
 }

@@ -4,7 +4,7 @@ const { select } = require("../../../flCore/server/model/select")
 const { updateCase } = require("../../../flCore/server/model/updateCase")
 const { insert } = require("../../../flCore/server/model/insert")
 
-const updateColumns = async (context, columnsToUpdate, model, db) => {
+const updateColumns = async (context, columnsToUpdate, model, sql) => {
     
     const columnsToRetrieve = {}
     for (const [table, columns] of Object.entries(columnsToUpdate)) {
@@ -19,7 +19,9 @@ const updateColumns = async (context, columnsToUpdate, model, db) => {
 
     for (const [table, object] of Object.entries(columnsToRetrieve)) {
         const model = context.config[`${ table }/model`]
-        const rows = {}, [cursor] = await db.execute(select(context, table, object.columns, {id: object.ids}, null, null, model))
+        const rows = {}
+        // const [cursor] = await db.execute(select(context, table, object.columns, {id: object.ids}, null, null, model))
+        const [cursor] = await sql.execute({ context, type: "select", entity: table, columns: object.columns, where: {id: object.ids} })
         for (const row of cursor) {
             for (const [key, value] of Object.entries(row)) {
                 if (model.properties[key].type && model.properties[key].type == "date") row[key] = moment(value).format("YYYY-MM-DD")
@@ -52,7 +54,8 @@ const updateColumns = async (context, columnsToUpdate, model, db) => {
         for (const [column, map] of Object.entries(columns)) {
             if (map.size > 0) {
                 const pairs = Array.from(map).map(([key, values]) => [key, values.new])
-                await db.execute(updateCase(context, table, column, Object.fromEntries(pairs), model), [pairs[0][1]])
+                // await db.execute(updateCase(context, table, column, Object.fromEntries(pairs), model), [pairs[0][1]])
+                await sql.execute({ context, type: "updateCase", entity: table, column, pairs: Object.fromEntries(pairs)})
 
                 const property = model.properties[column]
                 if (property.audit) {
@@ -64,7 +67,8 @@ const updateColumns = async (context, columnsToUpdate, model, db) => {
                             value: values.new,
                             previous_value: values.old
                         }
-                        await db.execute(insert(context, auditTable, auditToInsert, auditModel))    
+                        // await db.execute(insert(context, auditTable, auditToInsert, auditModel))    
+                        await sql.execute({ context, type: "insert", entity: auditTable, data: auditToInsert})
                     }
                 }
             }
