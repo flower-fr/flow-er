@@ -72,7 +72,7 @@ const registerReminders = async (context, entity, date, viewModel, connection) =
             provider: "smtp",
             endpoint: "sendMail",
             method: "POST",
-            params: JSON.stringify({ "type": "html", "to": rows[0][viewModel.to], "subject": context.localize(viewModel.subject) }),
+            params: { "type": "html", "to": rows[0][viewModel.to], "subject": context.localize(viewModel.subject) },
             body: text.join("")
         }
         const [insertedRow] = (await connection.execute(insert(context, "interaction", data, context.config["interaction/model"])))
