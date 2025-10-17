@@ -2,8 +2,10 @@ const mysql2 = require("mysql2/promise")
 const util = require("util")
 
 const { dElete } = require("./delete")
+const { decrypt, encrypt } = require("./encrypt")
 const { insert } = require("./insert")
 const { select } = require("./select")
+const { sensitiveWhere } = require("./sensitiveWhere")
 const { update } = require("./update")
 const { updateCase } = require("./updateCase")
 
@@ -77,13 +79,23 @@ const sql = async ({ context, type, entity, columns, where, order, limit, ids, d
 {
     const model = context.config[`${ entity }/model`]
     if (type === "select") {
+        where = await sensitiveWhere({context, model, where}, connection, logger)
+        for (const value of Object.values(where)) {
+            if (value.length == 1) return [] // No rows matching a rule on sensitive property
+        }
         const request = select(context, entity, columns, where || {}, order, limit, model, debug)
         logger && logger.debug(request)
         const cursor = (await connection.execute(request))[0]
         const result = []
         for (const row of cursor) {
             const data = {}
-            for (const [key, value] of Object.entries(row)) {
+            for (let [key, value] of Object.entries(row)) {
+
+                // Decryption
+                if (model.properties[key].sensitive && value) {
+                    value = decrypt(context, value)
+                }
+
                 if (model.properties[key].type === "json") {
                     data[key] = JSON.parse(value)
                 } else {
@@ -94,12 +106,22 @@ const sql = async ({ context, type, entity, columns, where, order, limit, ids, d
         }
         logger && logger.debug(util.inspect(result))
         return result
+        
     } else if (type === "insert") {
+
+        // Encryption
+        for (const [key, value] of Object.entries(data)) {
+            if (model.properties[key].sensitive && value) {
+                data[key] = encrypt(context, value)
+            }
+        }
+        
         const request = insert(context, entity, data, model, debug)
         logger && logger.debug(request)
         const insertedRows = await connection.execute(request)
         logger && logger.debug(util.inspect(insertedRows))
         return insertedRows[0].insertId
+
     } else if (type === "update") {
         const request = update(context, entity, ids, data, model, debug)
         logger && logger.debug(request)

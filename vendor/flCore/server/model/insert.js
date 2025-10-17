@@ -20,10 +20,6 @@ const insert = (context, entity, data, model, debug = false) => {
                 }
                 else {
 
-                    // Encryption
-                    if (model.properties[key].sensitive && value) {
-                        value = encrypt(context, value)
-                    }
                     // Hash
                     if (model.properties[key].hash && value) {
                         pairs[qi(model.properties[key].hash)] = qv(encrypt(context, value))

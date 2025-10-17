@@ -1,16 +1,19 @@
+const util = require("util")
+
+const { decrypt } = require("./encrypt")
 const { select } = require("./select")
 
-const sensitiveWhere = async (context, db, entity, model, columns, where, order = [], limit = null, debug = false) =>
+const sensitiveWhere = async ({context, model, where}, connection, logger) =>
 {
     const unsensitiveWhere = {}, sensitiveWhere = {}, requests = {}
     for (const [propertyId, rule] of Object.entries(where)) {
         const property = model.properties[propertyId]
         if (property.sensitive) {
-            const property = model.properties[propertyId], table = property.table, column = property.column
-            if (!sensitiveWhere[table]) sensitiveWhere[table] = {}
-            sensitiveWhere[table][column] = rule
-            if (!requests[table]) requests[table] = ["id"]
-            requests[table].push(column)
+            const entity = property.entity, column = property.column
+            if (!sensitiveWhere[entity]) sensitiveWhere[entity] = {}
+            sensitiveWhere[entity][column] = rule
+            if (!requests[entity]) requests[entity] = ["id"]
+            requests[entity].push(column)
         } else {
             unsensitiveWhere[propertyId] = rule
         }
@@ -20,15 +23,22 @@ const sensitiveWhere = async (context, db, entity, model, columns, where, order 
      * Retrieve vectors of sensitive properties
      */
     const idsToKeep = {}
-    for (const [table, columns] of requests) {
-        idsToKeep[table] = ["in"]
-        const vector = (await db.execute(select(context, table, columns, [], null, null, context.config[`model/${ table }`])))[0]
+    for (const [table, columns] of Object.entries(requests)) {
+        idsToKeep[table] = []
+        const vector = (await connection.execute(select(context, table, columns, {}, null, null, context.config[`${ table }/model`])))[0]
         for (const row of vector) {
 
             let keep = true // initialization
 
-            for (let [column, rule] of sensitiveWhere[table]) {
+            for (let [column, rule] of Object.entries(sensitiveWhere[table])) {
                 let cell = row[column]
+
+                // Decryption
+                if (cell) {
+                    const decrypted = decrypt(context, cell)
+                    cell = decrypted || cell
+                }
+
                 rule = [...rule]
 
                 if (Array.isArray(rule)) {
@@ -164,13 +174,13 @@ const sensitiveWhere = async (context, db, entity, model, columns, where, order 
         }
     }
 
-    for (const [table, ids] of idsToKeep) {
-        unsensitiveWhere[model.entities[table].foreignKey] = ids
+    for (const [table, ids] of Object.entries(idsToKeep)) {
+        unsensitiveWhere[model.entities[table].foreignKey] = ["in"].concat(ids)
     }
 
-    const rows = (await db.execute(select(context, entity, columns, where, order, limit, model)))[0]
-    if (debug) console.log(rows)
-    return rows
+    logger && logger.debug(util.inspect(unsensitiveWhere))
+    
+    return unsensitiveWhere
 }
 
 module.exports = {

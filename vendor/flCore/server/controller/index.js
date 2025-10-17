@@ -61,7 +61,7 @@ const registerCore = async ({ context, config, logger, app }) => {
 
     app.get(`${config.prefix}v1/:entity`, execute(getAction, context, { sql, logger }))
     app.get(`${config.prefix}v1/:entity/:id`, execute(getAction, context, { sql, logger }))
-    app.post(`${config.prefix}v1/:entity`, execute(postAction, context, { db }))
+    app.post(`${config.prefix}v1/:entity`, execute(postAction, context, { sql, logger }))
     app.post(`${config.prefix}file/:entity`, upload.single("attachment"), executeFile)
     app.post(`${config.prefix}v1/:entity/:transaction/:id`, execute(transactionAction, context, { db, smtp, sms }))
     app.post(`${config.prefix}v1/:entity/:transaction`, execute(transactionAction, context, { db, smtp, sms }))
