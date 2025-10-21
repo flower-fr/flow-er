@@ -1,8 +1,9 @@
 const { assert } = require("../../../../core/api-utils")
+const util = require("util")
 const { getProperties } = require("./getProperties")
 const { getList } = require("./getList")
 
-const detailTabAction = async ({ req }, context, db) => {
+const detailTabAction = async ({ req }, context, db, logger) => {
     const entity = assert.notEmpty(req.params, "entity")
     const id = assert.notEmpty(req.params, "id")
     const view = (req.query.view) ? req.query.view : "default"
@@ -20,13 +21,12 @@ const detailTabAction = async ({ req }, context, db) => {
 
     let detailTabConfig = context.config[`${entity}/detailTab/${view}`]
     if (!detailTabConfig) detailTabConfig = context.config[`${entity}/detailTab/default`]
-
+    
     const data = { id, where, order, limit }
     for (const [key, value] of Object.entries(where)) data[key] = value
     for (let entityId of Object.keys(detailTabConfig.data)) {
 
         const dataConfig = detailTabConfig.data[entityId]
-
         const whereDef = dataConfig.where
         const subWhere = {}
         for (let key of Object.keys(whereDef)) {
@@ -35,10 +35,15 @@ const detailTabAction = async ({ req }, context, db) => {
             }
         }
 
+        logger && logger.debug(`where for ${entityId}: ${util.inspect(subWhere, { colors: true, depth: null })}`)
+
         data[entityId] = {}
 
         const propertyDefs = dataConfig.properties
         const properties = await getProperties(db, context, entityId, view, propertyDefs, where)
+
+        logger && logger.debug(`properties for ${entityId}: ${util.inspect(properties, { colors: true, depth: null })}`)
+
         data[entityId].properties = properties    
 
         /**

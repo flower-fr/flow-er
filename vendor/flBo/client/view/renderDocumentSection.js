@@ -9,11 +9,45 @@ const renderDocumentSection = ({ context }, { section, properties, rows }) => {
     if (section.links) {
         const links = []
         for (const link of section.links) {
-            links.push(`<a role="button" class="fl-modal-list-link" data-fl-tab="${ link.tab }">${ context.localize(link.labels) }</a>`)
+            if (link.document) {
+                const property = properties[link.document]
+                if (rows[0][property.id] !== 0) {
+                    let route = `/${ property.controller }/${ property.action }/${ property.entity }`
+                    if (property.id) route += `/${ rows[0][property.id] }`
+                    if (property.query) {
+                        const query = []
+                        for (const [key, value] of Object.entries(property.query)) {
+                            query.push(`${ key }=${ rows[0][value] }`)
+                        }
+                        route += `?${ query.join("&") }`
+                    }
+                    links.push(`
+                    <div class="col-md-3">
+                        <td><a href="${ route }">${ context.localize(property.labels) }</a></td>
+                    </div>`)
+                }
+            } else if (link.method === "post") {
+                links.push(`
+                    <div class="col-md-3">
+                        <button 
+                            class="btn btn-warning fl-detail-tab-action"
+                            data-fl-method=${link.method}
+                            data-fl-controller=${link.controller}
+                            data-fl-action=${link.action}
+                            data-fl-entity=${link.entity}
+                            data-fl-id=${ rows[0].id }
+                            ${ (link.view) ? `data-fl-view=${link.view}` : "" }
+                            ${ (link.glyph) ? `title=${  context.localize(link.labels) }` : "" }>
+                                ${ (link.glyph) ? `<i class="fas ${ link.glyph }"></i>` : context.localize(link.labels) }
+                        </button>
+                    </div>`)
+            } else {
+                links.push(`<a role="button" class="fl-modal-list-link" data-fl-tab="${ link.tab }">${ context.localize(link.labels) }</a>`)
+            }
         }
 
         html.push(`
-        <div class="row">${ links.join("/n") }</div>`)
+        <div class="row">${ links.join("") }</div>`)
     }
 
     html.push(

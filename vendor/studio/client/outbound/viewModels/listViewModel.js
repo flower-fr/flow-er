@@ -56,6 +56,19 @@ const postList = async ({ entity }) =>
 
                 else if (type === "number") value = value.replace(",", ".")
 
+                else if (type === "file") {
+                
+                    const fileSelect = document.getElementById("data")
+                    if (fileSelect) {
+                        var files = fileSelect.files
+                        for (var i = 0; i < files.length; i++) {
+                            var file = files[i]
+                            formData.append(propertyId, file, file.name)
+                        }
+                    }
+                    return
+                }
+
                 body[propertyId] = value
                 formData.append(propertyId, value)
             })
@@ -64,9 +77,9 @@ const postList = async ({ entity }) =>
 
             const response = await fetch(route, {
                 method: "POST",
-                // body: formData
-                headers: new Headers({"content-type": "application/json"}),
-                body: JSON.stringify(body)
+                body: formData
+                // headers: new Headers({"content-type": "application/json"}),
+                // body: JSON.stringify(body)
             })
 
             if (response.status == 200) {

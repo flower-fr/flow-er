@@ -5,7 +5,8 @@ const { throwBadRequestError } = require("../../../../core/api-utils")
 
 const deleteAction = async ({ req }, context, { db }) => {
     const entity = assert.notEmpty(req.params, "entity")
-    const id = assert.notEmpty(req.params, "id")
+    let id = req.params.id
+    if (!id) id = req.body[0] && req.body[0].id
 
     const connection = await db.getConnection()
     try {

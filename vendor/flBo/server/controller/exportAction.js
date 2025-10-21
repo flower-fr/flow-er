@@ -10,21 +10,44 @@ const exportAction = async ({ req, res }, context, db) =>
 
     let exportConfig = context.config[`${entity}/export/${view}`]
     if (!exportConfig) exportConfig = context.config[`${entity}/export/default`]
-    const data = await listAction({ req }, context, db, exportConfig)
+    const rawData = await listAction({ req }, context, db, exportConfig)
+
+    let data = {}
+    for (const row of rawData.rows) {
+        if (exportConfig.aggregation) {
+            if (!data[row[exportConfig.aggregation.key]]) {
+                data[row[exportConfig.aggregation.key]] = {}
+                for (const [key, value] of Object.entries(row)) {
+                    if (exportConfig.aggregation.sum.includes(key)) {
+                        data[row[exportConfig.aggregation.key]][key] = 0    
+                    } else {
+                        data[row[exportConfig.aggregation.key]][key] = value
+                    }
+                }
+            }
+            for (const [key, value] of Object.entries(row)) {
+                if (exportConfig.aggregation.sum.includes(key)) {
+                    data[row[exportConfig.aggregation.key]][key] += parseFloat(value)
+                }
+            }
+        }
+        else data[row.id] = row
+    }
+    data = Object.values(data)
 
     const workbook = new excelJS.Workbook()
 
     const worksheet = workbook.addWorksheet(entity)
     const columns = []
-    for (const propertyId of Object.keys(data.rows[0])) {
-        const property = data.properties[propertyId]
+    for (const propertyId of Object.keys(data[0])) {
+        const property = rawData.properties[propertyId]
         columns.push({ header: (property) ? context.localize(property.labels) : propertyId, key: propertyId, width: 20 })
     }
     worksheet.columns = columns
-    data.rows.forEach(row => { 
+    data.forEach(row => { 
         const values = {}
         for (const [key, value] of Object.entries(row)) {
-            const property = data.properties[key]
+            const property = rawData.properties[key]
             if (property && property.type === "select") values[key] = context.localize(property.modalities[value])
             else values[key] = value
         }
@@ -44,7 +67,8 @@ const exportAction = async ({ req, res }, context, db) =>
         })
     })
 
-    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"); res.setHeader("Content-Disposition", "attachment; filename=" + "users.xlsx")
+    const fileName = exportConfig.fileName || "doubled-cream.xlsx"
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"); res.setHeader("Content-Disposition", `attachment; filename=${fileName}`)
     await workbook.xlsx.write(res)
 }
 

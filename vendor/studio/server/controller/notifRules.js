@@ -41,6 +41,9 @@ const postNotifRules = async ({ req }, context, db) =>
 {
     const entity = assert.notEmpty(req.params, "entity")
     const form = req.body
+    const file = req.file && req.file.buffer
+    if (file) form.data = file
+
     const connection = await db.getConnection()
 
     try {
