@@ -16,7 +16,7 @@ const updateColumns = async (context, columnsToUpdate, model, sql) => {
     for (const [table, object] of Object.entries(columnsToRetrieve)) {
         const model = context.config[`${ table }/model`]
         const rows = {}
-        const [cursor] = await sql.execute({ context, type: "select", entity: table, columns: object.columns, where: {id: object.ids} })
+        const cursor = await sql.execute({ context, type: "select", entity: table, columns: object.columns, where: {id: object.ids} })
         for (const row of cursor) {
             for (const [key, value] of Object.entries(row)) {
                 if (model.properties[key].type && model.properties[key].type == "date") row[key] = moment(value).format("YYYY-MM-DD")

@@ -35,7 +35,8 @@ const createSqlClient = async ({ config, logger, dbName }) =>
 
 const beginTransaction = ({ logger, closure }) => async () => 
 {
-    await closure.connection.beginTransaction()
+    closure.connection = await closure.db.getConnection()
+    closure.connection.beginTransaction()
     logger && logger.debug("Transaction initiated")
 }
 
@@ -78,10 +79,11 @@ const rollback = ({ logger, closure }) => async () =>
 const sql = async ({ context, type, entity, columns, where, order, limit, ids, data, column, pairs, debug }, connection, logger) =>
 {
     const model = context.config[`${ entity }/model`]
+
     if (type === "select") {
         where = await sensitiveWhere({context, model, where}, connection, logger)
         for (const value of Object.values(where)) {
-            if (value.length == 1) return [] // No rows matching a rule on sensitive property
+            if (value.length == 0) return [] // No rows matching a rule on sensitive property
         }
         const request = select(context, entity, columns, where || {}, order, limit, model, debug)
         logger && logger.debug(request)
@@ -123,17 +125,37 @@ const sql = async ({ context, type, entity, columns, where, order, limit, ids, d
         return insertedRows[0].insertId
 
     } else if (type === "update") {
+
+        // Encryption
+        for (const [key, value] of Object.entries(data)) {
+            if (model.properties[key].sensitive && value) {
+                data[key] = encrypt(context, value)
+            }
+        }
+
         const request = update(context, entity, ids, data, model, debug)
         logger && logger.debug(request)
         const result = await connection.execute(request)
         logger && logger.debug(util.inspect(result[0]))
         return
+
     } else if (type === "updateCase") {
+
+        // Encryption
+        if (model.properties[column].sensitive) {
+            for (const [id, value] of Object.entries(pairs)) {
+                if (value) {
+                    pairs[id] = encrypt(context, value)
+                }
+            }
+        }
+
         const request = updateCase(context, entity, column, pairs, model, debug)
         logger && logger.debug(request)
         const result = await connection.execute(request)
         logger && logger.debug(util.inspect(result[0]))
         return
+
     } else if (type === "delete") {
         const request = dElete(context, entity, ids, model, debug)
         logger && logger.debug(request)

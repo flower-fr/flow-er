@@ -26,13 +26,13 @@ const getAction = async ({ req }, context, { sql, logger }) =>
 
     const limit = (req.query.limit) ? req.query.limit : 1000
 
-    try {
+    // try {
         const result = await sql.execute({ context, type: "select", entity, columns, where, order, limit })
         return JSON.stringify(result)
-    }
-    catch {
-        throw throwBadRequestError()
-    }
+    // }
+    // catch {
+    //     throw throwBadRequestError()
+    // }
 }
 
 module.exports = {

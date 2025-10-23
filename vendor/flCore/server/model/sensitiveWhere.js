@@ -175,7 +175,7 @@ const sensitiveWhere = async ({context, model, where}, connection, logger) =>
     }
 
     for (const [table, ids] of Object.entries(idsToKeep)) {
-        unsensitiveWhere[model.entities[table].foreignKey] = ["in"].concat(ids)
+        unsensitiveWhere[model.entities[table].foreignKey] = ids
     }
 
     logger && logger.debug(util.inspect(unsensitiveWhere))
