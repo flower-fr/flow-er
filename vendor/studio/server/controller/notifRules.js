@@ -41,6 +41,8 @@ const postNotifRules = async ({ req }, context, sql) =>
 {
     const entity = assert.notEmpty(req.params, "entity")
     const form = req.body
+    const file = req.file && req.file.buffer
+    if (file) form.data = file
 
     // try {
         const model = context.config[`${ entity }/model`]
