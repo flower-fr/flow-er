@@ -3,6 +3,7 @@ const multer = require("multer")
 
 const { sessionCookieMiddleware } = require("../../../user/server/controller/sessionCookieMiddleware");
 const { createDbClient } = require("../../../utils/db-client")
+const { createSqlClient } = require("../../../flCore/server/model/sql-client")
 const { executeService } = require("../../../../core/api-utils")
 const { throwBadRequestError } = require("../../../../core/api-utils")
 
@@ -12,7 +13,8 @@ const { modelRelease } = require("./model")
 const { getNotifRules, postNotifRules } = require("./notifRules")
 
 const registerStudio = async ({ context, config, logger, app }) => {
-    const db = await createDbClient(config.db, context.dbName)
+    const db = await createDbClient(config.db, context.dbName) // Deprecated
+    const sql = await createSqlClient({ config: config.db, logger, dbName: context.dbName })
     const execute = executeService(context.clone(), config, logger)
     const executeImport = async (req, res) => {
         if (!context.isAllowed("document_binary")) return res.status(403).send({message: "unauthorized"})
@@ -22,17 +24,17 @@ const registerStudio = async ({ context, config, logger, app }) => {
     const upload = multer()
     
     app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
-    app.get(`${config.prefix}ddl/:entity`, execute(ddl, context, db))
-    app.get(`${config.prefix}ddl/:entity/:property`, execute(ddl, context, db))
-    app.get(`${config.prefix}model/:module/:release`, execute(model, context, db))
+    app.get(`${config.prefix}ddl/:entity`, execute(ddl, context))
+    app.get(`${config.prefix}ddl/:entity/:property`, execute(ddl, context))
+    app.get(`${config.prefix}model/:module/:release`, execute(model, context))
     app.post(`${config.prefix}model/:module/:release`, execute(postModel, context, db))
 
-    app.get(`${config.prefix}notifRules/:entity`, execute(getNotifRules, context, db))
-    app.post(`${config.prefix}notifRules/:entity`, execute(postNotifRules, context, db))
+    app.get(`${config.prefix}notifRules/:entity`, execute(getNotifRules, context, sql))
+    app.post(`${config.prefix}notifRules/:entity`, execute(postNotifRules, context, sql))
     app.post(`${config.prefix}notifRules/:entity`, upload.single("file"), executeImport)
 }
 
-const ddl = async ({ req }, context, db) => {
+const ddl = async ({ req }, context) => {
     const entity = assert.notEmpty(req.params, "entity")
     const propertyId = req.params.property
     let ddl = []

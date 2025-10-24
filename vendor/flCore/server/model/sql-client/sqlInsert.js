@@ -3,7 +3,7 @@ const util = require("util")
 const { encrypt } = require("./encrypt")
 const { insert } = require("../insert")
 
-const sqlInsert = async ({ context, entity, data, debug }, model, connection, logger) =>
+const sqlInsert = async ({ context, entity, data, params, debug }, model, connection, logger) =>
 {
     // Encryption
     for (const [key, value] of Object.entries(data)) {
@@ -14,7 +14,7 @@ const sqlInsert = async ({ context, entity, data, debug }, model, connection, lo
     
     const request = insert(context, entity, data, model, debug)
     logger && logger.debug(request)
-    const insertedRows = await connection.execute(request)
+    const insertedRows = await connection.execute(request, params)
     logger && logger.debug(util.inspect(insertedRows))
     return insertedRows[0].insertId
 }

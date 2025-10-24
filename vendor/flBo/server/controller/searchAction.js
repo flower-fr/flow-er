@@ -1,7 +1,7 @@
 const { assert } = require("../../../../core/api-utils")
 const { getProperties } = require("./getProperties")
 
-const searchAction = async ({ req }, context, db) => {
+const searchAction = async ({ req }, context, sql) => {
     const entity = assert.notEmpty(req.params, "entity")
     const view = (req.query.view) ? req.query.view : "default"
     const whereParam = (req.query.where) ? req.query.where : null
@@ -20,7 +20,7 @@ const searchAction = async ({ req }, context, db) => {
     if (!listConfig) listConfig = context.config[`${entity}/list/${view}`]
     if (!listConfig) listConfig = context.config[`${entity}/list/default`]
     const propertyDefs = listConfig.properties
-    const properties = await getProperties(db, context, entity, view, propertyDefs, where)
+    const properties = await getProperties(sql, context, entity, view, propertyDefs, where)
 
     /**
      * Global actions

@@ -11,7 +11,7 @@ const sqlSelect = async ({ context, entity, columns, where, order, limit = 1000,
         if (value.length == 0) return [] // No rows matching a rule on sensitive property
     }
     const request = select(context, entity, columns, where || {}, order, limit, model, debug)
-    logger && logger.debug(request)
+    logger && logger.debug(`SELECT request: ${request}`)
     const cursor = (await connection.execute(request))[0]
     const result = []
     for (const row of cursor) {
@@ -31,7 +31,7 @@ const sqlSelect = async ({ context, entity, columns, where, order, limit = 1000,
         }
         result.push(data)
     }
-    logger && logger.debug(util.inspect(result))
+    logger && logger.debug(`SELECT result: ${util.inspect(result)}`)
     return result
 }
 

@@ -29,9 +29,16 @@ const getAction = async ({ req }, context, { sql, logger }) =>
     const vectors = (req.query.vectors) ? req.query.vectors.split(",") : []
 
     try {
-        let result = await sql.execute({ context, type: "select", entity, columns, where, order, limit, vectors })
-        if (!result.vectors) result = result.rows // Backward compatibility
-        return JSON.stringify(result)
+
+        if (vectors) {
+            const result = {}
+            result.rows = await sql.execute({ context, type: "select", entity, columns, where, order, limit })
+            result.vectors = await sql.execute({context, type: "vectors", entity, vectors})
+            return JSON.stringify(result)
+        }
+        else {
+            return JSON.stringify(await sql.execute({ context, type: "select", entity, columns, where, order, limit, vectors }))
+        }
     }
     catch {
         throw throwBadRequestError()

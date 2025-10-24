@@ -17,7 +17,7 @@ const storeEntities = async (context, mainEntity, rowsToStore, model, sql) => {
             }
             // const [insertedRow] = (await connection.execute(insert(context, entity.table, entityToInsert.cells, insertModel), params))
             // entityToInsert.rowId = insertedRow.insertId
-            entityToInsert.rowId = (await sql.execute({ context, type: "insert", entity: entity.table, data: entityToInsert.cells }))
+            entityToInsert.rowId = (await sql.execute({ context, type: "insert", entity: entity.table, data: entityToInsert.cells, params }))
             if (entity.foreignEntity) {
                 if (entitiesToInsert[entity.foreignEntity]) {
                     entitiesToInsert[entity.foreignEntity].cells[entity.foreignKey] = entityToInsert.rowId //insertedRow.insertId

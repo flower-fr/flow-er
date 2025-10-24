@@ -8,7 +8,7 @@ const sensitiveWhere = async ({context, model, where}, connection, logger) =>
     const unsensitiveWhere = {}, sensitiveWhere = {}, requests = {}
     for (const [propertyId, rule] of Object.entries(where)) {
         const property = model.properties[propertyId]
-        if (property.sensitive) {
+        if (property && property.sensitive) {
             const entity = property.entity, column = property.column
             if (!sensitiveWhere[entity]) sensitiveWhere[entity] = {}
             sensitiveWhere[entity][column] = rule

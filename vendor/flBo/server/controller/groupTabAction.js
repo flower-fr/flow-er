@@ -5,7 +5,7 @@ const { insert } = require("../../../flCore/server/model/insert")
 const { updateCase } = require("../../../flCore/server/model/updateCase")
 const { getProperties } = require("./getProperties")
 
-const groupTabAction = async ({ req }, context, db) => {
+const groupTabAction = async ({ req }, context, sql) => {
     const entity = assert.notEmpty(req.params, "entity")
     const view = (req.query.view) ? req.query.view : "default"
 
@@ -26,7 +26,8 @@ const groupTabAction = async ({ req }, context, db) => {
     const row = {}
 
     const propertyDefs = groupTabConfig.properties
-    const properties = await getProperties(db, context, entity, view, propertyDefs, [])
+    console.log(entity, propertyDefs)
+    const properties = await getProperties(sql, context, entity, view, propertyDefs, [])
     
     /**
      * Data source
@@ -69,7 +70,8 @@ const groupTabAction = async ({ req }, context, db) => {
             const sourceColumns = ["id"]
             property.columns = (redef.columns) ? Object.keys(redef.columns) : property.format[1].split(",")
             for (let columnId of property.columns) sourceColumns.push(columnId)
-            const modalities = (await db.execute(select(context, sourceEntity, sourceColumns, sourceWhere, null, null, context.config[`${property.entity}/model`])))[0]
+            // const modalities = (await db.execute(select(context, sourceEntity, sourceColumns, sourceWhere, null, null, context.config[`${property.entity}/model`])))[0]
+            const modalities = await sql.execute({ context, type: "select", entity: sourceEntity, columns: sourceColumns, where: sourceWhere })
             property.modalities = {}
             property.rows = {}
             for (let modality of modalities) {
@@ -100,14 +102,14 @@ const groupTabAction = async ({ req }, context, db) => {
     return JSON.stringify(data)
 }
 
-const postGroupTabAction = async ({ req }, context, db) => {
+const postGroupTabAction = async ({ req }, context, sql) => {
     const entity = assert.notEmpty(req.params, "entity")
     const view = (req.query.view) ? req.query.view : "default"
 
     let updateConfig = context.config[`${entity}/update/${view}`]
     if (!updateConfig) updateConfig = context.config[`${entity}/update`]
     const propertyDefs = updateConfig.properties
-    const properties = await getProperties(db, context, entity, view, propertyDefs, [])
+    const properties = await getProperties(sql, context, entity, view, propertyDefs, [])
 
     // Retrieve the existing row
 
@@ -115,14 +117,13 @@ const postGroupTabAction = async ({ req }, context, db) => {
     const payload = {}, columns = Object.keys(model.properties)
     const fks = foreignKeys({ entity }, model, Object.keys(updateConfig.properties))
     columns.concat(fks)
-    const row = (await db.execute(select(context, entity, columns, { "id": id }, null, null, model)))[0][0]
+    // const row = (await db.execute(select(context, entity, columns, { "id": id }, null, null, model)))[0][0]
+    const [row] = await sql.execute({ context, type: "select", entity, columns, where: {id} })
 
     for (let foreignKey of fks) payload[foreignKey] = row[foreignKey]
     for (let propertyId of Object.keys(updateConfig.properties)) {
         payload[propertyId] = req.body[propertyId]
     }
-
-    const connection = await db.getConnection()
 
     // Check authorization
     /*$formJwt = $this->request->getPost('formJwt');
@@ -142,10 +143,10 @@ const postGroupTabAction = async ({ req }, context, db) => {
      */
     const { cellsToStore, tagsToUpdate } = dataToStore( properties, payload, row)
     let { entitiesToInsert, entitiesToUpdate  } = entitiesToStore(entity, model, cellsToStore, payload, row)
-    await connection.beginTransaction()
+    await sql.beginTransaction()
 
-    await storeEntities(context, entity, { entitiesToInsert, entitiesToUpdate }, model, connection)
-    await auditCells(context, { insertedEntities: entitiesToInsert, updatedEntities: entitiesToUpdate }, connection)
+    await storeEntities(context, entity, { entitiesToInsert, entitiesToUpdate }, model, sql)
+    await auditCells(context, { insertedEntities: entitiesToInsert, updatedEntities: entitiesToUpdate }, sql)
 
     /**
      * Tags
@@ -162,12 +163,11 @@ const postGroupTabAction = async ({ req }, context, db) => {
                 const ids = vector[tag_id]
                 dict[tag_id] = ids.join(",")
             }
-            await connection.execute(updateCase(context, tagEntity, vectorId, dict))
+            await sql.execute(updateCase({context, type: "updateCase", entity: tagEntity, column: vectorId, pairs: dict}))
         }
     }
 
-    await connection.commit()
-    await connection.release()
+    await sql.commit()
 }
 
 const foreignKeys = ({ entity }, model, propertyIds) => {

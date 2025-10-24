@@ -4,7 +4,7 @@ const { assert } = require("../../../../core/api-utils")
 const { getProperties } = require("./getProperties")
 const { getList } = require("./getList")
 
-const listAction = async ({ req }, context, db, listConfig) => {
+const listAction = async ({ req }, context, sql, listConfig) => {
     const entity = assert.notEmpty(req.params, "entity")
     const view = (req.query.view) ? req.query.view : "default"
     const where = (req.query.where) ? req.query.where : null
@@ -52,7 +52,7 @@ const listAction = async ({ req }, context, db, listConfig) => {
         if (!propertyDefs[propertyId]) propertyDefs[propertyId] = {}
     }
 
-    const properties = await getProperties(db, context, entity, view, propertyDefs)
+    const properties = await getProperties(sql, context, entity, view, propertyDefs)
 
     /**
      * List of DB columns to retrieve
@@ -78,7 +78,7 @@ const listAction = async ({ req }, context, db, listConfig) => {
         if (major.charAt(0) == "-") major = major.substring(1)
     }
     
-    const rows = await getList(db, context, entity, columns, properties, whereParam, order, limit)
+    const rows = await getList(sql, context, entity, columns, properties, whereParam, order, limit)
     const result = { rows, config: listConfig, properties, where, order, limit }
     
     if (listConfig.crossEntity) {
@@ -99,7 +99,7 @@ const listAction = async ({ req }, context, db, listConfig) => {
                 if (!propertyDefs[propertyId]) propertyDefs[propertyId] = {}
             }
 
-            const crossProperties = await getProperties(db, context, crossEntity, null, crossPropertyDefs)
+            const crossProperties = await getProperties(sql, context, crossEntity, null, crossPropertyDefs)
 
             const crossColumns = ["id"]
             for (const [propertyId, property] of Object.entries(crossProperties)) {
@@ -108,7 +108,7 @@ const listAction = async ({ req }, context, db, listConfig) => {
         
             const crossOrder = listConfig.crossOrder || order
             const crossWhere = { [listConfig.crossKey]: ["in"].concat(ids) }
-            result.crossRows = await getList(db, context, crossEntity, crossColumns, crossProperties, crossWhere, crossOrder, limit)
+            result.crossRows = await getList(sql, context, crossEntity, crossColumns, crossProperties, crossWhere, crossOrder, limit)
             result.crossProperties = crossProperties
             result.crossOrder = crossOrder
         }

@@ -2,16 +2,14 @@ const moment = require("moment")
 
 const { insert } = require("../model/insert")
 
-const registerHistory = async ({ req }, context, rows, { connection }) => {
+const registerHistory = async ({ req }, context, rows, { sql }) => {
 
     /**
      * Save message to send
      */
 
-    let model
     for (let row of req.body.rows) {
 
-        model = context.config["crm_contact/model"]
         const data = {
             status: "done",
             chanel: row.chanel,
@@ -20,7 +18,7 @@ const registerHistory = async ({ req }, context, rows, { connection }) => {
             summary: `${ context.translate("Message sent") } - ${row.summary}`
         }
         if (row.scheduled_at && row.scheduled_at !== "") data.touched_at = row.scheduled_at
-        await connection.execute(insert(context, "crm_contact", data, model))
+        await sql.execute({ context, type: "insert", entity: "crm_contact", data })
     }
 }
 

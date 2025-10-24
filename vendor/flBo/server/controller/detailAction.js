@@ -1,6 +1,6 @@
 const { assert } = require("../../../../core/api-utils")
 
-const detailAction = ({ req }, context, db) => {
+const detailAction = ({ req }, context) => {
     const entity = assert.notEmpty(req.params, "entity")
     const id = assert.notEmpty(req.params, "id")
     const view = (req.query.view) ? req.query.view : "default"

@@ -75,21 +75,21 @@ const rollback = ({ logger, closure }) => async () =>
     logger && logger.debug("Transaction rolled back")
 }
 
-const sql = async ({ context, type, entity, columns, where, order, limit, vectors, ids, data, column, pairs, debug }, connection, logger) =>
+const sql = async ({ context, type, entity, columns, where, order, limit, vectors, ids, data, column, pairs, params, debug }, connection, logger) =>
 {
     const model = context.config[`${ entity }/model`]
 
     if (type === "select") {
         
-        const result = {}
-        result.rows = await sqlSelect({ context, entity, columns, where, order, limit, debug }, model, connection, logger)
-        vectors = await selectVectors({context, vectors, debug}, model, connection, logger)
-        if (Object.keys(vectors).length !== 0) result.vectors = vectors
-        return result
+        return await sqlSelect({ context, entity, columns, where, order, limit, debug }, model, connection, logger)
+
+    } else if (type === "vectors") {
         
+        return await selectVectors({context, vectors, debug}, model, connection, logger)
+
     } else if (type === "insert") {
 
-        return sqlInsert({ context, entity, data, debug }, model, connection, logger)
+        return sqlInsert({ context, entity, data, params, debug }, model, connection, logger)
 
     } else if (type === "update") {
 
