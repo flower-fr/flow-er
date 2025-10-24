@@ -1,13 +1,12 @@
 const mysql2 = require("mysql2/promise")
 const util = require("util")
 
-const { dElete } = require("./delete")
-const { decrypt, encrypt } = require("./encrypt")
-const { insert } = require("./insert")
-const { select } = require("./select")
-const { sensitiveWhere } = require("./sensitiveWhere")
-const { update } = require("./update")
-const { updateCase } = require("./updateCase")
+const { selectVectors } = require("./sql-client/selectVectors")
+const { sqlDelete } = require("./sql-client/sqlDelete")
+const { sqlInsert } = require("./sql-client/sqlInsert")
+const { sqlUpdate } = require("./sql-client/sqlUpdate")
+const { sqlUpdateCase } = require("./sql-client/sqlUpdateCase")
+const { sqlSelect } = require("./sql-client/sqlSelect")
 
 const createSqlClient = async ({ config, logger, dbName }) => 
 {
@@ -76,92 +75,33 @@ const rollback = ({ logger, closure }) => async () =>
     logger && logger.debug("Transaction rolled back")
 }
 
-const sql = async ({ context, type, entity, columns, where, order, limit, ids, data, column, pairs, debug }, connection, logger) =>
+const sql = async ({ context, type, entity, columns, where, order, limit, vectors, ids, data, column, pairs, debug }, connection, logger) =>
 {
     const model = context.config[`${ entity }/model`]
 
     if (type === "select") {
-        where = await sensitiveWhere({context, model, where}, connection, logger)
-        for (const value of Object.values(where)) {
-            if (value.length == 0) return [] // No rows matching a rule on sensitive property
-        }
-        const request = select(context, entity, columns, where || {}, order, limit, model, debug)
-        logger && logger.debug(request)
-        const cursor = (await connection.execute(request))[0]
-        const result = []
-        for (const row of cursor) {
-            const data = {}
-            for (let [key, value] of Object.entries(row)) {
-
-                // Decryption
-                if (model.properties[key].sensitive && value) {
-                    value = decrypt(context, value)
-                }
-
-                if (model.properties[key].type === "json") {
-                    data[key] = JSON.parse(value)
-                } else {
-                    data[key] = value
-                }
-            }
-            result.push(data)
-        }
-        logger && logger.debug(util.inspect(result))
+        
+        const result = {}
+        result.rows = await sqlSelect({ context, entity, columns, where, order, limit, debug }, model, connection, logger)
+        vectors = await selectVectors({context, vectors, debug}, model, connection, logger)
+        if (Object.keys(vectors).length !== 0) result.vectors = vectors
         return result
         
     } else if (type === "insert") {
 
-        // Encryption
-        for (const [key, value] of Object.entries(data)) {
-            if (model.properties[key].sensitive && value) {
-                data[key] = encrypt(context, value)
-            }
-        }
-        
-        const request = insert(context, entity, data, model, debug)
-        logger && logger.debug(request)
-        const insertedRows = await connection.execute(request)
-        logger && logger.debug(util.inspect(insertedRows))
-        return insertedRows[0].insertId
+        return sqlInsert({ context, entity, data, debug }, model, connection, logger)
 
     } else if (type === "update") {
 
-        // Encryption
-        for (const [key, value] of Object.entries(data)) {
-            if (model.properties[key].sensitive && value) {
-                data[key] = encrypt(context, value)
-            }
-        }
-
-        const request = update(context, entity, ids, data, model, debug)
-        logger && logger.debug(request)
-        const result = await connection.execute(request)
-        logger && logger.debug(util.inspect(result[0]))
-        return
+        return sqlUpdate({ context, entity, ids, data, debug }, model, connection, logger)
 
     } else if (type === "updateCase") {
 
-        // Encryption
-        if (model.properties[column].sensitive) {
-            for (const [id, value] of Object.entries(pairs)) {
-                if (value) {
-                    pairs[id] = encrypt(context, value)
-                }
-            }
-        }
-
-        const request = updateCase(context, entity, column, pairs, model, debug)
-        logger && logger.debug(request)
-        const result = await connection.execute(request)
-        logger && logger.debug(util.inspect(result[0]))
-        return
+        return sqlUpdateCase({ context, entity, column, pairs, debug }, model, connection, logger)
 
     } else if (type === "delete") {
-        const request = dElete(context, entity, ids, model, debug)
-        logger && logger.debug(request)
-        const result = await connection.execute(request)
-        logger && logger.debug(util.inspect(result))
-        return
+
+        return sqlDelete({ context, entity, ids, debug }, model, connection, logger)
     }
 }
 

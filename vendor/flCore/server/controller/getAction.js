@@ -26,13 +26,16 @@ const getAction = async ({ req }, context, { sql, logger }) =>
 
     const limit = (req.query.limit) ? req.query.limit : 1000
 
-    // try {
-        const result = await sql.execute({ context, type: "select", entity, columns, where, order, limit })
+    const vectors = (req.query.vectors) ? req.query.vectors.split(",") : []
+
+    try {
+        let result = await sql.execute({ context, type: "select", entity, columns, where, order, limit, vectors })
+        if (!result.vectors) result = result.rows // Backward compatibility
         return JSON.stringify(result)
-    // }
-    // catch {
-    //     throw throwBadRequestError()
-    // }
+    }
+    catch {
+        throw throwBadRequestError()
+    }
 }
 
 module.exports = {
