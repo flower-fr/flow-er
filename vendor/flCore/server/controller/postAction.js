@@ -11,7 +11,7 @@ const postAction = async ({ req }, context, { sql }) => {
     const id = (req.query.id) ? req.query.id : 0
 
     // const connection = await db.getConnection()
-    //try {
+    try {
         // await connection.beginTransaction()
         await sql.beginTransaction()
 
@@ -44,13 +44,13 @@ const postAction = async ({ req }, context, { sql }) => {
         await sql.commit()
         // connection.release()
         return JSON.stringify({ "status": "ok", "stored": rowsToStore })
-    // }
-    // catch {
-    //     // await connection.rollback()
-    //     await sql.rollback()
-    //     // connection.release()
-    //     throw throwBadRequestError()
-    // }
+    }
+    catch {
+        // await connection.rollback()
+        await sql.rollback()
+        // connection.release()
+        throw throwBadRequestError()
+    }
 }
 
 const postFormAction = async ({ req }, context, { db }) => {

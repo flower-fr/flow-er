@@ -24,7 +24,7 @@ const transactionAction = async ({ req }, context, { sql, smtp, sms }) => {
     }
 
     //const connection = await db.getConnection()
-    // try {
+    try {
         // await connection.beginTransaction()
         await sql.beginTransaction()
     
@@ -45,13 +45,13 @@ const transactionAction = async ({ req }, context, { sql, smtp, sms }) => {
         // connection.release()
         
         return JSON.stringify({ "status": "ok" })    
-    // }
-    // catch {
-    //     // await connection.rollback()
-    //     await sql.rollback()
-    //     // connection.release()
-    //     throw throwBadRequestError()
-    // }
+    }
+    catch {
+        // await connection.rollback()
+        await sql.rollback()
+        // connection.release()
+        throw throwBadRequestError()
+    }
 }
 
 module.exports = {
