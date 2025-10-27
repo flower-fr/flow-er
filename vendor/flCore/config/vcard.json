@@ -13,7 +13,7 @@
             "n_first": { "entity": "vcard", "column": "n_first", "audit": true },
             "n_last": { "entity": "vcard", "column": "n_last", "audit": true },
             "n_birth": { "entity": "vcard", "column": "n_birth", "audit": true },
-            "email": { "entity": "vcard", "column": "email", "audit": true, "sensitive": true },
+            "email": { "entity": "vcard", "column": "email", "audit": true },
             "tel_work": { "entity": "vcard", "column": "tel_work", "audit": true },
             "tel_cell": { "entity": "vcard", "column": "tel_cell", "audit": true },
             "adr_street": { "entity": "vcard", "column": "adr_street", "audit": true },
