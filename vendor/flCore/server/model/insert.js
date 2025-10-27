@@ -1,6 +1,6 @@
 const { qi, qv } = require("./quote")
 
-const { encrypt } = require("./encrypt")
+const { encrypt } = require("./sql-client/encrypt")
 
 const insert = (context, entity, data, model, debug = false) => {
 

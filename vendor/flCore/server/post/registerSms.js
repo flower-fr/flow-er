@@ -2,7 +2,7 @@ const moment = require("moment")
 
 const { insert } = require("../model/insert")
 
-const registerSms = async ({ req }, context, rows, { connection, sms }) => {
+const registerSms = async ({ req }, context, rows, { sql, sms }) => {
 
     /**
      * Save message to send
@@ -32,7 +32,8 @@ const registerSms = async ({ req }, context, rows, { connection, sms }) => {
             body: JSON.stringify({ SMSList: [{ phoneNumber: row.tel_cell, message: message }] })
         }
         if (row.scheduled_at && row.scheduled_at !== "") data.scheduled_at = row.scheduled_at
-        const [insertedRow] = (await connection.execute(insert(context, "interaction", data, model)))
+        // const [insertedRow] = (await connection.execute(insert(context, "interaction", data, model)))
+        const insertedRow = (await sql.execute({ context, type: "insert", entity: "interaction", data }))
         row.insertId = insertedRow.insertId   
 
         /**
@@ -48,7 +49,8 @@ const registerSms = async ({ req }, context, rows, { connection, sms }) => {
             summary: `${ context.translate("SMS sent") } - ${ row.summary }`
         }
         if (row.scheduled_at && row.scheduled_at !== "") data.touched_at = row.scheduled_at
-        await connection.execute(insert(context, "crm_contact", data, model))
+        // await connection.execute(insert(context, "crm_contact", data, model))
+        await sql.execute({ context, type: "insert", entity: "crm_contact", data })
     }
 }
 

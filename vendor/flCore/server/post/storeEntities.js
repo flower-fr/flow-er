@@ -1,7 +1,7 @@
 const { updateColumns } = require("./updateColumns")
 const { insert } = require("../../../flCore/server/model/insert")
 
-const storeEntities = async (context, mainEntity, rowsToStore, model, connection) => {
+const storeEntities = async (context, mainEntity, rowsToStore, model, sql) => {
 
     const columnsToUpdate = {}
 
@@ -15,15 +15,16 @@ const storeEntities = async (context, mainEntity, rowsToStore, model, connection
                 const value = insertModel.properties[key]
                 if (["longblob", "mediumblob"].includes(value.type)) params.push(entityToInsert.cells[key])
             }
-            const [insertedRow] = (await connection.execute(insert(context, entity.table, entityToInsert.cells, insertModel), params))
-            entityToInsert.rowId = insertedRow.insertId
+            // const [insertedRow] = (await connection.execute(insert(context, entity.table, entityToInsert.cells, insertModel), params))
+            // entityToInsert.rowId = insertedRow.insertId
+            entityToInsert.rowId = (await sql.execute({ context, type: "insert", entity: entity.table, data: entityToInsert.cells, params }))
             if (entity.foreignEntity) {
                 if (entitiesToInsert[entity.foreignEntity]) {
-                    entitiesToInsert[entity.foreignEntity].cells[entity.foreignKey] = insertedRow.insertId
+                    entitiesToInsert[entity.foreignEntity].cells[entity.foreignKey] = entityToInsert.rowId //insertedRow.insertId
                 }
     
                 if (entitiesToUpdate[entity.foreignEntity]) {
-                    entitiesToUpdate[entity.foreignEntity].cells[entity.foreignKey] = insertedRow.insertId
+                    entitiesToUpdate[entity.foreignEntity].cells[entity.foreignKey] = entityToInsert.rowId //insertedRow.insertId
                 }
             }
         }
@@ -66,7 +67,7 @@ const storeEntities = async (context, mainEntity, rowsToStore, model, connection
         }
     }
 
-    await updateColumns(context, columnsToUpdate, model, connection)
+    await updateColumns(context, columnsToUpdate, model, sql)
 }
 
 module.exports = {

@@ -1,7 +1,7 @@
 const { assert } = require("../../../../core/api-utils")
 const { throwBadRequestError } = require("../../../../core/api-utils")
 
-const transactionAction = async ({ req }, context, { db, smtp, sms }) => {
+const transactionAction = async ({ req }, context, { sql, smtp, sms }) => {
 
     const entity = assert.notEmpty(req.params, "entity")
     const view = req.query.view
@@ -23,30 +23,33 @@ const transactionAction = async ({ req }, context, { db, smtp, sms }) => {
         }    
     }
 
-    const connection = await db.getConnection()
+    //const connection = await db.getConnection()
     try {
-        await connection.beginTransaction()
+        // await connection.beginTransaction()
+        await sql.beginTransaction()
     
         for (const [stepId, step] of Object.entries(steps)) {
             const stepFunction = context.config.postSteps[stepId]
-            if (!step.async) await stepFunction({ req, entity }, context, rows, { connection, smtp, sms })
+            if (!step.async) await stepFunction({ req, entity }, context, rows, { sql, smtp, sms })
         }
     
-        await connection.commit()
+        // await connection.commit()
+        await sql.commit()
     
         for (let stepId of Object.keys(steps)) {
             const step = steps[stepId]
             const stepFunction = context.config.postSteps[stepId]
-            if (step.async) stepFunction({ req, entity }, context, rows, { connection, smtp, sms })
+            if (step.async) stepFunction({ req, entity }, context, rows, { sql, smtp, sms })
         }
     
-        connection.release()
+        // connection.release()
         
         return JSON.stringify({ "status": "ok" })    
     }
     catch {
-        await connection.rollback()
-        connection.release()
+        // await connection.rollback()
+        await sql.rollback()
+        // connection.release()
         throw throwBadRequestError()
     }
 }

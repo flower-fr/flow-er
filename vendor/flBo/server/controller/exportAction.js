@@ -3,14 +3,14 @@ const { assert } = require("../../../../core/api-utils")
 
 const { listAction } = require("./listAction")
 
-const exportAction = async ({ req, res }, context, db) => 
+const exportAction = async ({ req, res }, context, sql) => 
 {
     const entity = assert.notEmpty(req.params, "entity")
     const view = (req.query.view) ? req.query.view : "default"
 
     let exportConfig = context.config[`${entity}/export/${view}`]
     if (!exportConfig) exportConfig = context.config[`${entity}/export/default`]
-    const rawData = await listAction({ req }, context, db, exportConfig)
+    const rawData = await listAction({ req }, context, sql, exportConfig)
 
     let data = {}
     for (const row of rawData.rows) {

@@ -125,7 +125,7 @@ const mergePayload = async (context, entity, model, form, config, connection) =>
     return payload
 }
 
-const save = async ({ req }, context, rows, { connection }) => {
+const save = async ({ req }, context, rows, { sql }) => {
     const entity = assert.notEmpty(req.params, "entity")
 
     const model = context.config[`${entity}/model`]
@@ -146,8 +146,8 @@ const save = async ({ req }, context, rows, { connection }) => {
     
     rowsToStore = entitiesToStore(entity, model, rowsToStore)
 
-    await storeEntities(context, entity, rowsToStore, model, connection)
-    await auditCells(context, rowsToStore, connection)
+    await storeEntities(context, entity, rowsToStore, model, sql)
+    await auditCells(context, rowsToStore, sql)
 
     return JSON.stringify({ "status": "ok", "stored": rowsToStore })
 }

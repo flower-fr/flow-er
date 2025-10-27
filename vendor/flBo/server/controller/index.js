@@ -1,9 +1,9 @@
 const { executeService, assert } = require("../../../../core/api-utils")
 const { sessionCookieMiddleware } = require("../../../user/server/controller/sessionCookieMiddleware");
-const { createDbClient } = require("../../../utils/db-client")
+const { createDbClient } = require("../../../utils/db-client") // Deprecated
+const { createSqlClient } = require("../../../flCore/server/model/sql-client")
 
-const { getProperties } = require("../../../../vendor/flBo/server/controller/getProperties")
-//const { getDistribution } = require("../../../../vendor/flbo/server/controller/getDistribution")
+const { getProperties } = require("./getProperties")
 
 const { dashboardAction } = require("./dashboardAction")
 const { detailAction } = require("./detailAction")
@@ -18,9 +18,9 @@ const { notFoundAction } = require("./404")
 
 const { renderIndex } = require("../view/renderIndex")
 
-const registerFlBo = async ({ context, config, logger, app }) => {
-
-    const db = await createDbClient(config.db, context.dbName)
+const registerFlBo = async ({ context, config, logger, app }) => 
+{
+    const sql = await createSqlClient({ config: config.db, logger, dbName: context.dbName })
     const execute = executeService(context, config, logger)
 
     // Default tab
@@ -33,16 +33,16 @@ const registerFlBo = async ({ context, config, logger, app }) => {
 
     app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
 
-    app.get(`${config.prefix}dashboard/:entity`, execute(dashboardAction, context, db))
-    app.get(`${config.prefix}detail/:entity/:id`, execute(detailAction, context, db))
-    app.get(`${config.prefix}detailTab/:entity/:id`, execute(detailTabAction, context, db, logger))
-    app.get(`${config.prefix}export/:entity`, execute(exportAction, context, db))
-    app.get(`${config.prefix}group/:entity`, execute(groupAction, context, db))
-    app.get(`${config.prefix}groupTab/:entity`, execute(groupTabAction, context, db))
-    app.get(`${config.prefix}groupTab/:entity/:id`, execute(groupTabAction, context, db))
-    app.get(`${config.prefix}index/:entity`, execute(index, context, config, db))
-    app.get(`${config.prefix}list/:entity`, execute(listAction, context, db))
-    app.get(`${config.prefix}search/:entity`, execute(searchAction, context, db))
+    app.get(`${config.prefix}dashboard/:entity`, execute(dashboardAction, context))
+    app.get(`${config.prefix}detail/:entity/:id`, execute(detailAction, context))
+    app.get(`${config.prefix}detailTab/:entity/:id`, execute(detailTabAction, context, sql, logger))
+    app.get(`${config.prefix}export/:entity`, execute(exportAction, context, sql))
+    app.get(`${config.prefix}group/:entity`, execute(groupAction, context))
+    app.get(`${config.prefix}groupTab/:entity`, execute(groupTabAction, context, sql))
+    app.get(`${config.prefix}groupTab/:entity/:id`, execute(groupTabAction, context, sql))
+    app.get(`${config.prefix}index/:entity`, execute(index, context, config, sql))
+    app.get(`${config.prefix}list/:entity`, execute(listAction, context, sql))
+    app.get(`${config.prefix}search/:entity`, execute(searchAction, context, sql))
     app.get(`${config.prefix}404`, execute(notFoundAction, context, config))
 
     // fallback : send 404
@@ -81,7 +81,7 @@ const index = async ({ req, logger }, context, config, db) =>
     for (let propertyId of Object.keys(listConfig.properties)) {
         if (!propertyDefs[propertyId]) propertyDefs[propertyId] = {}
     }
-    const properties = await getProperties(db, context, entity, view, propertyDefs, whereParam)
+    const properties = await getProperties(sql, context, entity, view, propertyDefs, whereParam)
 
     /**
      * Retrieve distributions of the data

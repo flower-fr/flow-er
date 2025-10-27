@@ -2,14 +2,13 @@ const multer = require("multer")
 const { sessionCookieMiddleware } = require("../../../user/server/controller/sessionCookieMiddleware");
 const { throwBadRequestError } = require("../../../../core/api-utils")
 
-const { describeAuditModel } = require("../model/config/audit")
-
 const { getAction } = require("./getAction")
 const { postAction, postFormAction } = require("./postAction")
 const { deleteAction } = require("./deleteAction")
 const { getMails } = require("./getMails")
 const { transactionAction } = require("./transactionAction")
-const { createDbClient } = require("../../../utils/db-client")
+const { createDbClient } = require("../../../utils/db-client") // Deprecated
+const { createSqlClient } = require("../../../../vendor/flCore/server/model/sql-client")
 const { createMailClient, createImapClient } = require("../../../utils/mail-client")
 const { executeService, assert } = require("../../../../core/api-utils")
 const { resendSmtp } = require("../post/sendSmtp")
@@ -25,7 +24,8 @@ const { sendSmtp } = require("../post/sendSmtp")
 const { sendSms } = require("../post/sendSms")
 
 const registerCore = async ({ context, config, logger, app }) => {
-    const db = await createDbClient(config.db, context.dbName)
+    const db = await createDbClient(config.db, context.dbName) // Deprecated
+    const sql = await createSqlClient({ config: config.db, logger, dbName: context.dbName })
     const smtp = createMailClient({ config: config.smtp, logger })
     const imap = createImapClient({ config: config.imap, logger })
     const sms = config.sms
@@ -59,14 +59,12 @@ const registerCore = async ({ context, config, logger, app }) => {
     
     app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
 
-    app.get(`${config.prefix}describe-audit-model`, execute(describeAuditModel, context))
-
-    app.get(`${config.prefix}v1/:entity`, execute(getAction, context, { db }))
-    app.get(`${config.prefix}v1/:entity/:id`, execute(getAction, context, { db }))
-    app.post(`${config.prefix}v1/:entity`, execute(postAction, context, { db }))
+    app.get(`${config.prefix}v1/:entity`, execute(getAction, context, { sql, logger }))
+    app.get(`${config.prefix}v1/:entity/:id`, execute(getAction, context, { sql, logger }))
+    app.post(`${config.prefix}v1/:entity`, execute(postAction, context, { sql, logger }))
     app.post(`${config.prefix}file/:entity`, upload.single("attachment"), executeFile)
-    app.post(`${config.prefix}v1/:entity/:transaction/:id`, execute(transactionAction, context, { db, smtp, sms }))
-    app.post(`${config.prefix}v1/:entity/:transaction`, execute(transactionAction, context, { db, smtp, sms }))
+    app.post(`${config.prefix}v1/:entity/:transaction/:id`, execute(transactionAction, context, { sql, smtp, sms }))
+    app.post(`${config.prefix}v1/:entity/:transaction`, execute(transactionAction, context, { sql, smtp, sms }))
     //app.post(`${config.prefix}resendSmtp`, execute(postSmtpAction, context, { db, smtp }))
     //app.get(`${config.prefix}getMails`, execute(getMailsAction, context, { db, imap }))
     app.delete(`${config.prefix}v1/:entity/:id`, execute(deleteAction, context, { db }))

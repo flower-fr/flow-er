@@ -6,13 +6,14 @@ const { entitiesToStore } = require("../model/entitiesToStore")
 const { storeEntities } = require("../post/storeEntities")
 const { auditCells } = require("../post/auditCells")
 
-const postAction = async ({ req }, context, { db }) => {
+const postAction = async ({ req }, context, { sql }) => {
     const entity = assert.notEmpty(req.params, "entity")
     const id = (req.query.id) ? req.query.id : 0
 
-    const connection = await db.getConnection()
+    // const connection = await db.getConnection()
     try {
-        await connection.beginTransaction()
+        // await connection.beginTransaction()
+        await sql.beginTransaction()
 
         const model = context.config[`${entity}/model`]
         const form = req.body
@@ -36,16 +37,18 @@ const postAction = async ({ req }, context, { db }) => {
         /**
          * Apply and audit the changes in the database
          */
-        await storeEntities(context, entity, rowsToStore, model, connection)
-        await auditCells(context, rowsToStore, connection)
+        await storeEntities(context, entity, rowsToStore, model, sql)
+        await auditCells(context, rowsToStore, sql)
 
-        await connection.commit()
-        connection.release()
+        // await connection.commit()
+        await sql.commit()
+        // connection.release()
         return JSON.stringify({ "status": "ok", "stored": rowsToStore })
     }
     catch {
-        await connection.rollback()
-        connection.release()
+        // await connection.rollback()
+        await sql.rollback()
+        // connection.release()
         throw throwBadRequestError()
     }
 }

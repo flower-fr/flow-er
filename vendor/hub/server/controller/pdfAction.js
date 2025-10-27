@@ -1,6 +1,6 @@
 const { assert } = require("../../../../core/api-utils")
 
-const { decrypt } = require("../../../flCore/server/model/encrypt")
+const { decrypt } = require("../../../flCore/server/model/sql-client/encrypt")
 const { createPdf } = require("./createPdf")
 const { select } = require("../../../flCore/server/model/select")
 

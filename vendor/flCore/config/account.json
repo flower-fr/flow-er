@@ -22,6 +22,16 @@
             "visibility": { "entity": "account", "column": "visibility", "audit": true },
             "touched_at": { "entity": "account", "column": "touched_at", "type": "datetime" },
             "touched_by": { "entity": "account", "column": "touched_by", "type": "int" }
+        },
+        "vectors": {
+            "places": {
+                "entity": "place",
+                "foreignKey": "place_id",
+                "foreignEntity": "account",
+                "columns": ["id", "status", "name", "region"],
+                "where": { "status":"new" },
+                "order": "name"
+            }
         }
     },
 

@@ -1,11 +1,12 @@
 const mysql2 = require("mysql2/promise")
 const util = require("util")
 
-const { dElete } = require("./delete")
-const { insert } = require("./insert")
-const { select } = require("./select")
-const { update } = require("./update")
-const { updateCase } = require("./updateCase")
+const { selectVectors } = require("./sql-client/selectVectors")
+const { sqlDelete } = require("./sql-client/sqlDelete")
+const { sqlInsert } = require("./sql-client/sqlInsert")
+const { sqlUpdate } = require("./sql-client/sqlUpdate")
+const { sqlUpdateCase } = require("./sql-client/sqlUpdateCase")
+const { sqlSelect } = require("./sql-client/sqlSelect")
 
 const createSqlClient = async ({ config, logger, dbName }) => 
 {
@@ -33,7 +34,8 @@ const createSqlClient = async ({ config, logger, dbName }) =>
 
 const beginTransaction = ({ logger, closure }) => async () => 
 {
-    await closure.connection.beginTransaction()
+    closure.connection = await closure.db.getConnection()
+    closure.connection.beginTransaction()
     logger && logger.debug("Transaction initiated")
 }
 
@@ -73,51 +75,33 @@ const rollback = ({ logger, closure }) => async () =>
     logger && logger.debug("Transaction rolled back")
 }
 
-const sql = async ({ context, type, entity, columns, where, order, limit, ids, data, column, pairs, debug }, connection, logger) =>
+const sql = async ({ context, type, entity, columns, where, order, limit, vectors, ids, data, column, pairs, params, debug }, connection, logger) =>
 {
     const model = context.config[`${ entity }/model`]
+
     if (type === "select") {
-        const request = select(context, entity, columns, where || {}, order, limit, model, debug)
-        logger && logger.debug(request)
-        const cursor = (await connection.execute(request))[0]
-        const result = []
-        for (const row of cursor) {
-            const data = {}
-            for (const [key, value] of Object.entries(row)) {
-                if (model.properties[key].type === "json") {
-                    data[key] = JSON.parse(value)
-                } else {
-                    data[key] = value
-                }
-            }
-            result.push(data)
-        }
-        logger && logger.debug(util.inspect(result))
-        return result
+        
+        return await sqlSelect({ context, entity, columns, where, order, limit, debug }, model, connection, logger)
+
+    } else if (type === "vectors") {
+        
+        return await selectVectors({context, vectors, debug}, model, connection, logger)
+
     } else if (type === "insert") {
-        const request = insert(context, entity, data, model, debug)
-        logger && logger.debug(request)
-        const insertedRows = await connection.execute(request)
-        logger && logger.debug(util.inspect(insertedRows))
-        return insertedRows[0].insertId
+
+        return sqlInsert({ context, entity, data, params, debug }, model, connection, logger)
+
     } else if (type === "update") {
-        const request = update(context, entity, ids, data, model, debug)
-        logger && logger.debug(request)
-        const result = await connection.execute(request)
-        logger && logger.debug(util.inspect(result[0]))
-        return
+
+        return sqlUpdate({ context, entity, ids, data, debug }, model, connection, logger)
+
     } else if (type === "updateCase") {
-        const request = updateCase(context, entity, column, pairs, model, debug)
-        logger && logger.debug(request)
-        const result = await connection.execute(request)
-        logger && logger.debug(util.inspect(result[0]))
-        return
+
+        return sqlUpdateCase({ context, entity, column, pairs, debug }, model, connection, logger)
+
     } else if (type === "delete") {
-        const request = dElete(context, entity, ids, model, debug)
-        logger && logger.debug(request)
-        const result = await connection.execute(request)
-        logger && logger.debug(util.inspect(result))
-        return
+
+        return sqlDelete({ context, entity, ids, debug }, model, connection, logger)
     }
 }
 

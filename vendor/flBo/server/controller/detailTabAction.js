@@ -3,7 +3,7 @@ const util = require("util")
 const { getProperties } = require("./getProperties")
 const { getList } = require("./getList")
 
-const detailTabAction = async ({ req }, context, db, logger) => {
+const detailTabAction = async ({ req }, context, sql, logger) => {
     const entity = assert.notEmpty(req.params, "entity")
     const id = assert.notEmpty(req.params, "id")
     const view = (req.query.view) ? req.query.view : "default"
@@ -40,7 +40,7 @@ const detailTabAction = async ({ req }, context, db, logger) => {
         data[entityId] = {}
 
         const propertyDefs = dataConfig.properties
-        const properties = await getProperties(db, context, entityId, view, propertyDefs, where)
+        const properties = await getProperties(sql, context, entityId, view, propertyDefs, where)
 
         logger && logger.debug(`properties for ${entityId}: ${util.inspect(properties, { colors: true, depth: null })}`)
 
@@ -77,7 +77,7 @@ const detailTabAction = async ({ req }, context, db, logger) => {
 
         let rows
         if (Object.keys(subWhere).length > 0) {
-            rows = await getList(db, context, entityId, columns, properties, subWhere, order, limit)
+            rows = await getList(sql, context, entityId, columns, properties, subWhere, order, limit)
         }
         else rows = []
         data[entityId].rows = rows        

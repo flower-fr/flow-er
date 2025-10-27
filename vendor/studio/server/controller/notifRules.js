@@ -8,7 +8,7 @@ const { entitiesToStore } = require("../../../../vendor/flCore/server/model/enti
 const { storeEntities } = require("../../../../vendor/flCore/server/post/storeEntities")
 const { auditCells } = require("../../../../vendor/flCore/server/post/auditCells")
 
-const getNotifRules = async ({ req }, context, db) => 
+const getNotifRules = async ({ req }, context, sql) => 
 {
     const entity = assert.notEmpty(req.params, "entity")
     const view = (req.query.view) ? req.query.view : "default"
@@ -37,25 +37,21 @@ const getNotifRules = async ({ req }, context, db) =>
     return renderNotifRules({ context, entity, view }, data)
 }
 
-const postNotifRules = async ({ req }, context, db) => 
+const postNotifRules = async ({ req }, context, sql) => 
 {
     const entity = assert.notEmpty(req.params, "entity")
     const form = req.body
     const file = req.file && req.file.buffer
     if (file) form.data = file
 
-    const connection = await db.getConnection()
-
     try {
         const model = context.config[`${ entity }/model`]
         let { rowsToStore } = dataToStore(model, [form])
         rowsToStore = entitiesToStore(entity, model, rowsToStore)
-        await storeEntities(context, entity, rowsToStore, model, connection)
-        await auditCells(context, rowsToStore, connection)
-        await connection.release()
+        await storeEntities(context, entity, rowsToStore, model, sql)
+        await auditCells(context, rowsToStore, sql)
     }
     catch {
-        connection.release()
         throw throwBadRequestError()
     }
     return { "status": "ok" }

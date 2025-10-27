@@ -1,6 +1,6 @@
 const { select } = require("../../../flCore/server/model/select")
 
-const getProperties = async (db, context, entity, view, propertyDefs, whereParam = {}) => {
+const getProperties = async (sql, context, entity, view, propertyDefs, whereParam = {}) => {
     const properties = {}, propertyList = Object.keys(propertyDefs)
     const dataModel = context.config[`${entity}/model`]
     for (let propertyId of propertyList) {
@@ -53,7 +53,8 @@ const getProperties = async (db, context, entity, view, propertyDefs, whereParam
         if (property.type == "input" && property.autocomplete) {
             const order = {}
             order[propertyId] = "ASC"
-            const rows = (await db.execute(select(context, entity, [property.autocomplete], {}, order, null, context.config[`${entity}/model`])))[0]
+            // const rows = (await db.execute(select(context, entity, [property.autocomplete], {}, order, null, context.config[`${entity}/model`])))[0]
+            const rows = await sql.execute({ context, type: "select", entity, columns: [property.autocomplete], where: {}, order })
             property.values = []
             for (const row of rows) {
                 if (row[property.autocomplete].length !== 0) property.values.push(row[property.autocomplete])
@@ -80,7 +81,9 @@ const getProperties = async (db, context, entity, view, propertyDefs, whereParam
             let order = {}
             if (property.order[0] == "-") order[property.order.substr(1)] = "DESC" 
             else order[property.order] = "ASC"
-            const rows = (await db.execute(select(context, property.entity, tagColumns, where, order, null, context.config[`${property.entity}/model`])))[0]
+            // const rows = (await db.execute(select(context, property.entity, tagColumns, where, order, null, context.config[`${property.entity}/model`])))[0]
+console.log(property.entity, tagColumns, where, order)
+            const rows = await sql.execute({ context, type: "select", entity: property.entity, columns: tagColumns, where, order })
             const modalities = []
             for (let row of rows) {
                 if (property.type == "tag") {

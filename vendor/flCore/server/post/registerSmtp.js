@@ -2,7 +2,7 @@ const moment = require("moment")
 
 const { insert } = require("../model/insert")
 
-const registerSmtp = async ({ req }, context, rows, { connection }) => {
+const registerSmtp = async ({ req }, context, rows, { sql }) => {
 
     /**
      * Save message to send
@@ -45,8 +45,8 @@ const registerSmtp = async ({ req }, context, rows, { connection }) => {
             attachments: row.attachments
         }
         if (row.scheduled_at && row.scheduled_at !== "") data.scheduled_at = row.scheduled_at
-        const [insertedRow] = (await connection.execute(insert(context, "interaction", data, context.config["interaction/model"])))
-        row.insertId = insertedRow.insertId   
+        // const [insertedRow] = (await connection.execute(insert(context, "interaction", data, context.config["interaction/model"])))
+        row.insertId = await sql.execute({ context, type: "insert", entity: "interaction", data })
 
         /**
          * Insert a note
@@ -60,7 +60,8 @@ const registerSmtp = async ({ req }, context, rows, { connection }) => {
             summary: `${ context.translate("Email sent") } - ${row.email_subject}`
         }
         if (row.scheduled_at && row.scheduled_at !== "") data.touched_at = row.scheduled_at
-        await connection.execute(insert(context, "crm_contact", data, context.config["crm_contact/model"]))
+        // await connection.execute(insert(context, "crm_contact", data, context.config["crm_contact/model"]))
+        await sql.execute({ context, type: "insert", entity: "crm_contact", data })
     }
 }
 
