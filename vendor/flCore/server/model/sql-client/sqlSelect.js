@@ -1,7 +1,7 @@
 const util = require("util")
 
 const { decrypt } = require("./encrypt")
-const { select } = require("../Select")
+const { select } = require("../select")
 const { sensitiveWhere } = require("./sensitiveWhere")
 
 const sqlSelect = async ({ context, entity, columns, where, order, limit = 1000, debug }, model, connection, logger) =>
@@ -24,6 +24,7 @@ const sqlSelect = async ({ context, entity, columns, where, order, limit = 1000,
             }
 
             if (model.properties[key].type === "json") {
+                console.log("unparsed json : ", value)
                 data[key] = JSON.parse(value)
             } else {
                 data[key] = value
