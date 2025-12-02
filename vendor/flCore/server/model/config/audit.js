@@ -1,11 +1,8 @@
 const { Model } = require("./Model")
 
-const describeAuditModel = () =>
-{
-    (new(Audit)).serialize("vendor/flCore/config/auditModel.json")
-}
-
 class Audit extends Model {
+
+    identifier = "audit"
 
     entities = {
         audit: { table: "audit" }
@@ -20,14 +17,9 @@ class Audit extends Model {
         property: { entity: "audit", column: "property" },
         value: { entity: "audit", column: "value", type: "text" },
         previous_value: { entity: "audit", column: "previous_value", type: "text" },
-
-        visibility: { entity: "audit", column: "visibility", audit: true },
-        touched_at: { entity: "audit", column: "touched_at", type: "datetime" },
-        touched_by: { entity: "audit", column: "touched_by", type: "int" }
     }
 }
 
 module.exports = {
-    describeAuditModel,
     Audit
 }

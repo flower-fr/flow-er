@@ -10,6 +10,37 @@ const postGroupTab = async ({ context, entity, view }, tab, searchParams, rows) 
 
             const submit = event.submitter
 
+            /**
+             * Add an attachment in the list
+             */
+
+            if ($(submit).attr("id") === "submitButton-document_binary") {
+                // Special case for file upload outside of FormData
+                const fileInput = document.getElementById("document_binary")
+                if (fileInput.files.length === 0) {
+                    alert(context.translate("Select a file to download"))
+                    return
+                }
+                const fileSelect = document.getElementById("document_binary")
+                if (fileSelect) {
+                    const formData = new FormData(), files = fileSelect.files
+                    formData.append("formJwt", $("#formJwt").val())
+                    for (var i = 0; i < files.length; i++) {
+                        var file = files[i]
+                        if (file.size >= 1024000) {
+                            alert(context.translate("File to big (1 Mb max)"))
+                            return
+                        }
+                        formData.append("attachment", file, file.name)
+                    }
+                    const xhttp = await fetch("/core/file/document_binary", {
+                        method: "POST",
+                        body: formData
+                    })
+                    getGroupTab({ context, entity, view }, tab, searchParams)
+                }
+            }
+
             $(".fl-group-tab-submit").prop("disabled", true)
 
             // Create a new FormData object.

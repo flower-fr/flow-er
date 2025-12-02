@@ -50,7 +50,7 @@ const registerCore = async ({ context, config, logger, app }) => {
     context.config.postSteps.sendSms = sendSms
  
     const executeFile = async (req, res) => {
-        const result = await postFormAction({ req }, context, { db })
+        const result = await postFormAction({ req }, context, { sql, logger })
         return res.status(200).send(result)
     }
     const upload = multer()

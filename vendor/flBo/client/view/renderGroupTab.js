@@ -353,31 +353,80 @@ const renderGroupTab = ({ context, entity }, section, properties, row, payload )
                 )    
             }
             else {
-                html.push(
-                    `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3">
-                        <div class="form-outline">
-                            <select 
-                                class="updateSelect"
-                                data-mdb-select-init
-                                id="${propertyId}"
-                                data-fl-disabled="${ disabled }" ${ required }
-                                data-fl-key-property="${ property.options.columns && property.options.columns.id }"
-                            >
-                                <option />`
-                )
-    
-                for (let modalityId of Object.keys(modalities)) {
-                    const modality = modalities[modalityId]
-                    html.push(`<option value="${modalityId}" ${(value == modalityId) ? "selected" : ""}>${modality}</option>`)
-                }
-    
-                html.push(
-                    `       </select>
-                            <label class="form-label select-label">${(required) ? "* " : ""}${label}</label>
-                            <div class="invalid-feedback">${ context.translate("Invalid") }</div>
+                if (property.entity == "document_binary") {
+
+                    html.push(
+                        `<div class="col-md-2 mb-3">
+                            <div class="form-outline">
+                                <select 
+                                    class="updateSelect"
+                                    data-mdb-select-init
+                                    id="${propertyId}"
+                                    data-fl-disabled="${ disabled }" ${ required }
+                                    data-fl-key-property="${ property.options.columns && property.options.columns.id }"
+                                >
+                                    <option />`
+                    )
+        
+                    for (let modalityId of Object.keys(modalities)) {
+                        const modality = modalities[modalityId]
+                        html.push(`<option value="${modalityId}" ${(value == modalityId) ? "selected" : ""}>${modality}</option>`)
+                    }
+        
+                    html.push(
+                        `       </select>
+                                <label class="form-label select-label">${(required) ? "* " : ""}${label}</label>
+                                <div class="invalid-feedback">${ context.translate("Invalid") }</div>
+                            </div>
                         </div>
-                    </div>`
-                )    
+                        <div class="col-md-4">
+                            <div class="input-group mb-3">
+                                <div class="form-outline formOutline" data-mdb-input-init="" data-mdb-input-initialized="true">
+                                    <input type="file" id="document_binary" class="form-control form-control-sm fl-add-file" />
+                                </div>
+                                <button
+                                    id="submitButton-document_binary" 
+                                    class="btn btn-warning btn-sm fl-group-tab-submit" 
+                                    type="submit"
+                                    data-controller="core"
+                                    data-action="v1"
+                                    data-entity="mkt_targeted"
+                                    data-transaction="sendEmail"
+                                >
+                                    ${context.translate("Add")}
+                                </button>
+                            </div>
+                        </div>`
+                    )
+
+                } else {
+
+                    html.push(
+                        `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3">
+                            <div class="form-outline">
+                                <select 
+                                    class="updateSelect"
+                                    data-mdb-select-init
+                                    id="${propertyId}"
+                                    data-fl-disabled="${ disabled }" ${ required }
+                                    data-fl-key-property="${ property.options.columns && property.options.columns.id }"
+                                >
+                                    <option />`
+                    )
+        
+                    for (let modalityId of Object.keys(modalities)) {
+                        const modality = modalities[modalityId]
+                        html.push(`<option value="${modalityId}" ${(value == modalityId) ? "selected" : ""}>${modality}</option>`)
+                    }
+        
+                    html.push(
+                        `       </select>
+                                <label class="form-label select-label">${(required) ? "* " : ""}${label}</label>
+                                <div class="invalid-feedback">${ context.translate("Invalid") }</div>
+                            </div>
+                        </div>`
+                    )
+                }
             }
         }
 

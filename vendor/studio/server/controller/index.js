@@ -18,7 +18,7 @@ const registerStudio = async ({ context, config, logger, app }) => {
     const execute = executeService(context.clone(), config, logger)
     const executeImport = async (req, res) => {
         if (!context.isAllowed("document_binary")) return res.status(403).send({message: "unauthorized"})
-        const result = await postNotifRules({ req }, context, db)
+        const result = await postNotifRules({ req }, context, sql, logger)
         return res.status(200).send(result)
     }
     const upload = multer()
@@ -30,8 +30,8 @@ const registerStudio = async ({ context, config, logger, app }) => {
     app.post(`${config.prefix}model/:module/:release`, execute(postModel, context, db))
 
     app.get(`${config.prefix}notifRules/:entity`, execute(getNotifRules, context, sql))
-    app.post(`${config.prefix}notifRules/:entity`, execute(postNotifRules, context, sql))
-    app.post(`${config.prefix}notifRules/:entity`, upload.single("file"), executeImport)
+    //app.post(`${config.prefix}notifRules/:entity`, execute(postNotifRules, context, sql))
+    app.post(`${config.prefix}notifRules/:entity`, upload.single("data"), executeImport)
 }
 
 const ddl = async ({ req }, context) => {

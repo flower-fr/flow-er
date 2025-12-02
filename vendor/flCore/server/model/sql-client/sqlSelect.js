@@ -1,7 +1,7 @@
 const util = require("util")
 
 const { decrypt } = require("./encrypt")
-const { select } = require("../Select")
+const { select } = require("../select")
 const { sensitiveWhere } = require("./sensitiveWhere")
 
 const sqlSelect = async ({ context, entity, columns, where, order, limit = 1000, debug }, model, connection, logger) =>

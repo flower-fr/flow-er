@@ -9,7 +9,6 @@ const renderUpdate = ({ context }, section, properties, row ) => {
     for (let propertyId of section.properties) {
         const property = properties[propertyId]
         const options = property.options
-        console.log(propertyId, options)
         const label = (options.labels) ? context.localize(options.labels) : context.localize(property.labels)
         const propertyType = (options.type) ? options.type : property.type
         const disabled = (property.options.readonly /* deprecated */ || property.options.disabled) ? "disabled" : ""

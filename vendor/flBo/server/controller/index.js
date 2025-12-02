@@ -43,6 +43,7 @@ const registerFlBo = async ({ context, config, logger, app }) =>
     app.get(`${config.prefix}index/:entity`, execute(index, context, config, sql))
     app.get(`${config.prefix}list/:entity`, execute(listAction, context, sql))
     app.get(`${config.prefix}search/:entity`, execute(searchAction, context, sql))
+
     app.get(`${config.prefix}404`, execute(notFoundAction, context, config))
 
     // fallback : send 404

@@ -5,6 +5,7 @@ import { triggerSmsText } from "/flBo/cli/controller/triggerSmsText.js"
 import { triggerEmailText } from "/flBo/cli/controller/triggerEmailText.js"
 import { postTab } from "/flBo/cli/controller/postTab.js"
 import { postGroupTab } from "/flBo/cli/controller/group.js"
+import { ComponentTree } from '/flBo/cli/controller/ComponentTree.js'
 
 const getTab = async ({ context, entity, view }, tab, route, id, message, searchParams, order, callback) => {
 
@@ -49,6 +50,10 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
     }
     
     const data = await response.json()
+
+    $(".renderPoc").each(function () { 
+        ComponentTree.loadView("poc")
+    })
 
     $(".renderDetailTab").each(function () { 
         const tabId = $(this).attr("id").split("-")[1]

@@ -1,5 +1,6 @@
 const { updateColumns } = require("./updateColumns")
 const { insert } = require("../../../flCore/server/model/insert")
+const util = require("util")
 
 const storeEntities = async (context, mainEntity, rowsToStore, model, sql) => {
 
@@ -17,7 +18,7 @@ const storeEntities = async (context, mainEntity, rowsToStore, model, sql) => {
             }
             // const [insertedRow] = (await connection.execute(insert(context, entity.table, entityToInsert.cells, insertModel), params))
             // entityToInsert.rowId = insertedRow.insertId
-            entityToInsert.rowId = (await sql.execute({ context, type: "insert", entity: entity.table, data: entityToInsert.cells, params }))
+            entityToInsert.rowId = await sql.execute({ context, type: "insert", entity: entity.table, data: entityToInsert.cells, params })
             if (entity.foreignEntity) {
                 if (entitiesToInsert[entity.foreignEntity]) {
                     entitiesToInsert[entity.foreignEntity].cells[entity.foreignKey] = entityToInsert.rowId //insertedRow.insertId

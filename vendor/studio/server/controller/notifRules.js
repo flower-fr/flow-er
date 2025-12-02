@@ -1,5 +1,6 @@
 const { assert } = require("../../../../core/api-utils")
 const { throwBadRequestError } = require("../../../../core/api-utils")
+const util = require("util")
 
 const { renderNotifRules } = require("../rendering/renderNotifRules")
 
@@ -37,21 +38,21 @@ const getNotifRules = async ({ req }, context, sql) =>
     return renderNotifRules({ context, entity, view }, data)
 }
 
-const postNotifRules = async ({ req }, context, sql) => 
+const postNotifRules = async ({ req }, context, sql, logger) => 
 {
     const entity = assert.notEmpty(req.params, "entity")
     const form = req.body
     const file = req.file && req.file.buffer
     if (file) form.data = file
-
     try {
         const model = context.config[`${ entity }/model`]
         let { rowsToStore } = dataToStore(model, [form])
-        rowsToStore = entitiesToStore(entity, model, rowsToStore)
+        rowsToStore = entitiesToStore(entity, model, rowsToStore)        
         await storeEntities(context, entity, rowsToStore, model, sql)
         await auditCells(context, rowsToStore, sql)
     }
-    catch {
+    catch(err) {
+        logger && logger.debug(util.inspect(err))
         throw throwBadRequestError()
     }
     return { "status": "ok" }

@@ -41,8 +41,8 @@ const registerMiddlewares = async (context, config, logger, app) => {
         const middleware = require(middlewares[key].dir)
         if (typeof middleware.register === "function") {
             if (middlewares[key].status !== "disabled") {
-                app.use(`${middlewares[key].prefix}cli/`, express.static(`./vendor${middlewares[key].prefix}client/`))
-                app.use(`${middlewares[key].prefix}cli/`, express.static(`./module${middlewares[key].prefix}client/`))
+                app.use(`${middlewares[key].prefix}cli/`, express.static(`./vendor/${key}/client/`))
+                app.use(`${middlewares[key].prefix}cli/`, express.static(`./module/${key}/client/`))
                 await middleware.register({context, config: middlewares[key], logger, app})    
             }
         }
