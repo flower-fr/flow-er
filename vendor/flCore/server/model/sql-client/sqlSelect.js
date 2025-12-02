@@ -24,7 +24,6 @@ const sqlSelect = async ({ context, entity, columns, where, order, limit = 1000,
             }
 
             if (model.properties[key].type === "json") {
-                console.log("unparsed json : ", value)
                 data[key] = JSON.parse(value)
             } else {
                 data[key] = value
