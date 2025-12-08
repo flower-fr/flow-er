@@ -1,28 +1,27 @@
 const { assert } = require("../../../../core/api-utils")
 const { updateColumns } = require("../../../flCore/server/post/updateColumns")
+const util = require("util")
 
 const { throwBadRequestError } = require("../../../../core/api-utils")
 
-const deleteAction = async ({ req }, context, { db }) => {
+const deleteAction = async ({ req }, context, { sql, logger }) => {
     const entity = assert.notEmpty(req.params, "entity")
     let id = req.params.id
     if (!id) id = req.body[0] && req.body[0].id
 
-    const connection = await db.getConnection()
     try {
-        await connection.beginTransaction()
+        await sql.beginTransaction()
         const model = context.config[`${entity}/model`], table = model.entities[entity].table
         const columnsToUpdate = {}, pair = {}
         pair[id] = "deleted"
         columnsToUpdate[table] = { visibility: pair }
-        updateColumns(context, columnsToUpdate, null, connection)
-        await connection.commit()
-        connection.release()
+        updateColumns(context, columnsToUpdate, null, sql)
+        await sql.commit()
         return JSON.stringify({ "status": "ok" })
     }
-    catch {
-        await connection.rollback()
-        connection.release()
+    catch (err) {
+        logger && logger.debug(util.inspect(err))
+        await sql.rollback()
         throw throwBadRequestError()
     }
 }

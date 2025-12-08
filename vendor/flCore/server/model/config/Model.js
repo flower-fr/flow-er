@@ -13,7 +13,9 @@ class Model
         json[`${this.identifier}/model`] = {
             entities: this.entities,
             properties: this.properties,
-            audit: this.audit || "audit",
+        }
+        if (this.audit) {
+            json[`${this.identifier}/model`]["audit"] = this.audit
         }
         fs.writeFileSync(`${path}/${this.identifier}.json`, JSON.stringify(json))
     }

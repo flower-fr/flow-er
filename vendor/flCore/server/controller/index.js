@@ -67,8 +67,8 @@ const registerCore = async ({ context, config, logger, app }) => {
     app.post(`${config.prefix}v1/:entity/:transaction`, execute(transactionAction, context, { sql, smtp, sms }))
     //app.post(`${config.prefix}resendSmtp`, execute(postSmtpAction, context, { db, smtp }))
     //app.get(`${config.prefix}getMails`, execute(getMailsAction, context, { db, imap }))
-    app.delete(`${config.prefix}v1/:entity/:id`, execute(deleteAction, context, { db }))
-    app.delete(`${config.prefix}v1/:entity`, execute(deleteAction, context, { db }))
+    app.delete(`${config.prefix}v1/:entity/:id`, execute(deleteAction, context, { sql, logger }))
+    app.delete(`${config.prefix}v1/:entity`, execute(deleteAction, context, { sql, logger }))
 }
 
 // const postSmtpAction = async ({ req }, context, { db: connection, smtp }) => 

@@ -21,6 +21,12 @@
                 "place/bank_account",
                 "place/bank_identifier"
             ]
+        },
+        "V251212": { 
+            "entities": [
+                "www_content"
+            ],
+            "properties" : []
         }
     }
 }
