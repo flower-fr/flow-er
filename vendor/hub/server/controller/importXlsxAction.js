@@ -123,7 +123,7 @@ const match = (payload, importConfig, { valid, invalid }) => {
  * Import xlsx files
  */
 
-const getImportXlsxAction = async ({ req }, context, db) => {
+const getImportXlsxAction = async ({ req }, context, sql) => {
     const entity = assert.notEmpty(req.params, "entity")
     const view = (req.query.view) ? req.query.view : "default"
 
@@ -146,10 +146,9 @@ const getImportXlsxAction = async ({ req }, context, db) => {
         }
     }
 
-    const connection = await db.getConnection()
-
     const interactionModel = context.config["interaction/model"]
-    const [cursor] = await connection.execute(select(context, "interaction", ["id", "status", "endpoint", "body"], { "status": "new", "endpoint": `hub/import-xlsx/${entity}` }, null, null, interactionModel))
+    // const [cursor] = await db.execute(select(context, "interaction", ["id", "status", "endpoint", "body"], { "status": "new", "endpoint": `hub/import-xlsx/${entity}` }, null, null, interactionModel))
+    const [cursor] = await sql.execute({ context, type: "select", entity: "interaction", columns : ["id", "status", "endpoint", "body"], where: { "status": "new", "endpoint": `hub/import-xlsx/${entity}` }, model: interactionModel })
     if (cursor.length > 0) {
         result.message = { default: "A previous import is pending", "fr_FR": "Un précédent import est en attente", level: "warning" }
         const interaction = cursor[0]
@@ -182,7 +181,7 @@ const getImportXlsxAction = async ({ req }, context, db) => {
     return result
 }
 
-const postImportXlsxAction = async ({ req }, context, db) => {
+const postImportXlsxAction = async ({ req }, context, sql, logger) => {
     const entity = assert.notEmpty(req.params, "entity")
     const interactionId = req.params.id
     const view = (req.query.view) ? req.query.view : "default"
@@ -203,7 +202,6 @@ const postImportXlsxAction = async ({ req }, context, db) => {
         }
     }
 
-    const connection = await db.getConnection()
     try {
         const interactionModel = context.config["interaction/model"]
 
@@ -232,7 +230,8 @@ const postImportXlsxAction = async ({ req }, context, db) => {
                 "authorization": "bearer",
                 "status_code": "200"
             }
-            const [insertedRow] = (await connection.execute(insert(context, "interaction", interactionData, interactionModel)))
+            // const [insertedRow] = (await connection.execute(insert(context, "interaction", interactionData, interactionModel)))
+            const insertId = await sql.execute({ context, type: "insert", entity: "interaction", data: interactionData, model: interactionModel })
 
             const result = {
                 layout: {
@@ -252,7 +251,7 @@ const postImportXlsxAction = async ({ req }, context, db) => {
                     controller: "hub",
                     action: "import-xlsx",
                     entity: entity,
-                    id: insertedRow.insertId,
+                    id: insertId,
                     view,
                     labels: { default: "import", fr_FR: "Importer" }
                 }
@@ -265,9 +264,11 @@ const postImportXlsxAction = async ({ req }, context, db) => {
          * Read the previously loaded interaction
          */
 
-        const [cursor] = await connection.execute(select(context, "interaction", ["status", "endpoint", "body"], { "id": interactionId }, null, null, interactionModel))
+        // const [cursor] = await connection.execute(select(context, "interaction", ["status", "endpoint", "body"], { "id": interactionId }, null, null, interactionModel))
+        const cursor = await sql.execute({ context, type: "select", entity: "interaction", columns : ["status", "endpoint", "body"], where: { "id": interactionId }, model: interactionModel })
         if (cursor.length == 0) return JSON.stringify({ "status": "ko", "message": "Unknown interaction" })
         const interaction = cursor[0]
+console.log(interaction)
         if (interaction.endpoint != `hub/import-xlsx/${entity}`) return JSON.stringify({ "status": "ko", "message": "Not an import-xlsx interaction or entity not matching" })
         if (interaction.status != "new") return JSON.stringify({ "status": "ko", "message": "Already processed interaction" })
 
@@ -276,13 +277,13 @@ const postImportXlsxAction = async ({ req }, context, db) => {
         if (!payload || !valid || !invalid) return JSON.stringify({ "status": "ko", "message": "Invalid JSON data in interaction" })
         
         const targetModel = context.config[`${entity}/model`]
-        const mergedPayload = await mergePayload(context, entity, targetModel, valid, importConfig, connection)
+        const mergedPayload = await mergePayload(context, entity, targetModel, valid, importConfig, sql, logger)
 
         /**
          * Find out the data to actually store in the database 
          */
 
-        await connection.beginTransaction()
+        await sql.beginTransaction()
 
         let { rowsToStore, rowsToReject } = dataToStore(targetModel, mergedPayload)
         // if (rowsToReject.length > 0) {
@@ -294,18 +295,18 @@ const postImportXlsxAction = async ({ req }, context, db) => {
          */
 
         rowsToStore = entitiesToStore(entity, targetModel, rowsToStore)
-        await storeEntities(context, entity, rowsToStore, targetModel, connection)
-        await auditCells(context, rowsToStore, connection)
+        await storeEntities(context, entity, rowsToStore, targetModel, sql, logger)
+        await auditCells(context, rowsToStore, sql, logger)
 
-        await connection.execute(update(context, "interaction", [interactionId], { "status": "processed"}, interactionModel))
+        // await connection.execute(update(context, "interaction", [interactionId], { "status": "processed"}, interactionModel))
+        await sql.execute({ context, type: "update", entity: "interaction", ids: [interactionId], data: { "status": "processed"}, model: interactionModel })
 
-        await connection.commit()
-        await connection.release()
+        await sql.commit()
         return JSON.stringify({ "status": "ok", "stored": rowsToStore })
     }
-    catch {
-        await connection.rollback()
-        await connection.release()
+    catch (err) {
+        logger && logger.debug(util.inspect(err))
+        await sql.rollback()
         return JSON.stringify({ "status": "ko", "errors": "Bad request" })
     }
 }

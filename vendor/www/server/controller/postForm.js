@@ -1,20 +1,19 @@
 const { assert } = require("../../../../core/api-utils")
 const moment = require("moment")
-const { throwBadRequestError } = require("../../../../core/api-utils")
+const util = require("util")
 
-const { select } = require("../../../flCore/server/model/select")
-const { insert } = require("../../../flCore/server/model/insert")
+const { throwBadRequestError } = require("../../../../core/api-utils")
 
 const { dataToStore } = require("../../../flCore/server/model/dataToStore")
 const { entitiesToStore } = require("../../../flCore/server/model/entitiesToStore")
 const { storeEntities } = require("../../../flCore/server/post/storeEntities")
 const { auditCells } = require("../../../flCore/server/post/auditCells")
+const { log } = require("console")
 
-const postForm = async ({ req }, context, config, db) => {
+const postForm = async ({ req }, context, config, sql, logger) => {
     const entity = assert.notEmpty(req.params, "entity")
     const form = req.body
 
-    const connection = await db.getConnection()
     let status = "ok"
 
     try {
@@ -58,24 +57,22 @@ const postForm = async ({ req }, context, config, db) => {
             method: "POST",
             params: JSON.stringify(interactionParams)
         }
-        await connection.execute(insert(context, "interaction", data, interactionModel))
+        await sql.execute({ context, type: "insert", entity: "interaction", data, model: interactionModel })
 
         /**
          * Check validity
          */
         if (status === "unprocessable" ) {
-            await connection.release()
             return JSON.stringify({ status: "unprocessable"})
         } 
         else if (status === "undelivrable" ) {
-            await connection.release()
             return JSON.stringify({ status: "undelivrable"})
         } 
 
         /**
          * Process the request
          */
-        await connection.beginTransaction()
+        await sql.beginTransaction()
 
         form.status = "new"
         form.callback_date = moment().add(1, "days").format("YYYY-MM-DD")
@@ -86,7 +83,9 @@ const postForm = async ({ req }, context, config, db) => {
         form.owner_id = 1
 
         const model = context.config[`${entity}/model`]
-        const [rows] = (await connection.execute(select(context, entity, ["id", "n_first", "email"], { "n_first": form.n_first, "email": form.email }, null, null, model)))
+        // const [rows] = (await connection.execute(select(context, entity, ["id", "n_first", "email"], { "n_first": form.n_first, "email": form.email }, null, null, model)))
+        const rows = await sql.execute({ context, type: "select", entity, columns: ["id", "n_first", "email"], where: { "n_first": form.n_first, "email": form.email }, model })
+
         if (rows.length > 0) {
             form.id = rows[0].id
         }
@@ -98,19 +97,19 @@ const postForm = async ({ req }, context, config, db) => {
          */
 
         rowsToStore = entitiesToStore(entity, model, rowsToStore)
+        logger && logger.debug(util.inspect(rowsToStore))
 
         /**
          * Apply and audit the changes in the database
          */
-        await storeEntities(context, entity, rowsToStore, model, connection)
-        await auditCells(context, rowsToStore, connection)
+        await storeEntities(context, entity, rowsToStore, model, sql)
+        await auditCells(context, rowsToStore, sql)
 
-        await connection.commit()
-        await connection.release()
+        await sql.commit()
     }
-    catch {
-        await connection.rollback()
-        connection.release()
+    catch (err) {
+        logger && logger.debug(util.inspect(err))
+        await sql.rollback()
         throw throwBadRequestError()
     }
 

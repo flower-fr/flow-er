@@ -24,7 +24,7 @@ const foreignKeys = (mainEntity, model, propertyIds) => {
     return result
 }
 
-const mergePayload = async (context, entity, model, form, config, connection) => {
+const mergePayload = async (context, entity, model, form, config, sql, logger) => {
 
     /**
      * Search for existing row and retrieve foreign key values and updatable property values
@@ -51,9 +51,10 @@ const mergePayload = async (context, entity, model, form, config, connection) =>
      */
 
     let cursor
-    const request = select(context, entity, columns, where, null, null, model)
+    // const request = select(context, entity, columns, where, null, null, model)
     try {
-        [cursor] = await connection.execute(request)
+        // [cursor] = await connection.execute(request)
+        cursor = await sql.execute({ context, type: "select", entity, columns, where, model })
     }
     catch {
         throw (new Error("Bad request"))

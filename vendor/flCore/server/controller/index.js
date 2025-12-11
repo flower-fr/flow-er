@@ -7,7 +7,7 @@ const { postAction, postFormAction } = require("./postAction")
 const { deleteAction } = require("./deleteAction")
 const { getMails } = require("./getMails")
 const { transactionAction } = require("./transactionAction")
-const { createDbClient } = require("../../../utils/db-client") // Deprecated
+// const { createDbClient } = require("../../../utils/db-client") // Deprecated
 const { createSqlClient } = require("../../../../vendor/flCore/server/model/sql-client")
 const { createMailClient, createImapClient } = require("../../../utils/mail-client")
 const { executeService, assert } = require("../../../../core/api-utils")
@@ -24,7 +24,7 @@ const { sendSmtp } = require("../post/sendSmtp")
 const { sendSms } = require("../post/sendSms")
 
 const registerCore = async ({ context, config, logger, app }) => {
-    const db = await createDbClient(config.db, context.dbName) // Deprecated
+    // const db = await createDbClient(config.db, context.dbName) // Deprecated
     const sql = await createSqlClient({ config: config.db, logger, dbName: context.dbName })
     const smtp = createMailClient({ config: config.smtp, logger })
     const imap = createImapClient({ config: config.imap, logger })

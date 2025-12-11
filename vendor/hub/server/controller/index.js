@@ -3,6 +3,7 @@ const moment = require("moment")
 
 const { sessionCookieMiddleware } = require("../../../user/server/controller/sessionCookieMiddleware")
 const { createDbClient } = require("../../../utils/db-client")
+const { createSqlClient } = require("../../../flCore/server/model/sql-client")
 const { createMailClient } = require("../../../utils/mail-client")
 const { executeService, assert } = require("../../../../core/api-utils")
 
@@ -18,13 +19,14 @@ const { update } = require("../../../flCore/server/model/update")
 
 const registerHub = async ({ context, config, logger, app }) => {
     const db = await createDbClient(config.db, context.dbName)
+    const sql = await createSqlClient({ config: config.db, logger, dbName: context.dbName })
     const smsClient = config.sms
     const mailClient = createMailClient({ config: config.smtp, logger })
 
     const execute = executeService(context.clone(), config, logger)
     const executeImportXlsx = async (req, res) => {
         if (!context.isAllowed("interaction")) return res.status(403).send({message: "unauthorized"})
-        const result = await postImportXlsxAction({ req }, context, db)
+        const result = await postImportXlsxAction({ req }, context, sql, logger)
         return res.status(200).send(result)
     }
     const executeImportCsv = async (req, res) => {
@@ -42,7 +44,7 @@ const registerHub = async ({ context, config, logger, app }) => {
     // app.get(`${config.prefix}send`, execute(getAction, context, db))
     // app.post(`${config.prefix}send`, execute(postAction, context, db))
     app.get(`${config.prefix}send-mail`, execute(sendMailAction, context, mailClient))
-    app.get(`${config.prefix}import-xlsx/:entity`, execute(getImportXlsxAction, context, db))
+    app.get(`${config.prefix}import-xlsx/:entity`, execute(getImportXlsxAction, context, sql))
     app.post(`${config.prefix}import-xlsx/:entity/:id`, upload.single("global-xlsxFile"), executeImportXlsx)
     app.get(`${config.prefix}import-csv/:entity`, execute(getImportCsvAction, context, db))
     app.post(`${config.prefix}import-csv/:entity/:id`, upload.single("global-csvFile"), executeImportCsv)
