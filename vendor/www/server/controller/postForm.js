@@ -8,7 +8,6 @@ const { dataToStore } = require("../../../flCore/server/model/dataToStore")
 const { entitiesToStore } = require("../../../flCore/server/model/entitiesToStore")
 const { storeEntities } = require("../../../flCore/server/post/storeEntities")
 const { auditCells } = require("../../../flCore/server/post/auditCells")
-const { log } = require("console")
 
 const postForm = async ({ req }, context, config, sql, logger) => {
     const entity = assert.notEmpty(req.params, "entity")
@@ -21,8 +20,9 @@ const postForm = async ({ req }, context, config, sql, logger) => {
         /**
          * Recaptcha
          */
+        logger && logger.debug(util.inspect({ googleApiKey: config.googleApiKey, recaptchaProject: config.recaptchaProject }))
         const interactionParams = {}
-        const response = await fetch(`https://recaptchaenterprise.googleapis.com/v1/projects/double-cream/assessments?key=${ config.googleApiKey }`, {
+        const response = await fetch(`https://recaptchaenterprise.googleapis.com/v1/projects/${config.recaptchaProject}/assessments?key=${ config.googleApiKey }`, {
             method: "POST",
             body: JSON.stringify({
                 "event": {

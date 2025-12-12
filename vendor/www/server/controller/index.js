@@ -16,7 +16,7 @@ const registerWww = async ({ context, config, logger, app }) => {
     const execute = executeService(context, config, logger)
 
     app.get(`${config.prefix}:entity`, execute(index, context, config))
-    app.post(`${config.prefix}:entity`, execute(postForm, context, config, sql))
+    app.post(`${config.prefix}:entity`, execute(postForm, context, config, sql, logger))
     app.get(`${config.prefix}404`, execute(notFoundAction, context, config))
 
     // fallback : send 404
