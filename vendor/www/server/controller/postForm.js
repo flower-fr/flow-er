@@ -52,7 +52,7 @@ const postForm = async ({ req }, context, config, sql, logger) => {
 
         let data = {
             status: "new",
-            provider: "www.double-cream.com",
+            provider: "www",
             endpoint: "/",
             method: "POST",
             params: JSON.stringify(interactionParams)
