@@ -1,6 +1,6 @@
 const express = require("express")
 const { executeService, assert } = require("../../../../core/api-utils")
-const { createSqlClient } = require("../../../../vendor/flCore/server/model/sql-client")
+const { createSqlClient } = require("../../../flCore/server/model/sql-client")
 
 const { notFoundAction } = require("./404")
 

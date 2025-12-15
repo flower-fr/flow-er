@@ -154,17 +154,13 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
         $(".fl-close-button").hide()
     })
 
-    $(".fl-modal-form-input").each(function () {
-        $(this).prop("disabled", $(this).attr("data-fl-disabled"))
-    })
+    $(".fl-modal-form-input").prop("disabled", "disabled")
 
     $(".fl-update-button").click(function() {
         $(".fl-submit-div").show()
         $(".fl-close-button").show()
         $(".fl-update-button").hide()
-        $(".fl-modal-form-input").each(function () {
-            $(this).prop("disabled", $(this).attr("data-fl-disabled"))
-        })
+        $(".fl-modal-form-input").prop("disabled", false)
     })
 
     $(".fl-close-button").click(() => {
@@ -173,7 +169,7 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
         $(".fl-update-button").show()
         $(".fl-modal-form-input").prop("disabled", true)
         $(".fl-detail-tab-message").hide()
-
+        $(".fl-modal-form-input").prop("disabled", "disabled")
     })
 
     $(".fl-detail-tab-action").click(async function () {

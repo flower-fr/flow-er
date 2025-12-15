@@ -19,7 +19,7 @@ const loadContext = (settings, logger) => {
     const user = {
         id: 83,
         formattedName: "Démo CRITE",
-        roles: ["sales_manager", "admin", "user"],
+        roles: settings.server.config.roles,
         locale: "fr_FR",
         config: {}
     }
@@ -58,6 +58,12 @@ const loadContext = (settings, logger) => {
         else return str
     }
 
+    const hasRole = (role) => {
+        console.log(user.roles)
+        if (user.roles.includes(role)) return true
+        return false
+    }
+
     const isAllowed = (entity, view) => {
         let authorization = settings.server.guard[`${entity}:${view}`]
         if (!authorization) authorization = settings.server.guard[`${entity}`]
@@ -71,7 +77,7 @@ const loadContext = (settings, logger) => {
     const context = {
 
         settings, dbName, instance, user, config, translations,
-        localize, decodeDate, decodeTime, translate, isAllowed,
+        localize, decodeDate, decodeTime, translate, hasRole, isAllowed,
 
         clone: () => {
             return {
@@ -81,7 +87,7 @@ const loadContext = (settings, logger) => {
                 user : { ...user }, 
                 config: { ...config }, 
                 translations: { ...translations },
-                localize, decodeDate, decodeTime, translate, isAllowed
+                localize, decodeDate, decodeTime, translate, hasRole, isAllowed
             }
         }
     }
