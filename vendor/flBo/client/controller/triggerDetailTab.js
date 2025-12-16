@@ -154,22 +154,30 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
         $(".fl-close-button").hide()
     })
 
-    $(".fl-modal-form-input").prop("disabled", "disabled")
+    if (id != 0) {
+        $(".fl-modal-form-input").each(function () {
+            if ($(this).val() !== "") {
+                $(this).prop("disabled", "disabled")
+            } else {
+                const property = $(this).attr("data-fl-property")
+                $(`#flModalFormInput-${property}`).hide()
+            }
+        })
+    }
 
     $(".fl-update-button").click(function() {
         $(".fl-submit-div").show()
         $(".fl-close-button").show()
         $(".fl-update-button").hide()
-        $(".fl-modal-form-input").prop("disabled", false)
+        $(".fl-modal-form-input").each(function () {
+            const property = $(this).attr("data-fl-property")
+            $(`#flModalFormInput-${property}`).show()
+            $(".fl-modal-form-input").prop("disabled", false)
+        })
     })
 
     $(".fl-close-button").click(() => {
-        $(".fl-submit-div").hide()
-        $(".fl-close-button").hide()
-        $(".fl-update-button").show()
-        $(".fl-modal-form-input").prop("disabled", true)
-        $(".fl-detail-tab-message").hide()
-        $(".fl-modal-form-input").prop("disabled", "disabled")
+        getTab({ context, entity, view }, tab, route, id, message, searchParams, order)
     })
 
     $(".fl-detail-tab-action").click(async function () {

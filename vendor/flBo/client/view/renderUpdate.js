@@ -64,6 +64,7 @@ const renderUpdate = ({ context }, section, properties, row ) => {
             html.push(
                 `<div 
                   class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } ${ (property.autocomplete) ? "fl-modal-list-add-autocomplete" : "" }"
+                  id="flModalFormInput-${propertyId}"
                   data-mdb-input-init
                   ${ (property.autocomplete) ? `data-fl-values="${ property.values.join(",") }"`: "" }
                 >
@@ -84,6 +85,7 @@ const renderUpdate = ({ context }, section, properties, row ) => {
             html.push(
                 `<div 
                   class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } ${ (property.autocomplete) ? "fl-modal-list-add-autocomplete" : "" }"
+                  id="flModalFormInput-${propertyId}"
                   data-mdb-input-init
                   ${ (property.autocomplete) ? `data-fl-values="${ property.values.join(",") }"`: "" }
                 >
@@ -102,7 +104,10 @@ const renderUpdate = ({ context }, section, properties, row ) => {
         else if (propertyType == "email") {
 
             html.push(
-                `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" }">
+                `<div 
+                  class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" }"
+                  id="flModalFormInput-${propertyId}"
+                >
                     <div class="form-outline formOutline" data-mdb-input-init>
                         <input type="email" class="form-control form-control-sm is-valid fl-modal-form-input" data-fl-property="${propertyId}" data-fl-type="email" value="${value}"  data-fl-disabled="${ disabled }" ${ required } maxlength="255" />
                         <label class="form-label">${label}</label>
@@ -118,7 +123,10 @@ const renderUpdate = ({ context }, section, properties, row ) => {
         else if (propertyType == "phone") {
 
             html.push(
-                `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" }">
+                `<div 
+                  class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" }"
+                  id="flModalFormInput-${propertyId}"
+                >
                     <div class="form-outline formOutline" data-mdb-input-init>
                         <input class="form-control form-control-sm is-valid fl-modal-form-input" data-fl-property="${propertyId}" data-fl-type="phone" value="${value}"  data-fl-disabled="${ disabled }" ${ required } maxlength="255" />
                         <label class="form-label">${label}</label>
@@ -134,7 +142,10 @@ const renderUpdate = ({ context }, section, properties, row ) => {
         else if (["date", "datetime", "closing_date"].includes(propertyType)) {
 
             html.push(
-                `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3 mb-3">
+                `<div 
+                  class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3 mb-3"
+                  id="flModalFormInput-${propertyId}"
+                >
                     <div class="form-outline fl-date-outline" data-fl-container="detailPanel">
                         <input class="form-control form-control-sm fl-modal-form-input" data-fl-property="${propertyId}" data-fl-type="date" value="${context.decodeDate(value)}"  data-fl-disabled="${ disabled }" ${ required } placeholder="${ context.translate("DD/MM/YYYY") }" autocomplete="off" />
                         <label class="form-label">${label}</label>
@@ -150,7 +161,10 @@ const renderUpdate = ({ context }, section, properties, row ) => {
         else if (propertyType == "birth_year") {
 
             html.push(
-                `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3 mb-3">
+                `<div 
+                  class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3 mb-3"
+                  id="flModalFormInput-${propertyId}"
+                >
                     <div class="form-outline formOutline" data-mdb-input-init>
                         <select class="form-control form-control-sm fl-modal-form-input fl-modal-form-select" data-fl-property="${propertyId}" data-fl-type="birthYear" data-fl-container="flModalForm"  data-fl-disabled="${ disabled }" ${ required }>
                             <option />
@@ -169,7 +183,10 @@ const renderUpdate = ({ context }, section, properties, row ) => {
         else if (propertyType == "time") {
 
             html.push(
-                `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3 mb-3">
+                `<div 
+                  class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3 mb-3"
+                  id="flModalFormInput-${propertyId}"
+                >
                     <div class="form-outline fl-time-outline" data-fl-container="flModalForm" data-mdb-timepicker-init data-mdb-input-init>
                         <input class="form-control form-control-sm fl-modal-form-input" data-fl-property="${propertyId}" data-fl-type="time" value="${value}"  data-fl-disabled="${ disabled }" ${ required } />
                         <label class="form-label">${label}</label>
@@ -185,7 +202,10 @@ const renderUpdate = ({ context }, section, properties, row ) => {
         else if (propertyType == "number") {
 
             html.push(
-                `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3 mb-3">
+                `<div 
+                  class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3 mb-3"
+                  id="flModalFormInput-${propertyId}"
+                >
                     <div class="form-outline formOutline" data-mdb-input-init>
                         <input type="numeric" class="form-control form-control-sm fl-modal-form-input" data-fl-property="${propertyId}" data-fl-type="number" value="${value}"  data-fl-disabled="${ disabled }" ${ required } pattern="[0-9]+(\.[0-9]{0,4})?" placeholder="12345,67" />
                         <label class="form-label">${label}</label>
@@ -201,7 +221,10 @@ const renderUpdate = ({ context }, section, properties, row ) => {
         else if (propertyType == "percentage") {
 
             html.push(
-                `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3 mb-3">
+                `<div 
+                  class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3 mb-3"
+                  id="flModalFormInput-${propertyId}"
+                >
                     <div class="form-outline formOutline" data-mdb-input-init>
                         <input type="numeric" class="form-control form-control-sm fl-modal-form-input" data-fl-property="${propertyId}" data-fl-type="percentage" value="${value}"  data-fl-disabled="${ disabled }" ${ required } pattern="[0-9]+(\.[0-9]{0,4})?" />
                         <label class="form-label">${label}</label>
@@ -217,7 +240,10 @@ const renderUpdate = ({ context }, section, properties, row ) => {
         else if (propertyType == "textarea") {
 
             html.push(
-                `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3">
+                `<div
+                  class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3"
+                  id="flModalFormInput-${propertyId}"
+                >
                     <div class="form-outline formOutline" data-mdb-input-init>
                         <textarea class="form-control form-control-sm fl-modal-form-input" data-fl-property="${propertyId}" data-fl-type="textarea" rows="5"  data-fl-disabled="${ disabled }" ${ required } ${label} maxlength="${(property.options.max_length) ? property.options.max_length : 2047}">${value}</textarea>
                         <label class="form-label">${label}</label>
@@ -242,7 +268,10 @@ const renderUpdate = ({ context }, section, properties, row ) => {
             else values = []
 
             html.push(
-                `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3">
+                `<div
+                  class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3"
+                  id="flModalFormInput-${propertyId}"
+                >
                     <div class="form-outline">
                         <select class="form-select form-select-sm fl-modal-form-input fl-modal-form-select" data-fl-property="${propertyId}" data-fl-type="select" data-fl-container="flModalForm" data-mdb-select-init ${ (required) ? "data-mdb-validation=\"true\" data-mdb-invalid-feedback=\" \" data-mdb-valid-feedback=\" \"" : "" } ${(multiple) ? "multiple" : ""}  data-fl-disabled="${ disabled }" ${ required }>
                             <option />`
@@ -279,7 +308,10 @@ const renderUpdate = ({ context }, section, properties, row ) => {
             }
 
             html.push(
-                `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3">
+                `<div
+                  class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3"
+                  id="flModalFormInput-${propertyId}"
+                >
                     <div class="form-outline" data-mdb-input-init data-mdb-inline="true">
                         <input class="form-control form-control-sm fl-modal-form-input" data-fl-property="${propertyId}" data-fl-type="input" list="updateDataList-${propertyId}" data-tag-ids="${ selectedIds.join(",") }" placeholder="${ context.translate("Search") }" data-fl-disabled="${ disabled }" />
                         <datalist id="updateDataList-${propertyId}">
@@ -323,7 +355,10 @@ const renderUpdate = ({ context }, section, properties, row ) => {
         else if (propertyType == "source") {
 
             html.push(
-                `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3">
+                `<div
+                  class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3"
+                  id="flModalFormInput-${propertyId}"
+                >
                     <div class="form-outline">
                         <select class=" fl-modal-form-input fl-modal-form-select" data-fl-property="${propertyId}" data-fl-type="select" data-fl-container="flModalForm" data-mdb-select-init  data-fl-disabled="${ disabled }" ${ required } ${ (required) ? "data-mdb-validation=\"true\" data-mdb-invalid-feedback=\" \" data-mdb-valid-feedback=\" \"" : "" }>
                             <option />`
@@ -356,7 +391,10 @@ const renderUpdate = ({ context }, section, properties, row ) => {
         else if (propertyType == "file") {
 
             html.push(
-                `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3">
+                `<div 
+                  class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3"
+                  id="flModalFormInput-${propertyId}"
+                >
                     <div class="">
                         <label class="form-label" for="customFile">${ label }</label>
                         <input type="file" class="form-control form-control-sm fl-modal-form-file" id="${propertyId}" data-fl-property="${propertyId}" data-fl-type="file" data-fl-disabled="${ disabled }" ${ required } />
@@ -437,7 +475,10 @@ const renderUpdate = ({ context }, section, properties, row ) => {
         else {
 
             html.push(
-                `<div class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3">
+                `<div
+                  class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3"
+                  id="flModalFormInput-${propertyId}"
+                >
                     <div class="form-outline formOutline" data-mdb-input-init>
                         <input class="form-control form-control-sm fl-modal-form-input" data-fl-property="${propertyId}" data-fl-type="input" value="${value}"  data-fl-disabled="${ disabled }" ${(required) ? "required" : ""} maxlength="${(property.options.max_length) ? property.options.max_length : 255}" />
                         <label class="form-label select-label">${(required) ? "* " : ""}${label}</label>
