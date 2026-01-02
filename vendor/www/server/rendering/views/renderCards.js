@@ -28,7 +28,7 @@ const renderCard = (context, entry) => {
                    />
             </div>
             <div class="card-body">
-              <h5 class="card-title text-center my-3">${ context.localize(entry.title) }</h5>
+              <h5 class="card-title text-center my-3">${ context.localize(entry.title) }${ (entry.vignette) ? `&nbsp;&nbsp;${ context.localize(entry.vignette) }` : "" }</h5>
               <hr class="my-3" />
               <a href="#!" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#${ context.localize(entry.title) }">
                 Voir le profil
@@ -50,7 +50,7 @@ const renderModal = (context, entry) => {
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="${ context.localize(entry.title) }Label">${ context.localize(entry.title) }</h5>
+                        <h5 class="modal-title" id="${ context.localize(entry.title) }Label">${ context.localize(entry.title) }${ (entry.vignette) ? `&nbsp;&nbsp;${ context.localize(entry.vignette) }` : "" }</h5>
                         <button type="button" class="btn-close" data-mdb-ripple-init data-mdb-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">

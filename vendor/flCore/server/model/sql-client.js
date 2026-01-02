@@ -23,6 +23,7 @@ const createSqlClient = async ({ config, logger, dbName }) =>
         connection: db
     } 
     return {
+        dbName,
         getConnection: getConnection({ logger, closure }),
         beginTransaction: beginTransaction({ logger, closure }),
         execute: execute({ logger, closure }),

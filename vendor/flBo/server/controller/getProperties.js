@@ -82,7 +82,7 @@ const getProperties = async (sql, context, entity, view, propertyDefs, wherePara
             if (property.order[0] == "-") order[property.order.substr(1)] = "DESC" 
             else order[property.order] = "ASC"
             // const rows = (await db.execute(select(context, property.entity, tagColumns, where, order, null, context.config[`${property.entity}/model`])))[0]
-console.log(property.entity, tagColumns, where, order)
+
             const rows = await sql.execute({ context, type: "select", entity: property.entity, columns: tagColumns, where, order })
             const modalities = []
             for (let row of rows) {
