@@ -8,7 +8,7 @@ const selectWhere = (context, table, where, model, joins) => {
     if (model.properties.visibility) predicates.push(`${qTable}.${qi("visibility")} != 'deleted'`)
     
     for (let propertyId of Object.keys(where)) {
-        if (!["instance_id", "touched_by"].includes(propertyId)) {
+        if (!["touched_by"].includes(propertyId)) {
             if (propertyId == "id" || model.properties[propertyId]) {
                 const property = model.properties[propertyId]
 
