@@ -3,14 +3,14 @@ const renderGroupTab = ({ context, entity }, section, properties, row, payload )
     console.log("In renderGroupTab (flBo)")
 
     const html = []
-
-    for (let propertyId of Object.keys(section.properties)) {
+    for (const [propertyId, sectionProperty] of Object.entries(section.properties)) {
         const property = properties[propertyId]
         const options = property.options
+        for (const [key, value] of Object.entries(sectionProperty)) options[key] = value
         const propertyType = (options.type) ? options.type : property.type
         const label = propertyType !== "hidden" && ((options.labels) ? context.localize(options.labels) : context.localize(property.labels))
         const disabled = (property.options.readonly /* deprecated */ || property.options.disabled) ? "disabled" : ""
-        const required = (options.mandatory) ? "required" : ""
+        const required = (options.mandatory /* deprecated */ || options.required) ? "required" : ""
         const modalities = (options.modalities) ? options.modalities : property.modalities
 
         let value = (row[propertyId]) ? row[propertyId] : ""
@@ -356,7 +356,7 @@ const renderGroupTab = ({ context, entity }, section, properties, row, payload )
                 if (property.entity == "document_binary") {
 
                     html.push(
-                        `<div class="col-md-2 mb-3">
+                        `<div class="col-md-3 mb-3">
                             <div class="form-outline">
                                 <select 
                                     class="updateSelect"
@@ -379,22 +379,11 @@ const renderGroupTab = ({ context, entity }, section, properties, row, payload )
                                 <div class="invalid-feedback">${ context.translate("Invalid") }</div>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="input-group mb-3">
                                 <div class="form-outline formOutline" data-mdb-input-init="" data-mdb-input-initialized="true">
                                     <input type="file" id="document_binary" class="form-control form-control-sm fl-add-file" />
                                 </div>
-                                <button
-                                    id="submitButton-document_binary" 
-                                    class="btn btn-warning btn-sm fl-group-tab-submit" 
-                                    type="submit"
-                                    data-controller="core"
-                                    data-action="v1"
-                                    data-entity="mkt_targeted"
-                                    data-transaction="sendEmail"
-                                >
-                                    ${context.translate("Add")}
-                                </button>
                             </div>
                         </div>`
                     )
@@ -517,15 +506,15 @@ const renderGroupTab = ({ context, entity }, section, properties, row, payload )
         }
     }
     
-    html.push(
-        `<div class="col-md-12 mb-4">
-            <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-update-button" title="${context.translate("Update")}">
-                <i class="fas fa-pen"></i>
-            </button>
-            <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-close-button" id="flModalListCloseButton" data-mdb-ripple-init>
-                <span class="fas fa-close"></span>
-            </button>
-        </div>`)
+    // html.push(
+    //     `<div class="col-md-12 mb-4">
+    //         <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-update-button" title="${context.translate("Update")}">
+    //             <i class="fas fa-pen"></i>
+    //         </button>
+    //         <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-close-button" id="flModalListCloseButton" data-mdb-ripple-init>
+    //             <span class="fas fa-close"></span>
+    //         </button>
+    //     </div>`)
 
     return html.join("\n")
 }

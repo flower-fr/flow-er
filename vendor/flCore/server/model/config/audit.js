@@ -1,6 +1,6 @@
-const { Model } = require("./Model")
+const { Ddl } = require("../../../utils/Ddl")
 
-class Audit extends Model {
+class Audit extends Ddl {
 
     identifier = "audit"
 

@@ -1,7 +1,15 @@
-const { assert } = require("../../../../core/api-utils")
-const { throwBadRequestError } = require("../../../../core/api-utils")
+const { assert } = require("../../../core/api-utils")
+const { throwBadRequestError } = require("../../../core/api-utils")
 
-const transactionAction = async ({ req }, context, { sql, smtp, sms }) => {
+const { addEvent } = require("./post/addEvent")
+const { registerHistory } = require("./post/registerHistory")
+const { registerSmtp } = require("./post/registerSmtp")
+const { registerSms } = require("./post/registerSms")
+const { save } = require("./post/save")
+const { sendSmtp } = require("./post/sendSmtp")
+const { sendSms } = require("./post/sendSms")
+
+const deprecatedTransactionAction = async ({ req }, context, { sql, smtp, sms }) => {
 
     const entity = assert.notEmpty(req.params, "entity")
     const view = req.query.view
@@ -11,7 +19,7 @@ const transactionAction = async ({ req }, context, { sql, smtp, sms }) => {
     const transaction = assert.notEmpty(req.params, "transaction")
     const id = req.params.id
     const steps = config.layout.posts[transaction].steps
-    
+console.log(steps); return;    
     let rows
     if (req.body.rows) rows = req.body.rows // Batch upsert
     else if (id) rows = [{"id": id}] // unitary update
@@ -23,13 +31,15 @@ const transactionAction = async ({ req }, context, { sql, smtp, sms }) => {
         }    
     }
 
+    const postSteps = { addEvent, registerHistory, registerSmtp, registerSms, save, sendSmtp, sendSms }
+
     //const connection = await db.getConnection()
     try {
         // await connection.beginTransaction()
         await sql.beginTransaction()
     
         for (const [stepId, step] of Object.entries(steps)) {
-            const stepFunction = context.config.postSteps[stepId]
+            const stepFunction = postSteps[stepId]
             if (!step.async) await stepFunction({ req, entity }, context, rows, { sql, smtp, sms })
         }
     
@@ -38,7 +48,7 @@ const transactionAction = async ({ req }, context, { sql, smtp, sms }) => {
     
         for (let stepId of Object.keys(steps)) {
             const step = steps[stepId]
-            const stepFunction = context.config.postSteps[stepId]
+            const stepFunction = postSteps[stepId]
             if (step.async) stepFunction({ req, entity }, context, rows, { sql, smtp, sms })
         }
     
@@ -55,5 +65,5 @@ const transactionAction = async ({ req }, context, { sql, smtp, sms }) => {
 }
 
 module.exports = {
-    transactionAction
+    deprecatedTransactionAction
 }

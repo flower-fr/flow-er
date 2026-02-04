@@ -91,10 +91,10 @@ const getGroupTab = async ({ context, entity, view }, tab, searchParams) => {
 
     $(".fl-group-tab-message").hide()
 
-    $(".fl-update-button").each(() => {
-        $(".fl-submit-div").hide()
-        $(".fl-close-button").hide()
-    })
+    // $(".fl-update-button").each(() => {
+    //     $(".fl-submit-div").hide()
+    //     $(".fl-close-button").hide()
+    // })
 
     $(".fl-update-button").click(function() {
         $(".fl-submit-div").show()

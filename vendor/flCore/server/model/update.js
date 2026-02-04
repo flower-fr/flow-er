@@ -1,3 +1,4 @@
+const moment = require("moment")
 const { qi, qv } = require("./quote")
 
 const update = (context, entity, ids, data, model = [], debug = false) => {
@@ -31,7 +32,7 @@ const update = (context, entity, ids, data, model = [], debug = false) => {
         }
     }
 
-    pairs[qi("touched_at")] = `'${new Date().toISOString().slice(0, 19).replace("T", " ")}'`
+    pairs[qi("touched_at")] = `'${moment().format("YYYY-MM-DD HH:mm:ss")}'`
     pairs[qi("touched_by")] = context.user.id
 
     let request = ""

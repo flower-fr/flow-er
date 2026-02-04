@@ -1,9 +1,10 @@
+const moment = require("moment")
 const { qi, qv } = require("./quote")
 
 const dElete = (context, table, ids, debug = false) => {
     const pairs = { visibility: qv("deleted") }
 
-    pairs[qi("touched_at")] = `'${new Date().toISOString().slice(0, 19).replace("T", " ")}'`
+    pairs[qi("touched_at")] = `'${moment().format("YYYY-MM-DD HH:mm:ss")}'`
     pairs[qi("touched_by")] = context.user.id
 
     let request = ""

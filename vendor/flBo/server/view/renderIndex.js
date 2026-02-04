@@ -1,6 +1,5 @@
 const { renderHead } = require("./renderHead")
 const { renderHeader } = require("./renderHeader")
-const { renderTable } = require("./renderTable")
 const { renderSearchInput } = require("./renderSearchInput")
 const { renderFooter } = require("./renderFooter")
 const { renderScripts } = require("./renderScripts")
@@ -51,7 +50,8 @@ const renderIndex = ({ context, entity, view }, data) => {
                         </section>
 
                         <div class="section" id="dataview">
-                            ${ renderTable({ context, entity, view }, data) }
+                            <div class="row" id="flList">
+                            </div>
                         </div>
                     </div>
                 </div>

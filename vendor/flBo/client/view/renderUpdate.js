@@ -1,10 +1,20 @@
-const renderUpdate = ({ context }, section, properties, row ) => {
+const renderUpdate = ({ context }, section, properties, row, vectors ) => {
 
     console.log("In renderUpdate (flBo)")
     
     const html = []
 
     if (row.id) html.push(`<input type="hidden" class="fl-modal-form-input" data-fl-property="id" data-fl-type="input" value="${ row.id }" />`)
+    
+    html.push(
+        `<div class="col-md-12 mb-4">
+            <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-update-button" title="${context.translate("Update")}">
+                <i class="fas fa-pen"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-close-button" id="flModalListCloseButton" data-mdb-ripple-init>
+                <span class="fas fa-close"></span>
+            </button>
+        </div>`)
 
     for (let propertyId of section.properties) {
         const property = properties[propertyId]
@@ -147,7 +157,7 @@ const renderUpdate = ({ context }, section, properties, row ) => {
                   id="flModalFormInput-${propertyId}"
                 >
                     <div class="form-outline fl-date-outline" data-fl-container="detailPanel">
-                        <input class="form-control form-control-sm fl-modal-form-input" data-fl-property="${propertyId}" data-fl-type="date" value="${context.decodeDate(value)}"  data-fl-disabled="${ disabled }" ${ required } placeholder="${ context.translate("DD/MM/YYYY") }" autocomplete="off" />
+                        <input class="form-control form-control-sm fl-modal-form-input fl-modal-future" data-fl-property="${propertyId}" data-fl-type="date" value="${context.decodeDate(value)}"  data-fl-disabled="${ disabled }" ${ required } placeholder="${ context.translate("DD/MM/YYYY") }" autocomplete="off" />
                         <label class="form-label">${label}</label>
                     </div>
                 </div>`
@@ -401,6 +411,44 @@ const renderUpdate = ({ context }, section, properties, row ) => {
                     </div>
                 </div>`
             )
+        }
+
+        /**
+         * Log
+         */
+
+        else if (propertyType == "log") {          
+
+            html.push(
+                `<div
+                  class="${ (property.options && property.options.class) ? property.options.class : "col-md-6" } mb-3"
+                  id="flModalFormInput-${propertyId}"
+                >
+                    <div class="form-outline formOutline mb-2">
+                        <textarea class="form-control form-control-sm fl-modal-form-input" data-fl-property="${propertyId}" data-fl-type="textarea" ${(required) ? "required" : ""} maxlength="${(property.options.max_length) ? property.options.max_length : 65535}"></textarea>
+                        <label class="form-label">${ label }</label>
+                    </div>
+                </div>
+                <div class="fl-modal-log">
+                    <table class="table table-sm table-hover table-responsive">
+                        <thead class="datatable-header" />
+                        <tbody class=""table-group-divider">`)
+
+            for (const comment of vectors[property.vector]) {
+                html.push(`
+                    <tr>
+                        <td><strong>${ moment(comment.touched_at).format("DD/MM/YYYY HH:mm:ss") }</strong></td>
+                        <td><strong>${ comment.owner_n_fn.trim() !== "" ? `(${ comment.owner_n_fn })` : `(${ comment.chanel })` }</strong></td>
+                        <td>${ comment.summary.split("\n").join("<br>") }</td>
+                    </tr>
+
+                    <!--<div class="text-muted mb-2"><small>
+                        <strong>${ moment(comment.touched_at).format("DD/MM/YYYY HH:mm:ss") } ${ comment.owner_n_fn.trim() !== "" ? `(${ comment.owner_n_fn })` : `(${ comment.chanel })` }</strong><br>
+                        ${ comment.summary.split("\n").join("<br>") }
+                    </small></div><hr>-->`)
+            }
+
+            html.push("</tbody></table></div>")
         }
 
         /**

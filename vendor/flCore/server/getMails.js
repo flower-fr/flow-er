@@ -1,5 +1,5 @@
-const { insert } = require("../model/insert")
-const { select } = require("../model/select")
+const { insert } = require("./model/insert")
+const { select } = require("./model/select")
 
 const getMails = async ({ context, connection, imap, whiteList }) => {
     const mails = await imap.getMails()

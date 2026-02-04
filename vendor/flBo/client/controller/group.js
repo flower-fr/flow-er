@@ -26,7 +26,7 @@ const postGroupTab = async ({ context, entity, view }, tab, searchParams, rows) 
                     const formData = new FormData(), files = fileSelect.files
                     formData.append("formJwt", $("#formJwt").val())
                     for (var i = 0; i < files.length; i++) {
-                        var file = files[i]
+                        const file = files[i]
                         if (file.size >= 1024000) {
                             alert(context.translate("File to big (1 Mb max)"))
                             return
@@ -212,14 +212,36 @@ const postGroupTab = async ({ context, entity, view }, tab, searchParams, rows) 
                 dataPayload[key] = (options.value) ? payload[options.value] : payload[key]
             }
 
-            const body = { payload: dataPayload }
-            if (!dataId) body.rows = rows
+            let xhttp
+            if ($(submit).attr("data-action") === "file") {
+                if (!dataId) formData.append("rows", JSON.stringify(rows))
 
-            const xhttp = await fetch(route, {
-                method: "POST",
-                headers: new Headers({"content-type": "application/json"}),
-                body: JSON.stringify(body)
-            })
+                const fileSelect = document.getElementById("document_binary")
+                if (fileSelect) {
+                    const files = fileSelect.files
+                    for (var i = 0; i < files.length; i++) {
+                        const file = files[i]
+                        if (file.size >= 1024000) {
+                            alert(context.translate("File to big (1 Mb max)"))
+                            return
+                        }
+                        formData.append("attachment", file, file.name)
+                    }
+                }
+
+                xhttp = await fetch(route, {
+                    method: "POST",
+                    body: formData,
+                })
+            } else {
+                const body = { payload: dataPayload }
+                if (!dataId) body.rows = rows
+                xhttp = await fetch(route, {
+                    method: "POST",
+                    headers: new Headers({"content-type": "application/json"}),
+                    body: JSON.stringify(body)
+                })
+            }
 
             if (xhttp.status == 200) {
                 $("#updateMessageOk").show()

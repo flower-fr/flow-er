@@ -1,3 +1,5 @@
+const moment = require("moment")
+
 const { qi, qv } = require("./quote")
 
 const { encrypt } = require("./sql-client/encrypt")
@@ -12,7 +14,8 @@ const insert = (context, entity, data, model, debug = false) => {
             let value = data[key]
             if (key != "visibility" || value != "deleted") {
                 const type = (model.properties[key].type) ? model.properties[key].type : "text"
-                if (!value) {
+                if (["longblob", "mediumblob"].includes(type)) value = "?"
+                else if (!value) {
                     if (["foreign", "date", "datetime", "time"].includes(type)) value = "null"
                     else if (["int", "smallint", "tinyint", "float", "decimal"].includes(type)) value = 0
                     else if (["json"].includes(type)) value = "'[]'"
@@ -35,7 +38,6 @@ const insert = (context, entity, data, model, debug = false) => {
                         }
                     }
                     else if (["mediumtext", "longtext"].includes(type)) value = qv(value.trim())    
-                    else if (["longblob", "mediumblob"].includes(type)) value = "?"
                 }
 
                 pairs[qi(key)] = value
@@ -43,10 +45,13 @@ const insert = (context, entity, data, model, debug = false) => {
         }
     }
     if (model.properties.visibility) pairs[qi("visibility")] = qv("active")
+    
+    // Deprecated
     if (model.properties.creation_date) pairs[qi("creation_date")] = `'${new Date().toISOString().slice(0, 10)}'`
     if (model.properties.creation_month) pairs[qi("creation_month")] = `'${new Date().toISOString().slice(0, 7)}'`
     if (model.properties.creation_year) pairs[qi("creation_year")] = `'${new Date().toISOString().slice(0, 4)}'`
-    if (!pairs[qi("touched_at")]) pairs[qi("touched_at")] = `'${new Date().toISOString().slice(0, 19).replace("T", " ")}'`
+    
+    if (!pairs[qi("touched_at")]) pairs[qi("touched_at")] = `'${moment().format("YYYY-MM-DD HH:mm:ss")}'`
     pairs[qi("touched_by")] = context.user.id
 
     const request = `INSERT INTO ${table} (${Object.keys(pairs).join(", ")})\n VALUES (${Object.values(pairs).join(", ")})\n`

@@ -4,7 +4,7 @@ const { decrypt } = require("./encrypt")
 const { select } = require("../select")
 const { sensitiveWhere } = require("./sensitiveWhere")
 
-const sqlSelect = async ({ context, entity, columns, where, order, limit = 1000, debug }, model, connection, logger) =>
+const sqlSelect = async ({ context, entity, columns, where = {}, order, limit = 1000, debug }, model, connection, logger) =>
 {
     where = await sensitiveWhere({context, model, where}, connection, logger)
     for (const value of Object.values(where)) {

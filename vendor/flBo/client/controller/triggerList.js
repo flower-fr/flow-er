@@ -1,9 +1,7 @@
 import { getSearchParams } from "/flBo/cli/controller/getSearchParams.js"
-import { triggerOrder } from "/flBo/cli/controller/triggerOrder.js"
-import { triggerDetail } from "/flBo/cli/controller/triggerDetail.js"
-import { triggerTaskDetail } from "/flBo/cli/controller/triggerTaskDetail.js"
-import { triggerTaskAdd } from "/flBo/cli/controller/triggerTaskAdd.js"
-import { triggerGroup } from "/flBo/cli/controller/triggerGroup.js"
+
+import { List } from "/bo/cli/view/list/List.js"
+import { Tasks } from "/bo/cli/view/tasks/Tasks.js"
 
 const triggerList = async ({ context, entity, view }, order = $("#flListOrderHidden").val()) => {		
 
@@ -43,121 +41,11 @@ const triggerList = async ({ context, entity, view }, order = $("#flListOrderHid
             return
         }
     }
-
     const data = await response.json()
-
-    $("#flList").html(listRenderer({ context, entity, view }, data))
-    listCallback({ context, entity, view })
-
-    triggerOrder({ context, entity, view })
-
-    $(".fl-search-yesterday").click(function () {
-        $("#flSearchMin-date").val($(this).attr("data-fl-value"))
-        $("#flSearchMax-date").val($(this).attr("data-fl-value"))
-        triggerList({ context, entity, view })
-    })
-
-    $(".fl-search-tomorrow").click(function () {
-        $("#flSearchMin-date").val($(this).attr("data-fl-value"))
-        $("#flSearchMax-date").val($(this).attr("data-fl-value"))
-        triggerList({ context, entity, view })
-    })
-
-    // Extend the displayed list
-
-    $(".fl-list-more").click(function () {
-        $("#flListLimitHidden").val(limit * 2)
-        triggerList({ context, entity, view })
-    })
-
-    // Enable group action
-
-    $(".fl-list-group").hide()
-
-    // Trigger checking rows for group action
-
-    $(".fl-list-check").click(function (e) {
-        if (e.shiftKey) {
-            const max = $(this).attr("data-row-id"), state = $(this).prop("checked")
-            let min = 0
-            $(".fl-list-check").each(function () {
-                const i = parseInt($(this).attr("data-row-id"))
-                if ($(this).prop("checked") && i < max) min = i
-            })
-            $(".fl-list-check").each(function () {
-                const i = parseInt($(this).attr("data-row-id"))
-                if (i >= min && i <= max) $(this).prop("checked", state)
-            })
-        } 
-
-        let checked = 0, sumChecked = 0
-
-        $(".fl-list-check").each(function () {
-            if ($(this).prop("checked")) checked++
-
-            let amount = $(this).attr("data-val")
-            if (amount) {
-                amount = parseFloat(amount)
-                if ($(this).prop("checked")) sumChecked += amount
-            }
-        })
-
-        if (checked > 0) {
-            $(".fl-list-group").show()
-            $(".fl-list-add").hide()
-            $(".fl-list-count").text(checked)
-            if (sumChecked) $(".fl-list-sum").text((Math.round(sumChecked * 100) / 100).toFixed(2))
-        }
-        else {
-            $(".fl-list-group").hide()
-            $(".fl-list-add").show()
-            $(".fl-list-count").text("")
-            $(".fl-list-sum").text("")
-        }
-    })
-
-    // Trigger checking all
-
-    $(".fl-list-check-all").click(function () {
-        const state = $(this).prop("checked")
-        $(".fl-list-check").prop("checked", state)
-        $(".fl-list-check-all").prop("checked", state)
-
-        if (state) {
-            $(".fl-list-group").show()
-            $(".fl-list-add").hide()
-
-            let count = 0, sum = 0
-            $(".fl-list-check").each(function () {
-                count++
-                let amount = $(this).attr("data-val")
-                if (amount) {
-                    amount = parseFloat(amount)
-                    if ($(this).prop("checked")) sum += amount
-                }
-            })
-            $(".fl-list-count").text(count)
-            if (sum) $(".fl-list-sum").text((Math.round(sum * 100) / 100).toFixed(2))
-        }
-        else {
-            $(".fl-list-group").hide()
-            $(".fl-list-add").show()
-            $(".fl-list-count").text("")
-            if (sum) $(".fl-list-sum").text("")
-        }
-    })
-
-    triggerDetail({ context, entity, view }, params)
-
-    triggerTaskDetail({ context, entity, view }, params)
-
-    triggerTaskAdd({ context, entity, view }, params)
-
-    triggerGroup({ context, entity, view }, params)
-    // Connect the grouped actions anchors
-    // $(".fl-list-group").click(function () {
-    //     getGroup(context, entity, view, params)
-    // })
+    
+    const list = (view === "task") ? new Tasks({ context, entity, view, data }) : new List({ context, entity, view, data })
+    $("#flList").html(list.render())
+    list.trigger()
 }
 
 export { triggerList }

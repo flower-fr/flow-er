@@ -1,8 +1,8 @@
-const { assert } = require("../../../../core/api-utils")
-const { updateColumns } = require("../../../flCore/server/post/updateColumns")
+const { assert } = require("../../../core/api-utils")
+const { updateColumns } = require("./post/updateColumns")
 const util = require("util")
 
-const { throwBadRequestError } = require("../../../../core/api-utils")
+const { throwBadRequestError } = require("../../../core/api-utils")
 
 const deleteAction = async ({ req }, context, { sql, logger }) => {
     const entity = assert.notEmpty(req.params, "entity")

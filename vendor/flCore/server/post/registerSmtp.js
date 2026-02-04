@@ -10,7 +10,7 @@ const registerSmtp = async ({ req }, context, rows, { sql }) => {
 
     const type = "html"
 
-    for (let row of req.body.rows) {
+    for (let row of rows) {
 
         const mailData = {
             preHeader: row.email_subject,

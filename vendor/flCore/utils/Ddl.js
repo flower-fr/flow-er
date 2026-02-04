@@ -1,6 +1,6 @@
 const fs = require("fs")
 
-class Model 
+class Ddl 
 {
     serialize = (path) =>
     {
@@ -22,5 +22,5 @@ class Model
 }
 
 module.exports = {
-    Model
+    Ddl
 }

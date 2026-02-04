@@ -1,3 +1,4 @@
+const moment = require("moment")
 const { qi, qv } = require("./quote")
 
 const updateCase = (context, table, column, pairs, model, debug = false) => {
@@ -28,7 +29,7 @@ const updateCase = (context, table, column, pairs, model, debug = false) => {
         request.push(`WHEN id = ${id} THEN ${value}`)
     }
     request.push("END,")
-    const touched_at = `${new Date().toISOString().slice(0, 19).replace("T", " ")}`
+    const touched_at = `${moment().format("YYYY-MM-DD HH:mm:ss")}`
     request.push(`touched_at = '${touched_at}',`)
     const user_id = context.user.id
     request.push(`touched_by = ${user_id}`)

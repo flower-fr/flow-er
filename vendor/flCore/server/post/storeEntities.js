@@ -14,7 +14,10 @@ const storeEntities = async (context, mainEntity, rowsToStore, model, sql) => {
             const params = []
             for (const key of Object.keys(entityToInsert.cells)) {
                 const value = insertModel.properties[key]
-                if (["longblob", "mediumblob"].includes(value.type)) params.push(entityToInsert.cells[key])
+                if (["longblob", "mediumblob"].includes(value.type)) {
+                    params.push(entityToInsert.cells[key])
+                    entityToInsert.cells[key] = null
+                }
             }
             // const [insertedRow] = (await connection.execute(insert(context, entity.table, entityToInsert.cells, insertModel), params))
             // entityToInsert.rowId = insertedRow.insertId

@@ -50,7 +50,7 @@ const registerFlBo = async ({ context, config, logger, app }) =>
     app.use(`${config.prefix}`, notFoundMiddleware)
 }
 
-const index = async ({ req, logger }, context, config, db) => 
+const index = async ({ req, logger }, context, config, sql) => 
 {
     const entity = assert.notEmpty(req.params, "entity")
     const view = (req.query.view) ? req.query.view : "default"

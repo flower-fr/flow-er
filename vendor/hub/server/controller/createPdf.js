@@ -246,8 +246,10 @@ const createPdf = async ({ entity, type, reference, owner_entity, owner_id, owne
         })
 
         doc.end()
-
-    } catch {
+        return id
+    } catch (err)
+    {
+        logger && logger.error(err)
         await connection.rollback()
         connection.release()
         throw throwBadRequestError()

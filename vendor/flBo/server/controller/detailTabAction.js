@@ -80,7 +80,15 @@ const detailTabAction = async ({ req }, context, sql, logger) => {
             rows = await getList(sql, context, entityId, columns, properties, subWhere, order, limit)
         }
         else rows = []
-        data[entityId].rows = rows        
+        data[entityId].rows = rows
+        data[entityId].vectors = {}
+        if (dataConfig.vectors) {
+            for (const [vectorEntity, vectorConfig] of Object.entries(dataConfig.vectors)) {
+                const args = {}
+                args[vectorConfig.foreignKey] = id
+                data[entityId].vectors = await sql.execute({ context, type: "vectors", entity, vectors: [vectorEntity], args })
+            }
+        }
     }
 
     return { data, detailTabConfig }

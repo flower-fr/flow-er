@@ -26,7 +26,6 @@ const groupTabAction = async ({ req }, context, sql) => {
     const row = {}
 
     const propertyDefs = groupTabConfig.properties
-    console.log(entity, propertyDefs)
     const properties = await getProperties(sql, context, entity, view, propertyDefs, [])
     
     /**
@@ -70,8 +69,13 @@ const groupTabAction = async ({ req }, context, sql) => {
             const sourceColumns = ["id"]
             property.columns = (redef.columns) ? Object.keys(redef.columns) : property.format[1].split(",")
             for (let columnId of property.columns) sourceColumns.push(columnId)
+
+            let order = {}
+            if (property.order[0] == "-") order[property.order.substr(1)] = "DESC" 
+            else order[property.order] = "ASC"
+
             // const modalities = (await db.execute(select(context, sourceEntity, sourceColumns, sourceWhere, null, null, context.config[`${property.entity}/model`])))[0]
-            const modalities = await sql.execute({ context, type: "select", entity: sourceEntity, columns: sourceColumns, where: sourceWhere })
+            const modalities = await sql.execute({ context, type: "select", entity: sourceEntity, columns: sourceColumns, where: sourceWhere, order })
             property.modalities = {}
             property.rows = {}
             for (let modality of modalities) {

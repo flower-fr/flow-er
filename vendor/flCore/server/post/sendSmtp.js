@@ -3,6 +3,7 @@ const moment = require("moment")
 const { select } = require("../../../flCore/server/model/select")
 const { update } = require("../model/update")
 const { throwBadRequestError } = require("../../../../core/api-utils")
+const util = require("util")
 
 const sendSmtp = async ({ req }, context, rows, { sql, smtp }) => {
 
@@ -21,8 +22,6 @@ const sendSmtp = async ({ req }, context, rows, { sql, smtp }) => {
     }
     if (Object.values(attachments).length > 0) {
         const where = ["in"].concat(Object.keys(attachments))
-        const documentModel = context.config["document_binary/model"]
-        // const cursor = (await connection.execute(select(context, "document_binary", null, { "id": where }, null, null, documentModel)))[0]
         const cursor = await sql.execute({ context, type: "select", entity: "document_binary", where: {id: where} })
         for (const attachment of cursor) {
             attachments[attachment.id] = attachment
@@ -35,6 +34,9 @@ const sendSmtp = async ({ req }, context, rows, { sql, smtp }) => {
 
     for (let row of rows) {
         if (!row.scheduled_at || row.scheduled_at === "") {
+            if (Object.keys(attachments).length !== 0) {
+                row.email_body += "<br><br>"
+            }
             const attachmentsToSend = []
             for (const attachmentId of (row.attachments) ? row.attachments.split(",") : []) {
                 const attachment = attachments[attachmentId]

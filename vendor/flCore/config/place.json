@@ -15,6 +15,7 @@
             "adr_zip": { "entity": "place", "column": "adr_zip", "audit": true },
             "adr_city": { "entity": "place", "column": "adr_city", "audit": true },
             "adr_state": { "entity": "place", "column": "adr_state", "audit": true },
+            "vat_identifier": { "entity": "place", "column": "vat_identifier", "audit": true },
             "adr_country": { "entity": "place", "column": "adr_country", "audit": true },
             "bank_name": { "entity": "place", "column": "bank_name", "audit": true },
             "bank_account": { "entity": "place", "column": "bank_account", "audit": true, "sensitive": true },

@@ -1,0 +1,30 @@
+const { Model } = require("../../../../flCore/server/model/config/Model")
+
+class Document extends Model {
+
+    identifier = "document"
+
+    entities = {
+        document: { table: "document" },
+
+        // Foreign entities
+    }
+
+    properties = {
+        id: { entity: "document", column: "id", type: "primary" },
+        type: { entity: "document", column: "type" },
+        folder: { entity: "document", column: "folder" },
+        name: { entity: "document", column: "name" },
+        mime: { entity: "document", column: "mime" },
+        version: { entity: "document", column: "version", type: "smallint" },
+        content_vector: { entity: "document", column: "content_vector", type: "mediumtext" }, // Deprecated
+
+        visibility: { entity: "document", column: "visibility", audit: true },
+        touched_at: { entity: "document", column: "touched_at", type: "datetime" },
+        touched_by: { entity: "document", column: "touched_by", type: "int" },
+    }
+}
+
+module.exports = {
+    Document
+}

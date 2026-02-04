@@ -10,8 +10,8 @@ const dataToStore = (model, rows) => {
         for (let propertyId of Object.keys(row)) {
             if (propertyId != "formJwt") {
                 const property = model.properties[propertyId]
-                if (!property) cellsToReject[propertyId] = "unknown"
-                else {
+                if (property) { //cellsToReject[propertyId] = "unknown"
+                // else {
                     let value = row[propertyId]
                     if (property.type == "int") {
                         if (value == "") cellsToStore[propertyId] = 0

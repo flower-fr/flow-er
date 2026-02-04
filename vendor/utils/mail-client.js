@@ -21,9 +21,10 @@ const createMailClient = ({ config, logger }) => {
 
 const sendMail = ({ logger, transporter, from, forcedTo }) => async options => {
 
-    logger && logger.debug(`sending email from ${from}, to ${forcedTo}`)
-
     const { to, cc, bcc, subject, type, content, attachments } = options
+
+    logger && logger.debug(`sending email from ${from}, to ${forcedTo || to}`)
+
     if (!to) throw new Error("missing mail to")
     if (!subject) throw new Error("missing mail subject")
     if (!content) throw new Error("missing mail content")

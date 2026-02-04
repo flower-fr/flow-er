@@ -174,6 +174,11 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
             $(`#flModalFormInput-${property}`).show()
             $(".fl-modal-form-input").prop("disabled", false)
         })
+        $(".fl-modal-future").each(function () {
+            const now = $(this).val()
+            if (`${now.substring(6, 10)}-${now.substring(3, 5)}-${now.substring(0, 2)}` < moment().format("YYYY-MM-DD")) $(this).val("")
+        })
+        $(".fl-modal-log").hide()
     })
 
     $(".fl-close-button").click(() => {
