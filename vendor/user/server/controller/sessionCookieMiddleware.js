@@ -2,7 +2,7 @@ const { checkToken } = require("../../../../core/tools/security")
 
 const sessionCookieMiddleware = (config, context) => async (req, res, next) => {
 
-    const session = req.cookies["session"]
+    const session = req.cookies["session"] || req.query.jwt
     if (!session) {
         return res.redirect("/user/login")
     }

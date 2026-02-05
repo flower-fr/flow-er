@@ -21,7 +21,7 @@ const register = async ({ context, config, logger, app }) => {
 
 const sessionCookieMiddleware = config => async (req, res, next) => {
 
-    const session = req.cookies["session"]
+    const session = req.cookies["session"] || req.query.jwt
     if (!session) {
         return res.status(403).send({message: "missing cookie"})
     }

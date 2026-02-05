@@ -51,8 +51,7 @@ const postAction = async ({ req }, context, { sql, logger }) => {
 
         rowsToStore = entitiesToStore(entity, model, rowsToStore)
         logger && logger.debug(util.inspect({rowsToStore}))
-console.log(rowsToStore)
-return
+
         /**
          * Apply and audit the changes in the database
          */
