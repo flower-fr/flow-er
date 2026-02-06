@@ -396,12 +396,15 @@ const triggerDetailTab = ({ context, entity, view }, data, tab, route, id, messa
             if ($(submit).attr("data-fl-id")) route += `/${ $(submit).attr("data-fl-id") }`
             if ($(submit).attr("data-fl-view")) route += `?view=${ $(submit).attr("data-fl-view") }`
 
+            const body = ($(submit).attr("data-fl-action") === "transaction")
+                ? JSON.stringify({ steps: JSON.parse($(submit).attr("data-fl-steps")), rows: [payload] }) 
+                : JSON.stringify([payload])
             const response = await fetch(route, {
                 headers: {
                     "Content-Type": "application/json"
                 },
                 method: $(submit).attr("data-fl-method") || "POST",
-                body: JSON.stringify([payload])
+                body
             })
 
             // const route = `/${$(submit).attr("data-fl-controller")}/file/${$(submit).attr("data-fl-entity")}`

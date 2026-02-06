@@ -146,6 +146,7 @@ const renderDetailTab = ({ context, entity }, { data, detailTabConfig, formJwt }
                             data-fl-entity=${post.entity}
                             ${ (post.id) ? `data-fl-id=${ data[post.id] }`: "" }
                             data-fl-transaction=${postId}
+                            ${ (post.steps) ? `data-fl-steps=${ JSON.stringify(post.steps) }`: "" }
                             ${ (post.view) ? `data-fl-view=${post.view}` : "" }
                             ${ (post.glyph) ? `title=${  context.localize(post.labels) }` : "" }>${ (post.glyph) ? `<i class="fas ${ post.glyph }"></i>` : context.localize(post.labels) }
                         </button>

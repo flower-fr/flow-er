@@ -115,7 +115,6 @@ const resendSmtp = async ({ context, sql, smtp, ids }) =>
      */
 
     for (let row of rows) {
-console.log(row.params);
         if (!row.scheduled_at || moment(row.scheduled_at).format("YYYY-MM-DD HH:mm:ss") < moment().format("YYYY-MM-DD HH:mm:ss")) {
             const params = row.params
             const attachmentsToSend = []

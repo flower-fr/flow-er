@@ -31,7 +31,14 @@ const transactionAction = async ({ req }, context, { sql, smtp, sms, logger }) =
     
         for (const step of req.body.steps) {
             const stepId = step.id, stepFunction = postSteps[stepId]
-            if (!step.async) await stepFunction({ req, entity: step.entity }, context, rows, { sql, smtp, sms })
+            const data = rows.map(row => {
+                const dataRow = {}
+                for (const [key, value] of Object.entries(step.properties)) {
+                    dataRow[key] = (key === "owner_id") ? context.user.profile_id : row[value] 
+                }
+                return dataRow
+            })
+            if (!step.async) await stepFunction({ req, entity: step.entity }, context, data, { sql, smtp, sms })
         }
     
         await sql.commit()

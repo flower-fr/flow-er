@@ -1,7 +1,6 @@
 class ListRowProperties
 {
     constructor({context, listConfig, columns, row}) {
-console.log(columns)
         this.context = context
         this.listConfig = listConfig
         this.columns = columns

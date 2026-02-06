@@ -126,8 +126,9 @@ const mergePayload = async (context, entity, model, form, config, sql, logger) =
     return payload
 }
 
-const save = async ({ req }, context, rows, { sql }) => {
-    const entity = assert.notEmpty(req.params, "entity")
+const save = async ({ req, entity }, context, rows, { sql }) =>
+{
+    if (!entity) entity = req.params.entity
 
     const model = context.config[`${entity}/model`]
     
