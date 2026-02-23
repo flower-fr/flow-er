@@ -1,16 +1,12 @@
 
-import View from "../View.js"
-
-// Deprecated
 import { getSearchParams } from "/flBo/cli/controller/getSearchParams.js"
 import { triggerList } from "/flBo/cli/controller/triggerList.js"
 import { triggerTaskDetail } from "/flBo/cli/controller/triggerTaskDetail.js"
 import { triggerTaskAdd } from "/flBo/cli/controller/triggerTaskAdd.js"
 
-export default class Tasks extends View
+class Tasks
 {
-    constructor({ controller, context, entity, view, data }) {
-        super({ controller })
+    constructor({ context, entity, view, data }) {
         this.context = context
         this.entity = entity
         this.view = view

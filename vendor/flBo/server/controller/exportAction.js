@@ -67,7 +67,7 @@ const exportAction = async ({ req, res }, context, sql) =>
         })
     })
 
-    const fileName = exportConfig.fileName || "doubled-cream.xlsx"
+    const fileName = exportConfig.fileName || "double-cream.xlsx"
     res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"); res.setHeader("Content-Disposition", `attachment; filename=${fileName}`)
     await workbook.xlsx.write(res)
 }

@@ -1,22 +1,20 @@
-import View from "../View.js"
-import ListHeader from "./ListHeader.js"
-import ListRow from "./ListRow.js"
+import { ListHeader } from "./ListHeader.js"
+import { ListRow } from "./ListRow.js"
 
 import { getSearchParams } from "/flBo/cli/controller/getSearchParams.js"
 import { triggerDetail } from "/flBo/cli/controller/triggerDetail.js"
 import { triggerList } from "/flBo/cli/controller/triggerList.js"
 import { triggerGroup } from "/flBo/cli/controller/triggerGroup.js"
 
-export default class List extends View
+class List
 {
-    constructor({ controller, entity, view, locale, data }) {
-        super({ controller })
+    constructor({ context, entity, view, data }) {
+        this.context = context
         this.entity = entity
         this.view = view
-        this.locale = locale
         this.data = data
         const { rows, order, limit, config, properties } = data
-        this.listHeader = new ListHeader({ rows, order, limit, config, properties })
+        this.listHeader = new ListHeader({ context, rows, order, limit, config, properties })
 
         const columns = {}, dictionary = {}
         for (const row of rows) dictionary[row.id] = row
@@ -52,7 +50,7 @@ export default class List extends View
                     }
                     if (keep) {
                         const modalities = data.crossProperties[property.property].modalities
-                        if (modalities && modalities[value]) value = this.localize(modalities[value])
+                        if (modalities && modalities[value]) value = context.localize(modalities[value])
                         row[propertyId].push(value)
                     }
                 }
@@ -66,12 +64,9 @@ export default class List extends View
         this.listRows = rows.map(row => new ListRow({ context, config, columns, row, i: i++ }))
     }
 
-    translate = (phrase) => this.dictionary[phrase][this.locale] || phrase
-    localize = (labels) => labels[this.locale] || labels.default
-
     render = () =>
     {    
-        const html = []
+        const html = [], context = this.context
 
         html.push(`
         <div class="table-responsive">
@@ -86,12 +81,12 @@ export default class List extends View
                         <tr>
                             <td>
                                 <div class="text-center">
-                                    <input type="checkbox" class="fl-list-check-all" data-toggle="tooltip" data-placement="top" title="${this.translate("Check all")}"></input>
+                                    <input type="checkbox" class="fl-list-check-all" data-toggle="tooltip" data-placement="top" title="${this.context.translate("Check all")}"></input>
                                 </div>
                             </td>
 
                             <td class="text-center">
-                                <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-list-detail fl-list-add" title="${this..translate("Add")}" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#flListDetailModalForm" data-id="0">
+                                <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-list-detail fl-list-add" title="${this.context.translate("Add")}" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#flListDetailModalForm" data-id="0">
                                     <span class="fas fa-plus"></span>
                                 </button>
                                 <button 
@@ -104,7 +99,7 @@ export default class List extends View
                                 data-mdb-target="#flListDetailModalForm"
                                 data-toggle="tooltip"
                                 data-placement="top"
-                                title="${this.translate("Grouped actions")}"
+                                title="${this.context.translate("Grouped actions")}"
                                 >
                                     <span class="fas fa-list"></span>
                                 </button>
@@ -119,12 +114,12 @@ export default class List extends View
                         <tr class="listRow">
                             <td>
                                 <div class="text-center">
-                                    <input type="checkbox" class="fl-list-check-all" title="${this.translate("Check all")}"></input>
+                                    <input type="checkbox" class="fl-list-check-all" title="${context.translate("Check all")}"></input>
                                 </div>
                             </td>
 
                             <td class="text-center">
-                                <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-list-detail fl-list-add" title="${this.translate("Add")}" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#flListDetailModalForm" data-id="0">
+                                <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-list-detail fl-list-add" title="${context.translate("Add")}" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#flListDetailModalForm" data-id="0">
                                     <span class="fas fa-plus"></span>
                                 </button>
                                 <button 
@@ -137,13 +132,13 @@ export default class List extends View
                                 data-mdb-target="#flListDetailModalForm"
                                 data-toggle="tooltip"
                                 data-placement="top"
-                                title="${this.translate("Grouped actions")}"
+                                title="${this.context.translate("Grouped actions")}"
                                 >
                                     <span class="fas fa-list"></span>
                                 </button>
                                 ${(this.listRows.length == this.data.limit) 
         ? `
-                                    <button type="button" class="btn btn-sm btn-outline-primary fl-list-more" data-toggle="tooltip" data-placement="top" title="${this.translate("Display the entire list")}">
+                                    <button type="button" class="btn btn-sm btn-outline-primary fl-list-more" data-toggle="tooltip" data-placement="top" title="${context.translate("Display the entire list")}">
                                         <i class="fas fa-ellipsis-h"></i>
                                     </button>`
         : ""}
@@ -163,6 +158,7 @@ export default class List extends View
 
     trigger = () =>
     {
+        const context = this.context
         const entity = this.entity
         const view = this.view
 
@@ -181,14 +177,14 @@ export default class List extends View
             let direction = $(this).attr("data-fl-direction")
             if (!direction || direction == "-") direction = ""
             else direction = "-"
-            // triggerList({ context, entity, view }, `${direction}${propertyId}`)
+            triggerList({ context, entity, view }, `${direction}${propertyId}`)
         })
 
         // Extend the displayed list
 
         $(".fl-list-more").click(function () {
             $("#flListLimitHidden").val(this.data.limit * 2)
-            // triggerList({ context, entity, view })
+            triggerList({ context, entity, view })
         })
 
         // Enable group action
@@ -268,7 +264,9 @@ export default class List extends View
             }
         })
 
-        // triggerDetail({ context, entity, view }, params)
-        // triggerGroup({ context, entity, view }, params)
+        triggerDetail({ context, entity, view }, params)
+        triggerGroup({ context, entity, view }, params)
     }
 }
+
+export { List }

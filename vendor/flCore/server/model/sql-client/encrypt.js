@@ -15,6 +15,7 @@ function encrypt(context, text) {
 
 // Function to decrypt data
 function decrypt(context, encryptedData) {
+console.log(context.encrypt_secret)
     try {
         // Create decipher
         const decipher = crypto.createDecipheriv(

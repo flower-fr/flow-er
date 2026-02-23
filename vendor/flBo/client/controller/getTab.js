@@ -1,3 +1,4 @@
+import { DetailTab } from "/flBo/cli/view/tab/DetailTab.js"
 
 import { triggerDetailTab } from "/flBo/cli/controller/triggerDetailTab.js"
 import { triggerLinkedinText } from "/flBo/cli/controller/triggerLinkedinText.js"
@@ -51,36 +52,38 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
     
     const data = await response.json()
 
-    $(".renderPoc").each(function () { 
-        ComponentTree.loadView("poc")
-    })
+    const detailTab = new DetailTab({ context, entity, view, data: data.data, detailTabConfig: data.detailTabConfig, formJwt: data.formJwt })
+    $("#detailPanel").html(detailTab.render())
+    detailTab.trigger()
+    modalListCallback({ context, entity, view }, data)
+    postTab({ context, entity, view }, tab, id, searchParams, callback)
 
-    $(".renderDetailTab").each(function () { 
-        const tabId = $(this).attr("id").split("-")[1]
-        if (tabId == tab) {
-            $("#detailPanel").html(renderDetailTab({ context, entity, view }, data))
-            modalListCallback({ context, entity, view }, data)
-        }
-        postTab({ context, entity, view }, tab, id, searchParams, callback)
-    })
+    // $(".renderDetailTab").each(function () { 
+    //     const tabId = $(this).attr("id").split("-")[1]
+    //     if (tabId == tab) {
+    //         $("#detailPanel").html(renderDetailTab({ context, entity, view }, data))
+    //         modalListCallback({ context, entity, view }, data)
+    //     }
+    //     postTab({ context, entity, view }, tab, id, searchParams, callback)
+    // })
 
-    $(".renderUpdate").each(function () { 
-        const tabId = $(this).attr("id").split("-")[1]
-        if (tabId == tab) {
-            $("#detailPanel").html(renderUpdate({ context, entity, view }, data))
-            updateCallback({ context, entity, view }, data)
-        }
-        postTab({ context, entity, view }, tab, id, searchParams, callback)
-    })
+    // $(".renderUpdate").each(function () { 
+    //     const tabId = $(this).attr("id").split("-")[1]
+    //     if (tabId == tab) {
+    //         $("#detailPanel").html(renderUpdate({ context, entity, view }, data))
+    //         updateCallback({ context, entity, view }, data)
+    //     }
+    //     postTab({ context, entity, view }, tab, id, searchParams, callback)
+    // })
 
-    $(".renderModalList").each(function () {
-        const tabId = $(this).attr("id").split("-")[1]
-        if (tabId == tab) {
-            $("#detailPanel").html(renderModalList({ context, entity, view }, data)) 
-            modalListCallback({ context, entity, view }, data)
-        }
-        postTab({ context, entity, view }, tab, id, searchParams)
-    })
+    // $(".renderModalList").each(function () {
+    //     const tabId = $(this).attr("id").split("-")[1]
+    //     if (tabId == tab) {
+    //         $("#detailPanel").html(renderModalList({ context, entity, view }, data)) 
+    //         modalListCallback({ context, entity, view }, data)
+    //     }
+    //     postTab({ context, entity, view }, tab, id, searchParams)
+    // })
 
     const rows = []
     $(`#flListCheck-${ id }`).each(function () {
@@ -92,14 +95,14 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
         }
         rows.push({ ...row })
     })
-    $(".renderGroupTab").each(function () { 
-        const tabId = $(this).attr("id").split("-")[1]
-        if (tabId == tab) {
-            $("#detailPanel").html(renderGroupTabCards({ context, entity, view }, data))
-            updateCallback({ context, entity, view }, data)
-        }
-        postGroupTab({ context, entity, view }, tab, searchParams, rows)
-    })
+    // $(".renderGroupTab").each(function () { 
+    //     const tabId = $(this).attr("id").split("-")[1]
+    //     if (tabId == tab) {
+    //         $("#detailPanel").html(renderGroupTabCards({ context, entity, view }, data))
+    //         updateCallback({ context, entity, view }, data)
+    //     }
+    //     postGroupTab({ context, entity, view }, tab, searchParams, rows)
+    // })
     $(".fl-group-tab-message").hide()
     // $(".form-change").each(function () {
     //     const propertyId = $(this).attr("data-property-id")

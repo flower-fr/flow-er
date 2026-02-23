@@ -10,6 +10,7 @@ const getPdfAction = async ({ req, res, logger }, context, connection) => {
 
     let hash = req.query.hash
     if (!hash) return ["401"] // Unauthorized
+console.log(context)
     const name = decrypt(context, hash)
 
     const documentModel = context.config[`${ entity }/model`]

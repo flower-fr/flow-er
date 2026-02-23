@@ -1,10 +1,9 @@
-import View from "../View.js"
+
 import { ListRowProperties } from "./ListRowProperties.js"
 
-export default class ListRow extends View
+class ListRow
 {
-    constructor({ controller, context, config, columns, row, i }) {
-        super({ controller })
+    constructor({ context, config, columns, row, i }) {
         this.context = context
         this.config = config
         this.columns = columns
@@ -67,4 +66,9 @@ export default class ListRow extends View
 
         return html.join("\n")
     }
+
+    trigger = () => {
+    }
 }
+
+export { ListRow }

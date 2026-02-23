@@ -1,9 +1,6 @@
-import View from "../View.js"
-
-export default class ListHeader extends View
+class ListHeader
 {
-    constructor({ controller, context, rows, order, limit, config, properties }) {
-        super({ controller })
+    constructor({ context, rows, order, limit, config, properties }) {
         this.context = context
         this.rows = rows
         this.order = order
@@ -48,4 +45,9 @@ export default class ListHeader extends View
 
         return result.join("\n")
     }
+
+    trigger = () => {
+    }
 }
+
+export { ListHeader }

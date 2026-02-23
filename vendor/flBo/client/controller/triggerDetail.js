@@ -1,3 +1,5 @@
+import { Detail } from "/flBo/cli/view/detail/Detail.js"
+
 import { getTab } from "/flBo/cli/controller/getTab.js"
 
 const triggerDetail = ({ context, entity, view }, searchParams) => {
@@ -45,19 +47,23 @@ const getDetail = async (context, entity, view, route, id, searchParams, callbac
     }
     else $("#flListDetailModalLabel").text(context.translate("Add"))
 
-    $("#flListDetailModal").html(renderDetail({ context, entity, view}, data))
+    const detail = new Detail({ context, entity, view, data, searchParams, callback })
+    $("#flListDetailModal").html(detail.render())
+    detail.trigger()
 
-    $(".detailTab").click(function () {
-        const tabId = $(this).attr("id").split("-")[1]
-        $(".detailTab").removeClass("active")
-        $(this).addClass("active")
-        const route = $(`#detailTabRoute-${tabId}`).val()
+    // $("#flListDetailModal").html(renderDetail({ context, entity, view}, data))
 
-        getTab({ context, entity, view }, tabId, route, id, "", { ...searchParams }, null, callback)
-    })
+    // $(".detailTab").click(function () {
+    //     const tabId = $(this).attr("id").split("-")[1]
+    //     $(".detailTab").removeClass("active")
+    //     $(this).addClass("active")
+    //     const route = $(`#detailTabRoute-${tabId}`).val()
 
-    const tab = $("#defaultTab").val(), tabRoute = $(`#detailTabRoute-${tab}`).val()
-    getTab({ context, entity, view }, tab, tabRoute, id, "", { ...searchParams }, null, callback)
+    //     getTab({ context, entity, view }, tabId, route, id, "", { ...searchParams }, null, callback)
+    // })
+
+    // const tab = $("#defaultTab").val(), tabRoute = $(`#detailTabRoute-${tab}`).val()
+    // getTab({ context, entity, view }, tab, tabRoute, id, "", { ...searchParams }, null, callback)
 }
 
 export { triggerDetail, getDetail }

@@ -1,7 +1,7 @@
 import { getSearchParams } from "/flBo/cli/controller/getSearchParams.js"
 
-import { List } from "/bo/cli/view/list/List.js"
-import { Tasks } from "/bo/cli/view/tasks/Tasks.js"
+import { List } from "/flBo/cli/view/list/List.js"
+import { Tasks } from "/flBo/cli/view/tasks/Tasks.js"
 
 const triggerList = async ({ context, entity, view }, order = $("#flListOrderHidden").val()) => {		
 

@@ -49,10 +49,10 @@ const loginPost = async ({ req, res }, context, config, db) => {
     const profileModel = context.config[payloadModel.model]
     const [rows] = await db.execute(select(context, payloadModel.entity, Object.keys(payloadModel.columns), filters, null, null, profileModel))
     user.user_id = user.id // Deprecated
-    for (const [key, value] of Object.entries(rows[0])) user[payloadModel.columns[key]] = value
-
+    const payload = { id: user.id, locale: user.locale }
+    for (const [key, value] of Object.entries(rows[0])) payload[payloadModel.columns[key]] = value
     const expiresIn = config.tokenExpirationTime
-    const token = createToken(user, config.apiKey, expiresIn)
+    const token = createToken(payload, config.apiKey, expiresIn)
 
     res.cookie("session", `Bearer ${token}`, {
         path: "/", 
