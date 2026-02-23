@@ -35,7 +35,7 @@ const formAction = async ({ req }, { logger }) =>
                         type: "input",
                         label: "SIREN / SIRET",
                         required: true,
-                   },
+                    },
                     adr_street: {
                         type: "input",
                         label: "Adresse",
