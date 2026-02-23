@@ -126,7 +126,7 @@ export default class Form extends View
                 html.push(`
                 <div class="col-md-6">
                     <div class="form-outline fl-date-outline" data-mdb-datepicker-init>
-                        <input class="form-control form-control-sm fl-modal-form-input" data-fl-property="${ propertyId }" data-fl-type="date" value="${ value ? moment(value).format("DD/MM/YYYY") : "" }"  data-fl-disabled="${ disabled }" ${ required } placeholder="${ context.translate("DD/MM/YYYY") }" />
+                        <input class="form-control form-control-sm fl-modal-form-input" data-fl-property="${ propertyId }" data-fl-type="date" value="${ value ? moment(value).format("DD/MM/YYYY") : "" }"  data-fl-disabled="${ disabled }" ${ required } placeholder="${ this.translations["DD/MM/YYYY"] }" />
                         <label class="form-label">${ label }</label>
                     </div>
                 </div>`

@@ -35,7 +35,7 @@ const formAction = async ({ req }, { logger }) =>
                         type: "input",
                         label: "SIREN / SIRET",
                         required: true,
-                   },
+                    },
                     adr_street: {
                         type: "input",
                         label: "Adresse",
@@ -49,6 +49,11 @@ const formAction = async ({ req }, { logger }) =>
                     adr_city: {
                         type: "input",
                         label: "Ville",
+                        required: true,
+                    },
+                    date: {
+                        type: "date",
+                        label: "Date",
                         required: true,
                     },
                     status: {
@@ -87,7 +92,9 @@ const formAction = async ({ req }, { logger }) =>
                         label: "Ajouter",
                     }
                 },
-                translations: {}
+                translations: {
+                    "DD/MM/YYYY": "JJ/MM/AAAA",
+                }
             },
             "application/json"
         ]        
