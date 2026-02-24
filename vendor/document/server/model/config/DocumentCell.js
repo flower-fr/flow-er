@@ -1,6 +1,6 @@
-const { Model } = require("../../../../flCore/server/model/config/Model")
+const Ddl = require("../../../../flCore/utils/Ddl")
 
-class DocumentCell extends Model {
+class DocumentCell extends Ddl {
 
     identifier = "document_cell"
 
