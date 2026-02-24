@@ -70,7 +70,7 @@ export default class Form extends View
                 html.push(`
                 <div class="col-md-6">
                     <div class="form-outline fl-form-outline" data-mdb-input-init>
-                        <input class="form-control form-control-sm is-valid fl-modal-form-input" data-fl-property="${ propertyId }" data-fl-type="input" value="${ value }"  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
+                        <input class="form-control form-control-sm fl-modal-form-input" data-fl-property="${ propertyId }" data-fl-type="input" value="${ value }"  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
                         <label class="form-label">${ label }</label>
                     </div>
                 </div>`
@@ -84,7 +84,7 @@ export default class Form extends View
                 html.push(`
                 <div class="col-md-6">
                     <div class="form-outline fl-form-outline" data-mdb-input-init>
-                        <input type="password" class="form-control form-control-sm is-valid fl-modal-form-input" data-fl-property="${ propertyId }" data-fl-type="input" data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
+                        <input type="password" class="form-control form-control-sm fl-modal-form-input" data-fl-property="${ propertyId }" data-fl-type="input" data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
                         <label class="form-label">${ label }</label>
                     </div>
                 </div>`
@@ -98,7 +98,7 @@ export default class Form extends View
                 html.push(`
                 <div class="col-md-6">
                     <div class="form-outline fl-form-outline" data-mdb-input-init>
-                        <input type="email" class="form-control form-control-sm is-valid fl-modal-form-input" data-fl-property="${ propertyId }" data-fl-type="email" value="${ value }"  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
+                        <input type="email" class="form-control form-control-sm fl-modal-form-input" data-fl-property="${ propertyId }" data-fl-type="email" value="${ value }"  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
                         <label class="form-label">${ label }</label>
                     </div>
                 </div>`
@@ -112,7 +112,7 @@ export default class Form extends View
                 html.push(`
                 <div class="col-md-6">
                     <div class="form-outline fl-form-outline" data-mdb-input-init>
-                        <input class="form-control form-control-sm is-valid fl-modal-form-input" data-fl-property="${ propertyId }" data-fl-type="phone" value="${ value }"  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
+                        <input class="form-control form-control-sm fl-modal-form-input" data-fl-property="${ propertyId }" data-fl-type="phone" value="${ value }"  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
                         <label class="form-label">${ label }</label>
                     </div>
                 </div>`
@@ -125,7 +125,7 @@ export default class Form extends View
             {
                 html.push(`
                 <div class="col-md-6">
-                    <div class="form-outline fl-date-outline" data-mdb-datepicker-init>
+                    <div class="form-outline fl-date-outline" data-mdb-datepicker-init data-mdb-input-init>
                         <input class="form-control form-control-sm fl-modal-form-input" data-fl-property="${ propertyId }" data-fl-type="date" value="${ value ? moment(value).format("DD/MM/YYYY") : "" }"  data-fl-disabled="${ disabled }" ${ required } placeholder="${ this.translations["DD/MM/YYYY"] }" />
                         <label class="form-label">${ label }</label>
                     </div>
@@ -305,11 +305,13 @@ export default class Form extends View
                     where.push(`${key}:${ Array.isArray(value) ? value.join(",") : value }`)
                 }
                 html.push(`
-                    <div class="col-md-3 fl-submit-div">
+                    <div class="col-md-3 fl-submit-div p-3">
                         <input type="hidden" id="flDetailTabSubmitRefresh-${postId}" data-fl-route="/${ post.controller }/${ post.action }/${ post.entity }/${ data.id }?${ (post.view) ? `&view=${post.view}` : "" }&where=${ where.join("|") }&order=-touched_at" />
                         <button 
                             name="submit-${postId}" 
                             class="btn ${ (post.danger) ? "btn-outline-primary" : "btn-warning" } fl-detail-tab-submit"
+                            data-mdb-ripple-init
+                            data-mdb-ripple-color="danger"
                             ${ (post.danger) ? "data-fl-danger=\"danger\"" : "" }
                             ${ (post.method) ? `data-fl-method=${post.method}`: "" }
                             data-fl-controller=${post.controller}
@@ -319,7 +321,8 @@ export default class Form extends View
                             data-fl-transaction=${postId}
                             ${ (post.steps) ? `data-fl-steps=${ JSON.stringify(post.steps) }`: "" }
                             ${ (post.view) ? `data-fl-view=${post.view}` : "" }
-                            ${ (post.glyph) ? `title=${  post.label }` : "" }>${ (post.glyph) ? `<i class="fas ${ post.glyph }"></i>` : post.label }
+                            ${ (post.glyph) ? `title=${  post.label }` : "" }>
+                                ${ (post.glyph) ? `<i class="fas ${ post.glyph }"></i>` : post.label }
                         </button>
                     </div>`)
             }
@@ -338,5 +341,30 @@ export default class Form extends View
         // formJwt
         // ${ (property.autocomplete)
         // property.values.join(",")
+        // const inputs = document.querySelectorAll(".fl-form-outline")
+        // inputs.forEach( el => {
+        //     console.log(el)
+        //     new mdb.Input(el)
+        // })
+
+        // const dateInputs = document.querySelectorAll(".fl-date-outline")
+        // dateInputs.forEach( el => {
+        //     console.log(el)
+        //     new mdb.Datepicker(el)
+        // })
+        document.querySelectorAll(".form-outline").forEach(el => {
+            if (el.classList.contains("fl-form-outline")) new mdb.Input(el)
+            else if (el.classList.contains("fl-date-outline")) new mdb.Datepicker(el)
+        })
+
+        document.querySelectorAll("select").forEach(el => {
+            if (el.classList.contains("fl-modal-form-select")) new mdb.Select(el)
+        })
+
+        document.querySelectorAll("btn").forEach(el => {
+            new mdb.Ripple(el, {
+                rippleColor: "danger"
+            })
+        })
     }
 }
