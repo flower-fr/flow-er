@@ -71,7 +71,7 @@ export default class Form extends View
             {
                 html.push(`
                 <div class="col-md-6">
-                    <div class="form-outline fl-form-outline" data-mdb-input-init>
+                    <div class="form-outline fl-form-outline ${ this.id }-input" data-mdb-input-init>
                         <input class="form-control form-control-sm fl-modal-form-input" id="${ this.id }-${ propertyId }" data-fl-type="input" value="${ value }"  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
                         <label class="form-label">${ label }</label>
                     </div>
@@ -85,7 +85,7 @@ export default class Form extends View
             {
                 html.push(`
                 <div class="col-md-6">
-                    <div class="form-outline fl-form-outline" data-mdb-input-init>
+                    <div class="form-outline fl-form-outline ${ this.id }-input"" data-mdb-input-init>
                         <input type="password" class="form-control form-control-sm fl-modal-form-input" id="${ this.id }-${ propertyId }" data-fl-type="input" data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
                         <label class="form-label">${ label }</label>
                     </div>
@@ -99,7 +99,7 @@ export default class Form extends View
             {
                 html.push(`
                 <div class="col-md-6">
-                    <div class="form-outline fl-form-outline" data-mdb-input-init>
+                    <div class="form-outline fl-form-outline ${ this.id }-input"" data-mdb-input-init>
                         <input type="email" class="form-control form-control-sm fl-modal-form-input" data-fl-property="${ propertyId }" data-fl-type="email" value="${ value }"  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
                         <label class="form-label">${ label }</label>
                     </div>
@@ -113,7 +113,7 @@ export default class Form extends View
             {
                 html.push(`
                 <div class="col-md-6">
-                    <div class="form-outline fl-form-outline" data-mdb-input-init>
+                    <div class="form-outline fl-form-outline ${ this.id }-input"" data-mdb-input-init>
                         <input class="form-control form-control-sm fl-modal-form-input" id="${ this.id }-${ propertyId }" data-fl-type="phone" value="${ value }"  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
                         <label class="form-label">${ label }</label>
                     </div>
@@ -127,7 +127,7 @@ export default class Form extends View
             {
                 html.push(`
                 <div class="col-md-6">
-                    <div class="form-outline fl-date-outline" data-mdb-datepicker-init data-mdb-input-init>
+                    <div class="form-outline fl-date-outline ${ this.id }-datepicker"" data-mdb-datepicker-init data-mdb-input-init>
                         <input class="form-control form-control-sm fl-modal-form-input" id="${ this.id }-${ propertyId }" data-fl-type="date" value="${ value ? moment(value).format("DD/MM/YYYY") : "" }"  data-fl-disabled="${ disabled }" ${ required } placeholder="${ this.translations["DD/MM/YYYY"] }" />
                         <label class="form-label">${ label }</label>
                     </div>
