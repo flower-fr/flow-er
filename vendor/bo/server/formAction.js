@@ -86,6 +86,7 @@ const formAction = async ({ req }, { logger }) =>
                 },
                 posts: {
                     add: {
+                        method: "POST",
                         controller: "core",
                         action: "v1",
                         entity: "crm_account",
