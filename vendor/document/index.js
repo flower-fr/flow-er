@@ -10,6 +10,7 @@ const { deleteAction } = require("./server/deleteAction")
 
 // test
 const { loadTestDataset } = require("./server/test/loadTestDataset")
+const { testGetAction } = require("./server/test/testGetAction")
 
 const register = async ({ context, config, logger, app }) => {
 
@@ -29,6 +30,7 @@ const register = async ({ context, config, logger, app }) => {
 
     // for testing purposes
     app.post(`${config.prefix}v1/test`, execute(loadTestDataset, context, { sql, logger }))
+    app.get(`${config.prefix}v1/test`, execute(testGetAction, context, { sql, logger }))
 
     // Deprecated
     registerDocument({ context, config, logger, app })

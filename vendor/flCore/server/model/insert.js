@@ -34,6 +34,7 @@ const insert = (context, entity, data, model, debug = false) => {
                         if (typeof value === "string") {
                             const maxLength = (model.properties[key].max_length) ? model.properties[key].max_length : 255
                             value = value.substring(0, maxLength) // Protect against string overflow
+                            console.log(`Trimming value : ${value}`)
                             value = qv(value.trim()) 
                         }
                     }

@@ -222,7 +222,7 @@ export default class Form extends View
                 html.push(`
                 <div class="col-md-6">
                     <div class="form-outline">
-                        <select class="form-select form-select-sm fl-modal-form-select" data-fl-property="${ propertyId }" data-fl-type="select" data-mdb-select-init ${ (required) ? "data-mdb-validation=\"true\" data-mdb-invalid-feedback=\" \" data-mdb-valid-feedback=\" \"" : "" } ${( multiple ) ? "multiple" : ""}  data-fl-disabled="${ disabled }" ${ required }>
+                        <select class="form-select form-select-sm fl-modal-form-select" data-fl-property="${ propertyId }" data-fl-type="select" data-mdb-size="sm" data-mdb-select-init ${ (required) ? "data-mdb-validation=\"true\" data-mdb-invalid-feedback=\" \" data-mdb-valid-feedback=\" \"" : "" } ${( multiple ) ? "multiple" : ""}  data-fl-disabled="${ disabled }" ${ required }>
                             <option />`
                 )
 

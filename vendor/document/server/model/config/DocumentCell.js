@@ -13,10 +13,12 @@ class DocumentCell extends Ddl {
 
     properties = {
         id: { entity: "document_cell", column: "id", type: "primary" },
+        identifier: { entity: "document_cell", column: "identifier" },
         document_id: { entity: "document_cell", column: "document_id", type: "int" },
         content: { entity: "document_cell", column: "content" },
         row: { entity: "document_cell", column: "row", type: "int" },
         column: { entity: "document_cell", column: "column", type: "int" },
+        state: { entity: "document_cell", column: "state" },
 
         folder: { entity: "document", column: "folder" },
         name: { entity: "document", column: "name" },
