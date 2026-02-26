@@ -95,6 +95,10 @@ const formAction = async ({ req }, { logger }) =>
                 },
                 translations: {
                     "DD/MM/YYYY": "JJ/MM/AAAA",
+                    "Technical error, pLease try again later": "Erreur technique, veuillez ré-éssayer ultérieurement",
+                    "Request registered": "Demande enregistrée",
+                    "The data has changed in the meantime, please input again": "La donnée a été modifiée entretemps, veuillez saisir à nouveau",
+                    "The data already exists": "La donnée existe déjà",
                 }
             },
             "application/json"

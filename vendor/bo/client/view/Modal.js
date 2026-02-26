@@ -12,7 +12,7 @@ class Modal extends View
         const order = this.order
         return `
             <!-- First modal dialog -->
-            <div class="modal fade" id="appleeModalToggle${ order }" aria-hidden="true" aria-labelledby="appleeModalToggleLabel${ order }" tabindex="-1">
+            <div class="modal fade" id="appleeModalToggle${ order }" aria-hidden="true" aria-labelledby="appleeModalToggleLabel${ order }" tabindex="-1" data-mdb-backdrop="static">
                 <div class="modal-dialog ${ order === 1 ? "modal-fullscreen" : "modal-lg" }">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -30,7 +30,7 @@ class Modal extends View
     {
         const element = document.getElementById(`appleeModalToggle${ this.order }`)
         element.addEventListener("hidden.mdb.modal", () => {
-            this.controller.unstack()
+            this.controller.screenIndex--
         })
     }
 }

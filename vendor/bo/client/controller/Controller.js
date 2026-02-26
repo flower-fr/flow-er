@@ -38,7 +38,10 @@ export default class Controller
         this.screenIndex++
     }
 
-    unstack = () => this.screenIndex--
+    unstack = () => {
+        const element = document.getElementById(`appleeModalToggle${ this.screenIndex - 1 }`)
+        mdb.Modal.getInstance(element).hide()
+    }
 
     trigger = () =>
     {
