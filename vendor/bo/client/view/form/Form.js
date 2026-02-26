@@ -27,7 +27,22 @@ export default class Form extends View
 
         html.push(`
         <div class="my-3 mt-5">
-            <div class="row" id="flFormMessage"></div>
+            <div class="${ this.id }-message" id="${ this.id }-messageOk">
+                <h5 class="alert alert-success my-3 text-center">${ this.translations["Request registered"] }</h5>
+            </div>
+
+            <div class="${ this.id }-message" id="${ this.id }-messageConsistency">
+                <h5 class="alert alert-danger  my-3 text-center">${ this.translations["The data has changed in the meantime, please input again"] }</h5>
+            </div>
+
+            <div class="${ this.id }-message" id="${ this.id }-messageDuplicate">
+                <h5 class="alert alert-danger  my-3 text-center">${ this.translations["The data already exists"] }</h5>
+            </div>
+
+            <div class="${ this.id }-message" id="${ this.id }-messageServerError">
+                <h5 class="alert alert-danger  my-3 text-center">${ this.translations["Technical error, pLease try again later"] }</h5>
+            </div>
+
             <form class="row g-4" id="${ this.id }">`)
 
         // Consistency
@@ -339,24 +354,39 @@ export default class Form extends View
     {
         // ${ (property.autocomplete)
         // property.values.join(",")
-        const properties = this.properties, posts = this.posts, form = document.getElementById(this.id)
+
+        $(`.${ this.id }-message`).hide()
+        
+        const properties = this.properties, posts = this.posts, form = document.getElementById(this.id), controller = this.controller
         if (form) {
             form.onsubmit = async function (event)
             {
                 event.preventDefault()
                 form.checkValidity()
                 const body = { touched_at: document.getElementById(`${ this.id }-touched_at`)?.value }
-                for (const propertyId in properties) {
+                for (const [propertyId, property] of Object.entries(properties)) {
                     const input = document.getElementById(`${ this.id }-${ propertyId }`)
-                    body[propertyId] = input.value
+                    if (property.type === "date") {
+                        const val = input.value
+                        body[propertyId] = val ? val.substring(6, 10) + "-" + val.substring(3, 5) + "-" + val.substring(0, 2) : ""
+                    } else {
+                        body[propertyId] = input.value
+                    }
                 }
 
                 const submit = event.submitter, postId = submit.name.split("-")[1], post = posts[postId]
                 const response = await fetch(`/${ post.controller }/${ post.action }/${ post.entity }${ this.view ? `/${ this.view }` : "" }`, {
                     method: post.method,
-                    body,
+                    headers: new Headers({"content-type": "application/json"}),
+                    body: JSON.stringify([body]),
                 })
-                console.log(response)
+                if (response.status == 200) {
+                    const body = await response.json()
+                    console.log(body.stored[0].entitiesToInsert[post.entity].rowId)
+                    controller.unstack()
+                } else {
+                    $(`#${ this.id }-messageServerError`).show()
+                }
             }
         }
     }
