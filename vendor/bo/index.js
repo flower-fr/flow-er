@@ -10,7 +10,7 @@ const register = async ({ context, config, logger, app }) => {
 
     app.use(`${config.prefix}/*`, noCacheMiddleware)
     app.use(`${config.prefix}/*`, handleCorsMiddleware)
-    app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
+    // app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
 
     const execute = executeService(context, config, logger)
 
