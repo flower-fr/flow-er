@@ -86,7 +86,7 @@ export default class Form extends View
             {
                 html.push(`
                 <div class="col-md-6">
-                    <div class="form-outline fl-form-outline" data-mdb-input-init>
+                    <div class="form-outline fl-form-outline ${ this.id }-input" data-mdb-input-init>
                         <input class="form-control form-control-sm fl-modal-form-input" id="${ this.id }-${ propertyId }" data-fl-type="input" value="${ value }"  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
                         <label class="form-label">${ label }</label>
                     </div>
@@ -100,7 +100,7 @@ export default class Form extends View
             {
                 html.push(`
                 <div class="col-md-6">
-                    <div class="form-outline fl-form-outline ${ this.id }-input" data-mdb-input-init>
+                    <div class="form-outline fl-form-outline ${ this.id }-input"" data-mdb-input-init>
                         <input type="password" class="form-control form-control-sm fl-modal-form-input" id="${ this.id }-${ propertyId }" data-fl-type="input" data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
                         <label class="form-label">${ label }</label>
                     </div>
@@ -114,8 +114,8 @@ export default class Form extends View
             {
                 html.push(`
                 <div class="col-md-6">
-                    <div class="form-outline fl-form-outline ${ this.id }-input" data-mdb-input-init>
-                        <input type="email" class="form-control form-control-sm fl-modal-form-input" id="${ this.id }-${ propertyId }" data-fl-type="email" value="${ value }"  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
+                    <div class="form-outline fl-form-outline ${ this.id }-input"" data-mdb-input-init>
+                        <input type="email" class="form-control form-control-sm fl-modal-form-input" data-fl-property="${ propertyId }" data-fl-type="email" value="${ value }"  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
                         <label class="form-label">${ label }</label>
                     </div>
                 </div>`
@@ -128,7 +128,7 @@ export default class Form extends View
             {
                 html.push(`
                 <div class="col-md-6">
-                    <div class="form-outline fl-form-outline ${ this.id }-input" data-mdb-input-init>
+                    <div class="form-outline fl-form-outline ${ this.id }-input"" data-mdb-input-init>
                         <input class="form-control form-control-sm fl-modal-form-input" id="${ this.id }-${ propertyId }" data-fl-type="phone" value="${ value }"  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
                         <label class="form-label">${ label }</label>
                     </div>
@@ -142,7 +142,7 @@ export default class Form extends View
             {
                 html.push(`
                 <div class="col-md-6">
-                    <div class="form-outline fl-date-outline ${ this.id }-datepicker" data-mdb-datepicker-init data-mdb-input-init>
+                    <div class="form-outline fl-date-outline ${ this.id }-datepicker"" data-mdb-datepicker-init data-mdb-input-init>
                         <input class="form-control form-control-sm fl-modal-form-input" id="${ this.id }-${ propertyId }" data-fl-type="date" value="${ value ? moment(value).format("DD/MM/YYYY") : "" }"  data-fl-disabled="${ disabled }" ${ required } placeholder="${ this.translations["DD/MM/YYYY"] }" />
                         <label class="form-label">${ label }</label>
                     </div>
@@ -239,7 +239,7 @@ export default class Form extends View
                 html.push(`
                 <div class="col-md-6">
                     <div class="form-outline">
-                        <select class="form-select form-select-sm fl-modal-form-select" id="${ this.id }-${ propertyId }" data-fl-type="select" data-mdb-select-init ${ (required) ? "data-mdb-validation=\"true\" data-mdb-invalid-feedback=\" \" data-mdb-valid-feedback=\" \"" : "" } ${( multiple ) ? "multiple" : ""}  data-fl-disabled="${ disabled }" ${ required }>
+                        <select class="form-select form-select-sm fl-modal-form-select" id="${ this.id }-${ propertyId }" data-fl-type="select" data-mdb-size="sm" data-mdb-select-init ${ (required) ? "data-mdb-validation=\"true\" data-mdb-invalid-feedback=\" \" data-mdb-valid-feedback=\" \"" : "" } ${( multiple ) ? "multiple" : ""}  data-fl-disabled="${ disabled }" ${ required }>
                             <option />`
                 )
 
@@ -322,11 +322,13 @@ export default class Form extends View
                     where.push(`${key}:${ Array.isArray(value) ? value.join(",") : value }`)
                 }
                 html.push(`
-                    <div class="col-md-3 fl-submit-div">
+                    <div class="col-md-3 fl-submit-div p-3">
                         <input type="hidden" id="flDetailTabSubmitRefresh-${postId}" data-fl-route="/${ post.controller }/${ post.action }/${ post.entity }/${ data.id }?${ (post.view) ? `&view=${post.view}` : "" }&where=${ where.join("|") }&order=-touched_at" />
                         <button 
                             name="${ this.id }-${postId}" 
                             class="btn ${ (post.danger) ? "btn-outline-primary" : "btn-warning" } fl-detail-tab-submit"
+                            data-mdb-ripple-init
+                            data-mdb-ripple-color="danger"
                             ${ (post.danger) ? "data-fl-danger=\"danger\"" : "" }
                             ${ (post.method) ? `data-fl-method=${post.method}`: "" }
                             data-fl-controller=${post.controller}
@@ -336,7 +338,8 @@ export default class Form extends View
                             data-fl-transaction=${postId}
                             ${ (post.steps) ? `data-fl-steps=${ JSON.stringify(post.steps) }`: "" }
                             ${ (post.view) ? `data-fl-view=${post.view}` : "" }
-                            ${ (post.glyph) ? `title=${  post.label }` : "" }>${ (post.glyph) ? `<i class="fas ${ post.glyph }"></i>` : post.label }
+                            ${ (post.glyph) ? `title=${  post.label }` : "" }>
+                                ${ (post.glyph) ? `<i class="fas ${ post.glyph }"></i>` : post.label }
                         </button>
                     </div>`)
             }

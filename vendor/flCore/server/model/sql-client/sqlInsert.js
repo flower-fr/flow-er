@@ -9,6 +9,7 @@ const sqlInsert = async ({ context, entity, data, params, debug }, model, connec
     
     // Encryption
     for (const [key, value] of Object.entries(data)) {
+        console.log(`Key : ${key}, value : ${value}`)
         if (model.properties[key].sensitive && value) {
             data[key] = encrypt(context, value)
         }
