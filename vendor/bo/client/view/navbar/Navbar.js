@@ -8,7 +8,8 @@ export default class Navbar extends View
         this.view = view
     }
 
-    initialize = async () => {
+    initialize = async () =>
+    {
         const response = await fetch(`/bo/navbar/${ this.entity }`)
         const { headerParams, helpMenu, instance, user, tab, menu, translations } = await response.json()
         this.headerParams = headerParams

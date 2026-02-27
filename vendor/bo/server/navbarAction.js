@@ -40,6 +40,14 @@ const navbarAction = async ({ req }, { logger }) =>
                     label: "Prospects / Clients"
                 },
                 menu: {
+                    "tab/simulation": {
+                        menu: "menu/crm",
+                        controller: "applee",
+                        action: "index",
+                        entity: "crm_commitment",
+                        view: "proposition",
+                        label: "Nouvelle proposition"
+                    },
                     "tab/acquisition": {
                         menu: "menu/crm",
                         controller: "mdb",

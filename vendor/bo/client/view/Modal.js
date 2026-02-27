@@ -13,7 +13,7 @@ class Modal extends View
         return `
             <!-- First modal dialog -->
             <div class="modal fade" id="appleeModalToggle${ order }" aria-hidden="true" aria-labelledby="appleeModalToggleLabel${ order }" tabindex="-1" data-mdb-backdrop="static">
-                <div class="modal-dialog ${ order === 1 ? "modal-fullscreen" : "modal-lg" }">
+                <div class="modal-dialog ${ order === 1 ? "modal-lg" : "modal-lg" }">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="appleeModalToggleLabel${ order }">Modal ${ order }</h5>
