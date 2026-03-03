@@ -1,18 +1,8 @@
 const moment = require("moment")
-
-const { select } = require("../model/select")
-const { update } = require("../model/update")
-
 const { throwBadRequestError } = require("../../../../core/api-utils")
 
-const sendSms = async ({ req }, context, rows, { connection, sms }) => {
-
-    const model = context.config["interaction/model"]
-    
-    /**
-     * Send the batch of messages
-     */
-
+const sendSms = async ({ req }, context, rows, { sql, sms }) =>
+{
     for (let row of rows) {
         if (!row.scheduled_at || row.scheduled_at === "") {
 
@@ -38,26 +28,17 @@ const sendSms = async ({ req }, context, rows, { connection, sms }) => {
                         "api_secret": sms.apiSecret
                     })
                 })
-        
-                /**
-                 * Mark for each message the interaction as OK
-                 */
 
-                await connection.execute(update(context, "interaction", [row.insertId], { "status": "ok" }, model))
+                await sql.execute({ context, type: "update", entity: "interaction", ids: [row.insertId], data: { "status": "ok" }})
             }
             catch (err) {
-                
-                /**
-                 * Mark the interaction as KO
-                 */
-        
-                await connection.execute(update(context, "interaction", [row.insertId], { "status": "ko" }, model))
+                await sql.execute({ context, type: "update", entity: "interaction", ids: [row.insertId], data: { "status": "ko" }})
             }
         }
     }
 }
 
-const resendSms = async ({ context, connection, smsClient, ids }) => {
+const resendSms = async ({ context, sql, smsClient, ids }) => {
 
     /**
      * Retrieve the interactions as sms to send
@@ -66,7 +47,7 @@ const resendSms = async ({ context, connection, smsClient, ids }) => {
     const model = context.config["interaction/model"]
     const where = { "status": "current", "provider": "api.smspartner.fr" }
     if (ids) where.id = ids
-    const rows = (await connection.execute(select(context, "interaction", ["id", "scheduled_at", "body"], where, null, 500, model)))[0]
+    const rows = await sql.execute({ context, type: "select", entity: "interaction", columns: ["id", "scheduled_at", "body"], where, limit: 500 })
     ids = []
     for (let row of rows) ids.push(row.id)
 
@@ -89,16 +70,14 @@ const resendSms = async ({ context, connection, smsClient, ids }) => {
                 headers: new Headers({"content-type": "application/json"}),
                 body: JSON.stringify(body)
             })
-            await connection.execute(update(context, "interaction", [selectedIds], { status: (response.status === 200) ? "ok" : "ko" }, model))
+            await sql.execute({ context, type: "update", entity: "interaction", ids: [selectedIds], data: { status: (response.status === 200) ? "ok" : "ko" }})
         }
 
-        await connection.commit()
-        await connection.release()
+        await sql.commit()
     }
     catch {
-        if (selectedIds.length > 0) await connection.execute(update(context, "interaction", [selectedIds], { status: "ko" }, model))
-        await connection.rollback()
-        await connection.release()
+        if (selectedIds.length > 0) await sql.execute({ context, type: "update", entity: "interaction", ids: [selectedIds], data: { status: "ko" }})
+        await sql.rollback()
         throw throwBadRequestError()
     }
 }
