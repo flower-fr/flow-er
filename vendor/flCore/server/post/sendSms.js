@@ -1,7 +1,8 @@
 const moment = require("moment")
+const util = require("util")
 const { throwBadRequestError } = require("../../../../core/api-utils")
 
-const sendSms = async ({ req }, context, rows, { sql, sms }) =>
+const sendSms = async ({ req }, context, rows, { sql, sms, logger }) =>
 {
     for (let row of rows) {
         if (!row.scheduled_at || row.scheduled_at === "") {
@@ -32,13 +33,14 @@ const sendSms = async ({ req }, context, rows, { sql, sms }) =>
                 await sql.execute({ context, type: "update", entity: "interaction", ids: [row.insertId], data: { "status": "ok" }})
             }
             catch (err) {
+                logger && logger.error(err)
                 await sql.execute({ context, type: "update", entity: "interaction", ids: [row.insertId], data: { "status": "ko" }})
             }
         }
     }
 }
 
-const resendSms = async ({ context, sql, smsClient, ids }) => {
+const resendSms = async ({ context, sql, smsClient, logger, ids }) => {
 
     /**
      * Retrieve the interactions as sms to send
@@ -75,9 +77,9 @@ const resendSms = async ({ context, sql, smsClient, ids }) => {
 
         await sql.commit()
     }
-    catch {
+    catch (err) {
+        logger && logger.error(err)
         if (selectedIds.length > 0) await sql.execute({ context, type: "update", entity: "interaction", ids: [selectedIds], data: { status: "ko" }})
-        // await sql.rollback()
         throw throwBadRequestError()
     }
 }
