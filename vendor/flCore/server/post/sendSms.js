@@ -75,7 +75,7 @@ const resendSms = async ({ context, sql, smsClient, logger, ids }) => {
             await sql.execute({ context, type: "update", entity: "interaction", ids: [selectedIds], data: { status: (response.status === 200) ? "ok" : "ko" }})
         }
 
-        await sql.commit()
+        // await sql.commit()
     }
     catch (err) {
         logger && logger.error(err)

@@ -4,8 +4,6 @@ const timezone = require("dayjs/plugin/timezone")
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
-const { select } = require("../../../flCore/server/model/select")
-const { update } = require("../model/update")
 const { throwBadRequestError } = require("../../../../core/api-utils")
 const util = require("util")
 
@@ -120,7 +118,7 @@ const resendSmtp = async ({ context, sql, smtp, logger, ids }) =>
 
     for (let row of rows) {
 
-        logger && logger.debug({ scheduled: row.scheduled_at.format("YYYY-MM-DD HH:mm:ss"), now: dayjs().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss") })
+        logger && logger.debug(util.inspect({ scheduled: row.scheduled_at.format("YYYY-MM-DD HH:mm:ss"), now: dayjs().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss") }))
 
         if (!row.scheduled_at || dayjs(row.scheduled_at).format("YYYY-MM-DD HH:mm:ss") < dayjs().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")) {
             const params = row.params
