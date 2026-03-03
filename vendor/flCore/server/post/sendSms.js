@@ -77,7 +77,7 @@ const resendSms = async ({ context, sql, smsClient, ids }) => {
     }
     catch {
         if (selectedIds.length > 0) await sql.execute({ context, type: "update", entity: "interaction", ids: [selectedIds], data: { status: "ko" }})
-        await sql.rollback()
+        // await sql.rollback()
         throw throwBadRequestError()
     }
 }
