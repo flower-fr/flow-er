@@ -1,7 +1,7 @@
 const { update } = require("../../../flCore/server/model/update")
 const { throwBadRequestError, throwInternalError } = require("../../../../core/api-utils")
 
-const sendHttp = async ({ req }, context, interactions, { connection }) => {
+const sendHttp = async ({ req }, context, interactions, { sql }) => {
 
     const type = "html"
     const model = context.config["interaction/model"]
@@ -25,23 +25,14 @@ const sendHttp = async ({ req }, context, interactions, { connection }) => {
             })
 
             if (!response.ok) {
-                await connection.execute(update(context, "interaction", [interaction.id], { "status": "ko" }, model))
+                await sql.execute({ context, type: "update", entity: "interaction", ids: [interaction.id], data: { "status": "ko" }})
                 throw throwInternalError(`Response status: ${response.status}`)
             }
 
-            /**
-             * Mark for each message the interaction as OK
-             */
-
-            await connection.execute(update(context, "interaction", [interaction.id], { "status": "ok" }, model))
+            await sql.execute({ context, type: "update", entity: "interaction", ids: [interaction.id], data: { "status": "ok" }})
         }
         catch (err) {
-                
-            /**
-             * Mark the interaction as KO
-             */
-
-            await connection.execute(update(context, "interaction", [interaction.id], { "status": "ko" }, model))
+            await sql.execute({ context, type: "update", entity: "interaction", ids: [interaction.id], data: { "status": "ko" }})
             throw throwBadRequestError()
         }
     }

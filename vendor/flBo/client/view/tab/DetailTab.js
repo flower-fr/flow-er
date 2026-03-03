@@ -94,8 +94,7 @@ class DetailTab
                         (renderers[section.renderer])({ context, entity }, section, properties, (rows.length > 0) ? rows[0] : [{}], sectionData.vectors) :
                         (section.renderer === "renderModalList") ? 
                             section.modalList.render() :
-                            (renderers[section.renderer])({ context, entity }, { id: data.id, section, config: detailTabConfig, properties, rows, where, order, limit }) }
-                    }`
+                            (renderers[section.renderer])({ context, entity }, { id: data.id, section, config: detailTabConfig, properties, rows, where, order, limit }) }`
                 )
             }
         }

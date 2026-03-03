@@ -1,29 +1,30 @@
 import View from "../View.js"
 export default class Navbar extends View
 {
-    constructor({ controller, entity, view })
+    constructor({ controller, application, tab })
     {
         super({ controller })
-        this.entity = entity
-        this.view = view
+        this.application = application
+        this.tab = tab
     }
 
     initialize = async () =>
     {
-        const response = await fetch(`/bo/navbar/${ this.entity }`)
-        const { headerParams, helpMenu, instance, user, tab, menu, translations } = await response.json()
-        this.headerParams = headerParams
+        const response = await fetch(`/bo/navbar/${ this.application }/${ this.tab }`)
+        const { logo, logoHeight, helpMenu, instance, profile, menu, defaultTab, translations } = await response.json()
+        this.logo = logo
+        this.logoHeight = logoHeight || "40"
         this.helpMenu = helpMenu
         this.instance = instance
-        this.user = user
-        this.tab = tab
+        this.profile = profile
+        this.defaultTab = defaultTab
         this.menu = menu,
         this.translations = translations
     }
 
     render = () =>
     {
-        const html = [], headerParams = this.headerParams, menu = this.menu
+        const html = [], menu = this.menu
 
         html.push(`
             <header>
@@ -46,8 +47,8 @@ export default class Navbar extends View
 
                             <a class="navbar-brand" href="#">`)
         
-        if (headerParams && headerParams.logo) {
-            html.push(`<img height="${headerParams.logoHeight}" src="/${`logos/${headerParams.logo}`}" alt="${headerParams.title}" title="${headerParams.title}" />`)
+        if (this.logo) {
+            html.push(`<img height="${ this.logoHeight }" src="/${`logos/${ this.logo }`}" alt="${ this.title }" title="${ this.title }" />`)
         } else {
             html.push(`<span>${this.instance.label}&nbsp;&nbsp;|</span>`)
         }
@@ -80,7 +81,7 @@ export default class Navbar extends View
                                     <span class="far fa-lg fa-user"></span>
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                    <li><a class="dropdown-item" href="#">${this.user.n_fn}</a></li>
+                                    <li><a class="dropdown-item" href="#">${ this.profile.name }</a></li>
                                     <li><a class="dropdown-item" href="/user/change-password">${ this.translations["Change password"] }</a></li>
                                 </ul>
                             </div>`)
@@ -103,23 +104,13 @@ export default class Navbar extends View
     renderEntries = ({ menu }) => 
     {
         const html = []
-        for (let menuTabId of Object.keys(menu)) {
-            const menuTab = menu[menuTabId]
-
-            let route
-            if (menuTab.controller) {
-                route = `/${menuTab.controller}/${menuTab.action}/${menuTab.entity}`
-                if (menuTab.view) route += `?view=${menuTab.view}`
-            }
-            else {
-                const query = menuTab.urlParams
-                route = `${menuTab.route}${(query) ? `?${query}` : ""}`
-            }
-
-            const active = (menuTabId == `tab/${this.tab}`)
+        for (let [menuTabId, menuTab] of Object.entries(menu)) {
+            const params = menuTab.params ? `/${ Object.values(menuTab.params).map(value => value).join("/") }` : ""
+            const query = menuTab.query ? `?${Object.entries(menuTab.query).map(([key, value]) => `${key}=${value}`).join("&")}` : ""
+            const route = `/${ menuTab.controller }/${ menuTab.action }${ params }${ query }`
 
             html.push(`<li class="nav-item">
-                <a class="nav-link ${(active) ? "active" : ""} ${(menuTab.disabled) ? "btn disabled" : ""}" href="${route}" id="${menuTabId}-anchor">
+                <a class="nav-link ${ menuTabId === this.defaultTab ? "active" : "" } ${ menuTab.disabled ? "btn disabled" : ""}" href="${route}" id="${menuTabId}-anchor">
                     ${ menuTab.label }
                 </a>
             </li>`)
@@ -128,7 +119,9 @@ export default class Navbar extends View
     }
 
     trigger = () => {
-        const element = document.getElementById("navbarDropdownMenuLink")
-        new mdb.Dropdown(element)
+        if (mdb) {
+            const element = document.getElementById("navbarDropdownMenuLink")
+            new mdb.Dropdown(element)
+        }
     }
 }

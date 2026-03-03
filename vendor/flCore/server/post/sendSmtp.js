@@ -1,4 +1,8 @@
-const moment = require("moment")
+const dayjs = require("dayjs")
+const utc = require("dayjs/plugin/utc")
+const timezone = require("dayjs/plugin/timezone")
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 const { select } = require("../../../flCore/server/model/select")
 const { update } = require("../model/update")
@@ -115,7 +119,7 @@ const resendSmtp = async ({ context, sql, smtp, ids }) =>
      */
 
     for (let row of rows) {
-        if (!row.scheduled_at || moment(row.scheduled_at).format("YYYY-MM-DD HH:mm:ss") < moment().format("YYYY-MM-DD HH:mm:ss")) {
+        if (!row.scheduled_at || dayjs(row.scheduled_at).format("YYYY-MM-DD HH:mm:ss") < dayjs().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")) {
             const params = row.params
             const attachmentsToSend = []
             for (const attachmentId of (row.attachments) ? row.attachments.split(",") : []) {

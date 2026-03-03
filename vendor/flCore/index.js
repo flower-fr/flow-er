@@ -7,7 +7,7 @@ const { postAction, postFormAction } = require("./server/postAction")
 const { deleteAction } = require("./server/deleteAction")
 const { transactionAction } = require("./server/transactionAction")
 const { smtpAction } = require("./server/smtpAction")
-const { createSqlClient } = require("./server//model/sql-client")
+const { createSqlClient } = require("./server/model/sql-client")
 const { createMailClient } = require("../utils/mail-client")
 const { executeService } = require("../../core/api-utils")
 

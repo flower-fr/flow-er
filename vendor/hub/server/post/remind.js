@@ -1,11 +1,8 @@
-const { select } = require("../../../flCore/server/model/select")
-const { insert } = require("../../../flCore/server/model/insert")
-const { update } = require("../../../flCore/server/model/update")
 const moment = require("moment")
 
 const { throwBadRequestError } = require("../../../../core/api-utils")
 
-const registerReminders = async (context, entity, date, viewModel, connection) => {
+const registerReminders = async (context, entity, date, viewModel, sql) => {
 
     /**
      * Retrieve the data
@@ -14,7 +11,7 @@ const registerReminders = async (context, entity, date, viewModel, connection) =
     const dataModel = context.config[`${entity}/model`]
     const where = viewModel.where
     where.date = ["<=", date]
-    const [rows] = await connection.execute(select(context, entity, Object.keys(viewModel.properties), where, null, null, dataModel))
+    const [rows] = await sql.execute({ context, type: "select", entity, where })
 
     /**
      * Split by owner
@@ -75,22 +72,16 @@ const registerReminders = async (context, entity, date, viewModel, connection) =
             params: { "type": "html", "to": rows[0][viewModel.to], "subject": context.localize(viewModel.subject) },
             body: text.join("")
         }
-        const [insertedRow] = (await connection.execute(insert(context, "interaction", data, context.config["interaction/model"])))
-        data.id = insertedRow.insertId
+        data.id = await sql.execute({ context, type: "insert", entity: "interaction", data })
         reminders.push(data)
     }
 
     return reminders
 }
 
-const sendReminders = async (context, reminders, connection, mailClient) => {
-
+const sendReminders = async (context, reminders, sql, mailClient) =>
+{
     const model = context.config["interaction/model"]
-    
-    /**
-     * Send the batch of messages
-     */
-
     for (let reminder of reminders) {
 
         const params = JSON.parse(reminder.params)
@@ -102,22 +93,10 @@ const sendReminders = async (context, reminders, connection, mailClient) => {
                 subject: params.subject,
                 content: reminder.body
             })
-    
-            /**
-             * Mark for each message the interaction as OK
-             */
-
-            await connection.execute(update(context, "interaction", [reminder.id], { "status": "ok" }, model))
-            await connection.release()
+            await sql.execute({ context, type: "update", entity: "interaction", ids: [reminder.id], data: { "status": "ok" }})
         }
         catch (err) {
-                
-            /**
-             * Mark the interaction as KO
-             */
-
-            await connection.execute(update(context, "interaction", [reminder.insertId], { "status": "ko" }, model))
-            await connection.release()
+            await sql.execute({ context, type: "update", entity: "interaction", ids: [reminder.insertId], data: { "status": "ko" }})
             throw throwBadRequestError()
         }
     }

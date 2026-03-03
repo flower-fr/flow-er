@@ -377,7 +377,7 @@ export default class Form extends View
             if (el.classList.contains("fl-modal-form-select")) new mdb.Select(el)
         })
 
-        document.querySelectorAll("btn").forEach(el => {
+        document.querySelectorAll(".btn").forEach(el => {
             new mdb.Ripple(el, {
                 rippleColor: "danger"
             })
@@ -390,31 +390,31 @@ export default class Form extends View
             form.onsubmit = async function (event)
             {
                 event.preventDefault()
-                form.checkValidity()
-                const body = { touched_at: document.getElementById(`${ this.id }-touched_at`)?.value }
-                for (const [propertyId, property] of Object.entries(properties)) {
-                    const input = document.getElementById(`${ this.id }-${ propertyId }`)
-                    if (property.type === "date") {
-                        const val = input.value
-                        body[propertyId] = val ? val.substring(6, 10) + "-" + val.substring(3, 5) + "-" + val.substring(0, 2) : ""
-                    } else {
-                        body[propertyId] = input.value
-                    }
-                }
+                // form.checkValidity()
+                // const body = { touched_at: document.getElementById(`${ this.id }-touched_at`)?.value }
+                // for (const [propertyId, property] of Object.entries(properties)) {
+                //     const input = document.getElementById(`${ this.id }-${ propertyId }`)
+                //     if (property.type === "date") {
+                //         const val = input.value
+                //         body[propertyId] = val ? val.substring(6, 10) + "-" + val.substring(3, 5) + "-" + val.substring(0, 2) : ""
+                //     } else {
+                //         body[propertyId] = input.value
+                //     }
+                // }
 
-                const submit = event.submitter, postId = submit.name.split("-")[1], post = posts[postId]
-                const response = await fetch(`/${ post.controller }/${ post.action }/${ post.entity }${ this.view ? `/${ this.view }` : "" }`, {
-                    method: post.method,
-                    headers: new Headers({"content-type": "application/json"}),
-                    body: JSON.stringify([body]),
-                })
-                if (response.status == 200) {
-                    const body = await response.json()
-                    console.log(body.stored[0].entitiesToInsert[post.entity].rowId)
-                    controller.unstack()
-                } else {
-                    $(`#${ this.id }-messageServerError`).show()
-                }
+                // const submit = event.submitter, postId = submit.name.split("-")[1], post = posts[postId]
+                // const response = await fetch(`/${ post.controller }/${ post.action }/${ post.entity }${ this.view ? `/${ this.view }` : "" }`, {
+                //     method: post.method,
+                //     headers: new Headers({"content-type": "application/json"}),
+                //     body: JSON.stringify([body]),
+                // })
+                // if (response.status == 200) {
+                //     const body = await response.json()
+                //     console.log(body.stored[0].entitiesToInsert[post.entity].rowId)
+                //     controller.unstack()
+                // } else {
+                //     $(`#${ this.id }-messageServerError`).show()
+                // }
             }
         }
     }
