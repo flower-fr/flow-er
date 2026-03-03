@@ -118,7 +118,7 @@ const resendSmtp = async ({ context, sql, smtp, logger, ids }) =>
 
     for (let row of rows) {
 
-        logger && logger.debug(util.inspect({ scheduled: row.scheduled_at.format("YYYY-MM-DD HH:mm:ss"), now: dayjs().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss") }))
+        logger && logger.debug(util.inspect({ scheduled: dayjs(row.scheduled_at).format("YYYY-MM-DD HH:mm:ss"), now: dayjs().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss") }))
 
         if (!row.scheduled_at || dayjs(row.scheduled_at).format("YYYY-MM-DD HH:mm:ss") < dayjs().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")) {
             const params = row.params
