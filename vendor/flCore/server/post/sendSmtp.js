@@ -3,6 +3,7 @@ const utc = require("dayjs/plugin/utc")
 const timezone = require("dayjs/plugin/timezone")
 dayjs.extend(utc)
 dayjs.extend(timezone)
+const util = require("util")
 
 const { select } = require("../../../flCore/server/model/select")
 const { update } = require("../model/update")
@@ -80,7 +81,7 @@ const sendSmtp = async ({ req }, context, rows, { sql, smtp }) => {
     }
 }
 
-const resendSmtp = async ({ context, sql, smtp, ids }) => 
+const resendSmtp = async ({ context, sql, smtp, logger, ids }) => 
 {
     const type = "html"
     const model = context.config["interaction/model"]
@@ -119,6 +120,9 @@ const resendSmtp = async ({ context, sql, smtp, ids }) =>
      */
 
     for (let row of rows) {
+
+        logger && logger.debug({ scheduled: row.scheduled_at.format("YYYY-MM-DD HH:mm:ss"), now: dayjs().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss") })
+
         if (!row.scheduled_at || dayjs(row.scheduled_at).format("YYYY-MM-DD HH:mm:ss") < dayjs().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")) {
             const params = row.params
             const attachmentsToSend = []
