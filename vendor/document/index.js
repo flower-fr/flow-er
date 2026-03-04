@@ -26,8 +26,8 @@ const register = async ({ context, config, logger, app }) => {
 
     app.get(`${config.prefix}v1/document-cell/:document_id`, execute(getAction, context, { sql, logger }))
     app.get(`${config.prefix}v1/document-cell/:document_id/:identifier`, execute(getAction, context, { sql, logger }))
-    app.put(`${config.prefix}v1/document-cell/:document_id`, execute(postAction, context, { sql, logger }))
-    app.patch(`${config.prefix}v1/document-cell/:id/:action`, execute(patchAction, context, { sql, logger })) // action = undo ou redo
+    app.post(`${config.prefix}v1/document-cell/:document_id`, execute(postAction, context, { sql, logger }))
+    app.patch(`${config.prefix}v1/document-cell/:document_id/:action`, execute(patchAction, context, { sql, logger })) // action = undo ou redo
     // app.delete(`${config.prefix}v1/document-cell/:document_id/:identifier`, execute(deleteAction, context, { sql, logger }))
     // app.delete(`${config.prefix}v1/document-cell`, execute(deleteAction, context, { sql, logger }))
 

@@ -18,10 +18,6 @@ const postAction = async ({ req }, context, { sql, logger }) => {
 
     try {
 
-        const ids = await sql.execute({ context, type: "select", entity: "document", columns: ["id"], where: { id: document_id } })
-
-        if (ids.length === 0) throw throwBadRequestError()
-
         await sql.execute({ context, type: "insert", entity, data })
         return JSON.stringify({ response: "cellule insérée avec succès" })
 
@@ -34,7 +30,7 @@ const postAction = async ({ req }, context, { sql, logger }) => {
 const checkParams = (req, context) => {
 
     // we check that the body is not empty
-    assert.notEmpty(req.body, "identifier", "content", "row", "column")
+    assert.notEmpty(req.body, "identifier", "content")
 
     // we check that the body does not contain any field that is not in the model
     const properties = Object.keys(context.config["document_cell/model"].properties)

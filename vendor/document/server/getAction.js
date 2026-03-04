@@ -12,6 +12,12 @@ const getAction = async ({ req }, context, { sql, logger }) =>
     const query = req.query
     const columns = query.columns ? query.columns.split(",") : ["id", "identifier", "document_id", "content", "row", "column"]
     const where = { document_id }
+
+    req.query?.where?.split("|").forEach(element => {
+        const [key, value] = element.split(":")
+        where[key] = value
+    })
+
     if (identifier) where.identifier = identifier
     // fin gestion des paramètres de query
 
