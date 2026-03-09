@@ -1,15 +1,17 @@
 const { noCacheMiddleware, notFoundMiddleware, handleCorsMiddleware } = require("../../core/api-utils")
 const { executeService } = require("../../core/api-utils")
-const { sessionCookieMiddleware } = require("../user/server/controller/sessionCookieMiddleware")
+// const { sessionCookieMiddleware } = require("../user/server/controller/sessionCookieMiddleware")
 const { registerDocument } = require("./server/controller/index")
 const { createSqlClient } = require("../flCore/server//model/sql-client")
 
 const { getAction } = require("./server/getAction")
 const { postAction } = require("./server/postAction")
-const { deleteAction } = require("./server/deleteAction")
+const { patchAction } = require("./server/patchAction")
+// const { deleteAction } = require("./server/deleteAction")
 
 // test
-const { loadTestDataset } = require("./server/test/loadTestDataset")
+// const { loadTestDataset } = require("./server/test/loadTestDataset")
+const { testPostAction } = require("./server/test/testPostAction")
 const { testGetAction } = require("./server/test/testGetAction")
 
 const register = async ({ context, config, logger, app }) => {
@@ -22,14 +24,15 @@ const register = async ({ context, config, logger, app }) => {
 
     const execute = executeService(context.clone(), config, logger)
 
-    app.get(`${config.prefix}v1/document`, execute(getAction, context, { sql, logger }))
-    app.get(`${config.prefix}v1/document/:identifier`, execute(getAction, context, { sql, logger }))
-    app.post(`${config.prefix}v1/document`, execute(postAction, context, { sql, logger }))
-    app.delete(`${config.prefix}v1/document/:id`, execute(deleteAction, context, { sql, logger }))
-    app.delete(`${config.prefix}v1/document`, execute(deleteAction, context, { sql, logger }))
+    app.get(`${config.prefix}v1/document-cell/:document_id`, execute(getAction, context, { sql, logger }))
+    app.get(`${config.prefix}v1/document-cell/:document_id/:identifier`, execute(getAction, context, { sql, logger }))
+    app.post(`${config.prefix}v1/document-cell/:document_id`, execute(postAction, context, { sql, logger }))
+    app.patch(`${config.prefix}v1/document-cell/:document_id/:action`, execute(patchAction, context, { sql, logger })) // action = undo ou redo
+    // app.delete(`${config.prefix}v1/document-cell/:document_id/:identifier`, execute(deleteAction, context, { sql, logger }))
+    // app.delete(`${config.prefix}v1/document-cell`, execute(deleteAction, context, { sql, logger }))
 
     // for testing purposes
-    app.post(`${config.prefix}v1/test`, execute(loadTestDataset, context, { sql, logger }))
+    app.post(`${config.prefix}v1/test`, execute(testPostAction, context, { sql, logger }))
     app.get(`${config.prefix}v1/test`, execute(testGetAction, context, { sql, logger }))
 
     // Deprecated
