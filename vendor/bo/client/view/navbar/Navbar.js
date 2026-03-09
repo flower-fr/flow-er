@@ -11,12 +11,12 @@ export default class Navbar extends View
     initialize = async () =>
     {
         const response = await fetch(`/bo/navbar/${ this.application }/${ this.tab }`)
-        const { logo, logoHeight, helpMenu, instance, profile, menu, defaultTab, translations } = await response.json()
+        const { logo, logoHeight, helpMenu, instance, user, menu, defaultTab, translations } = await response.json()
         this.logo = logo
         this.logoHeight = logoHeight || "40"
         this.helpMenu = helpMenu
         this.instance = instance
-        this.profile = profile
+        this.user = user
         this.defaultTab = defaultTab
         this.menu = menu,
         this.translations = translations
@@ -81,7 +81,7 @@ export default class Navbar extends View
                                     <span class="far fa-lg fa-user"></span>
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                    <li><a class="dropdown-item" href="#">${ this.profile.name }</a></li>
+                                    <li><a class="dropdown-item" href="#">${ this.user.n_fn }</a></li>
                                     <li><a class="dropdown-item" href="/user/change-password">${ this.translations["Change password"] }</a></li>
                                 </ul>
                             </div>`)
