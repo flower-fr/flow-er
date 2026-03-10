@@ -46,13 +46,20 @@ const insert = (context, entity, data, model, debug = false) => {
     }
     if (model.properties.visibility) pairs[qi("visibility")] = qv("active")
     
-    // Deprecated
-    if (model.properties.creation_date) pairs[qi("creation_date")] = `'${new Date().toISOString().slice(0, 10)}'`
-    if (model.properties.creation_month) pairs[qi("creation_month")] = `'${new Date().toISOString().slice(0, 7)}'`
-    if (model.properties.creation_year) pairs[qi("creation_year")] = `'${new Date().toISOString().slice(0, 4)}'`
-    
     if (!pairs[qi("touched_at")]) pairs[qi("touched_at")] = `'${moment().format("YYYY-MM-DD HH:mm:ss")}'`
     pairs[qi("touched_by")] = context.user.id
+
+    /**
+     * Access control
+     */
+    if (model.access) {
+        for (const [modelProp, profileProp] of Object.entries(model.access)) {
+            if (context.user[profileProp]) {
+                const property = model.properties[modelProp], qEntity = `${qi(property.entity)}.`, qColumn = qi(property.column)
+                pairs[qi(modelProp)] = context.user[profileProp]
+            }
+        }
+    }
 
     const request = `INSERT INTO ${table} (${Object.keys(pairs).join(", ")})\n VALUES (${Object.values(pairs).join(", ")})\n`
     if (debug) console.log(request)
