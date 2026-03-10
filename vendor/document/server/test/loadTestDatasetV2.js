@@ -1,6 +1,5 @@
 const demoContent = [
     {
-        id: 0,
         identifier: "header",
         level: 0,
         parent: null,
@@ -17,7 +16,6 @@ const demoContent = [
     },
 
     {
-        id: 1,
         identifier: "support_utilisateurs",
         level: 2,
         parent: "0",
@@ -29,7 +27,6 @@ const demoContent = [
     },
     
     {
-        id: 2,
         identifier: "support_niveau_1",
         level: 3,
         parent: "1",
@@ -44,7 +41,6 @@ const demoContent = [
         },
     },
     {
-        id: 3,
         identifier: "support_niveau_2",
         level: 3,
         parent: "1",
@@ -59,7 +55,6 @@ const demoContent = [
         },
     },
     {
-        id: 4,
         identifier: "support_24_7",
         level: 3,
         parent: "1",
@@ -76,7 +71,6 @@ const demoContent = [
     },
 
     {
-        id: 4,
         identifier: "developpement_logiciel",
         level: 2,
         parent: "0",
@@ -87,7 +81,6 @@ const demoContent = [
         },
     },
     {
-        id: 5,
         identifier: "application_web_sur_mesure",
         level: 3,
         parent: "4",
@@ -102,7 +95,6 @@ const demoContent = [
         },
     },
     {
-        id: 6,
         identifier: "maintenance_evolutive",
         level: 3,
         parent: "4",
@@ -117,7 +109,6 @@ const demoContent = [
         },
     },
     {
-        id: 7,
         identifier: "hebergement",
         level: 3,
         parent: "4",
@@ -134,7 +125,6 @@ const demoContent = [
     },
 
     {
-        id: 8,
         identifier: "infrastructure_it",
         level: 2,
         parent: "0",
@@ -145,7 +135,6 @@ const demoContent = [
         },
     },
     {
-        id: 9,
         identifier: "audit_securite",
         level: 3,
         parent: "8",
@@ -160,7 +149,6 @@ const demoContent = [
         },
     },
     {
-        id: 10,
         identifier: "migration_cloud",
         level: 3,
         parent: "8",
@@ -175,7 +163,6 @@ const demoContent = [
         },
     },
     {
-        id: 11,
         identifier: "sauvegarde",
         level: 3,
         parent: "8",
@@ -192,7 +179,6 @@ const demoContent = [
     },
 
     {
-        id: 12,
         identifier: "virtualisation_securisation_poste_travail",
         level: 2,
         parent: "0",
@@ -203,12 +189,10 @@ const demoContent = [
         },
     },
     {
-        id: 13,
         identifier: "virtualisation_vm",
         level: 3,
         parent: "12",
         before: null,
-        row: null,
         content: {
             section: "virtualisation_securisation_poste_travail",
             type: "VM",
@@ -219,7 +203,6 @@ const demoContent = [
         },
     },
     {
-        id: 14,
         identifier: "stockage_nas",
         level: 3,
         parent: "12",
@@ -234,7 +217,6 @@ const demoContent = [
         },
     },
     {
-        id: 15,
         identifier: "antivirus_entreprise",
         level: 3,
         parent: "12",
@@ -249,7 +231,6 @@ const demoContent = [
         },
     },
     {
-        id: 16,
         identifier: "sauvegardes_automatiques",
         level: 3,
         parent: "12",
@@ -264,7 +245,6 @@ const demoContent = [
         },
     },
     {
-        id: 17,
         identifier: "chiffrement_donnees",
         level: 3,
         parent: "12",
@@ -281,7 +261,6 @@ const demoContent = [
     },
 
     {
-        id: 18,
         identifier: "demarrage",
         level: 1,
         parent: 0,
@@ -294,7 +273,6 @@ const demoContent = [
         },
     },
     {
-        id: 19,
         identifier: "intermediaire",
         level: 1,
         parent: 0,
@@ -307,7 +285,6 @@ const demoContent = [
         },
     },
     {
-        id: 20,
         identifier: "complet",
         level: 1,
         parent: 0,
@@ -322,308 +299,252 @@ const demoContent = [
 
     {
         identifier: "1",
-        level: "cell",
+        level: 4,
         parent: "18,2",
         before: null,
-        row: "support_niveau_1",
-        column: "demarrage",
         content: {
             value: 3,
         },
     },
     {
         identifier: "2",
-        level: "cell",
+        level: 4,
         parent: "19,2",
         before: null,
-        row: "support_niveau_1",
-        column: "intermediaire",
         content: {
             value: 3,
         },
     },
     {
         identifier: "3",
-        level: "cell",
+        level: 4,
         parent: "20,2",
         before: null,
-        row: "support_niveau_1",
-        column: "complet",
         content: {
             value: 3,
         },
     },
     {
         identifier: "4",
-        level: "cell",
+        level: 4,
         parent: "19,3",
         before: null,
-        row: "support_niveau_2",
-        column: "intermediaire",
         content: {
             value: 3,
         },
     },
     {
         identifier: "5",
-        level: "cell",
+        level: 4,
         parent: "20,3",
         before: null,
-        row: "support_niveau_2",
-        column: "complet",
         content: {
             value: 3,
         },
     },
     {
         identifier: "6",
-        level: "cell",
+        level: 4,
         parent: "20,4",
         before: null,
-        row: "support_24_7",
-        column: "complet",
         content: {
             value: true,
         },
     },
     {
         identifier: "7",
-        level: "cell",
+        level: 4,
         parent: null,
         before: null,
-        row: "application_web_sur_mesure",
-        column: "complet",
         content: {
             value: true,
         },
     },
     {
         identifier: "8",
-        level: "cell",
+        level: 4,
         parent: null,
         before: null,
-        row: "maintenance_evolutive",
-        column: "complet",
         content: {
             value: 12,
         },
     },
     {
         identifier: "9",
-        level: "cell",
+        level: 4,
         parent: null,
         before: null,
-        row: "hebergement",
-        column: "complet",
         content: {
             value: 12,
         },
     },
     {
         identifier: "10",
-        level: "cell",
+        level: 4,
         parent: null,
         before: null,
-        row: "audit_securite",
-        column: "demarrage",
         content: {
             value: true,
         },
     },
     {
         identifier: "11",
-        level: "cell",
+        level: 4,
         parent: null,
         before: null,
-        row: "audit_securite",
-        column: "intermediaire",
         content: {
             value: true,
         },
     },
     {
         identifier: "12",
-        level: "cell",
+        level: 4,
         parent: null,
         before: null,
-        row: "audit_securite",
-        column: "complet",
         content: {
             value: true,
         },
     },
     {
         identifier: "13",
-        level: "cell",
+        level: 4,
         parent: null,
         before: null,
-        row: "migration_cloud",
-        column: "intermediaire",
         content: {
             value: true,
         },
     },
     {
         identifier: "14",
-        level: "cell",
+        level: 4,
         parent: null,
         before: null,
-        row: "migration_cloud",
-        column: "complet",
         content: {
             value: true,
         },
     },
     {
         identifier: "15",
-        level: "cell",
+        level: 4,
         parent: null,
         before: null,
-        row: "sauvegarde",
-        column: "demarrage",
         content: {
             value: 12,
         },
     },
     {
         identifier: "16",
-        level: "cell",
+        level: 4,
         parent: null,
         before: null,
-        row: "sauvegarde",
-        column: "intermediaire",
         content: {
             value: 12,
         },
     },
     {
         identifier: "17",
-        level: "cell",
+        level: 4,
         parent: null,
         before: null,
-        row: "sauvegarde",
-        column: "complet",
         content: {
             value: 12,
         },
     },
     {
         identifier: "18",
-        level: "cell",
+        level: 4,
         parent: null,
         before: null,
-        row: "virtualisation_vm",
-        column: "demarrage",
         content: {
             value: 3,
         },
     },
     {
         identifier: "19",
-        level: "cell",
+        level: 4,
         parent: null,
         before: null,
-        row: "virtualisation_vm",
-        column: "intermediaire",
         content: {
             value: 6,
         },
     },
     {
         identifier: "20",
-        level: "cell",
+        level: 4,
         parent: null,
         before: null,
-        row: "virtualisation_vm",
-        column: "complet",
         content: {
             value: 9,
         },
     },
     {
         identifier: "21",
-        level: "cell",
+        level: 4,
         parent: null,
         before: null,
-        row: "stockage_nas",
-        column: "complet",
         content: {
             value: true,
         },
     },
     {
         identifier: "22",
-        level: "cell",
+        level: 4,
         parent: null,
         before: null,
-        row: "antivirus_entreprise",
-        column: "demarrage",
         content: {
             value: 3,
         },
     },
     {
         identifier: "23",
-        level: "cell",
+        level: 4,
         parent: null,
         before: null,
-        row: "antivirus_entreprise",
-        column: "intermediaire",
         content: {
             value: 6,
         },
     },
     {
         identifier: "24",
-        level: "cell",
+        level: 4,
         parent: null,
         before: null,
-        row: "antivirus_entreprise",
-        column: "complet",
         content: {
             value: 9,
         },
     },
     {
         identifier: "25",
-        level: "cell",
+        level: 4,
         parent: null,
         before: null,
-        row: "sauvegardes_automatiques",
-        column: "demarrage",
         content: {
             value: 3,
         },
     },
     {
         identifier: "26",
-        level: "cell",
+        level: 4,
         parent: null,
         before: null,
-        row: "sauvegardes_automatiques",
-        column: "intermediaire",
         content: {
             value: 6,
         },
     },
     {
         identifier: "27",
-        level: "cell",
+        level: 4,
         parent: null,
         before: null,
-        row: "sauvegardes_automatiques",
-        column: "complet",
         content: {
             value: 9,
         },
     },
     {
         identifier: "28",
-        level: "cell",
+        level: 4,
         parent: null,
         before: null,
-        row: "chiffrement_donnees",
-        column: "complet",
         content: {
             value: true,
         },
