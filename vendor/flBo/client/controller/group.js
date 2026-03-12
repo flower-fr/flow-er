@@ -221,6 +221,10 @@ const postGroupTab = async ({ context, entity, view }, tab, searchParams, rows) 
                     const files = fileSelect.files
                     for (var i = 0; i < files.length; i++) {
                         const file = files[i]
+                        if (!["jpeg","jpg","png","gif","pdf","doc","docx","xls","xlsx","ppt","pptx","md","txt"].includes(file.type.split("/")[1])) {
+                            alert(context.translate("File type not accepted"))
+                            return
+                        }
                         if (file.size >= 1024000) {
                             alert(context.translate("File to big (1 Mb max)"))
                             return

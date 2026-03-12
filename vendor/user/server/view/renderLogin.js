@@ -55,10 +55,14 @@ const renderLogin = ({ context }, data) => {
                             ${ (data.status == "403") ?
         `<div data-mdb-alert-init class="alert" role="alert" data-mdb-color="danger">
                             ${ context.translate("Invalid authentication, please try again") }
-                            </div>` 
-        : "" }
+                            </div>` : (data.status == "401") ?
+            `<div data-mdb-alert-init class="alert" role="alert" data-mdb-color="danger">
+                            ${ context.translate("The form has expired, please input again") }
+                            </div>` : "" }
 
                             <form method="post">
+                                <input type="hidden" name="csrfToken" value="${data.csrfToken}" />
+                                
                                 <div class="text-center mb-3">
                                     <p>${ context.translate("Sign in with:") }</p>
 

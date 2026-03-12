@@ -52,7 +52,21 @@ const renderChangePassword = ({ context }, data) => {
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="pills-login" role="tabpanel" aria-labelledby="tab-login">
 
+                            ${ (data.status == "403") ?
+        `<div data-mdb-alert-init class="alert" role="alert" data-mdb-color="danger">
+                            ${ context.translate("Invalid authentication, please try again") }
+                            </div>` : (data.status == "401") ?
+            `<div data-mdb-alert-init class="alert" role="alert" data-mdb-color="danger">
+                            ${ context.translate("The form has expired, please input again") }
+                            </div>` : (data.status == "200") ?
+                `<div data-mdb-alert-init class="alert" role="alert" data-mdb-color="success">
+                            ${ context.translate("Your request has been registered") }
+                            </div>` : "" }
+
+                            ${ (data.status !== "200") ? `
                             <form method="post" class="was-validated" id="flPasswordChangeForm">
+                                <input type="hidden" name="csrfToken" value="${data.csrfToken}" />
+
                                 <div class="text-center mb-3">
                                     <p>${ context.translate("New password") }</p>
                                 </div>
@@ -71,6 +85,10 @@ const renderChangePassword = ({ context }, data) => {
 
                                 <div data-mdb-alert-init class="alert fl-alert" id="flAlertUnauthorized" role="alert" data-mdb-color="danger">
                                     ${context.translate("Invalid email or password")}
+                                </div>
+
+                                <div data-mdb-alert-init class="alert fl-alert" id="flAlertFormExpired" role="alert" data-mdb-color="danger">
+                                    ${context.translate("The form has expired, please input again")}
                                 </div>
 
                                 <!-- Email input -->
@@ -104,12 +122,12 @@ const renderChangePassword = ({ context }, data) => {
                                 <button type="submit" class="btn btn-danger btn-block mb-4 fl-submit" data-mdb-ripple-init>
                                     ${ context.translate("Save") }
                                 </button>
+                            </form>` : `
 
-                                <div class="text-center fl-next-link">
-                                    <a href="/user/login">${ context.translate("Log in") }</a>
-                                </div>
+                            <div class="text-center fl-next-link">
+                                <a href="/user/login">${ context.translate("Log in") }</a>
+                            </div>` }
 
-                            </form>
                         </div>
                     </div>
                     <!-- Pills content -->

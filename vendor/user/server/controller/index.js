@@ -15,10 +15,10 @@ const registerUser = async ({ context, config, logger, app }) => {
     const mailClient = createMailClient({ config: config.smtp, logger })
     const execute = executeService(context, config, logger)
 
-    app.get(`${config.prefix}login`, execute(login, context, db))
+    app.get(`${config.prefix}login`, execute(login, context, config, db))
     app.post(`${config.prefix}login`, execute(loginPost, context, config, db))
     app.get(`${config.prefix}logout`, execute(logout, context, db))
-    app.get(`${config.prefix}change-password`, execute(changePassword, context, db))
+    app.get(`${config.prefix}change-password`, execute(changePassword, context, config, db))
     app.post(`${config.prefix}change-password`, execute(changePasswordPost, context, config, db))
     app.post(`${config.prefix}createuser`, execute(createUser, context, db))
     app.get(`${config.prefix}register`, execute(register, context, db, mailClient))
