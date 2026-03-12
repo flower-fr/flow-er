@@ -22,7 +22,7 @@ const sessionCookieMiddleware = (config, context) => async (req, res, next) => {
             return res.redirect("/user/login")
         }
         else if (status === "ok") {
-            if (payload.status !== "active") {
+            if (payload.status === "expired") {
                 return res.redirect("/user/change-password")
             }
             if (context) context.user = payload
