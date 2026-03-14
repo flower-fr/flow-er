@@ -16,7 +16,7 @@ class DocumentCell extends Ddl {
         identifier: { entity: "document_cell", column: "identifier" },
         level: { entity: "document_cell", column: "level", type: "int" },
         parent: { entity: "document_cell", column: "parent" },
-        before: { entity: "document_cell", column: "before" },
+        previous: { entity: "document_cell", column: "previous" },
         content: { entity: "document_cell", column: "content", type: "json" },
         document_id: { entity: "document_cell", column: "document_id", type: "int" },
         state: { entity: "document_cell", column: "state" },

@@ -1,1 +1,44 @@
-{"viewModel_navbar_flower":{"logo":"flow-er.png","logoHeight":"40","title":"Flow-ER","helpMenu":{"entries":[]},"instance":{"label":"Flow-ER"},"menu":{"account":{"controller":"bo","action":"form","params":{"entity":"account"},"label":"Account"},"catalogue":{"controller":"bo","action":"form","params":{"entity":"catalogue"},"label":"Catalogue"},"navbar":{"controller":"bo","action":"navbar","params":{"application":"flower","tab":"form"},"label":"Navbar"}},"translations":{"Change password":"Modifier le mot de passe","Log out":"Se déconnecter"}}}
+{
+    "viewModel_navbar_flower": {
+        "logo": "flow-er.png",
+        "logoHeight": "40",
+        "title": "Flow-ER",
+        "helpMenu": {
+            "entries": []
+        },
+        "instance": {
+            "label": "Flow-ER"
+        },
+        "menu": {
+            "account": {
+                "controller": "bo",
+                "action": "form",
+                "params": {
+                    "entity": "account"
+                },
+                "label": "Account"
+            },
+            "catalogue": {
+                "controller": "bo",
+                "action": "form",
+                "params": {
+                    "entity": "catalogue"
+                },
+                "label": "Catalogue"
+            },
+            "navbar": {
+                "controller": "bo",
+                "action": "navbar",
+                "params": {
+                    "application": "flower",
+                    "tab": "form"
+                },
+                "label": "Navbar"
+            }
+        },
+        "translations": {
+            "Change password": "Modifier le mot de passe",
+            "Log out": "Se déconnecter"
+        }
+    }
+}

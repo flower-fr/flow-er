@@ -3,7 +3,7 @@ const demoContent = [
         identifier: "header",
         level: 0,
         parent: null,
-        before: null,
+        previous: null,
         content: {
             id: 1,
             clients: [
@@ -19,7 +19,7 @@ const demoContent = [
         identifier: "support_utilisateurs",
         level: 2,
         parent: "0",
-        before: null,
+        previous: null,
         content: {
             name: "A. Support utilisateurs",
             description: "Lorem ipsum..."
@@ -30,7 +30,7 @@ const demoContent = [
         identifier: "support_niveau_1",
         level: 3,
         parent: "1",
-        before: null,
+        previous: null,
         content: {
             section: "support_utilisateurs",
             type: "Utilisateur x mois",
@@ -44,7 +44,7 @@ const demoContent = [
         identifier: "support_niveau_2",
         level: 3,
         parent: "1",
-        before: "2",
+        previous: "2",
         content: {
             section: "support_utilisateurs",
             type: "Utilisateur x mois",
@@ -58,7 +58,7 @@ const demoContent = [
         identifier: "support_24_7",
         level: 3,
         parent: "1",
-        before: "3",
+        previous: "3",
         content: {
             section: "support_utilisateurs",
             type: "check",
@@ -74,7 +74,7 @@ const demoContent = [
         identifier: "developpement_logiciel",
         level: 2,
         parent: "0",
-        before: "1",
+        previous: "1",
         content: {
             name: "B. Développement logiciel",
             description: "Lorem ipsum..."
@@ -84,7 +84,7 @@ const demoContent = [
         identifier: "application_web_sur_mesure",
         level: 3,
         parent: "4",
-        before: null,
+        previous: null,
         content: {
             section: "developpement_logiciel",
             type: "check",
@@ -98,7 +98,7 @@ const demoContent = [
         identifier: "maintenance_evolutive",
         level: 3,
         parent: "4",
-        before: "5",
+        previous: "5",
         content: {
             section: "developpement_logiciel",
             type: "Mois",
@@ -112,7 +112,7 @@ const demoContent = [
         identifier: "hebergement",
         level: 3,
         parent: "4",
-        before: "6",
+        previous: "6",
         content: {
             section: "developpement_logiciel",
             type: "Mois",
@@ -128,7 +128,7 @@ const demoContent = [
         identifier: "infrastructure_it",
         level: 2,
         parent: "0",
-        before: "4",
+        previous: "4",
         content: {
             name: "C. Infrastructure IT",
             description: "Lorem ipsum..."
@@ -138,7 +138,7 @@ const demoContent = [
         identifier: "audit_securite",
         level: 3,
         parent: "8",
-        before: null,
+        previous: null,
         content: {
             section: "infrastructure_it",
             type: "check",
@@ -152,7 +152,7 @@ const demoContent = [
         identifier: "migration_cloud",
         level: 3,
         parent: "8",
-        before: "9",
+        previous: "9",
         content: {
             section: "infrastructure_it",
             type: "check",
@@ -166,7 +166,7 @@ const demoContent = [
         identifier: "sauvegarde",
         level: 3,
         parent: "8",
-        before: "10",
+        previous: "10",
         content: {
             section: "infrastructure_it",
             type: "Mois",
@@ -182,7 +182,7 @@ const demoContent = [
         identifier: "virtualisation_securisation_poste_travail",
         level: 2,
         parent: "0",
-        before: "8",
+        previous: "8",
         content: {
             name: "D. Virtualisation et sécurisation du poste de travail",
             description: "Lorem ipsum..."
@@ -192,7 +192,7 @@ const demoContent = [
         identifier: "virtualisation_vm",
         level: 3,
         parent: "12",
-        before: null,
+        previous: null,
         content: {
             section: "virtualisation_securisation_poste_travail",
             type: "VM",
@@ -206,7 +206,7 @@ const demoContent = [
         identifier: "stockage_nas",
         level: 3,
         parent: "12",
-        before: "13",
+        previous: "13",
         content: {
             section: "virtualisation_securisation_poste_travail",
             type: "check",
@@ -220,7 +220,7 @@ const demoContent = [
         identifier: "antivirus_entreprise",
         level: 3,
         parent: "12",
-        before: "14",
+        previous: "14",
         content: {
             section: "virtualisation_securisation_poste_travail",
             type: "Licences par an",
@@ -234,7 +234,7 @@ const demoContent = [
         identifier: "sauvegardes_automatiques",
         level: 3,
         parent: "12",
-        before: "15",
+        previous: "15",
         content: {
             section: "virtualisation_securisation_poste_travail",
             type: "Par an",
@@ -248,7 +248,7 @@ const demoContent = [
         identifier: "chiffrement_donnees",
         level: 3,
         parent: "12",
-        before: "16",
+        previous: "16",
         content: {
             section: "virtualisation_securisation_poste_travail",
             type: "check",
@@ -264,7 +264,7 @@ const demoContent = [
         identifier: "demarrage",
         level: 1,
         parent: 0,
-        before: null,
+        previous: null,
         content: {
             name: "DÉMARRAGE",
             description: "Lorem ipsum...",
@@ -276,7 +276,7 @@ const demoContent = [
         identifier: "intermediaire",
         level: 1,
         parent: 0,
-        before: "18",
+        previous: "18",
         content: {
             name: "INTERMÉDIAIRE",
             description: "Lorem ipsum...",
@@ -288,7 +288,7 @@ const demoContent = [
         identifier: "complet",
         level: 1,
         parent: 0,
-        before: "19",
+        previous: "19",
         content: {
             name: "COMPLET",
             description: "Lorem ipsum...",
@@ -301,7 +301,7 @@ const demoContent = [
         identifier: "1",
         level: 4,
         parent: "18,2",
-        before: null,
+        previous: null,
         content: {
             value: 3,
         },
@@ -310,7 +310,7 @@ const demoContent = [
         identifier: "2",
         level: 4,
         parent: "19,2",
-        before: null,
+        previous: null,
         content: {
             value: 3,
         },
@@ -319,7 +319,7 @@ const demoContent = [
         identifier: "3",
         level: 4,
         parent: "20,2",
-        before: null,
+        previous: null,
         content: {
             value: 3,
         },
@@ -328,7 +328,7 @@ const demoContent = [
         identifier: "4",
         level: 4,
         parent: "19,3",
-        before: null,
+        previous: null,
         content: {
             value: 3,
         },
@@ -337,7 +337,7 @@ const demoContent = [
         identifier: "5",
         level: 4,
         parent: "20,3",
-        before: null,
+        previous: null,
         content: {
             value: 3,
         },
@@ -346,7 +346,7 @@ const demoContent = [
         identifier: "6",
         level: 4,
         parent: "20,4",
-        before: null,
+        previous: null,
         content: {
             value: true,
         },
@@ -355,7 +355,7 @@ const demoContent = [
         identifier: "7",
         level: 4,
         parent: null,
-        before: null,
+        previous: null,
         content: {
             value: true,
         },
@@ -364,7 +364,7 @@ const demoContent = [
         identifier: "8",
         level: 4,
         parent: null,
-        before: null,
+        previous: null,
         content: {
             value: 12,
         },
@@ -373,7 +373,7 @@ const demoContent = [
         identifier: "9",
         level: 4,
         parent: null,
-        before: null,
+        previous: null,
         content: {
             value: 12,
         },
@@ -382,7 +382,7 @@ const demoContent = [
         identifier: "10",
         level: 4,
         parent: null,
-        before: null,
+        previous: null,
         content: {
             value: true,
         },
@@ -391,7 +391,7 @@ const demoContent = [
         identifier: "11",
         level: 4,
         parent: null,
-        before: null,
+        previous: null,
         content: {
             value: true,
         },
@@ -400,7 +400,7 @@ const demoContent = [
         identifier: "12",
         level: 4,
         parent: null,
-        before: null,
+        previous: null,
         content: {
             value: true,
         },
@@ -409,7 +409,7 @@ const demoContent = [
         identifier: "13",
         level: 4,
         parent: null,
-        before: null,
+        previous: null,
         content: {
             value: true,
         },
@@ -418,7 +418,7 @@ const demoContent = [
         identifier: "14",
         level: 4,
         parent: null,
-        before: null,
+        previous: null,
         content: {
             value: true,
         },
@@ -427,7 +427,7 @@ const demoContent = [
         identifier: "15",
         level: 4,
         parent: null,
-        before: null,
+        previous: null,
         content: {
             value: 12,
         },
@@ -436,7 +436,7 @@ const demoContent = [
         identifier: "16",
         level: 4,
         parent: null,
-        before: null,
+        previous: null,
         content: {
             value: 12,
         },
@@ -445,7 +445,7 @@ const demoContent = [
         identifier: "17",
         level: 4,
         parent: null,
-        before: null,
+        previous: null,
         content: {
             value: 12,
         },
@@ -454,7 +454,7 @@ const demoContent = [
         identifier: "18",
         level: 4,
         parent: null,
-        before: null,
+        previous: null,
         content: {
             value: 3,
         },
@@ -463,7 +463,7 @@ const demoContent = [
         identifier: "19",
         level: 4,
         parent: null,
-        before: null,
+        previous: null,
         content: {
             value: 6,
         },
@@ -472,7 +472,7 @@ const demoContent = [
         identifier: "20",
         level: 4,
         parent: null,
-        before: null,
+        previous: null,
         content: {
             value: 9,
         },
@@ -481,7 +481,7 @@ const demoContent = [
         identifier: "21",
         level: 4,
         parent: null,
-        before: null,
+        previous: null,
         content: {
             value: true,
         },
@@ -490,7 +490,7 @@ const demoContent = [
         identifier: "22",
         level: 4,
         parent: null,
-        before: null,
+        previous: null,
         content: {
             value: 3,
         },
@@ -499,7 +499,7 @@ const demoContent = [
         identifier: "23",
         level: 4,
         parent: null,
-        before: null,
+        previous: null,
         content: {
             value: 6,
         },
@@ -508,7 +508,7 @@ const demoContent = [
         identifier: "24",
         level: 4,
         parent: null,
-        before: null,
+        previous: null,
         content: {
             value: 9,
         },
@@ -517,7 +517,7 @@ const demoContent = [
         identifier: "25",
         level: 4,
         parent: null,
-        before: null,
+        previous: null,
         content: {
             value: 3,
         },
@@ -526,7 +526,7 @@ const demoContent = [
         identifier: "26",
         level: 4,
         parent: null,
-        before: null,
+        previous: null,
         content: {
             value: 6,
         },
@@ -535,7 +535,7 @@ const demoContent = [
         identifier: "27",
         level: 4,
         parent: null,
-        before: null,
+        previous: null,
         content: {
             value: 9,
         },
@@ -544,7 +544,7 @@ const demoContent = [
         identifier: "28",
         level: 4,
         parent: null,
-        before: null,
+        previous: null,
         content: {
             value: true,
         },
