@@ -2,7 +2,6 @@
 const triggerChangePassword = async (rule) => {
 
     $(".fl-alert").hide()
-    $(".fl-next-link").hide()
 
     const form = document.getElementById("flPasswordChangeForm")
     if (form) {
@@ -18,21 +17,27 @@ const triggerChangePassword = async (rule) => {
                 $("#newPassword").removeClass("is-valid").addClass("is-invalid")
                 $("#checkPassword").removeClass("is-valid").addClass("is-invalid")
                 $("#flAlertConsistency").show()
+                $("#newPassword").val("")
+                $("#checkPassword").val("")
             }
 
             // Password strength
 
             else if (!rule.test($("#newPassword").val())) {
                 $("#flAlertIntegrity").show()
+                $("#newPassword").val("")
+                $("#checkPassword").val("")
             }
 
             else {
+
+                event.currentTarget.submit()
 
                 $(".fl-submit").prop("disabled", true)
 
                 // Create a new FormData object.
                 const payload = {}
-                payload.formJwt = $("#formJwt").val()
+                payload.csrfToken = $("#csrfToken").val()
                 payload.email = $("#email").val()
                 payload.currentPassword = $("#currentPassword").val()
                 payload.newPassword = $("#newPassword").val()
@@ -45,6 +50,19 @@ const triggerChangePassword = async (rule) => {
 
                 if (xhttp.status == 403) {
                     $("#flAlertUnauthorized").show()
+                    $("#email").val("")
+                    $("#currentPassword").val("")
+                    $("#newPassword").val("")
+                    $("#checkPassword").val("")
+                    $(".fl-submit").prop("disabled", false)
+                }
+
+                if (xhttp.status == 401) {
+                    $("#flAlertFormExpired").show()
+                    $("#email").val("")
+                    $("#currentPassword").val("")
+                    $("#newPassword").val("")
+                    $("#checkPassword").val("")
                     $(".fl-submit").prop("disabled", false)
                 }
 

@@ -5,15 +5,19 @@
 
     "account/model": {
         "entities": {
+            "account": { "table": "account" },
             "place": { "table": "place", "foreignKey": "place_id", "foreignEntity": "account" },
             "vcard": { "table": "vcard", "foreignKey": "contact_1_id", "foreignEntity": "account" }
         },
         "properties": {
             "id": { "entity": "account", "column": "id", "type": "int" },
             "status": { "entity": "account", "column": "status", "audit": true },
+            "place_id": { "entity": "account", "column": "place_id", "type": "int" },
+            "contact_1_id": { "entity": "account", "column": "contact_1_id", "type": "int" },
+
             "place_region": { "entity": "place", "column": "region" },
-            "place_id": { "entity": "place", "column": "id" },
             "place_name": { "entity": "place", "column": "name" },
+
             "n_first": { "entity": "vcard", "column": "n_first" },
             "n_last": { "entity": "vcard", "column": "n_last" },
             "email": { "entity": "vcard", "column": "email", "type": "email" },

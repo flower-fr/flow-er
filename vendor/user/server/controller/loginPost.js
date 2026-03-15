@@ -1,22 +1,34 @@
 
-const { checkPassword, getTokenPayload, checkToken, createToken, encryptPassword } = require("../../../../core/tools/security")
-const { assert, throwUnauthorized } = require("../../../../core/api-utils")
+const { checkPassword, checkToken, createToken } = require("../../../../core/tools/security")
+const { assert } = require("../../../../core/api-utils")
 const { select } = require("../../../flCore/server/model/select")
 const { update } = require("../../../flCore/server/model/update")
 const { renderLogin } = require("../view/renderLogin")
 
 const loginPost = async ({ req, res }, context, config, db) => {
 
-    const [ email, password ] = assert.notEmpty(req.body, "email", "password")
-    const model = context.config["user/model"]
+    const [ csrfToken, email, password ] = assert.notEmpty(req.body, "csrfToken", "email", "password")
 
     const data = {
         headerParams: context.config.headerParams,
         instance: context.instance,
         footer: context.config.footer,
+        csrfToken: createToken({ form: "user/login" }, config.apiKey, 600)
     }
 
-    const [result] = (await db.execute(select(context, "user", ["id", "email", "locale", "password", "last_login", "last_updated", "login_failed"], { "email": email }, null, null, model)))
+    // Check CSRF token
+    const { status } = await checkToken(csrfToken, config.apiKey)
+    if (status === "invalid") {
+        return res.redirect("/user/login")
+    }
+    else if (status === "expired") {
+        data.status = "401"
+        return renderLogin({ context }, data)
+    }
+
+    const model = context.config["user/model"]
+
+    const [result] = (await db.execute(select(context, "user", ["id", "status", "email", "locale", "password", "last_login", "last_updated", "login_failed"], { "email": email }, null, null, model)))
     const user = result[0]
     if (!user) {
         data.status = "403"
@@ -49,7 +61,7 @@ const loginPost = async ({ req, res }, context, config, db) => {
     const profileModel = context.config[payloadModel.model]
     const [rows] = await db.execute(select(context, payloadModel.entity, Object.keys(payloadModel.columns), filters, null, null, profileModel))
     user.user_id = user.id // Deprecated
-    const payload = { id: user.id, locale: user.locale }
+    const payload = { id: user.id, locale: user.locale, status: user.status }
     for (const [key, value] of Object.entries(rows[0])) payload[payloadModel.columns[key]] = value
     const expiresIn = config.tokenExpirationTime
     const token = createToken(payload, config.apiKey, expiresIn)

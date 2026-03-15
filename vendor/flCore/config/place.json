@@ -30,6 +30,9 @@
             "visibility": { "entity": "place", "column": "visibility", "audit": true },
             "touched_at": { "entity": "place", "column": "touched_at", "type": "datetime" },
             "touched_by": { "entity": "place", "column": "touched_by", "type": "int" }
+        },
+        "access": {
+            "id": "place_id"
         }
     },
 

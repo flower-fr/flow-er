@@ -9,6 +9,8 @@ const { postAction } = require("./server/postAction")
 const { patchAction } = require("./server/patchAction")
 // const { deleteAction } = require("./server/deleteAction")
 
+const indexAction = require("./server/controller/indexAction")
+
 // test
 // const { loadTestDataset } = require("./server/test/loadTestDataset")
 const { testPostAction } = require("./server/test/testPostAction")
@@ -30,6 +32,8 @@ const register = async ({ context, config, logger, app }) => {
     app.patch(`${config.prefix}v1/document-cell/:document_id/:action`, execute(patchAction, context, { sql, logger })) // action = undo ou redo
     // app.delete(`${config.prefix}v1/document-cell/:document_id/:identifier`, execute(deleteAction, context, { sql, logger }))
     // app.delete(`${config.prefix}v1/document-cell`, execute(deleteAction, context, { sql, logger }))
+
+    app.get(`${config.prefix}index`, execute(indexAction, { context, logger }))
 
     // for testing purposes
     app.post(`${config.prefix}v1/test`, execute(testPostAction, context, { sql, logger }))

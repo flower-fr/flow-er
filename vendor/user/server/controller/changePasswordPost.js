@@ -1,12 +1,29 @@
 
-const { checkPassword, encryptPassword } = require("../../../../core/tools/security")
+const { createToken, checkToken, checkPassword, encryptPassword } = require("../../../../core/tools/security")
+const { renderChangePassword } = require("../view/renderChangePassword")
 const { assert, throwUnauthorized } = require("../../../../core/api-utils")
 const { select } = require("../../../flCore/server/model/select")
 const { update } = require("../../../flCore/server/model/update")
 
 const changePasswordPost = async ({ req, res }, context, config, db) => {
 
-    const [ email, currentPassword, newPassword ] = assert.notEmpty(req.body, "email", "currentPassword", "newPassword")
+    const [ email, currentPassword, newPassword, csrfToken ] = assert.notEmpty(req.body, "email", "currentPassword", "newPassword", "csrfToken")
+
+    // Check CSRF token
+    const { status } = await checkToken(csrfToken, config.apiKey)
+    if (status === "invalid") {
+        return res.redirect("/user/login")
+    }
+    else if (status === "expired") {
+        return renderChangePassword({ context }, { 
+            status: "401", 
+            headerParams: context.config.headerParams, 
+            instance: context.instance, 
+            footer: context.config.footer, 
+            csrfToken: createToken({ form: "user/change-password" }, config.apiKey, 600) 
+        })
+    }
+
     const model = context.config["user/model"]
 
     const [result] = (await db.execute(select(context, "user", ["id", "email", "password", "last_login", "last_updated", "login_failed"], { "email": email }, null, null, model)))
@@ -26,12 +43,28 @@ const changePasswordPost = async ({ req, res }, context, config, db) => {
 
     await db.execute(update(context, "user", [user.id], userData, model))
 
-    if (!authorized) return throwUnauthorized("Unauthorized")
+    if (!authorized) {
+        return renderChangePassword({ context }, { 
+            status: "403", 
+            headerParams: context.config.headerParams, 
+            instance: context.instance, 
+            footer: context.config.footer, 
+            csrfToken: createToken({ form: "user/change-password" }, config.apiKey, 600) 
+        })
+        // return throwUnauthorized("Unauthorized")
+    }
 
     const encryptedPassword = await encryptPassword(newPassword)
-    await db.execute(update(context, "user", [user.id], { password: encryptedPassword }, model))
+    await db.execute(update(context, "user", [user.id], { status: "active", password: encryptedPassword }, model))
 
     res.clearCookie("session")
+
+    return renderChangePassword({ context }, { 
+        status: "200", 
+        headerParams: context.config.headerParams, 
+        instance: context.instance, 
+        footer: context.config.footer, 
+    })
 }
 
 module.exports = {

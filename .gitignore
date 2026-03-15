@@ -3,6 +3,7 @@
 /config/
 /devops/
 /etc/settings.json
+/fileStorage/
 /node_modules/
 /public/*
 !/public/flow-er

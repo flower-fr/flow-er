@@ -1,6 +1,8 @@
 const multer = require("multer")
+const path = require("path")
+const NodeClam = require("clamscan")
 const { noCacheMiddleware, notFoundMiddleware, handleCorsMiddleware } = require("../../core/api-utils")
-const { sessionCookieMiddleware } = require("../user/server/controller/sessionCookieMiddleware");
+const { sessionCookieMiddleware } = require("../user/server/controller/sessionCookieMiddleware")
 
 const { getAction } = require("./server/getAction")
 const { postAction, postFormAction } = require("./server/postAction")
@@ -27,7 +29,38 @@ const register = async ({ context, config, logger, app }) => {
         const result = await postFormAction({ req }, context, { sql, smtp, logger })
         return res.status(200).send(result)
     }
-    const upload = multer()
+    const storage = multer.diskStorage({
+        destination: (req, file, cb) => {
+            cb(null, config.fileStorage)
+        },
+        filename: (req, file, cb) => {
+            cb(null, `file-${ Date.now() }${ path.extname(file.originalname) }`)
+        }
+    })
+    const upload = multer({
+        storage,
+        limits: { fileSize: 1000000 },
+        fileFilter: (req, file, cb) => {
+            checkFile(path, file, cb)
+        }
+    })
+
+    const checkFile = (path, file, cb) => {
+        const filetypes = /jpeg|jpg|png|gif|pdf|doc|docx|xls|xlsx|ppt|pptx|md|txt/
+        const extname = filetypes.test(path.extname(file.originalname).toLowerCase())
+        const mimetype = filetypes.test(file.mimetype)
+
+        if (mimetype && extname) {
+            return cb(null, true)
+        } else {
+            cb("Error: File type is not accepted")
+        }
+
+        const clamscan = new NodeClam().init()
+        // const { isInfected, viruses } = await clamscan.isInfected(path)
+        // if (isInfected) {
+        // }
+    }
 
     const execute = executeService(context.clone(), config, logger)
 

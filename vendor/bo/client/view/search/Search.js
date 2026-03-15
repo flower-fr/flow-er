@@ -7,7 +7,7 @@ export default class Search extends View
     {
         super({ controller })
         this.entity = entity
-        this.view = view
+        this.view = view || "default"
     }
 
     initialize = async () =>
@@ -39,17 +39,14 @@ export default class Search extends View
         html.push(`
                     <div class="col-md-12">    
                         <div class="input-group mb-2 text-center">
-                            <button type="button" class="btn btn-outline-primary fl-search-refresh" title="${ this.translations["Refresh the list"] }">
+                            <button type="button" class="btn btn-outline-primary" id="flSearchRefresh" title="${ this.translations["Refresh the list"] }">
                                 <i class="fa fa-sync-alt"></i>
                             </button>
-                            <button type="button" class="btn btn-outline-primary fl-search-erase" title="${ this.translations["Erase"] }">
+                            <button type="button" class="btn btn-outline-primary" id="flSearchErase" title="${ this.translations["Erase"] }">
                                 <i class="fa fa-times"></i>
                             </button>                
                         </div>
                     </div>
-
-                    {renderGlobalActions(context, entity, view, data)}
-
                 </div>
             </form>
         </div>`)
@@ -57,6 +54,16 @@ export default class Search extends View
         return html.join("\n")
     }
 
-    trigger = () => {
+    trigger = () =>
+    {
+        for (const filter of this.filters) {
+            filter.trigger()
+        }
+
+        const refresh = document.getElementById("flSearchRefresh")
+        new mdb.Ripple(refresh, { rippleColor: "primary" })
+
+        const erase = document.getElementById("flSearchErase")
+        new mdb.Ripple(erase, { rippleColor: "primary" })
     }
 }
