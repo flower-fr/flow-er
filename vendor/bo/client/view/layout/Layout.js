@@ -1,8 +1,24 @@
 import View from "../View.js"
+import Navbar from "../navbar/Navbar.js"
+import Search from "../search/Search.js"
 
 export default class Layout extends View
 {
-    render()
+    constructor({ controller, application, tab })
+    {
+        super({ controller })
+        this.application = application
+        this.tab = tab
+        this.navbar = new Navbar({ controller, application, tab })
+        this.search = new Search({ controller, application, tab })
+    }
+
+    initialize = async () =>
+    {
+        await this.navbar.initialize()
+    }
+
+    render = () =>
     {
         const html = []
     
@@ -18,7 +34,11 @@ export default class Layout extends View
             <div class="col-md-12" id="content">
 
                 <!-- Navbar -->
-                <div id="flNavbar">
+                <div id="flNavbar">`)
+
+        html.push(this.navbar.render())
+    
+        html.push(`
                 </div>
 
                 <div class="m-3">
@@ -57,13 +77,7 @@ export default class Layout extends View
             </div>
         </div>`)
 
-        $("body").html(html.join("\n"))
-    }
-
-    renderNavbar(navbar)
-    {
-        $("#flNavbar").html(navbar.render())
-        navbar.trigger()
+        return html.join("\n")
     }
 
     renderSearchView({ searchConfig, data })
@@ -98,6 +112,7 @@ export default class Layout extends View
 
     trigger = () =>
     {
+        // this.navbar.trigger()
         const element = document.getElementById("flSearchButton")
         new mdb.Button(element)
     }

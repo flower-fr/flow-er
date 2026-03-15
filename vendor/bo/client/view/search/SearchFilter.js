@@ -12,12 +12,7 @@ export default class SearchFilter extends View
         this.data = data
     }
 
-    initialize = async () =>
-    {
-        const response = await fetch(`/bo/search/${ this.entity }/${ this.view }`)
-        const { translations } = await response.json()
-        this.translations = translations
-    }
+    initialize = async () => {}
 
     render = () =>
     {
@@ -32,10 +27,10 @@ export default class SearchFilter extends View
         }
 
         else if (["number"].includes(propertyType)) {
-            input = renderFilterNumber(propertyId, property)
+            input = renderFilterNumber(propertyId, property, data)
         }
 
-        else if (["select", "multiselect"].includes(propertyType)) {
+        else if (["select", "vector"].includes(propertyType)) {
             input = renderFilterSelect(propertyId, property, data)
         }
 
@@ -48,7 +43,25 @@ export default class SearchFilter extends View
         return html.join("\n")
     }
 
-    trigger = () => {
+    trigger = () =>
+    {
+        if (["date", "time", "datetime"].includes(this.property.type)) {
+            const min = document.getElementById(`flSearchFormOutlineMin-${ this.propertyId }`)
+            new mdb.Datepicker(min)
+            const max = document.getElementById(`flSearchFormOutlineMax-${ this.propertyId }`)
+            new mdb.Datepicker(max)
+        } else if (["number"].includes(this.property.type)) {
+            const min = document.getElementById(`flSearchFormOutlineMin-${ this.propertyId }`)
+            new mdb.Input(min)
+            const max = document.getElementById(`flSearchFormOutlineMax-${ this.propertyId }`)
+            new mdb.Input(max)
+        } else if (["select", "vector"].includes(this.property.type)) {
+            const outline = document.getElementById(`flSearch-${ this.propertyId }`)
+            new mdb.Select(outline)
+        } else {
+            const outline = document.getElementById(`flSearchFormOutline-${ this.propertyId }`)
+            new mdb.Input(outline)
+        }
     }
 }
 
@@ -64,14 +77,14 @@ const renderFilterDateTime = (propertyId, property, data) =>
     }
 
     return `
-    <div class="form-floating form-outline mb-1" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true">
-        <input type="text" class="form-control form-control-sm" id="flSearchMin-${propertyId}" ${ (valueMin) ? `value="${ valueMin }"` : "" } />
-        <label for="flSearchMin-${propertyId}" class="form-label">${ property.label } - Min</label>
-    </div>
-    <div class="form-floating form-outline mb-3" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true">
-        <input type="text" class="form-control form-control-sm" id="flSearchMax-${propertyId}" ${ (valueMax) ? `value="${ valueMax }"` : "" } />
-        <label for="searchMax-${propertyId}" class="form-label">Max</label>
-    </div>`
+        <div class="form-outline mb-1" id="flSearchFormOutlineMin-<${propertyId}" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true">
+            <input type="text" class="form-control form-control-sm" id="flSearchMin-${propertyId}" ${ (valueMin) ? `value="${ valueMin }"` : "" } />
+            <label for="flSearchMin-${propertyId}" class="form-label">${ property.label } - Min</label>
+        </div>
+        <div class="form-outline mb-3" id="flSearchFormOutlineMax-<${propertyId}" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true">
+            <input type="text" class="form-control form-control-sm" id="flSearchMax-${propertyId}" ${ (valueMax) ? `value="${ valueMax }"` : "" } />
+            <label for="searchMax-${propertyId}" class="form-label">Max</label>
+        </div>`
 }
 
 const renderFilterSelect = (propertyId, property, { where }) => 
@@ -79,50 +92,57 @@ const renderFilterSelect = (propertyId, property, { where }) =>
     const renderModalities = () => 
     {
         let options = []
-        for (const modalityId of Object.keys(property.modalities)) {
-            const modality = property.modalities[modalityId]
+        for (const [modalityId, modality] of Object.entries(property.modalities)) {
             let selected = false
             if (Object.keys(where).length > 0 && Object.keys(where).includes(propertyId)) {
                 const checked = where[propertyId].split(",")
                 if (checked.includes(modalityId)) selected = true
             }
             if (!modality.archive) {
-                options.push(`<option value="${modalityId}" ${ (selected) ? "selected" : "" } id="search-${propertyId}-${modalityId}">${ modality }</option>`)
+                options.push(`<option value="${modalityId}" ${ (selected) ? "selected" : "" } id="search-${propertyId}-${modalityId}">${ modality.label }</option>`)
             }
         }
         return options.join("\n")
     }
 
     return `
-    <div class="form-floating mb-3">
-        <select class="form-select" data-mdb-size="sm" data-mdb-select-init="" id="flSearch-${propertyId}" multiple>
-            ${renderModalities()}
-        </select>
-        <label class="form-label select-label">${ property.labels }</label>
-    </div>`
+        <div class="mb-3">
+            <select class="form-select" data-mdb-size="sm" data-mdb-select-init="" id="flSearch-${propertyId}" multiple>
+                ${renderModalities()}
+            </select>
+            <label class="form-label select-label">${ property.label }</label>
+        </div>`
 }
 
-const renderFilterNumber = (propertyId, property) => 
+const renderFilterNumber = (propertyId, property, data) => 
 {
+    let valueMin, valueMax
+    if (data.where && data.where[propertyId]) {
+        const where = data.where[propertyId].split(",")
+        if (where[0] == "between") {
+            valueMin = where[1]
+            valueMax = where[2]
+        }
+    }
+
     return `
-    <div class="input-group input-group-sm mb-3">
-        <span class="input-group-text fs-6" id="addon-wrapping"><label class="form-label" style="margin-bottom: 0 !important">${ property.labels }</label></span>
-        <div class="form-floating form-outline" data-mdb-input-init>
-            <input type="number" value="0" id="min" min="0" class="form-control form-control-sm" id="flSearchMin-<${propertyId}"/>
-            <label class="form-label" for="flSearchMin-<${propertyId}">Min</label>
-        </div>
-        <div class="form-floating form-outline" data-mdb-input-init>
-            <input type="number" value="0" id="max" min="0" class="form-control form-control-sm" id="flSearchMax-<${propertyId}"/>
-            <label class="form-label" for="flSearchMax-<${propertyId}">Max</label>
-        </div>
-    </div>`
+        <div class="input-group input-group-sm mb-3">
+            <div class="form-outline" id="flSearchFormOutlineMin-<${propertyId}" data-mdb-input-init>
+                <input type="number" class="form-control form-control-sm" id="flSearchMin-<${propertyId}" ${ (valueMin) ? `value="${ valueMin }"` : "" } />
+                <label class="form-label" for="flSearchMin-<${propertyId}">Min</label>
+            </div>
+            <div class="form-outline" id="flSearchFormOutlineMax-<${propertyId}" data-mdb-input-init>
+                <input type="number" class="form-control form-control-sm" id="flSearchMax-<${propertyId}" ${ (valueMax) ? `value="${ valueMax }"` : "" } />
+                <label class="form-label" for="flSearchMax-<${propertyId}">Max</label>
+            </div>
+        </div>`
 }
 
 const renderFilterInput = (propertyId, property) => 
 {
     return `
-        <div class="form-floating form-outline mb-3" data-mdb-input-init>
+        <div class="form-outline mb-3" id="flSearchFormOutline-${propertyId}" data-mdb-input-init>
             <input type="text" class="form-control form-control-sm" data-property-id="${propertyId}" id="flSearch-${propertyId}" />
-            <label class="form-label" for="search-${propertyId}">${ property.labels }</label>
+            <label class="form-label" for="search-${propertyId}">${ property.label }</label>
         </div>`
 }

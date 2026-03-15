@@ -1,5 +1,4 @@
 const { assert } = require("../../../core/api-utils")
-const { throwBadRequestError } = require("../../../core/api-utils")
 const { renderIndex } = require("./html/renderIndex")
 
 const indexAction = async ({ req }, { context, logger }) => 
@@ -10,14 +9,7 @@ const indexAction = async ({ req }, { context, logger }) =>
     const { title, menu } = applicationConfig
     const tabConfig = menu[tab]
     applicationConfig.profile = { name: "Démo CRITE", roles: { any: "responsible" } }
-
-    try {
-        return renderIndex(context, application, tab, tabConfig, title, "dark")
-    }
-    catch(err) {
-        logger && logger.error(err)
-        throw throwBadRequestError()
-    }
+    return renderIndex(context, application, tab, tabConfig, title, "dark")
 }
 
 module.exports = indexAction
