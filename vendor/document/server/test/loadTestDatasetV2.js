@@ -1,6 +1,5 @@
 const demoContent = [
     {
-        identifier: "header",
         level: 0,
         parent: null,
         previous: null,
@@ -16,9 +15,8 @@ const demoContent = [
     },
 
     {
-        identifier: "support_utilisateurs",
         level: 2,
-        parent: "0",
+        parent: 0,
         previous: null,
         content: {
             name: "A. Support utilisateurs",
@@ -27,9 +25,8 @@ const demoContent = [
     },
     
     {
-        identifier: "support_niveau_1",
         level: 3,
-        parent: "1",
+        parent: 1,
         previous: null,
         content: {
             section: "support_utilisateurs",
@@ -41,10 +38,9 @@ const demoContent = [
         },
     },
     {
-        identifier: "support_niveau_2",
         level: 3,
-        parent: "1",
-        previous: "2",
+        parent: 1,
+        previous: 2,
         content: {
             section: "support_utilisateurs",
             type: "Utilisateur x mois",
@@ -55,10 +51,9 @@ const demoContent = [
         },
     },
     {
-        identifier: "support_24_7",
         level: 3,
-        parent: "1",
-        previous: "3",
+        parent: 1,
+        previous: 3,
         content: {
             section: "support_utilisateurs",
             type: "check",
@@ -71,19 +66,17 @@ const demoContent = [
     },
 
     {
-        identifier: "developpement_logiciel",
         level: 2,
-        parent: "0",
-        previous: "1",
+        parent: 0,
+        previous: 1,
         content: {
             name: "B. Développement logiciel",
             description: "Lorem ipsum..."
         },
     },
     {
-        identifier: "application_web_sur_mesure",
         level: 3,
-        parent: "4",
+        parent: 4,
         previous: null,
         content: {
             section: "developpement_logiciel",
@@ -95,10 +88,9 @@ const demoContent = [
         },
     },
     {
-        identifier: "maintenance_evolutive",
         level: 3,
-        parent: "4",
-        previous: "5",
+        parent: 4,
+        previous: 5,
         content: {
             section: "developpement_logiciel",
             type: "Mois",
@@ -109,10 +101,9 @@ const demoContent = [
         },
     },
     {
-        identifier: "hebergement",
         level: 3,
-        parent: "4",
-        previous: "6",
+        parent: 4,
+        previous: 6,
         content: {
             section: "developpement_logiciel",
             type: "Mois",
@@ -125,19 +116,17 @@ const demoContent = [
     },
 
     {
-        identifier: "infrastructure_it",
         level: 2,
-        parent: "0",
-        previous: "4",
+        parent: 0,
+        previous: 4,
         content: {
             name: "C. Infrastructure IT",
             description: "Lorem ipsum..."
         },
     },
     {
-        identifier: "audit_securite",
         level: 3,
-        parent: "8",
+        parent: 8,
         previous: null,
         content: {
             section: "infrastructure_it",
@@ -149,10 +138,9 @@ const demoContent = [
         },
     },
     {
-        identifier: "migration_cloud",
         level: 3,
-        parent: "8",
-        previous: "9",
+        parent: 8,
+        previous: 9,
         content: {
             section: "infrastructure_it",
             type: "check",
@@ -163,10 +151,9 @@ const demoContent = [
         },
     },
     {
-        identifier: "sauvegarde",
         level: 3,
-        parent: "8",
-        previous: "10",
+        parent: 8,
+        previous: 10,
         content: {
             section: "infrastructure_it",
             type: "Mois",
@@ -179,19 +166,17 @@ const demoContent = [
     },
 
     {
-        identifier: "virtualisation_securisation_poste_travail",
         level: 2,
-        parent: "0",
-        previous: "8",
+        parent: 0,
+        previous: 8,
         content: {
             name: "D. Virtualisation et sécurisation du poste de travail",
             description: "Lorem ipsum..."
         },
     },
     {
-        identifier: "virtualisation_vm",
         level: 3,
-        parent: "12",
+        parent: 12,
         previous: null,
         content: {
             section: "virtualisation_securisation_poste_travail",
@@ -203,10 +188,9 @@ const demoContent = [
         },
     },
     {
-        identifier: "stockage_nas",
         level: 3,
-        parent: "12",
-        previous: "13",
+        parent: 12,
+        previous: 13,
         content: {
             section: "virtualisation_securisation_poste_travail",
             type: "check",
@@ -217,10 +201,9 @@ const demoContent = [
         },
     },
     {
-        identifier: "antivirus_entreprise",
         level: 3,
-        parent: "12",
-        previous: "14",
+        parent: 12,
+        previous: 14,
         content: {
             section: "virtualisation_securisation_poste_travail",
             type: "Licences par an",
@@ -231,10 +214,9 @@ const demoContent = [
         },
     },
     {
-        identifier: "sauvegardes_automatiques",
         level: 3,
-        parent: "12",
-        previous: "15",
+        parent: 12,
+        previous: 15,
         content: {
             section: "virtualisation_securisation_poste_travail",
             type: "Par an",
@@ -245,10 +227,9 @@ const demoContent = [
         },
     },
     {
-        identifier: "chiffrement_donnees",
         level: 3,
-        parent: "12",
-        previous: "16",
+        parent: 12,
+        previous: 16,
         content: {
             section: "virtualisation_securisation_poste_travail",
             type: "check",
@@ -261,7 +242,6 @@ const demoContent = [
     },
 
     {
-        identifier: "demarrage",
         level: 1,
         parent: 0,
         previous: null,
@@ -273,10 +253,9 @@ const demoContent = [
         },
     },
     {
-        identifier: "intermediaire",
         level: 1,
         parent: 0,
-        previous: "18",
+        previous: 18,
         content: {
             name: "INTERMÉDIAIRE",
             description: "Lorem ipsum...",
@@ -285,10 +264,9 @@ const demoContent = [
         },
     },
     {
-        identifier: "complet",
         level: 1,
         parent: 0,
-        previous: "19",
+        previous: 19,
         content: {
             name: "COMPLET",
             description: "Lorem ipsum...",

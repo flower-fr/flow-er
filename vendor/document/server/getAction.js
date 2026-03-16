@@ -6,7 +6,9 @@ const getAction = async ({ req }, context, { sql, logger }) =>
 {
     logger
 
-    const identifier = req.params.identifier, document_id = assert.notEmpty(req.params, "document_id"), entity = "document_cell"
+    const identifier = req.params.identifier
+    const document_id = assert.notEmpty(req.params, "document_id")
+    const entity = assert.notEmpty(req.params, "entity")
 
     // gestion des paramètres de query
     const query = req.query

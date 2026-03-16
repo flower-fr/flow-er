@@ -6,7 +6,7 @@ const { demoContent } = require("./loadTestDatasetV2.js")
 const testPostAction = async ({ req }, context, { logger }) => {
     req
 
-    const route = "http://0.0.0.0:5010/document/v1/document-cell", result = []
+    const route = "http://0.0.0.0:5010/document/v1/document_cell", result = []
     const data = demoContent
 
     try {

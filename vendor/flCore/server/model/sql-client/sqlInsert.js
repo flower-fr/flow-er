@@ -6,6 +6,7 @@ const { insert } = require("../insert")
 const sqlInsert = async ({ context, entity, data, params, debug }, model, connection, logger) =>
 {
     logger && logger.debug(util.inspect({ entity, data, params }))
+    logger && logger.debug(util.inspect({ model }, { depth: null, colors: true }))
     
     // Encryption
     for (const [key, value] of Object.entries(data)) {

@@ -10,15 +10,22 @@ const postAction = async ({ req }, context, { sql, logger }) => {
     
     checkParams(req, context) // we check that the params are valid
 
-    const entity = "document_cell", data = req.body
+    const entity = assert.notEmpty(req.params, "entity")
+    const data = req.body
 
     // we set the state param at active
-    data.state = "active"
-    data.document_id = document_id
+    data.is_canceled = 0
+    data.document_id = parseInt(document_id)
+    if (!data.identifier) {
+        data.identifier = null
+    }
 
     try {
 
-        await sql.execute({ context, type: "insert", entity, data })
+        const id = await sql.execute({ context, type: "insert", entity, data })
+        if (!data.identifier) {
+            await sql.execute({ context, type: "update", entity, ids: [id], data: { identifier: id } })
+        }
         return JSON.stringify({ response: "cellule insérée avec succès" })
 
     } catch (err) {
@@ -30,7 +37,7 @@ const postAction = async ({ req }, context, { sql, logger }) => {
 const checkParams = (req, context) => {
 
     // we check that the body is not empty
-    assert.notEmpty(req.body, "identifier", "content")
+    assert.notEmpty(req.body, "content")
 
     // we check that the body does not contain any field that is not in the model
     const properties = Object.keys(context.config["document_cell/model"].properties)

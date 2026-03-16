@@ -5,17 +5,17 @@ const util = require("util")
 const patchAction = async ({ req }, context, { sql, logger }) => {
 
     const document_id = assert.notEmpty(req.params, "document_id"), action = assert.notEmpty(req.params, "action")
-    const entity = "document_cell"
-    let state
+    const entity = assert.notEmpty(req.params, "entity")
+    let is_canceled
 
-    if (action === "undo") state = "cancelled"
-    else if (action === "redo") state = "active"
+    if (action === "undo") is_canceled = "cancelled"
+    else if (action === "redo") is_canceled = "active"
     else throw throwBadRequestError("Invalid action")
 
     const where = { document_id }
     const order = { id: "DESC"}
-    state === "active" ? where.state = "cancelled" : where.state = "active"
-    state === "active" ? order.id = "ASC" : order.id = "DESC"
+    is_canceled === "active" ? where.is_canceled = 1 : where.is_canceled = 0
+    is_canceled === "active" ? order.id = "ASC" : order.id = "DESC"
 
     try {
 
@@ -26,7 +26,7 @@ const patchAction = async ({ req }, context, { sql, logger }) => {
 
         if (ids.length === 0) throw throwBadRequestError(`No cell to ${action}`)
 
-        await sql.execute({ context, type: "update", entity, ids, data: { state } })
+        await sql.execute({ context, type: "update", entity, ids, data: { is_canceled } })
         return JSON.stringify({ response: "cellule insérée avec succès" })
 
     } catch (err) {
