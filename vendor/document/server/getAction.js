@@ -12,7 +12,7 @@ const getAction = async ({ req }, context, { sql, logger }) =>
 
     // gestion des paramètres de query
     const query = req.query
-    const columns = query.columns ? query.columns.split(",") : ["id", "identifier", "document_id", "content", "row", "column"]
+    const columns = query.columns ? query.columns.split(",") : ["identifier", "level", "parent", "previous", "content"]
     const where = { document_id }
 
     req.query?.where?.split("|").forEach(element => {
@@ -24,13 +24,13 @@ const getAction = async ({ req }, context, { sql, logger }) =>
     // fin gestion des paramètres de query
 
     try {
-        const documentCells = await sql.execute({ context, type: "select", entity, columns: ["id", "identifier", "state"], where })
+        const documentCells = await sql.execute({ context, type: "select", entity, columns: ["id", "identifier", "is_canceled"], where })
         const ids = {}
         for (const documentCell of documentCells) {
-            if (!ids[documentCell.identifier] && documentCell.state === "active") {
+            if (!ids[documentCell.identifier] && documentCell.is_canceled === 0) {
                 ids[documentCell.identifier] = documentCell
             }
-            else if (ids[documentCell.identifier] && ids[documentCell.identifier].id < documentCell.id && documentCell.state === "active") {
+            else if (ids[documentCell.identifier] && ids[documentCell.identifier].id < documentCell.id && documentCell.is_canceled === 0) {
                 ids[documentCell.identifier] = documentCell
             }
         }

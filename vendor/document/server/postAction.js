@@ -21,15 +21,18 @@ const postAction = async ({ req }, context, { sql, logger }) => {
     }
 
     try {
+        await sql.beginTransaction()
 
         const id = await sql.execute({ context, type: "insert", entity, data })
         if (!data.identifier) {
             await sql.execute({ context, type: "update", entity, ids: [id], data: { identifier: id } })
         }
+        await sql.commit()
         return JSON.stringify({ response: "cellule insérée avec succès" })
 
     } catch (err) {
         logger && logger.debug(util.inspect(err))
+        await sql.rollback()
         throw throwBadRequestError()
     }
 }

@@ -19,11 +19,21 @@ export default class Document extends View
         // this.properties = properties
         // this.translations = translations
 
-        const response = await fetch(`/document/v1/document-cell/${ documentId }`)
+        const response = await fetch(`/document/v1/document_cell/${ documentId }`)
         this.data = await response.json()
         // const cells = await config.json()
         // Algorithlme de dénormalisation à créer
-        this.document = denormalizeDocument(this.data)
+        const config = {
+            levels: [ "header", "sections", "valueAttributes", "packs", "cells" ],
+            data: {
+                header: {},
+                sections: {},
+                valueAttributes: { groupBy: "sections" },
+                packs: {},
+                cells: {},
+            }
+        }
+        this.document = denormalizeDocument(this.data, config)
         console.log("Document initialize", { document: this.document })
     }
 

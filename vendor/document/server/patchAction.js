@@ -8,14 +8,14 @@ const patchAction = async ({ req }, context, { sql, logger }) => {
     const entity = assert.notEmpty(req.params, "entity")
     let is_canceled
 
-    if (action === "undo") is_canceled = "cancelled"
-    else if (action === "redo") is_canceled = "active"
+    if (action === "undo") is_canceled = 1
+    else if (action === "redo") is_canceled = 0
     else throw throwBadRequestError("Invalid action")
 
     const where = { document_id }
     const order = { id: "DESC"}
-    is_canceled === "active" ? where.is_canceled = 1 : where.is_canceled = 0
-    is_canceled === "active" ? order.id = "ASC" : order.id = "DESC"
+    is_canceled === 0 ? where.is_canceled = 1 : where.is_canceled = 0
+    is_canceled === 0 ? order.id = "ASC" : order.id = "DESC"
 
     try {
 

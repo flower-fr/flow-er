@@ -15,6 +15,7 @@ const indexAction = require("./server/controller/indexAction")
 // const { loadTestDataset } = require("./server/test/loadTestDataset")
 const { testPostAction } = require("./server/test/testPostAction")
 const { testGetAction } = require("./server/test/testGetAction")
+const { testPatchAction } = require("./server/test/testPatchAction")
 
 const register = async ({ context, config, logger, app }) => {
 
@@ -38,6 +39,7 @@ const register = async ({ context, config, logger, app }) => {
     // for testing purposes
     app.post(`${config.prefix}v1/test`, execute(testPostAction, context, { sql, logger }))
     app.get(`${config.prefix}v1/test`, execute(testGetAction, context, { sql, logger }))
+    app.patch(`${config.prefix}v1/test`, execute(testPatchAction, context, { sql, logger }))
 
     // Deprecated
     registerDocument({ context, config, logger, app })
