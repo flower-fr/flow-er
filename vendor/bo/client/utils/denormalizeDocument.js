@@ -29,8 +29,6 @@ export default function denormalize(items, config)
             for (const parentId of item.parent.split(",")) {
                 const parent = dictionary[parentId]
 
-                console.log({parent, config, dictionary, parentId, item})
-
                 // Parent cells
                 item.parentCells[config.levels[parent.level]] = parent
 
@@ -60,11 +58,10 @@ export default function denormalize(items, config)
     for (const item of items) {
         const level = config.levels[item.level]
         if (config.data[level].groupBy) {
-            const group = result[config.data[level].groupBy].find(x => x.identifier === item.parent)
+            const group = result[config.data[level].groupBy].find(x => x.identifier == item.parent)
             if (!group[level]) group[level] = []
             group[level].push(item)
         }
     }
-    console.log(result)
     return result
 }
