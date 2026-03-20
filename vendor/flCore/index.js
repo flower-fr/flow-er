@@ -37,13 +37,13 @@ const register = async ({ context, config, logger, app }) => {
             cb(null, `file-${ Date.now() }${ path.extname(file.originalname) }`)
         }
     })
-    const upload = multer({
+    const upload = multer(/*{
         storage,
         limits: { fileSize: 1000000 },
         fileFilter: (req, file, cb) => {
             checkFile(path, file, cb)
         }
-    })
+    }*/)
 
     const checkFile = (path, file, cb) => {
         const filetypes = /jpeg|jpg|png|gif|pdf|doc|docx|xls|xlsx|ppt|pptx|md|txt/
