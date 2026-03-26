@@ -1,14 +1,16 @@
 import View from "../View.js"
 
-export default class ListRowProperties extends View
+export default class ListCell extends View
 {
-    constructor({ controller, context, listConfig, columns, row}) {
+    constructor({ controller, row, propertyId, property, translations}) {
         super({ controller })
-        this.context = context
-        this.listConfig = listConfig
-        this.columns = columns
         this.row = row
+        this.propertyId = propertyId
+        this.property = property
+        this.translations = translations
     }
+
+    initialize = async () => {}
 
     render = () => 
     {
@@ -72,4 +74,6 @@ export default class ListRowProperties extends View
         }
         return html.join("\n")
     }
+
+    trigger = () => {}
 }

@@ -1,77 +1,35 @@
 import View from "../View.js"
 import ListHeader from "./ListHeader.js"
 import ListRow from "./ListRow.js"
-
-import { getSearchParams } from "/flBo/cli/controller/getSearchParams.js"
-import { triggerDetail } from "/flBo/cli/controller/triggerDetail.js"
-import { triggerList } from "/flBo/cli/controller/triggerList.js"
-import { triggerGroup } from "/flBo/cli/controller/triggerGroup.js"
-
 export default class List extends View
 {
-    constructor({ controller, entity, view, locale, data }) {
+    constructor({ controller, entity, view }) {
         super({ controller })
         this.entity = entity
         this.view = view
-        this.locale = locale
-        this.data = data
-        const { rows, order, limit, config, properties } = data
-        this.listHeader = new ListHeader({ rows, order, limit, config, properties })
+   }
 
-        const columns = {}, dictionary = {}
-        for (const row of rows) dictionary[row.id] = row
-        for (const [propertyId, column] of Object.entries( properties )) {
-            const property = column
-            if (column.cross) {
-                for (const crossRow of (data.crossRows) ? data.crossRows : []) {
-                    let row = dictionary[crossRow[property.foreignKey]]
-                    if (!row) {
-                        row = {}
-                        for (const key of Object.keys(config.properties)) {
-                            if (crossRow[key]) row[key] = crossRow[key]
-                        }
-                        rows.push(row)
-                        dictionary[crossRow[property.foreignKey]] = row
-                    }
-                    if (!row[propertyId]) row[propertyId] = []
-                    let value = crossRow[property.property]
-                    let keep = true
-                    if (column.restriction) {
-                        for (const [k, v] of Object.entries(column.restriction)) {
-                            if (v.substring(0, 1) == "!") {
-                                if (crossRow[k] == v.substring(1)) {
-                                    keep = false
-                                    break
-                                }
-                            }
-                            else if (crossRow[k] != v) {
-                                keep = false
-                                break
-                            }
-                        }
-                    }
-                    if (keep) {
-                        const modalities = data.crossProperties[property.property].modalities
-                        if (modalities && modalities[value]) value = this.localize(modalities[value])
-                        row[propertyId].push(value)
-                    }
-                }
-            }
+    initialize = async () =>
+    {
+        // Retrieve the config and params
+        const response = await fetch(`/bo/list/${ this.entity }?view=${ this.view }`)
+        const { properties, params, translations } = await response.json()
+        const { order, limit } = params
+        this.properties = properties
+        this.order = order
+        this.limit = limit
+        this.translations = translations
 
-            columns[propertyId] = property
-        }
+        // Retrieve the data
+        const rows = await fetch(`/core/v1/${ this.entity }`)
 
-        this.columns = columns
-        let i = 0
-        this.listRows = rows.map(row => new ListRow({ context, config, columns, row, i: i++ }))
-    }
-
-    translate = (phrase) => this.dictionary[phrase][this.locale] || phrase
-    localize = (labels) => labels[this.locale] || labels.default
+        this.listHeader = new ListHeader({ controller: this.controller, rows, properties, order, limit, translations })
+        this.listRows = rows.map(row => new ListRow({ controller: this.controller, row, properties, translations }))
+     }
 
     render = () =>
     {    
-        const html = []
+        const html = [], translations = this.translations
 
         html.push(`
         <div class="table-responsive">
@@ -104,22 +62,22 @@ export default class List extends View
                                 data-mdb-target="#flListDetailModalForm"
                                 data-toggle="tooltip"
                                 data-placement="top"
-                                title="${this.translate("Grouped actions")}"
+                                title="${ translations["Grouped actions"] }"
                                 >
                                     <span class="fas fa-list"></span>
                                 </button>
                             </td>
 
-                            <td colspan="${Object.keys(this.columns).length}" />
+                            <td colspan="${Object.keys(this.properties).length}" />
                         </tr>`)
 
-        this.listRows.map(listRow => html.push(listRow.render()))
+        this.listRows.map(listRow => html.push(listRow.render().join("\n")))
 
         html.push(`
                         <tr class="listRow">
                             <td>
                                 <div class="text-center">
-                                    <input type="checkbox" class="fl-list-check-all" title="${this.translate("Check all")}"></input>
+                                    <input type="checkbox" class="fl-list-check-all" title="${ translations["Check all"] }"></input>
                                 </div>
                             </td>
 
@@ -141,7 +99,7 @@ export default class List extends View
                                 >
                                     <span class="fas fa-list"></span>
                                 </button>
-                                ${(this.listRows.length == this.data.limit) 
+                                ${(this.listRows.length === this.limit) 
         ? `
                                     <button type="button" class="btn btn-sm btn-outline-primary fl-list-more" data-toggle="tooltip" data-placement="top" title="${this.translate("Display the entire list")}">
                                         <i class="fas fa-ellipsis-h"></i>
@@ -149,7 +107,7 @@ export default class List extends View
         : ""}
                             </td>
 
-                            <td colspan="${Object.keys(this.columns).length}" />
+                            <td colspan="${Object.keys(this.properties).length}" />
                         </tr>`)
 
         html.push(`
@@ -165,16 +123,6 @@ export default class List extends View
     {
         const entity = this.entity
         const view = this.view
-
-        let params = []
-        for (let [key, value] of Object.entries(getSearchParams())) {
-            if (Array.isArray(value)) {
-                if (value[0] == null) value = `<=,${value[1]}`
-                else if (value[1] == null) value = `>=,${value[0]}`
-                else value = `between,${value[0]},${value[1]}`
-            }
-            params.push(key + ":" + value)
-        }
 
         $(".fl-list-order-button").click(function() {
             const propertyId = $(this).attr("data-fl-property")
@@ -267,8 +215,5 @@ export default class List extends View
                 if (sum) $(".fl-list-sum").text("")
             }
         })
-
-        // triggerDetail({ context, entity, view }, params)
-        // triggerGroup({ context, entity, view }, params)
     }
 }

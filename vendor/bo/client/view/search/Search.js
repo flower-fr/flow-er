@@ -13,14 +13,14 @@ export default class Search extends View
     initialize = async () =>
     {
         const response = await fetch(`/bo/search/${ this.entity }?view=${ this.view }`)
-        const { properties, data, translations } = await response.json()
+        const { properties, params, translations } = await response.json()
         this.properties = properties
-        this.data = data
+        this.params = params
         this.translations = translations
 
         const filters = []
         for (const [propertyId, property] of Object.entries(properties)) {
-            filters.push(new SearchFilter({ controller: this.controller, entity: this.entity, view: this.view, propertyId, property, data }))
+            filters.push(new SearchFilter({ controller: this.controller, entity: this.entity, view: this.view, propertyId, property, params, translations }))
         }
         this.filters = filters
     }

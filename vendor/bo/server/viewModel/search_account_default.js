@@ -126,9 +126,17 @@ module.exports = {
             order: { name: "ASC" },
             label: "Tag"
         },
+
+        touched_at: {
+            type: "datetime",
+            label: "Dernière mise à jour"
+        },
     },
     translations: {
-        "Refresh the list": "Actualiser la liste",
+        mdbDateFormat: "dd/mm/yyyy",
+        mdbMonthsFull: ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"],
+        mdbWeekdaysNarrow: ["D", "L", "M", "M", "J", "V", "S"],
         "Erase": "Effacer",
+        "Refresh the list": "Actualiser la liste",
     }
 }

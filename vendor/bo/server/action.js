@@ -26,7 +26,7 @@ const action = async ({ req }, { context, sql, logger }) =>
         }
     }
     
-    config.data = { where: {} }
+    config.params = { where: { status: "new" } }
 
     return [200, config, "application/json"]
 }

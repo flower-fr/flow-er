@@ -9,8 +9,12 @@ module.exports = {
     menu: {
         account: {
             controller: "bo",
-            action: "form",
+            action: "index",
             params: {
+                application: "flower",
+                tab: "account",
+            },
+            query: {
                 entity: "account",
             },
             label: "Account"

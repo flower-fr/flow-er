@@ -1,48 +1,31 @@
 import View from "../View.js"
-import { ListRowProperties } from "./ListRowProperties.js"
+import { ListCell } from "./ListCell.js"
 
 export default class ListRow extends View
 {
-    constructor({ controller, context, config, columns, row, i }) {
+    constructor({ controller, row, properties, translations }) {
         super({ controller })
-        this.context = context
-        this.config = config
-        this.columns = columns
         this.row = row
-        this.i = i
-        this.listRowProperties = new ListRowProperties({ context, listConfig: config, columns, row })
+        this.properties = properties
+        this.translations = translations
+
+        this.listRowColumns = []
+        for (const [propertyId, property] of properties) {
+            this.listCells.push(new ListCell({ controller, row, propertyId, property, translations }))
+        }
     }
+
+    initialize = async () => {}
 
     render = () =>
     {
-        const html = [], listConfig = this.config, row = this.row, context = this.context
-
-        const checkData = []
-        if (listConfig && listConfig.checkData) {
-            for (const propertyId of listConfig.checkData) {
-                checkData.push(`${propertyId}:${ encodeURIComponent(row[propertyId]) }`)
-            }
-        }
-
-        // Deprecated
-        const listCheckIds = []
-        if (listConfig && listConfig.checkIds) {
-            for (let checkId of listConfig.checkIds) {
-                listCheckIds.push(`<input type="hidden" class="listCheckId-${row.id}" id="listCheckId-${row.id}-${checkId}" value="${row[checkId]}"></input>`)
-            }
-        }
-
-        if (listConfig.hidden) {
-            for (let propertyId of Object.keys(listConfig.hidden)) {
-                html.push(`<input type="hidden" id="flListHidden-${ propertyId }-${ row.id }" value="${ row[propertyId] }" />`)
-            }
-        }
+        const html = [], row = this.row, translations = this.translations
 
         html.push(`
         <tr class="listRow">
             <td>
                 <div class="text-center">
-                    <input type="checkbox" class="fl-list-check" id="flListCheck-${ row.id }" data-row-id="${this.i}" data-properties="${ checkData.join("|") }"></input>
+                    <input type="checkbox" class="fl-list-check" id="flListCheck-${ row.id }"></input>
                 </div>
             </td>
 
@@ -54,17 +37,18 @@ export default class ListRow extends View
                     data-bs-target="#flListDetailModalForm"
                     data-mdb-target="#flListDetailModalForm"
                     data-mdb-modal-init
-                    title="${context.translate("Detail")}"
-                    data-id="${row.id}"
+                    title="${ translations["Detail"] }"
                 >
                 <i class="fas fa-search"></i>
                 </button>
             </td>
 
-            ${ this.listRowProperties.render() }
+            ${ this.listCells.map(cell => cell.render()).join("\n") }
 
         </tr>`)
 
         return html.join("\n")
     }
+
+    trigger = () => {}
 }

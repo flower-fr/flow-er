@@ -19,7 +19,6 @@ const deprecatedTransactionAction = async ({ req }, context, { sql, smtp, sms })
     const transaction = assert.notEmpty(req.params, "transaction")
     const id = req.params.id
     const steps = config.layout.posts[transaction].steps
-console.log(steps); return;    
     let rows
     if (req.body.rows) rows = req.body.rows // Batch upsert
     else if (id) rows = [{"id": id}] // unitary update

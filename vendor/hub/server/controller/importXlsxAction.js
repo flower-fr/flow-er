@@ -148,7 +148,7 @@ const getImportXlsxAction = async ({ req }, context, sql) => {
 
     const interactionModel = context.config["interaction/model"]
     // const [cursor] = await db.execute(select(context, "interaction", ["id", "status", "endpoint", "body"], { "status": "new", "endpoint": `hub/import-xlsx/${entity}` }, null, null, interactionModel))
-    const [cursor] = await sql.execute({ context, type: "select", entity: "interaction", columns : ["id", "status", "endpoint", "body"], where: { "status": "new", "endpoint": `hub/import-xlsx/${entity}` }, model: interactionModel })
+    const cursor = await sql.execute({ context, type: "select", entity: "interaction", columns : ["id", "status", "endpoint", "body"], where: { "status": "new", "endpoint": `hub/import-xlsx/${entity}` }, model: interactionModel })
     if (cursor.length > 0) {
         result.message = { default: "A previous import is pending", "fr_FR": "Un précédent import est en attente", level: "warning" }
         const interaction = cursor[0]

@@ -2,40 +2,41 @@ import View from "../View.js"
 
 export default class SearchFilter extends View
 {
-    constructor({ controller, entity, view, propertyId, property, data })
+    constructor({ controller, entity, view, propertyId, property, params, translations })
     {
         super({ controller })
         this.entity = entity
         this.view = view
         this.propertyId = propertyId
         this.property = property
-        this.data = data
+        this.params = params
+        this.translations = translations
     }
 
     initialize = async () => {}
 
     render = () =>
     {
-        const propertyId = this.propertyId, property = this.property, data = this.data
+        const propertyId = this.propertyId, property = this.property, params = this.params
         const html = []
         const propertyType = property.type
 
         let input
         
         if (["date", "time", "datetime"].includes(propertyType)) {
-            input = renderFilterDateTime(propertyId, property, data)
+            input = renderFilterDateTime(propertyId, property, params)
         }
 
         else if (["number"].includes(propertyType)) {
-            input = renderFilterNumber(propertyId, property, data)
+            input = renderFilterNumber(propertyId, property, params)
         }
 
         else if (["select", "vector"].includes(propertyType)) {
-            input = renderFilterSelect(propertyId, property, data)
+            input = renderFilterSelect(propertyId, property, params)
         }
 
         else {
-            input = renderFilterInput(propertyId, property, data)
+            input = renderFilterInput(propertyId, property, params)
         }
 
         html.push(`<div class="col-md-12">${input}</div>`)
@@ -45,11 +46,19 @@ export default class SearchFilter extends View
 
     trigger = () =>
     {
+        const datePickerOptions = {
+            datepicker: { 
+                format: this.translations.mdbDateFormat
+            },
+            inline: true,
+            monthsFull: this.translations.mdbMonthsFull,
+            weekdaysNarrow: this.translations.mdbWeekdaysNarrow,
+        }
         if (["date", "time", "datetime"].includes(this.property.type)) {
             const min = document.getElementById(`flSearchFormOutlineMin-${ this.propertyId }`)
-            new mdb.Datepicker(min)
+            new mdb.Datepicker(min, datePickerOptions)
             const max = document.getElementById(`flSearchFormOutlineMax-${ this.propertyId }`)
-            new mdb.Datepicker(max)
+            new mdb.Datepicker(max, datePickerOptions)
         } else if (["number"].includes(this.property.type)) {
             const min = document.getElementById(`flSearchFormOutlineMin-${ this.propertyId }`)
             new mdb.Input(min)
@@ -65,11 +74,11 @@ export default class SearchFilter extends View
     }
 }
 
-const renderFilterDateTime = (propertyId, property, data) => 
+const renderFilterDateTime = (propertyId, property, params) => 
 {
     let valueMin, valueMax
-    if (data.where && data.where[propertyId]) {
-        const where = data.where[propertyId].split(",")
+    if (params.where && params.where[propertyId]) {
+        const where = params.where[propertyId].split(",")
         if (where[0] == "between") {
             valueMin = moment(where[1]).format("DD/MM/YYYY")
             valueMax = moment(where[2]).format("DD/MM/YYYY")
@@ -77,11 +86,11 @@ const renderFilterDateTime = (propertyId, property, data) =>
     }
 
     return `
-        <div class="form-outline mb-1" id="flSearchFormOutlineMin-<${propertyId}" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true">
+        <div class="form-outline mb-1" id="flSearchFormOutlineMin-${propertyId}" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true">
             <input type="text" class="form-control form-control-sm" id="flSearchMin-${propertyId}" ${ (valueMin) ? `value="${ valueMin }"` : "" } />
             <label for="flSearchMin-${propertyId}" class="form-label">${ property.label } - Min</label>
         </div>
-        <div class="form-outline mb-3" id="flSearchFormOutlineMax-<${propertyId}" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true">
+        <div class="form-outline mb-3" id="flSearchFormOutlineMax-${propertyId}" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true">
             <input type="text" class="form-control form-control-sm" id="flSearchMax-${propertyId}" ${ (valueMax) ? `value="${ valueMax }"` : "" } />
             <label for="searchMax-${propertyId}" class="form-label">Max</label>
         </div>`
@@ -114,11 +123,11 @@ const renderFilterSelect = (propertyId, property, { where }) =>
         </div>`
 }
 
-const renderFilterNumber = (propertyId, property, data) => 
+const renderFilterNumber = (propertyId, property, params) => 
 {
     let valueMin, valueMax
-    if (data.where && data.where[propertyId]) {
-        const where = data.where[propertyId].split(",")
+    if (params.where && params.where[propertyId]) {
+        const where = params.where[propertyId].split(",")
         if (where[0] == "between") {
             valueMin = where[1]
             valueMax = where[2]
