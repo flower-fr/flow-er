@@ -12,6 +12,11 @@ fs.writeFileSync("../../config/viewModel_form_catalogue_default.json", JSON.stri
     "viewModel_form_catalogue_default": js
 }))
 
+js = require("./list_account_default")
+fs.writeFileSync("../../config/viewModel_list_account_default.json", JSON.stringify({
+    "viewModel_list_account_default": js
+}))
+
 js = require("./navbar_flower")
 fs.writeFileSync("../../config/viewModel_navbar_flower.json", JSON.stringify({
     "viewModel_navbar_flower": js
@@ -20,4 +25,9 @@ fs.writeFileSync("../../config/viewModel_navbar_flower.json", JSON.stringify({
 js = require("./search_account_default")
 fs.writeFileSync("../../config/viewModel_search_account_default.json", JSON.stringify({
     "viewModel_search_account_default": js
+}))
+
+js = require("./tabbar_account_detail_default")
+fs.writeFileSync("../../config/viewModel_tabbar_account_detail_default.json", JSON.stringify({
+    "viewModel_tabbar_account_detail_default": js
 }))

@@ -1,5 +1,5 @@
 import View from "../View.js"
-import { ListCell } from "./ListCell.js"
+import ListCell from "./ListCell.js"
 
 export default class ListRow extends View
 {
@@ -8,9 +8,10 @@ export default class ListRow extends View
         this.row = row
         this.properties = properties
         this.translations = translations
+        this.listCells = []
 
         this.listRowColumns = []
-        for (const [propertyId, property] of properties) {
+        for (const [propertyId, property] of Object.entries(properties)) {
             this.listCells.push(new ListCell({ controller, row, propertyId, property, translations }))
         }
     }

@@ -1,4 +1,5 @@
 import View from "../View.js"
+import List from "../list/List.js"
 import Navbar from "../navbar/Navbar.js"
 import Search from "../search/Search.js"
 
@@ -13,12 +14,14 @@ export default class Layout extends View
         this.view = view
         this.navbar = new Navbar({ controller, application, tab })
         this.search = new Search({ controller, entity, view })
+        this.list = new List({ controller, entity, view })
     }
 
     initialize = async () =>
     {
         await this.navbar.initialize()
         await this.search.initialize()
+        await this.list.initialize()
     }
 
     render = () =>
@@ -62,18 +65,13 @@ export default class Layout extends View
 
                         </section>
 
-                        <div class="section" id="dataview">
-                            <div class="row" id="flList">
+                        <div class="section">
+                            <div class="row">`)
+    
+        html.push(this.list.render())
+
+        html.push(`
                             </div>
-                        </div>
-                    </div>
-                </div>
-                                        
-                <!-- Modal -->
-                
-                <div class="modal fade" id="flModal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="flModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-xl" role="document">
-                        <div class="modal-content" id="flModal">
                         </div>
                     </div>
                 </div>
@@ -87,44 +85,14 @@ export default class Layout extends View
         return html.join("\n")
     }
 
-    renderSearchView({ searchConfig, data })
-    {
-
-    }
-
-    renderShortcutsView({ shortcutsConfig, data })
-    {
-
-    }
-
-    renderListView({ listConfig, data })
-    {
-
-    }
-
-    showModal({ modalConfig })
-    {
-
-    }
-
-    renderTabs({ tabsConfig, data})
-    {
-
-    }
-
-    renderPanel({ panelConfig, data })
-    {
-
-    }
-
     trigger = () =>
     {
         const sidenav = document.getElementById("flSidenav")
         new mdb.Sidenav(sidenav)
 
         this.navbar.trigger()
-
         this.search.trigger()
+        this.list.trigger()
 
         const element = document.getElementById("flSearchButton")
         new mdb.Button(element)

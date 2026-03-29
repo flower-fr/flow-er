@@ -1,31 +1,40 @@
 import View from "../View.js"
+
+import Form from "../form/Form.js"
 import ListHeader from "./ListHeader.js"
 import ListRow from "./ListRow.js"
+import Tabbar from "../tabbar/Tabbar.js"
+
 export default class List extends View
 {
-    constructor({ controller, entity, view }) {
+    constructor({ controller, entity, view })
+    {
         super({ controller })
         this.entity = entity
-        this.view = view
-   }
+        this.view = view || "default"
+    }
 
     initialize = async () =>
     {
         // Retrieve the config and params
-        const response = await fetch(`/bo/list/${ this.entity }?view=${ this.view }`)
+        let response = await fetch(`/bo/list/${ this.entity }?view=${ this.view }`)
         const { properties, params, translations } = await response.json()
-        const { order, limit } = params
         this.properties = properties
-        this.order = order
-        this.limit = limit
+        // this.order = order
+        // this.limit = limit
         this.translations = translations
 
         // Retrieve the data
-        const rows = await fetch(`/core/v1/${ this.entity }`)
+        const columns = Object.keys(properties).join(",")
+        const where = Object.entries(params.where).map(([k, v]) => `${ k }:${ v }`).join("|")
+        const order = Object.entries(params.order).map(([k, v]) => `${ v === "desc" ? "-" : "" }${ k }`).join("|")
+        const limit = params.limit
+        response = await fetch(`/core/v1/${ this.entity }?columns=${ columns }&where=${ where }&order=${ order }${ limit ? `&limit=${ limit }` : "" }`)
+        const rows = (await response.json()).rows
 
         this.listHeader = new ListHeader({ controller: this.controller, rows, properties, order, limit, translations })
         this.listRows = rows.map(row => new ListRow({ controller: this.controller, row, properties, translations }))
-     }
+    }
 
     render = () =>
     {    
@@ -35,7 +44,7 @@ export default class List extends View
         <div class="table-responsive">
             <div class="col-md-12">
                 <table class="table table-sm table-hover">
-                    <thead class="table-light fl-list">
+                    <thead class="fl-list">
                         ${ this.listHeader.render() }
                     </thead>
                     <tbody class="table-group-divider">`)
@@ -44,12 +53,12 @@ export default class List extends View
                         <tr>
                             <td>
                                 <div class="text-center">
-                                    <input type="checkbox" class="fl-list-check-all" data-toggle="tooltip" data-placement="top" title="${this.translate("Check all")}"></input>
+                                    <input type="checkbox" class="fl-list-check-all" data-toggle="tooltip" data-placement="top" title="${ translations["Check all"] }"></input>
                                 </div>
                             </td>
 
                             <td class="text-center">
-                                <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-list-detail fl-list-add" title="${this..translate("Add")}" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#flListDetailModalForm" data-id="0">
+                                <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-list-add" title="${ translations["Add"] }" data-mdb-ripple-init data-id="0">
                                     <span class="fas fa-plus"></span>
                                 </button>
                                 <button 
@@ -58,8 +67,6 @@ export default class List extends View
                                 data-fl-controller="flBo"
                                 data-fl-action="group"
                                 data-mdb-ripple-init
-                                data-mdb-modal-init
-                                data-mdb-target="#flListDetailModalForm"
                                 data-toggle="tooltip"
                                 data-placement="top"
                                 title="${ translations["Grouped actions"] }"
@@ -71,7 +78,7 @@ export default class List extends View
                             <td colspan="${Object.keys(this.properties).length}" />
                         </tr>`)
 
-        this.listRows.map(listRow => html.push(listRow.render().join("\n")))
+        this.listRows.map(listRow => html.push(listRow.render())).join("\n")
 
         html.push(`
                         <tr class="listRow">
@@ -82,7 +89,7 @@ export default class List extends View
                             </td>
 
                             <td class="text-center">
-                                <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-list-detail fl-list-add" title="${this.translate("Add")}" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#flListDetailModalForm" data-id="0">
+                                <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-list-detail fl-list-add" title="${ translations["Add"] }" data-mdb-ripple-init data-id="0">
                                     <span class="fas fa-plus"></span>
                                 </button>
                                 <button 
@@ -91,17 +98,15 @@ export default class List extends View
                                 data-fl-controller="flBo"
                                 data-fl-action="group"
                                 data-mdb-ripple-init
-                                data-mdb-modal-init
-                                data-mdb-target="#flListDetailModalForm"
                                 data-toggle="tooltip"
                                 data-placement="top"
-                                title="${this.translate("Grouped actions")}"
+                                title="${ translations["Grouped actions"] }"
                                 >
                                     <span class="fas fa-list"></span>
                                 </button>
                                 ${(this.listRows.length === this.limit) 
         ? `
-                                    <button type="button" class="btn btn-sm btn-outline-primary fl-list-more" data-toggle="tooltip" data-placement="top" title="${this.translate("Display the entire list")}">
+                                    <button type="button" class="btn btn-sm btn-outline-primary fl-list-more" data-toggle="tooltip" data-placement="top" title="${ translations["Display the entire list"] }">
                                         <i class="fas fa-ellipsis-h"></i>
                                     </button>`
         : ""}
@@ -121,8 +126,7 @@ export default class List extends View
 
     trigger = () =>
     {
-        const entity = this.entity
-        const view = this.view
+        const controller = this.controller, entity = this.entity, view = this.view, translations = this.translations
 
         $(".fl-list-order-button").click(function() {
             const propertyId = $(this).attr("data-fl-property")
@@ -139,7 +143,15 @@ export default class List extends View
             // triggerList({ context, entity, view })
         })
 
-        // Enable group action
+        // Enable add action
+        $(".fl-list-add").click(() => {
+            controller.stack(new Form({ controller, entity, view }), translations["New"])
+        })
+
+        // Enable detail action
+        $(".fl-list-detail").click(() => {
+            controller.stack(new Tabbar({ controller, entity, level: "detail", view: "default" }), "À remplacer par l’identifiant de la donnée")
+        })
 
         $(".fl-list-group").hide()
 

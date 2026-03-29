@@ -26,7 +26,10 @@ const action = async ({ req }, { context, sql, logger }) =>
         }
     }
     
-    config.params = { where: { status: "new" } }
+    config.params = { 
+        order: { touched_at: "desc" },
+        where: { status: "new" }
+    }
 
     return [200, config, "application/json"]
 }

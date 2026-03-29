@@ -9,8 +9,7 @@ const renderIndex = (context, application, tab, entity, view, title, theme) =>
     
         ${ renderHead({ context, title }) }
     
-        <body>
-        </body>
+        <body />
 
         ${ renderScripts() }
         ${ renderCore(application, tab, entity, view) }
