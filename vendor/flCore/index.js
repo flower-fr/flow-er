@@ -68,7 +68,7 @@ const register = async ({ context, config, logger, app }) => {
     app.get(`${config.prefix}v1/:entity/:id`, execute(getAction, context, { sql, logger }))
     app.post(`${config.prefix}v1/:entity`, execute(postAction, context, { sql, logger }))
     app.post(`${config.prefix}file/:entity`, upload.single("attachment"), executeFile)
-    app.post(`${config.prefix}transaction/:id`, execute(transactionAction, context, { sql, smtp, sms, logger }))
+    app.post(`${config.prefix}transaction/:entity`, execute(transactionAction, context, { sql, smtp, sms, logger }))
     app.post(`${config.prefix}transaction`, execute(transactionAction, context, { sql, smtp, sms, logger }))
     app.post(`${config.prefix}smtp/:id`, execute(smtpAction, context, { sql, smtp, logger }))
     app.delete(`${config.prefix}v1/:entity/:id`, execute(deleteAction, context, { sql, logger }))

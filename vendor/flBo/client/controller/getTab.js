@@ -53,7 +53,6 @@ const getTab = async ({ context, entity, view }, tab, route, id, message, search
     const data = await response.json()
 
     const detailTab = new DetailTab({ context, entity, view, data: data.data, detailTabConfig: data.detailTabConfig, formJwt: data.formJwt })
-console.log(detailTab.render())
     $("#detailPanel").html(detailTab.render())
     detailTab.trigger()
     modalListCallback({ context, entity, view }, data)

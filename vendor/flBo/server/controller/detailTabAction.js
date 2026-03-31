@@ -83,6 +83,7 @@ const detailTabAction = async ({ req }, context, sql, logger) => {
         data[entityId].rows = rows
         data[entityId].vectors = {}
         if (dataConfig.vectors) {
+console.log({ vectors: util.inspect(dataConfig.vectors, { depth: null }) })
             for (const [vectorEntity, vectorConfig] of Object.entries(dataConfig.vectors)) {
                 const args = {}
                 args[vectorConfig.foreignKey] = id

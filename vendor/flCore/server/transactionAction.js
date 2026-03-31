@@ -9,8 +9,9 @@ const { save } = require("./post/save")
 const { sendSmtp } = require("./post/sendSmtp")
 const { sendSms } = require("./post/sendSms")
 
-const transactionAction = async ({ req }, context, { sql, smtp, sms, logger }) => {
-
+const transactionAction = async ({ req }, context, { sql, smtp, sms, logger }) =>
+{
+    const entity = req.params.entity
     const id = req.params.id
     
     let rows
@@ -29,16 +30,26 @@ const transactionAction = async ({ req }, context, { sql, smtp, sms, logger }) =
     try {
         await sql.beginTransaction()
     
+        let insertId
         for (const step of req.body.steps) {
             const stepId = step.id, stepFunction = postSteps[stepId]
             const data = rows.map(row => {
                 const dataRow = {}
                 for (const [key, value] of Object.entries(step.properties)) {
-                    dataRow[key] = (key === "owner_id") ? context.user.profile_id : row[value] 
+                    if (value === "id") {
+                        dataRow[key] = insertId
+                    } else {
+                        dataRow[key] = (key === "owner_id") ? context.user.profile_id : row[value]
+                    }
                 }
                 return dataRow
             })
-            if (!step.async) await stepFunction({ req, entity: step.entity }, context, data, { sql, smtp, sms })
+            if (!step.async) {
+                const result = await stepFunction({ req, entity: step.entity }, context, data, { sql, smtp, sms })
+                result.stored.forEach(row => {
+                    if (row.entitiesToInsert && row.entitiesToInsert[entity]) insertId = row.entitiesToInsert[entity].rowId
+                })
+            }
         }
     
         await sql.commit()

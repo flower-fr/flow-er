@@ -1,5 +1,5 @@
 const renderUpdate = ({ context }, section, properties, row, vectors ) => {
-
+console.log(vectors)
     console.log("In renderUpdate (flBo)")
     
     const html = []
@@ -434,18 +434,13 @@ const renderUpdate = ({ context }, section, properties, row, vectors ) => {
                         <thead class="datatable-header" />
                         <tbody class=""table-group-divider">`)
 
-            for (const comment of vectors[property.vector]) {
+            for (const comment of vectors[property.vector] || []) {
                 html.push(`
                     <tr>
                         <td><strong>${ moment(comment.touched_at).format("DD/MM/YYYY HH:mm:ss") }</strong></td>
                         <td><strong>${ comment.owner_n_fn.trim() !== "" ? `(${ comment.owner_n_fn })` : `(${ comment.chanel })` }</strong></td>
                         <td>${ comment.summary.split("\n").join("<br>") }</td>
-                    </tr>
-
-                    <!--<div class="text-muted mb-2"><small>
-                        <strong>${ moment(comment.touched_at).format("DD/MM/YYYY HH:mm:ss") } ${ comment.owner_n_fn.trim() !== "" ? `(${ comment.owner_n_fn })` : `(${ comment.chanel })` }</strong><br>
-                        ${ comment.summary.split("\n").join("<br>") }
-                    </small></div><hr>-->`)
+                    </tr>`)
             }
 
             html.push("</tbody></table></div>")

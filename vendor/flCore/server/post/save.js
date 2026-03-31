@@ -151,7 +151,7 @@ const save = async ({ req, entity }, context, rows, { sql }) =>
     await storeEntities(context, entity, rowsToStore, model, sql)
     await auditCells(context, rowsToStore, sql)
 
-    return JSON.stringify({ "status": "ok", "stored": rowsToStore })
+    return { "status": "ok", "stored": rowsToStore }
 }
 
 module.exports = {
