@@ -1,6 +1,6 @@
 const multer = require("multer")
 const path = require("path")
-const NodeClam = require("clamscan")
+// const NodeClam = require("clamscan")
 const { noCacheMiddleware, notFoundMiddleware, handleCorsMiddleware } = require("../../core/api-utils")
 const { sessionCookieMiddleware } = require("../user/server/controller/sessionCookieMiddleware")
 
@@ -56,7 +56,7 @@ const register = async ({ context, config, logger, app }) => {
             cb("Error: File type is not accepted")
         }
 
-        const clamscan = new NodeClam().init()
+        // const clamscan = new NodeClam().init()
         // const { isInfected, viruses } = await clamscan.isInfected(path)
         // if (isInfected) {
         // }
