@@ -36,7 +36,7 @@ const transactionAction = async ({ req }, context, { sql, smtp, sms, logger }) =
             const data = rows.map(row => {
                 const dataRow = {}
                 for (const [key, value] of Object.entries(step.properties)) {
-                    if (value === "id") {
+                    if (key !== "id" && value === "id" && !row[value]) {
                         dataRow[key] = insertId
                     } else {
                         dataRow[key] = (key === "owner_id") ? context.user.profile_id : row[value]

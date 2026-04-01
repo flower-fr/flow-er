@@ -1,5 +1,5 @@
-const renderUpdate = ({ context }, section, properties, row, vectors ) => {
-console.log(vectors)
+const renderUpdate = ({ context }, section, properties, row, vectors ) =>
+{
     console.log("In renderUpdate (flBo)")
     
     const html = []
