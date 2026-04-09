@@ -34,10 +34,7 @@ export default class ListRow extends View
                 <button 
                     type="button"
                     class="btn btn-sm btn-outline-primary index-btn fl-list-detail"
-                    data-bs-toggle="modal"
-                    data-bs-target="#flListDetailModalForm"
-                    data-mdb-target="#flListDetailModalForm"
-                    data-mdb-modal-init
+                    id="flListDetail-${ row.id }"
                     title="${ translations["Detail"] }"
                 >
                 <i class="fas fa-search"></i>

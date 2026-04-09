@@ -2,6 +2,11 @@ const fs = require("fs")
 
 let js 
 
+js = require("./card_account_default")
+fs.writeFileSync("../../config/viewModel_card_account_default.json", JSON.stringify({
+    "viewModel_card_account_default": js
+}))
+
 js = require("./form_account_default")
 fs.writeFileSync("../../config/viewModel_form_account_default.json", JSON.stringify({
     "viewModel_form_account_default": js

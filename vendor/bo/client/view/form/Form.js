@@ -287,12 +287,12 @@ export default class Form extends View
                         <thead class="datatable-header" />
                         <tbody class=""table-group-divider">`)
 
-                for (const comment of vectors[property.vector]) {
+                for (const modality of property.modalities) {
                     html.push(`
                     <tr>
-                        <td><strong>${ moment(comment.touched_at).format("DD/MM/YYYY HH:mm:ss") }</strong></td>
-                        <td><strong>${ comment.owner_n_fn.trim() !== "" ? `(${ comment.owner_n_fn })` : `(${ comment.chanel })` }</strong></td>
-                        <td>${ comment.summary.split("\n").join("<br>") }</td>
+                        <td><strong>${ moment(modality.touched_at).format("DD/MM/YYYY HH:mm:ss") }</strong></td>
+                        <td><strong>${ modality.owner_n_fn.trim() !== "" ? `(${ modality.owner_n_fn })` : `(${ modality.chanel })` }</strong></td>
+                        <td>${ modality.summary.split("\n").join("<br>") }</td>
                     </tr>`)
                 }
 

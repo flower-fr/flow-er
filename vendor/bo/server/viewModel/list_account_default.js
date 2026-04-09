@@ -79,12 +79,7 @@ module.exports = {
             label: "Établissement"
         },
 
-        n_first: {
-            type: "input",
-            label: "Prénom"
-        },
-
-        n_last: {
+        n_fn: {
             type: "input",
             label: "Nom"
         },
@@ -104,6 +99,7 @@ module.exports = {
             label: "Dernière mise à jour"
         },
     },
+    identifier: "n_fn",
     translations: {
         "Add": "Ajouter",
         "Check all": "Tout sélectionner",

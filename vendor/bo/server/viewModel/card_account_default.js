@@ -1,0 +1,75 @@
+module.exports = {
+    properties: {
+        n_first: {
+            type: "input",
+            label: "Prénom",
+        },
+        n_last: {
+            type: "input",
+            label: "Nom",
+        },
+        business_name: {
+            type: "input",
+            label: "Entreprise",
+        },
+        email: {
+            type: "email",
+            label: "Email",
+        },
+        tel_work: {
+            type: "phone",
+            label: "Téléphone professionnel",
+        },
+        identifier: {
+            type: "input",
+            label: "SIREN / SIRET",
+        },
+        adr_street: {
+            type: "input",
+            label: "Adresse",
+        },
+        adr_zip: {
+            type: "input",
+            label: "Code postal",
+        },
+        adr_city: {
+            type: "input",
+            label: "Ville",
+        },
+        date: {
+            type: "date",
+            label: "Date",
+        },
+        status: {
+            type: "select",
+            label: "Statut",
+            modalities: {
+                suspect: {
+                    label: "Suspect"
+                },
+                new: {
+                    label: "Prise de contact"
+                },
+                appointment: {
+                    label: "Rendez-vous"
+                },
+                proposal: {
+                    label: "Proposition"
+                },
+                relance: {
+                    label: "Relance"
+                },
+                active: {
+                    label: "Contrat"
+                },
+                gone: {
+                    label: "Parti"
+                }
+            },
+        },
+    },
+    translations: {
+        "DD/MM/YYYY": "JJ/MM/AAAA",
+        "Modify": "Modifier",
+    }
+}

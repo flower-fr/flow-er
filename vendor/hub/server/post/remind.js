@@ -9,9 +9,9 @@ const registerReminders = async (context, entity, date, viewModel, sql) => {
      */
 
     const dataModel = context.config[`${entity}/model`]
-    const where = viewModel.where
+    const where = viewModel.where, columns = Object.keys(viewModel.properties)
     where.date = ["<=", date]
-    const [rows] = await sql.execute({ context, type: "select", entity, where })
+    const rows = await sql.execute({ context, type: "select", entity, columns, where })
 
     /**
      * Split by owner

@@ -18,10 +18,9 @@ export default class List extends View
     {
         // Retrieve the config and params
         let response = await fetch(`/bo/list/${ this.entity }?view=${ this.view }`)
-        const { properties, params, translations } = await response.json()
+        const { properties, identifier, params, translations } = await response.json()
         this.properties = properties
-        // this.order = order
-        // this.limit = limit
+        this.identifier = identifier
         this.translations = translations
 
         // Retrieve the data
@@ -31,6 +30,7 @@ export default class List extends View
         const limit = params.limit
         response = await fetch(`/core/v1/${ this.entity }?columns=${ columns }&where=${ where }&order=${ order }${ limit ? `&limit=${ limit }` : "" }`)
         const rows = (await response.json()).rows
+        this.rows = rows
 
         this.listHeader = new ListHeader({ controller: this.controller, rows, properties, order, limit, translations })
         this.listRows = rows.map(row => new ListRow({ controller: this.controller, row, properties, translations }))
@@ -64,11 +64,6 @@ export default class List extends View
                                 <button 
                                 type="button"
                                 class="btn btn-sm btn-outline-primary index-btn fl-list-group"
-                                data-fl-controller="flBo"
-                                data-fl-action="group"
-                                data-mdb-ripple-init
-                                data-toggle="tooltip"
-                                data-placement="top"
                                 title="${ translations["Grouped actions"] }"
                                 >
                                     <span class="fas fa-list"></span>
@@ -95,11 +90,6 @@ export default class List extends View
                                 <button 
                                 type="button"
                                 class="btn btn-sm btn-outline-primary index-btn fl-list-group"
-                                data-fl-controller="flBo"
-                                data-fl-action="group"
-                                data-mdb-ripple-init
-                                data-toggle="tooltip"
-                                data-placement="top"
                                 title="${ translations["Grouped actions"] }"
                                 >
                                     <span class="fas fa-list"></span>
@@ -149,8 +139,10 @@ export default class List extends View
         })
 
         // Enable detail action
-        $(".fl-list-detail").click(() => {
-            controller.stack(new Tabbar({ controller, entity, level: "detail", view: "default" }), "À remplacer par l’identifiant de la donnée")
+        this.rows.forEach(row => {
+            $(`#flListDetail-${ row.id }`).click(() => {
+                controller.stack(new Tabbar({ controller, entity, id: row.id, level: "detail", view: "default" }), row[this.identifier])
+            })
         })
 
         $(".fl-list-group").hide()

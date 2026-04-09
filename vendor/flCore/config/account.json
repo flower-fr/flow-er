@@ -20,6 +20,7 @@
 
             "n_first": { "entity": "vcard", "column": "n_first" },
             "n_last": { "entity": "vcard", "column": "n_last" },
+            "n_fn": { "column": "n_fn", "type": "CONCAT", "components": ["n_last", "n_first"] },
             "email": { "entity": "vcard", "column": "email", "type": "email" },
             "tel_cell": { "entity": "vcard", "column": "tel_cell" },
 

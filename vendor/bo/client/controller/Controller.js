@@ -9,6 +9,7 @@ export default class Controller
             new Modal({ controller: this, order: 2 })
         ]
         this.screenIndex = 0
+        this.stackView = []
     }
 
     render = (object) => 
@@ -38,6 +39,7 @@ export default class Controller
     stack = async (object, title) =>
     {
         await object.initialize()
+        this.stackView.push(object)
         if (this.screenIndex === 0) {
             $("body").html(this.render(object))
             this.trigger(object)
@@ -56,5 +58,6 @@ export default class Controller
     unstack = () => {
         const element = document.getElementById(`appleeModalToggle${ this.screenIndex - 1 }`)
         mdb.Modal.getInstance(element).hide()
+        this.stackView.pop()
     }
 }

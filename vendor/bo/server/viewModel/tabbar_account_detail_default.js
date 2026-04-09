@@ -1,22 +1,25 @@
 module.exports = {
     menu: {
         detail: {
-            controller: "core",
-            action: "v1",
+            controller: "bo",
+            action: "card",
             params: {
                 entity: "account",
+                id: "id",
             },
             query: {
-                view: "default"
+                view: "default",
             },
             label: "Détail",
         },
         delete: {
-            scheme: "DELETE",
-            controller: "core",
-            action: "v1",
+            controller: "bo",
+            action: "delete",
             params: {
                 entity: "account",
+            },
+            query: {
+                view: "default",
             },
             label: "Supprimer",
         },
