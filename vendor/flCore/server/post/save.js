@@ -63,7 +63,7 @@ const mergePayload = async (context, entity, model, form, config, sql, logger) =
     const rows = {}
     for (const row of cursor) {
         const identifier = []
-        for (let item of config.identifier) identifier.push(row[item].toLowerCase().trim())
+        for (let item of config.identifier) identifier.push(row[item] ? row[item].toLowerCase().trim() : "")
         rows[identifier.join("|")] = row
     }
 
