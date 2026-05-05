@@ -260,9 +260,6 @@ export default class Card extends View
                     <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-update-button" id="flCardUpdateButton" title="${ this.translations["Update"] }">
                         <i class="fas fa-pen"></i>
                     </button>
-                    <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-close-button" id="flCardCloseButton" data-mdb-ripple-init>
-                        <span class="fas fa-close"></span>
-                    </button>
                 </div>`)
 
         html.push(`
@@ -275,7 +272,7 @@ export default class Card extends View
     getForm = () =>
     {
         const { controller, entity, id, view } = this
-        this.controller.stack(new Form({ controller, entity, view }), this.translations["Modify"])
+        this.controller.stack(new Form({ controller, entity, view, id }), this.translations["Modify"])
     }
 
     trigger = () =>

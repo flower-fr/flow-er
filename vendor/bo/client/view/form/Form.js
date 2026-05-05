@@ -2,21 +2,28 @@ import View from "../View.js"
 
 export default class Form extends View
 {
-    constructor({ controller, entity, view })
+    constructor({ controller, entity, view, id })
     {
         super({ controller })
-        this.id = Date.now()
+        this.identifier = Date.now()
         this.entity = entity
         this.view = view
+        this.id = id
     }
 
     initialize = async () => {
-        const response = await fetch(`/bo/form/${ this.entity }?view=${ this.view }`)
+        let response = await fetch(`/bo/form/${ this.entity }?view=${ this.view }`)
         const { properties, posts, translations } = await response.json()
         this.properties = properties
         this.posts = posts
         this.translations = translations
-        this.data = { id: 0 }
+
+        if (this.id) {
+            // Retrieve the data
+            const columns = Object.keys(properties).join(",")
+            response = await fetch(`/core/v1/${ this.entity }/${ this.id }?columns=${ columns }`)
+            this.data = (await response.json()).rows[0]
+        }
     }
 
     render = () => 
@@ -26,29 +33,30 @@ export default class Form extends View
         const html = []
 
         html.push(`
-        <div class="my-3 mt-5">
-            <div class="${ this.id }-message" id="${ this.id }-messageOk">
-                <h5 class="alert alert-success my-3 text-center">${ this.translations["Request registered"] }</h5>
-            </div>
+        <div class="container">
+            <div class="my-3">
+                <div class="${ this.identifier }-message" id="${ this.identifier }-messageOk">
+                    <h5 class="alert alert-success my-3 text-center">${ this.translations["Request registered"] }</h5>
+                </div>
 
-            <div class="${ this.id }-message" id="${ this.id }-messageConsistency">
-                <h5 class="alert alert-danger  my-3 text-center">${ this.translations["The data has changed in the meantime, please input again"] }</h5>
-            </div>
+                <div class="${ this.identifier }-message" id="${ this.identifier }-messageConsistency">
+                    <h5 class="alert alert-danger  my-3 text-center">${ this.translations["The data has changed in the meantime, please input again"] }</h5>
+                </div>
 
-            <div class="${ this.id }-message" id="${ this.id }-messageDuplicate">
-                <h5 class="alert alert-danger  my-3 text-center">${ this.translations["The data already exists"] }</h5>
-            </div>
+                <div class="${ this.identifier }-message" id="${ this.identifier }-messageDuplicate">
+                    <h5 class="alert alert-danger  my-3 text-center">${ this.translations["The data already exists"] }</h5>
+                </div>
 
-            <div class="${ this.id }-message" id="${ this.id }-messageServerError">
-                <h5 class="alert alert-danger  my-3 text-center">${ this.translations["Technical error, pLease try again later"] }</h5>
-            </div>
+                <div class="${ this.identifier }-message" id="${ this.identifier }-messageServerError">
+                    <h5 class="alert alert-danger  my-3 text-center">${ this.translations["Technical error, pLease try again later"] }</h5>
+                </div>
 
-            <form class="row g-4" id="${ this.id }">`)
+                <form class="row g-4" id="${ this.identifier }">`)
 
         // Consistency
 
-        if (data.touched_at) {
-            html.push(`<input type="hidden" id="${ this.id }-touched_at" value="${ data.touched_at }" />`)
+        if (data && data.touched_at) {
+            html.push(`<input type="hidden" id="${ this.identifier }-touched_at" value="${ data.touched_at }" />`)
         }
 
         for (const [propertyId, property] of Object.entries(this.properties)) {
@@ -56,17 +64,20 @@ export default class Form extends View
             const propertyType = property.type
             const disabled = property.disabled
             const required = property.required
-        
-            let value = data[propertyId] || ""
-            if (property.type === "percentage" && value) value = parseFloat(value * 100)
-            else if (property.value && !Array.isArray(property.value)) {
-                value = property.value
-                if (value === "?id") value = data.id
-                else if (value.substring(0, 5) === "today") {
-                    if (value && value.charAt(5) === "+") value = moment().add(value.substring(6), "days").format("YYYY-MM-DD")
-                    else if (value && value.charAt(5) === "-") value = moment().subtract(value.substring(6), "days").format("YYYY-MM-DD")
-                    else if (property.type == "datetime") value = moment().format("YYYY-MM-DD HH:mm:ss")    
-                    else value = moment().format("YYYY-MM-DD")
+
+            let value
+            if (data) {
+                value = data[propertyId] || ""
+                if (property.type === "percentage" && value) value = parseFloat(value * 100)
+                else if (property.value && !Array.isArray(property.value)) {
+                    value = property.value
+                    if (value === "?id") value = data.id
+                    else if (value.substring(0, 5) === "today") {
+                        if (value && value.charAt(5) === "+") value = moment().add(value.substring(6), "days").format("YYYY-MM-DD")
+                        else if (value && value.charAt(5) === "-") value = moment().subtract(value.substring(6), "days").format("YYYY-MM-DD")
+                        else if (property.type == "datetime") value = moment().format("YYYY-MM-DD HH:mm:ss")    
+                        else value = moment().format("YYYY-MM-DD")
+                    }
                 }
             }
 
@@ -77,7 +88,7 @@ export default class Form extends View
             }
 
             else if (property.type === "hidden") {
-                html.push(`<input type="hidden" class="fl-modal-form-input" id="${ this.id }-${ propertyId }" data-fl-type="input" value="${ value }" />`)
+                html.push(`<input type="hidden" class="fl-modal-form-input" id="${ this.identifier }-${ propertyId }" data-fl-type="input" ${ value ? `value=${ value }`: "" } />`)
             }
 
             // Input
@@ -86,8 +97,8 @@ export default class Form extends View
             {
                 html.push(`
                 <div class="col-md-6">
-                    <div class="form-outline fl-form-outline ${ this.id }-input" data-mdb-input-init>
-                        <input class="form-control form-control-sm fl-modal-form-input" id="${ this.id }-${ propertyId }" data-fl-type="input" value="${ value }"  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
+                    <div class="form-outline fl-form-outline ${ this.identifier }-input" data-mdb-input-init>
+                        <input class="form-control form-control-sm fl-modal-form-input" id="${ this.identifier }-${ propertyId }" data-fl-type="input" ${ value ? `value=${ value }`: "" }  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
                         <label class="form-label">${ label }</label>
                     </div>
                 </div>`
@@ -100,8 +111,8 @@ export default class Form extends View
             {
                 html.push(`
                 <div class="col-md-6">
-                    <div class="form-outline fl-form-outline ${ this.id }-input"" data-mdb-input-init>
-                        <input type="password" class="form-control form-control-sm fl-modal-form-input" id="${ this.id }-${ propertyId }" data-fl-type="input" data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
+                    <div class="form-outline fl-form-outline ${ this.identifier }-input"" data-mdb-input-init>
+                        <input type="password" class="form-control form-control-sm fl-modal-form-input" id="${ this.identifier }-${ propertyId }" data-fl-type="input" data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
                         <label class="form-label">${ label }</label>
                     </div>
                 </div>`
@@ -114,8 +125,8 @@ export default class Form extends View
             {
                 html.push(`
                 <div class="col-md-6">
-                    <div class="form-outline fl-form-outline ${ this.id }-input"" data-mdb-input-init>
-                        <input type="email" class="form-control form-control-sm fl-modal-form-input" data-fl-property="${ propertyId }" data-fl-type="email" value="${ value }"  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
+                    <div class="form-outline fl-form-outline ${ this.identifier }-input"" data-mdb-input-init>
+                        <input type="email" class="form-control form-control-sm fl-modal-form-input" data-fl-property="${ propertyId }" data-fl-type="email" ${ value ? `value=${ value }`: "" }  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
                         <label class="form-label">${ label }</label>
                     </div>
                 </div>`
@@ -128,8 +139,8 @@ export default class Form extends View
             {
                 html.push(`
                 <div class="col-md-6">
-                    <div class="form-outline fl-form-outline ${ this.id }-input"" data-mdb-input-init>
-                        <input class="form-control form-control-sm fl-modal-form-input" id="${ this.id }-${ propertyId }" data-fl-type="phone" value="${ value }"  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
+                    <div class="form-outline fl-form-outline ${ this.identifier }-input"" data-mdb-input-init>
+                        <input class="form-control form-control-sm fl-modal-form-input" id="${ this.identifier }-${ propertyId }" data-fl-type="phone" ${ value ? `value=${ value }`: "" }  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
                         <label class="form-label">${ label }</label>
                     </div>
                 </div>`
@@ -142,8 +153,8 @@ export default class Form extends View
             {
                 html.push(`
                 <div class="col-md-6">
-                    <div class="form-outline fl-date-outline ${ this.id }-datepicker"" data-mdb-datepicker-init data-mdb-input-init>
-                        <input class="form-control form-control-sm fl-modal-form-input" id="${ this.id }-${ propertyId }" data-fl-type="date" value="${ value ? moment(value).format("DD/MM/YYYY") : "" }"  data-fl-disabled="${ disabled }" ${ required } placeholder="${ this.translations["DD/MM/YYYY"] }" />
+                    <div class="form-outline fl-date-outline ${ this.identifier }-datepicker"" data-mdb-datepicker-init data-mdb-input-init>
+                        <input class="form-control form-control-sm fl-modal-form-input" id="${ this.identifier }-${ propertyId }" data-fl-type="date" value="${ value ? moment(value).format("DD/MM/YYYY") : "" }"  data-fl-disabled="${ disabled }" ${ required } placeholder="${ this.translations["DD/MM/YYYY"] }" />
                         <label class="form-label">${ label }</label>
                     </div>
                 </div>`
@@ -157,7 +168,7 @@ export default class Form extends View
                 html.push(`
                 <div class="col-md-6">
                     <div class="form-outline fl-form-outline">
-                        <select class="form-control form-control-sm fl-modal-form-select" id="${ this.id }-${ propertyId }" data-fl-type="birthYear" data-fl-disabled="${ disabled }" ${ required }>
+                        <select class="form-control form-control-sm fl-modal-form-select" id="${ this.identifier }-${ propertyId }" data-fl-type="birthYear" data-fl-disabled="${ disabled }" ${ required }>
                             <option />
                             ${() => { for (let year = 1950; year < new Date.getFullYear(); year++) `<option value="${ year }" ${ value === year ? "selected=\"selected\"" : ""}>${ year }</option>` }}
                         </select>
@@ -174,7 +185,7 @@ export default class Form extends View
                 html.push(`
                 <div class="col-md-6">
                     <div class="form-outline fl-time-outline" data-mdb-timepicker-init data-mdb-input-init>
-                        <input class="form-control form-control-sm fl-modal-form-input" id="${ this.id }-${ propertyId }" data-fl-type="time" value="${ value }" data-fl-disabled="${ disabled }" ${ required } />
+                        <input class="form-control form-control-sm fl-modal-form-input" id="${ this.identifier }-${ propertyId }" data-fl-type="time" ${ value ? `value=${ value }`: "" } data-fl-disabled="${ disabled }" ${ required } />
                         <label class="form-label">${ label }</label>
                     </div>
                 </div>`
@@ -188,7 +199,7 @@ export default class Form extends View
                 html.push(`
                 <div class="col-md-6">
                     <div class="form-outline fl-form-outline">
-                        <input type="number" class="form-control form-control-sm fl-modal-form-input" id="${ this.id }-${ propertyId }" data-fl-type="number" value="${ value }" data-fl-disabled="${ disabled }" ${ required } pattern="[0-9]+(\.[0-9]{0,4})?" placeholder="12345,67" />
+                        <input type="number" class="form-control form-control-sm fl-modal-form-input" id="${ this.identifier }-${ propertyId }" data-fl-type="number" ${ value ? `value=${ value }`: "" } data-fl-disabled="${ disabled }" ${ required } pattern="[0-9]+(\.[0-9]{0,4})?" placeholder="12345,67" />
                         <label class="form-label">${label}</label>
                     </div>
                 </div>`
@@ -202,7 +213,7 @@ export default class Form extends View
                 html.push(`
                 <div class="col-md-6">
                     <div class="form-outline fl-form-outline">
-                        <input type="number" class="form-control form-control-sm fl-modal-form-input" id="${ this.id }-${ propertyId }" data-fl-type="percentage" value="${ value }" data-fl-disabled="${ disabled }" ${ required } pattern="[0-9]+(\.[0-9]{0,4})?" />
+                        <input type="number" class="form-control form-control-sm fl-modal-form-input" id="${ this.identifier }-${ propertyId }" data-fl-type="percentage" ${ value ? `value=${ value }`: "" } data-fl-disabled="${ disabled }" ${ required } pattern="[0-9]+(\.[0-9]{0,4})?" />
                         <label class="form-label">${ label }</label>
                     </div>
                 </div>`
@@ -216,8 +227,8 @@ export default class Form extends View
                 html.push(`
                 <div class="col-md-6">
                     <div class="form-outline fl-form-outline">
-                        <textarea class="form-control form-control-sm fl-modal-form-input" id="${ this.id }-${ propertyId }" data-fl-type="textarea" rows="5" data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 2047 }">${ value }</textarea>
-                        <label class="form-label" for="${ this.id }-${ propertyId }">${ label }</label>
+                        <textarea class="form-control form-control-sm fl-modal-form-input" id="${ this.identifier }-${ propertyId }" data-fl-type="textarea" rows="5" data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 2047 }">${ value }</textarea>
+                        <label class="form-label" for="${ this.identifier }-${ propertyId }">${ label }</label>
                     </div>
                 </div>`
                 )
@@ -239,7 +250,7 @@ export default class Form extends View
                 html.push(`
                 <div class="col-md-6">
                     <div class="form-outline">
-                        <select class="form-select form-select-sm fl-modal-form-select" id="${ this.id }-${ propertyId }" data-fl-type="select" data-mdb-size="sm" data-mdb-select-init ${ (required) ? "data-mdb-validation=\"true\" data-mdb-invalid-feedback=\" \" data-mdb-valid-feedback=\" \"" : "" } ${( multiple ) ? "multiple" : ""}  data-fl-disabled="${ disabled }" ${ required }>
+                        <select class="form-select form-select-sm fl-modal-form-select" id="${ this.identifier }-${ propertyId }" data-fl-type="select" data-mdb-size="sm" data-mdb-select-init ${ (required) ? "data-mdb-validation=\"true\" data-mdb-invalid-feedback=\" \" data-mdb-valid-feedback=\" \"" : "" } ${( multiple ) ? "multiple" : ""}  data-fl-disabled="${ disabled }" ${ required }>
                             <option />`
                 )
 
@@ -265,7 +276,7 @@ export default class Form extends View
                 <div class="col-md-6">
                     <div>
                         <label class="form-label" for="customFile">${ label }</label>
-                        <input type="file" class="form-control form-control-sm fl-modal-form-file" id="${ this.id }-${ propertyId }" data-fl-type="file" data-fl-disabled="${ disabled }" ${ required } />
+                        <input type="file" class="form-control form-control-sm fl-modal-form-file" id="${ this.identifier }-${ propertyId }" data-fl-type="file" data-fl-disabled="${ disabled }" ${ required } />
                     </div>
                 </div>`
                 )
@@ -278,7 +289,7 @@ export default class Form extends View
                 html.push(`
                 <div class="col-md-6">
                     <div class="form-outline fl-form-outline mb-2">
-                        <textarea class="form-control form-control-sm fl-modal-form-input" id="${ this.id }-${ propertyId }" data-fl-type="textarea" ${(required) ? "required" : ""} maxlength="${(property.max_length) ? property.max_length : 65535}"></textarea>
+                        <textarea class="form-control form-control-sm fl-modal-form-input" id="${ this.identifier }-${ propertyId }" data-fl-type="textarea" ${(required) ? "required" : ""} maxlength="${(property.max_length) ? property.max_length : 65535}"></textarea>
                         <label class="form-label">${ label }</label>
                     </div>
                 </div>
@@ -304,7 +315,7 @@ export default class Form extends View
                 html.push(`
                 <div class="col-md-6">
                     <div class="form-outline fl-form-outline">
-                        <input class="form-control form-control-sm fl-modal-form-input" id="${ this.id }-${ propertyId }" data-fl-type="input" value="${ value }"  data-fl-disabled="${ disabled }" ${( required ) ? "required" : ""} maxlength="${ property.max_length ? property.max_length : 255 }" />
+                        <input class="form-control form-control-sm fl-modal-form-input" id="${ this.identifier }-${ propertyId }" data-fl-type="input" ${ value ? `value=${ value }`: "" }  data-fl-disabled="${ disabled }" ${( required ) ? "required" : ""} maxlength="${ property.max_length ? property.max_length : 255 }" />
                         <label class="form-label select-label">${ label }</label>
                     </div>
                 </div>`
@@ -316,38 +327,39 @@ export default class Form extends View
                 <div class="form-group row submitDiv">`)
 
         for (const [postId, post] of Object.entries(this.posts)) {
-            if (!post.condition && data.id == 0 || post.condition == "id" && data.id != 0) {
-                const where = []
-                for (const [key, value] of Object.entries((data.where) ? data.where : {})) {
-                    where.push(`${key}:${ Array.isArray(value) ? value.join(",") : value }`)
-                }
-                html.push(`
-                    <div class="col-md-3 fl-submit-div p-3">
-                        <input type="hidden" id="flDetailTabSubmitRefresh-${postId}" data-fl-route="/${ post.controller }/${ post.action }/${ post.entity }/${ data.id }?${ (post.view) ? `&view=${post.view}` : "" }&where=${ where.join("|") }&order=-touched_at" />
-                        <button 
-                            name="${ this.id }-${postId}" 
-                            class="btn ${ (post.danger) ? "btn-outline-primary" : "btn-warning" } fl-detail-tab-submit"
-                            data-mdb-ripple-init
-                            data-mdb-ripple-color="danger"
-                            ${ (post.danger) ? "data-fl-danger=\"danger\"" : "" }
-                            ${ (post.method) ? `data-fl-method=${post.method}`: "" }
-                            data-fl-controller=${post.controller}
-                            data-fl-action=${post.action}
-                            data-fl-entity=${post.entity}
-                            ${ (post.id) ? `data-fl-id=${ data[post.id] }`: "" }
-                            data-fl-transaction=${postId}
-                            ${ (post.steps) ? `data-fl-steps=${ JSON.stringify(post.steps) }`: "" }
-                            ${ (post.view) ? `data-fl-view=${post.view}` : "" }
-                            ${ (post.glyph) ? `title=${  post.label }` : "" }>
-                                ${ (post.glyph) ? `<i class="fas ${ post.glyph }"></i>` : post.label }
-                        </button>
-                    </div>`)
-            }
+            html.push(`
+                <div class="col-md-2 fl-submit-div p-3">
+                    <button 
+                        name="${ this.identifier }-${postId}" 
+                        class="btn ${ (post.danger) ? "btn-outline-primary" : "btn-warning" } fl-detail-tab-submit"
+                        data-mdb-ripple-init
+                        data-mdb-ripple-color="danger"
+                        ${ (post.danger) ? "data-fl-danger=\"danger\"" : "" }
+                        ${ (post.method) ? `data-fl-method=${post.method}`: "" }
+                        data-fl-controller=${post.controller}
+                        data-fl-action=${post.action}
+                        data-fl-entity=${post.entity}
+                        ${ (post.id) ? `data-fl-id=${ data[post.id] }`: "" }
+                        data-fl-transaction=${postId}
+                        ${ (post.steps) ? `data-fl-steps=${ JSON.stringify(post.steps) }`: "" }
+                        ${ (post.view) ? `data-fl-view=${post.view}` : "" }
+                        ${ (post.glyph) ? `title=${  post.label }` : "" }>
+                            ${ (post.glyph) ? `<i class="fas ${ post.glyph }"></i>` : post.label }
+                    </button>
+                </div>`)
         }
 
         html.push(`
-                </div>
-            </form>
+                <div class="col-md-2 fl-submit-div p-3">
+                    <a href="#!" id="flModalFormCancel">
+                        ${ this.translations["Cancel"] }
+                    </a>
+                </div>`)
+
+        html.push(`
+                    </div>
+                </form>
+            </div>
         </div>`)
 
         return html.join("\n")
@@ -355,19 +367,8 @@ export default class Form extends View
 
     trigger = () =>
     {
-        // ${ (property.autocomplete)
-        // property.values.join(",")
-        // const inputs = document.querySelectorAll(".fl-form-outline")
-        // inputs.forEach( el => {
-        //     console.log(el)
-        //     new mdb.Input(el)
-        // })
+        $("#flModalBtnClose").addClass("disabled")
 
-        // const dateInputs = document.querySelectorAll(".fl-date-outline")
-        // dateInputs.forEach( el => {
-        //     console.log(el)
-        //     new mdb.Datepicker(el)
-        // })
         document.querySelectorAll(".form-outline").forEach(el => {
             if (el.classList.contains("fl-form-outline")) new mdb.Input(el)
             else if (el.classList.contains("fl-date-outline")) new mdb.Datepicker(el)
@@ -383,17 +384,17 @@ export default class Form extends View
             })
         })
 
-        $(`.${ this.id }-message`).hide()
+        $(`.${ this.identifier }-message`).hide()
         
-        const properties = this.properties, posts = this.posts, form = document.getElementById(this.id), controller = this.controller
+        const properties = this.properties, posts = this.posts, form = document.getElementById(this.identifier), controller = this.controller
         if (form) {
             form.onsubmit = async function (event)
             {
                 event.preventDefault()
                 form.checkValidity()
-                const body = { touched_at: document.getElementById(`${ this.id }-touched_at`)?.value }
+                const body = { touched_at: document.getElementById(`${ this.identifier }-touched_at`)?.value }
                 for (const [propertyId, property] of Object.entries(properties)) {
-                    const input = document.getElementById(`${ this.id }-${ propertyId }`)
+                    const input = document.getElementById(`${ this.identifier }-${ propertyId }`)
                     if (property.type === "date") {
                         const val = input.value
                         body[propertyId] = val ? val.substring(6, 10) + "-" + val.substring(3, 5) + "-" + val.substring(0, 2) : ""
@@ -413,9 +414,17 @@ export default class Form extends View
                     console.log(body.stored[0].entitiesToInsert[post.entity].rowId)
                     controller.unstack()
                 } else {
-                    $(`#${ this.id }-messageServerError`).show()
+                    $(`#${ this.identifier }-messageServerError`).show()
                 }
             }
         }
+
+        $("#flModalFormCancel").click(() => {
+            controller.unstack(false)
+            // $("#flModalBtnClose").removeClass("disabled")
+            // $("#flModalForm").hide()
+            // $("#flModalTabs").show()
+            // this.controller.screenIndex--
+        })
     }
 }

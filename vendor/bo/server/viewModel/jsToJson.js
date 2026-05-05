@@ -7,6 +7,11 @@ fs.writeFileSync("../../config/viewModel_card_account_default.json", JSON.string
     "viewModel_card_account_default": js
 }))
 
+js = require("./detail_account_default")
+fs.writeFileSync("../../config/viewModel_detail_account_default.json", JSON.stringify({
+    "viewModel_detail_account_default": js
+}))
+
 js = require("./form_account_default")
 fs.writeFileSync("../../config/viewModel_form_account_default.json", JSON.stringify({
     "viewModel_form_account_default": js
@@ -15,6 +20,16 @@ fs.writeFileSync("../../config/viewModel_form_account_default.json", JSON.string
 js = require("./form_catalogue_default")
 fs.writeFileSync("../../config/viewModel_form_catalogue_default.json", JSON.stringify({
     "viewModel_form_catalogue_default": js
+}))
+
+js = require("./global_account_default")
+fs.writeFileSync("../../config/viewModel_global_account_default.json", JSON.stringify({
+    "viewModel_global_account_default": js
+}))
+
+js = require("./group_account_default")
+fs.writeFileSync("../../config/viewModel_group_account_default.json", JSON.stringify({
+    "viewModel_group_account_default": js
 }))
 
 js = require("./list_account_default")
@@ -30,9 +45,4 @@ fs.writeFileSync("../../config/viewModel_navbar_flower.json", JSON.stringify({
 js = require("./search_account_default")
 fs.writeFileSync("../../config/viewModel_search_account_default.json", JSON.stringify({
     "viewModel_search_account_default": js
-}))
-
-js = require("./tabbar_account_detail_default")
-fs.writeFileSync("../../config/viewModel_tabbar_account_detail_default.json", JSON.stringify({
-    "viewModel_tabbar_account_detail_default": js
 }))

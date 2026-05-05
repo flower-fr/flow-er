@@ -1,21 +1,18 @@
 import View from "../View.js"
-import Form from "../form/Form.js"
 import Card from "../card/Card.js"
 
-export default class Tabbar extends View
+export default class Group extends View
 {
-    constructor({ controller, entity, id, level, view })
+    constructor({ controller, entity, view })
     {
         super({ controller })
         this.entity = entity
-        this.id = id
-        this.level = level
         this.view = view
     }
 
     initialize = async () =>
     {
-        const response = await fetch(`/bo/tabbar/${ this.entity }/${ this.level }?view=${ this.view }`)
+        const response = await fetch(`/bo/group/${ this.entity }?view=${ this.view }`)
         const { menu, defaultTab, translations } = await response.json()
         this.menu = menu,
         this.defaultTab = defaultTab

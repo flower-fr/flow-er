@@ -6,7 +6,6 @@ const { selectWhere } = require("./selectWhere")
 const select = (context, entity, columns, where, order = [], limit = null, model = [], debug = false) =>
 {
     const table = (model.entities[entity]) ? model.entities[entity].table : entity
-console.log({ entity, columns, where, order, limit, model })
     if (model.properties.visibility && (!where.visibility || where.visibility == "deleted") /* deleted never visible */) where.visibility = "active"
 
     if (!columns) {
@@ -59,7 +58,7 @@ console.log({ entity, columns, where, order, limit, model })
     if (predicates.length > 0) request += `WHERE ${predicates.join("\nAND ")}\n`    
 
     if (groupBy) request += `GROUP BY ${groupBy.join(", ")}\n`
-    
+console.log(order)
     if (order != null && Object.keys(order).length != 0) {
         request += "ORDER BY "
         const orderArray = []

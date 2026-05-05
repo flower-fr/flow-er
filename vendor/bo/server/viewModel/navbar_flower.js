@@ -1,10 +1,15 @@
 module.exports = {
     logo: "flow-er.png",
     logoHeight: "40",
-    title: "Flow-ER",
+    defaultLocale: "default",
+    title: {
+        "default": "Flow-ER"
+    },
     helpMenu: { entries: [] },
     instance: {
-        label: "Flow-ER"
+        label: {
+            "default": "Flow-ER"
+        }
     },
     menu: {
         account: {
@@ -17,7 +22,9 @@ module.exports = {
             query: {
                 entity: "account",
             },
-            label: "Account"
+            label: {
+                "default": "Account"
+            }
         },
         catalogue: {
             controller: "bo",
@@ -25,7 +32,9 @@ module.exports = {
             params: {
                 entity: "catalogue",
             },
-            label: "Catalogue"
+            label: {
+                "default": "Catalogue"
+            }
         },
         navbar: {
             controller: "bo",
@@ -34,7 +43,9 @@ module.exports = {
                 application: "flower",
                 tab: "form",
             },
-            label: "Navbar"
+            label: {
+                "default": "Navbar"
+            }
         },
 
     },

@@ -2,68 +2,122 @@ module.exports = {
     properties: {
         n_first: {
             type: "input",
-            label: "Prénom",
+            label: {
+                "default": "First name",
+                "fr_FR": "Prénom"
+            }
         },
         n_last: {
             type: "input",
-            label: "Nom",
+            label: {
+                "default": "Last name",
+                "fr_FR": "Nom"
+            }
         },
         business_name: {
             type: "input",
-            label: "Entreprise",
+            label: {
+                "default": "Business name",
+                "fr_FR": "Nom de l'entreprise"
+            }
         },
         email: {
             type: "email",
-            label: "Email",
+            label: {
+                "default": "Email",
+                "fr_FR": "E-mail"
+            }
         },
         tel_work: {
             type: "phone",
-            label: "Téléphone professionnel",
+            label: {
+                "default": "Work phone",
+                "fr_FR": "Téléphone professionnel"
+            }
         },
         identifier: {
             type: "input",
-            label: "SIREN / SIRET",
+            label: {
+                "default": "SIREN / SIRET",
+                "fr_FR": "SIREN / SIRET"
+            }
         },
         adr_street: {
             type: "input",
-            label: "Adresse",
+            label: {
+                "default": "Address",
+                "fr_FR": "Adresse"
+            }
         },
         adr_zip: {
             type: "input",
-            label: "Code postal",
+            label: {
+                "default": "Postal code",
+                "fr_FR": "Code postal"
+            }
         },
         adr_city: {
             type: "input",
-            label: "Ville",
+            label: {
+                "default": "City",
+                "fr_FR": "Ville"
+            }
         },
         date: {
             type: "date",
-            label: "Date",
+            label: {
+                "default": "Date",
+                "fr_FR": "Date"
+            }
         },
         status: {
             type: "select",
-            label: "Statut",
+            label: {
+                "default": "Status",
+                "fr_FR": "Statut"
+            },
             modalities: {
                 suspect: {
-                    label: "Suspect"
+                    label: {
+                        "default": "Suspect",
+                        "fr_FR": "Suspect"
+                    }
                 },
                 new: {
-                    label: "Prise de contact"
+                    label: {
+                        "default": "New",
+                        "fr_FR": "Prise de contact"
+                    }
                 },
                 appointment: {
-                    label: "Rendez-vous"
+                    label: {
+                        "default": "Appointment",
+                        "fr_FR": "Rendez-vous"
+                    }
                 },
                 proposal: {
-                    label: "Proposition"
+                    label: {
+                        "default": "Proposal",
+                        "fr_FR": "Proposition"
+                    }
                 },
                 relance: {
-                    label: "Relance"
+                    label: {
+                        "default": "Follow-up",
+                        "fr_FR": "Relance"
+                    }
                 },
                 active: {
-                    label: "Contrat"
+                    label: {
+                        "default": "Active",
+                        "fr_FR": "Contrat"
+                    }
                 },
                 gone: {
-                    label: "Parti"
+                    label: {
+                        "default": "Gone",
+                        "fr_FR": "Parti"
+                    }
                 }
             },
         },

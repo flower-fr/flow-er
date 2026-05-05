@@ -22,6 +22,27 @@ const startServer = async (context, config, logger) => {
     app.use(bodyParser.json())
     app.use(bodyParser.urlencoded({ extended: false }))
     app.use(loggerMiddleware(logger))
+    
+    app.use((req, res, next) => {
+        // HSTS
+        res.setHeader("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
+
+        // CSP
+        res.setHeader(
+            "Content-Security-Policy",
+            "object-src 'none'; frame-ancestors 'none'; upgrade-insecure-requests"
+        )
+
+        // X-Frame-Options
+        res.setHeader("X-Frame-Options", "SAMEORIGIN")
+
+        // Autres en-têtes
+        res.setHeader("X-Content-Type-Options", "nosniff")
+        res.setHeader("X-XSS-Protection", "1; mode=block")
+        res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin")
+
+        next()
+    })
 
     await registerMiddlewares(context, config, logger, app)
 

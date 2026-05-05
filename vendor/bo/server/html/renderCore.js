@@ -1,7 +1,7 @@
-const renderCore = (application, tab, entity, view) =>
+const renderCore = (application, tab, entity, view, locale) =>
 {
     return `
-    <script type="module" src="/bo/cli/controller/load.js" data-json="${ encodeURI(JSON.stringify({ application, tab, entity, view })) }" id="module-script"></script>`
+    <script type="module" src="/bo/cli/controller/load.js" data-json="${ encodeURI(JSON.stringify({ application, tab, entity, view, locale })) }" id="module-script"></script>`
 }
 
 module.exports = {

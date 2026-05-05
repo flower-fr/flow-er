@@ -1,9 +1,10 @@
 import View from "../View.js"
 
 import Form from "../form/Form.js"
+import Group from "../group/Group.js"
 import ListHeader from "./ListHeader.js"
 import ListRow from "./ListRow.js"
-import Tabbar from "../tabbar/Tabbar.js"
+import Detail from "../detail/Detail.js"
 
 export default class List extends View
 {
@@ -58,16 +59,22 @@ export default class List extends View
                             </td>
 
                             <td class="text-center">
-                                <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-list-add" title="${ translations["Add"] }" data-mdb-ripple-init data-id="0">
+                                <a 
+                                    href="#!"
+                                    class="text-primary"
+                                    id="flListAdd"
+                                    title="${ translations["Add"] }"
+                                >
                                     <span class="fas fa-plus"></span>
-                                </button>
-                                <button 
-                                type="button"
-                                class="btn btn-sm btn-outline-primary index-btn fl-list-group"
-                                title="${ translations["Grouped actions"] }"
+                                </a>
+                                <a 
+                                    href="#!"
+                                    class="text-primary"
+                                    id="flListGroup"
+                                    title="${ translations["Grouped actions"] }"
                                 >
                                     <span class="fas fa-list"></span>
-                                </button>
+                                </a>
                             </td>
 
                             <td colspan="${Object.keys(this.properties).length}" />
@@ -84,16 +91,6 @@ export default class List extends View
                             </td>
 
                             <td class="text-center">
-                                <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-list-detail fl-list-add" title="${ translations["Add"] }" data-mdb-ripple-init data-id="0">
-                                    <span class="fas fa-plus"></span>
-                                </button>
-                                <button 
-                                type="button"
-                                class="btn btn-sm btn-outline-primary index-btn fl-list-group"
-                                title="${ translations["Grouped actions"] }"
-                                >
-                                    <span class="fas fa-list"></span>
-                                </button>
                                 ${(this.listRows.length === this.limit) 
         ? `
                                     <button type="button" class="btn btn-sm btn-outline-primary fl-list-more" data-toggle="tooltip" data-placement="top" title="${ translations["Display the entire list"] }">
@@ -134,18 +131,23 @@ export default class List extends View
         })
 
         // Enable add action
-        $(".fl-list-add").click(() => {
-            controller.stack(new Form({ controller, entity, view }), translations["New"])
+        $("#flListAdd").click(() => {
+            controller.stack(new Form({ controller, entity, view }), translations["New"], true)
+        })
+
+        // Enable group action
+        $("#flListGroup").click(() => {
+            controller.stack(new Group({ controller, entity, view }), translations["Grouped actions"], true)
         })
 
         // Enable detail action
         this.rows.forEach(row => {
             $(`#flListDetail-${ row.id }`).click(() => {
-                controller.stack(new Tabbar({ controller, entity, id: row.id, level: "detail", view: "default" }), row[this.identifier])
+                controller.stack(new Detail({ controller, entity, id: row.id, view: "default" }), row[this.identifier], true)
             })
         })
 
-        $(".fl-list-group").hide()
+        $("#flListGroup").hide()
 
         // Trigger checking rows for group action
 
@@ -176,14 +178,14 @@ export default class List extends View
             })
 
             if (checked > 0) {
-                $(".fl-list-group").show()
-                $(".fl-list-add").hide()
+                $("#flListGroup").show()
+                $("#flListAdd").hide()
                 $(".fl-list-count").text(checked)
                 if (sumChecked) $(".fl-list-sum").text((Math.round(sumChecked * 100) / 100).toFixed(2))
             }
             else {
-                $(".fl-list-group").hide()
-                $(".fl-list-add").show()
+                $("#flListGroup").hide()
+                $("#flListAdd").show()
                 $(".fl-list-count").text("")
                 $(".fl-list-sum").text("")
             }
@@ -197,8 +199,8 @@ export default class List extends View
             $(".fl-list-check-all").prop("checked", state)
 
             if (state) {
-                $(".fl-list-group").show()
-                $(".fl-list-add").hide()
+                $("#flListGroup").show()
+                $("#flListAdd").hide()
 
                 let count = 0, sum = 0
                 $(".fl-list-check").each(function () {
@@ -213,8 +215,8 @@ export default class List extends View
                 if (sum) $(".fl-list-sum").text((Math.round(sum * 100) / 100).toFixed(2))
             }
             else {
-                $(".fl-list-group").hide()
-                $(".fl-list-add").show()
+                $("#flListGroup").hide()
+                $("#flListAdd").show()
                 $(".fl-list-count").text("")
                 if (sum) $(".fl-list-sum").text("")
             }

@@ -85,9 +85,10 @@ module.exports = {
         }
     },
     translations: {
+        "Cancel": "Annuler",
         "DD/MM/YYYY": "JJ/MM/AAAA",
-        "Technical error, pLease try again later": "Erreur technique, veuillez ré-éssayer ultérieurement",
         "Request registered": "Demande enregistrée",
+        "Technical error, Please try again later": "Erreur technique, veuillez ré-éssayer ultérieurement",
         "The data has changed in the meantime, please input again": "La donnée a été modifiée entretemps, veuillez saisir à nouveau",
         "The data already exists": "La donnée existe déjà",
     }

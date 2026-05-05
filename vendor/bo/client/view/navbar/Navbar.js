@@ -1,19 +1,21 @@
 import View from "../View.js"
 export default class Navbar extends View
 {
-    constructor({ controller, application, tab })
+    constructor({ controller, application, tab, locale })
     {
         super({ controller })
+        this.locale = locale
         this.application = application
         this.tab = tab
     }
 
     initialize = async () =>
     {
-        const response = await fetch(`/bo/navbar/${ this.application }/${ this.tab }`)
-        const { logo, logoHeight, helpMenu, instance, user, menu, defaultTab, translations } = await response.json()
+        const response = await fetch(`/bo/navbar/${ this.application }/${ this.tab }?locale=${ this.locale }`)
+        const { logo, logoHeight, title, helpMenu, instance, user, menu, defaultTab, translations } = await response.json()
         this.logo = logo
         this.logoHeight = logoHeight || "40"
+        this.title = title
         this.helpMenu = helpMenu
         this.instance = instance
         this.user = user

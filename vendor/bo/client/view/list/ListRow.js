@@ -31,14 +31,17 @@ export default class ListRow extends View
             </td>
 
             <td class="text-center">
-                <button 
-                    type="button"
-                    class="btn btn-sm btn-outline-primary index-btn fl-list-detail"
+                <a 
+                    href="#!"
+                    class="text-primary"
                     id="flListDetail-${ row.id }"
                     title="${ translations["Detail"] }"
+                    data-bs-toggle="modal"
+                    data-mdb-modal-init
+                    data-mdb-target="#flModalToggle1"
                 >
-                <i class="fas fa-search"></i>
-                </button>
+                    <i class="fas fa-search"></i>
+                </a>
             </td>
 
             ${ this.listCells.map(cell => cell.render()).join("\n") }

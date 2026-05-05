@@ -1,26 +1,29 @@
 import View from "../View.js"
+import Global from "../global/Global.js"
 import List from "../list/List.js"
 import Navbar from "../navbar/Navbar.js"
 import Search from "../search/Search.js"
 
 export default class Layout extends View
 {
-    constructor({ controller, application, tab, entity, view })
+    constructor({ controller, application, tab, entity, view, locale })
     {
         super({ controller })
         this.application = application
         this.tab = tab
         this.entity = entity
         this.view = view
-        this.navbar = new Navbar({ controller, application, tab })
-        this.search = new Search({ controller, entity, view })
-        this.list = new List({ controller, entity, view })
+        this.navbar = new Navbar({ controller, application, tab, locale })
+        this.search = new Search({ controller, entity, view, locale })
+        this.global = new Global({ controller, entity, view, locale })
+        this.list = new List({ controller, entity, view, locale })
     }
 
     initialize = async () =>
     {
         await this.navbar.initialize()
         await this.search.initialize()
+        await this.global.initialize()
         await this.list.initialize()
     }
 
@@ -33,13 +36,17 @@ export default class Layout extends View
                 id="flSidenav"
                 data-mdb-sidenav-init
                 class="sidenav"
-                data-mdb-mode="push"
+                data-mdb-mode="over"
                 data-mdb-content="#content"
-            >`)
+            >
+                <div class="container">`)
 
         html.push(this.search.render())
 
+        html.push(this.global.render())
+
         html.push(`
+                </div>
             </nav>
             <div class="col-md-12" id="content">
 
@@ -55,7 +62,7 @@ export default class Layout extends View
                     <div class="row">
                         <section class="p-4 d-flex flex-wrap w-100">
                             <div>
-                                <button data-mdb-ripple-init="" data-mdb-toggle="sidenav" data-mdb-target="#flSidenav" class="btn btn-primary" aria-controls="#flSidenav" aria-haspopup="true" style="" aria-expanded="false">
+                                <button data-mdb-ripple-init="" data-mdb-toggle="sidenav" data-mdb-target="#flSidenav" class="btn btn-primary" aria-controls="#flSidenav" aria-haspopup="true" aria-expanded="false">
                                     <i class="fas fa-bars"></i>
                                 </button>
                             </div>

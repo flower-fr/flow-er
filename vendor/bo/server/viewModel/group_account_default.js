@@ -1,0 +1,28 @@
+module.exports = {
+    menu: {
+        groupUpdate: {
+            controller: "bo",
+            action: "card",
+            params: {
+                entity: "account",
+            },
+            query: {
+                "view": "default",
+            },
+            label: "Mise à jour groupée"
+        },
+        groupDelete: {
+            controller: "bo",
+            action: "card",
+            params: {
+                entity: "account",
+            },
+            query: { 
+                "view": "default",
+            },
+            label: "Suppression groupée"
+        },
+    },
+    defaultTab: "groupUpdate",
+    translations: {},
+}

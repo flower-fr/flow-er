@@ -1,21 +1,36 @@
 module.exports = {
+    params: { 
+        order: { touched_at: "desc" },
+        where: { status: "new" }
+    },
     properties: {
         id: {
             type: "input",
-            label: "Account ID"
+            label: {
+                "default": "Account ID"
+            }
         },
 
         status: {
             type: "select",
             modalities: {
                 new: {
-                    label: "Nouveau",
+                    label: {
+                        "default": "New",
+                        "fr_FR": "Nouveau"
+                    }
                 },
                 active: {
-                    label: "Actif",
+                    label: {
+                        "default": "Active",
+                        "fr_FR": "Actif"
+                    }
                 }
             },
-            label: "Statut"
+            label: {
+                "default": "Status",
+                "fr_FR": "Statut"
+            }
         },
 
         place_region: {
@@ -76,7 +91,10 @@ module.exports = {
                     label: "Provence-Alpes-Côte d'Azur"
                 }
             },
-            label: "Région"
+            label: {
+                "default": "Region",
+                "fr_FR": "Région"
+            }
         },
 
         place_id: {
@@ -87,32 +105,51 @@ module.exports = {
             columns: ["id", "name", "region"],
             where: {status: "new"},
             order: { name: "ASC" },
-            label: "Place"
+            label: {
+                "default": "Place",
+                "fr_FR": "Établissement"
+            }
         },
 
         place_name: {
             type: "input",
-            label: "Établissement"
+            label: {
+                "default": "Place",
+                "fr_FR": "Établissement"
+            }
         },
 
         n_first: {
             type: "input",
-            label: "Prénom"
+            label: {
+                "default": "first name",
+                "fr_FR": "Prénom"
+            }
         },
 
         n_last: {
             type: "input",
-            label: "Nom"
+            label: {
+                "default": "Last name",
+                "fr_FR": "Nom"
+                
+            }
         },
 
         email: {
             type: "email",
-            label: "Email"
+            label: {
+                "default": "Email",
+                "fr_FR": "E-mail"
+            }
         },
 
         tel_cell: {
             type: "phone",
-            label: "Téléphone portable"
+            label: {
+                "default": "Cell phone",
+                "fr_FR": "Téléphone portable"
+            }
         },
 
         tag: {
@@ -124,12 +161,18 @@ module.exports = {
             columns: ["id", "name"],
             where: {status: "new"},
             order: { name: "ASC" },
-            label: "Tag"
+            label: {
+                "default": "Tag",
+                "fr_FR": "Tag"
+            }
         },
 
         touched_at: {
             type: "datetime",
-            label: "Dernière mise à jour"
+            label: {
+                "default": "Last updated",
+                "fr_FR": "Dernière mise à jour"
+            }
         },
     },
     translations: {

@@ -2,17 +2,17 @@ const { renderCore } = require("./renderCore")
 const { renderHead } = require("./renderHead")
 const { renderScripts } = require("./renderScripts")
 
-const renderIndex = (context, application, tab, entity, view, title, theme) =>
+const renderIndex = (context, application, tab, entity, view, title, theme, locale) =>
 {
     return `<!DOCTYPE html>
     <html lang="fr" data-mdb-theme="${ theme }">
     
-        ${ renderHead({ context, title }) }
+        ${ renderHead({ title }) }
     
         <body />
 
         ${ renderScripts() }
-        ${ renderCore(application, tab, entity, view) }
+        ${ renderCore(application, tab, entity, view, locale) }
 
     </html>`
 }

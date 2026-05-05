@@ -4,7 +4,7 @@ const renderText = (text) => {
     rendered = rendered.replaceAll("<", "&lt;").replaceAll(">", "&gt;")
     rendered = rendered.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // bold
     rendered = rendered.replace(/\*(.*?)\*/g, "<em>$1</em>") // italic
-    rendered = rendered.replace(/\[(.*?)\]\((.*?)\)/g, "<a href=\"$2\" target=\"_blank\">$1</a>") // links
+    rendered = rendered.replace(/\[(.*?)\]\((.*?)\)/g, "<a type=\"button\" href=\"$2\" class=\"btn btn-light btn-rounded btn-lg me-1\" data-mdb-ripple-init>$1</a>") // links
     rendered = rendered.replace(/`(.*?)`/g, "<code>$1</code>") // inline code
     return rendered
 }
@@ -44,7 +44,7 @@ const mdToJson = (content, markups) =>
                 currentList = true
                 currentText.push(markups?.ul || "<h4 class=\"my-3\"><ul>")
             }
-            currentText.push(`<li class="my-3">${renderText(line.replace("* ", "")) }</li>`)
+            currentText.push(`<li>${renderText(line.replace("* ", "")) }</li>`)
 
         } else if (line.trim().startsWith("|")) {
             if (!currentTable) {

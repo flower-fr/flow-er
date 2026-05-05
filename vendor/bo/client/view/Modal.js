@@ -12,14 +12,20 @@ class Modal extends View
         const order = this.order
         return `
             <!-- First modal dialog -->
-            <div class="modal fade" id="appleeModalToggle${ order }" aria-hidden="true" aria-labelledby="appleeModalToggleLabel${ order }" tabindex="-1" data-mdb-backdrop="static">
-                <div class="modal-dialog ${ order === 1 ? "modal-lg" : "modal-lg" }">
+            <div class="modal fade" id="flModalToggle${ order }" data-mdb-backdrop="static">
+                <div class="modal-dialog modal-xl">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="appleeModalToggleLabel${ order }">Modal ${ order }</h5>
-                            <button type="button" class="btn-close" data-mdb-ripple-init data-mdb-dismiss="modal" aria-label="Close"></button>
+                            <h5 class="modal-title" id="flModalToggleLabel${ order }">Modal ${ order }</h5>
+                            <button id="flModalBtnClose" type="button" class="btn-close" data-mdb-ripple-init data-mdb-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body" id="appleeModalBody${ order }">
+                        <div class="modal-body" id="flModalBody${ order }">
+                            <div id="flModalTabs">
+                                Lorem ipsum... tabs
+                            </div>
+                            <div id="flModalForm">
+                                Lorem ipsum... form
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -28,7 +34,7 @@ class Modal extends View
     
     trigger = () =>
     {
-        const element = document.getElementById(`appleeModalToggle${ this.order }`)
+        const element = document.getElementById(`flModalToggle${ this.order }`)
         element.addEventListener("hidden.mdb.modal", () => {
             this.controller.screenIndex--
         })

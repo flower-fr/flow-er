@@ -6,7 +6,7 @@ export default class Controller
     {
         this.modals = [
             new Modal({ controller: this, order: 1 }),
-            new Modal({ controller: this, order: 2 })
+            // new Modal({ controller: this, order: 2 })
         ]
         this.screenIndex = 0
         this.stackView = []
@@ -16,13 +16,14 @@ export default class Controller
     {
         const html = []
         if (this.screenIndex === 0) {
-            html.push(object.render())
+            html.push(`<div id='flScreen1'>${ object.render() }</div>`)
+            html.push("<div id='flScreen2'></div>")
             html.push(this.modals[0].render())
-            html.push(this.modals[1].render())
+            // html.push(this.modals[1].render())
             $("body").html(html)
         } else {
             html.push(object.render())
-            $(`#appleeModalBody${ this.screenIndex }`).html(html)
+            $("#flModalTabs").html(html)
         }
         return html.join("\n")
     }
@@ -32,32 +33,60 @@ export default class Controller
         object.trigger()
         if (this.screenIndex === 0) {
             this.modals[0].trigger()
-            this.modals[1].trigger()
+            // this.modals[1].trigger()
         }
     }
 
-    stack = async (object, title) =>
+    stack = async (object, title, modal = false) =>
     {
         await object.initialize()
         this.stackView.push(object)
         if (this.screenIndex === 0) {
             $("body").html(this.render(object))
             this.trigger(object)
-        } else {
+        } else if (this.screenIndex === 1) {
+            if (modal) {
+                const content = object.render()
+                $("#flModalTabs").html(content)
+                $("#flModalForm").hide()
+                $(`#flModalToggleLabel${ this.screenIndex }`).html(title)
+                this.trigger(object)
+                const element = document.getElementById(`flModalToggle${ this.screenIndex }`)
+                try { // A mdbootstrap bug leading to try twice 
+                    const modal = mdb.Modal.getOrCreateInstance(element)
+                    modal.toggle()
+                } catch {
+                    const modal = mdb.Modal.getOrCreateInstance(element)
+                    modal.toggle()
+                }
+            }
+            else {
+                const content = object.render()
+                document.getElementById("flScreen2").innerHTML = content
+                document.getElementById("flScreen1").style.display = "none"
+                document.getElementById("flScreen2").style.display = "block"
+                this.trigger(object)
+            }
+        }
+        else {
             const content = object.render()
-            $(`#appleeModalBody${ this.screenIndex }`).html(content)
-            $(`#appleeModalToggleLabel${ this.screenIndex }`).html(title)
+            $("#flModalTabs").hide()
+            $("#flModalForm").show()
+            $("#flModalForm").html(content)
             this.trigger(object)
-            const element = document.getElementById(`appleeModalToggle${ this.screenIndex }`)
-            const modal = mdb.Modal.getOrCreateInstance(element)
-            modal.toggle()
         }
         this.screenIndex++
     }
 
-    unstack = () => {
-        const element = document.getElementById(`appleeModalToggle${ this.screenIndex - 1 }`)
-        mdb.Modal.getInstance(element).hide()
+    unstack = (modal = false) => {
+        if (modal) {
+            const element = document.getElementById(`flModalToggle${ this.screenIndex - 1 }`)
+            mdb.Modal.getInstance(element).hide()
+        } else {
+            this.screenIndex--
+            document.getElementById("flScreen2").style.display = "none"
+            document.getElementById("flScreen1").style.display = "block"
+        }
         this.stackView.pop()
     }
 }
