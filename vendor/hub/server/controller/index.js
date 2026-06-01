@@ -31,7 +31,7 @@ const registerHub = async ({ context, config, logger, app }) => {
     }
     const executeImportCsv = async (req, res) => {
         if (!context.isAllowed("interaction")) return res.status(403).send({message: "unauthorized"})
-        const result = await postImportCsvAction({ req }, context, db)
+        const result = await postImportCsvAction({ req }, context, sql, logger)
         return res.status(200).send(result)
     }
     const upload = multer()
@@ -46,7 +46,7 @@ const registerHub = async ({ context, config, logger, app }) => {
     app.get(`${config.prefix}send-mail`, execute(sendMailAction, context, mailClient))
     app.get(`${config.prefix}import-xlsx/:entity`, execute(getImportXlsxAction, context, sql))
     app.post(`${config.prefix}import-xlsx/:entity/:id`, upload.single("global-xlsxFile"), executeImportXlsx)
-    app.get(`${config.prefix}import-csv/:entity`, execute(getImportCsvAction, context, db))
+    app.get(`${config.prefix}import-csv/:entity`, execute(getImportCsvAction, context, sql, logger))
     app.post(`${config.prefix}import-csv/:entity/:id`, upload.single("global-csvFile"), executeImportCsv)
     app.post(`${config.prefix}remind/:entity`, execute(postReminder, context, db, mailClient))
     app.post(`${config.prefix}send-sms`, execute(postSmsAction, context, db, smsClient))

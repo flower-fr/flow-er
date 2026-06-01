@@ -1,7 +1,7 @@
 const { insert } = require("./model/insert")
 const { select } = require("./model/select")
 
-const getMails = async ({ context, connection, imap, whiteList }) => {
+const getMails = async ({ context, sql, imap, whiteList }) => {
     const mails = await imap.getMails()
     const identifiers = mails.map(x => x.identifier)
     const model = context.config["interaction/model"]
@@ -11,8 +11,7 @@ const getMails = async ({ context, connection, imap, whiteList }) => {
     for (const identifier of identifiers) {
         where["identifier"].push(identifier)
     }
-    const request = select(context, "interaction", ["identifier"], where, null, null, model)
-    const [cursor] = await connection.execute(request)
+    const cursor = await sql.execute({ context, type: "select", entity: "interaction", columns: ["identifier"], where })
     const duplets = cursor.map(x => x.identifier)
 
     const result = []
@@ -32,8 +31,8 @@ const getMails = async ({ context, connection, imap, whiteList }) => {
                 "method": "GET",
                 "params": mail.headers,
                 "body": mail.body
-            }        
-            const [insertedRow] = (await connection.execute(insert(context, "interaction", data, model)))
+            }
+            const insertedRow = await sql.execute({ context, type: "insert", entity: "interaction", data })
             data.id = insertedRow.insertId
             result.push(data)
         }

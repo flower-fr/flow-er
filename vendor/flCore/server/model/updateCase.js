@@ -1,8 +1,8 @@
 const moment = require("moment")
 const { qi, qv } = require("./quote")
 
-const updateCase = (context, table, column, pairs, model, debug = false) => {
-
+const updateCase = (table, column, pairs, model, user, context, debug = false) =>
+{
     const type = (model && model.properties[column].type) ? model.properties[column].type : "text"
 
     let request = []
@@ -31,7 +31,7 @@ const updateCase = (context, table, column, pairs, model, debug = false) => {
     request.push("END,")
     const touched_at = `${moment().format("YYYY-MM-DD HH:mm:ss")}`
     request.push(`touched_at = '${touched_at}',`)
-    const user_id = context.user.id
+    const user_id = user.id
     request.push(`touched_by = ${user_id}`)
     request.push(`WHERE id IN (${ids.join(",")})`)
     request = request.join("\n")

@@ -268,7 +268,6 @@ const postImportXlsxAction = async ({ req }, context, sql, logger) => {
         const cursor = await sql.execute({ context, type: "select", entity: "interaction", columns : ["status", "endpoint", "body"], where: { "id": interactionId }, model: interactionModel })
         if (cursor.length == 0) return JSON.stringify({ "status": "ko", "message": "Unknown interaction" })
         const interaction = cursor[0]
-console.log(interaction)
         if (interaction.endpoint != `hub/import-xlsx/${entity}`) return JSON.stringify({ "status": "ko", "message": "Not an import-xlsx interaction or entity not matching" })
         if (interaction.status != "new") return JSON.stringify({ "status": "ko", "message": "Already processed interaction" })
 

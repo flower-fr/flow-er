@@ -13,10 +13,10 @@ class DocumentCell extends Ddl {
 
     properties = {
         id: { entity: "document_cell", column: "id", type: "primary" },
-        identifier: { entity: "document_cell", column: "identifier", type: "int" },
+        identifier: { entity: "document_cell", column: "identifier" },
         level: { entity: "document_cell", column: "level", type: "int" },
         parent: { entity: "document_cell", column: "parent" },
-        previous: { entity: "document_cell", column: "previous", type: "int" },
+        predecessor: { entity: "document_cell", column: "predecessor" },
         content: { entity: "document_cell", column: "content", type: "json" },
         document_id: { entity: "document_cell", column: "document_id", type: "int" },
         is_canceled: { entity: "document_cell", column: "is_canceled", type: "tinyint" },

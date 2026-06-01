@@ -103,7 +103,7 @@ const renderFilterSelect = (propertyId, property, { where }) =>
         let options = []
         for (const [modalityId, modality] of Object.entries(property.modalities)) {
             let selected = false
-            if (Object.keys(where).length > 0 && Object.keys(where).includes(propertyId)) {
+            if (where && Object.keys(where).length > 0 && Object.keys(where).includes(propertyId)) {
                 const checked = where[propertyId].split(",")
                 if (checked.includes(modalityId)) selected = true
             }

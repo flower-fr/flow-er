@@ -1,7 +1,8 @@
 const crypto = require("crypto")
 
 // Function to encrypt data
-function encrypt(context, text) {
+function encrypt(context, text)
+{
     // Create cipher with AES-256-CBC
     const cipher = crypto.createCipheriv("aes-256-cbc", context.encrypt_secret, Buffer.from(context.encrypt_iv, "hex"))
 
@@ -14,14 +15,14 @@ function encrypt(context, text) {
 }
 
 // Function to decrypt data
-function decrypt(context, encryptedData) {
-console.log(context.encrypt_secret)
+function decrypt(encryptionParams, encryptedData)
+{
     try {
         // Create decipher
         const decipher = crypto.createDecipheriv(
             "aes-256-cbc",
-            context.encrypt_secret,
-            Buffer.from(context.encrypt_iv, "hex")
+            encryptionParams.secret,
+            Buffer.from(encryptionParams.iv, "hex")
         )
 
         // Decrypt the data

@@ -8,11 +8,15 @@ import Detail from "../detail/Detail.js"
 
 export default class List extends View
 {
-    constructor({ controller, entity, view })
+    constructor({ controller, entity, view, where, orderProperty, orderDirection, layout })
     {
         super({ controller })
         this.entity = entity
         this.view = view || "default"
+        this.where = where
+        this.orderProperty = orderProperty
+        this.orderDirection = orderDirection
+        this.layout = layout
     }
 
     initialize = async () =>
@@ -26,15 +30,35 @@ export default class List extends View
 
         // Retrieve the data
         const columns = Object.keys(properties).join(",")
-        const where = Object.entries(params.where).map(([k, v]) => `${ k }:${ v }`).join("|")
-        const order = Object.entries(params.order).map(([k, v]) => `${ v === "desc" ? "-" : "" }${ k }`).join("|")
+        const where = this.where || Object.entries(params.where).map(([k, v]) => `${ k }:${ v }`).join("|")
+        let orderProperty, orderDirection
+        if (this.orderProperty) {
+            orderProperty = this.orderProperty
+            orderDirection = this.orderDirection
+        } else {
+            orderProperty = Object.keys(params.order)[0]
+            orderDirection = params.order[orderProperty]
+        }
+        const order = this.orderProperty ? `${ (this.orderDirection === "desc") ? "-" : "" }${ this.orderProperty }` : Object.entries(params.order).map(([k, v]) => `${ v === "desc" ? "-" : "" }${ k }`).join("|")
+
         const limit = params.limit
         response = await fetch(`/core/v1/${ this.entity }?columns=${ columns }&where=${ where }&order=${ order }${ limit ? `&limit=${ limit }` : "" }`)
         const rows = (await response.json()).rows
         this.rows = rows
-
-        this.listHeader = new ListHeader({ controller: this.controller, rows, properties, order, limit, translations })
-        this.listRows = rows.map(row => new ListRow({ controller: this.controller, row, properties, translations }))
+        this.filledColumns = []
+        if (orderProperty) this.filledColumns.push(this.orderProperty)
+        this.rows.forEach(row => {
+            Object.keys(row).forEach(column => {
+                if (row[column] && row[column].toString().trim()) {
+                    if (!this.filledColumns.includes(column)) this.filledColumns.push(column)
+                }
+            })
+        })
+        this.listHeader = new ListHeader({ controller: this.controller, rows, filledColumns: this.filledColumns, properties, orderProperty, orderDirection, limit, translations, layout: this.layout })
+        let i = 0
+        this.listRows = rows.map(row => { 
+            return new ListRow({ i: i++, controller: this.controller, row, filledColumns: this.filledColumns, properties, translations })
+        })
     }
 
     render = () =>
@@ -54,7 +78,7 @@ export default class List extends View
                         <tr>
                             <td>
                                 <div class="text-center">
-                                    <input type="checkbox" class="fl-list-check-all" data-toggle="tooltip" data-placement="top" title="${ translations["Check all"] }"></input>
+                                    <input type="checkbox" id="flListCheckAllUp" data-toggle="tooltip" data-placement="top" title="${ translations["Check all"] }"></input>
                                 </div>
                             </td>
 
@@ -86,7 +110,7 @@ export default class List extends View
                         <tr class="listRow">
                             <td>
                                 <div class="text-center">
-                                    <input type="checkbox" class="fl-list-check-all" title="${ translations["Check all"] }"></input>
+                                    <input type="checkbox" id="flListCheckAllDown" data-toggle="tooltip" data-placement="top" title="${ translations["Check all"] }"></input>
                                 </div>
                             </td>
 
@@ -115,13 +139,7 @@ export default class List extends View
     {
         const controller = this.controller, entity = this.entity, view = this.view, translations = this.translations
 
-        $(".fl-list-order-button").click(function() {
-            const propertyId = $(this).attr("data-fl-property")
-            let direction = $(this).attr("data-fl-direction")
-            if (!direction || direction == "-") direction = ""
-            else direction = "-"
-            // triggerList({ context, entity, view }, `${direction}${propertyId}`)
-        })
+        this.listHeader.trigger()
 
         // Extend the displayed list
 
@@ -150,66 +168,64 @@ export default class List extends View
         $("#flListGroup").hide()
 
         // Trigger checking rows for group action
-
-        $(".fl-list-check").click(function (e) {
-            if (e.shiftKey) {
-                const max = $(this).attr("data-row-id"), state = $(this).prop("checked")
-                let min = 0
-                $(".fl-list-check").each(function () {
-                    const i = parseInt($(this).attr("data-row-id"))
-                    if ($(this).prop("checked") && i < max) min = i
-                })
-                $(".fl-list-check").each(function () {
-                    const i = parseInt($(this).attr("data-row-id"))
-                    if (i >= min && i <= max) $(this).prop("checked", state)
-                })
-            } 
-
-            let checked = 0, sumChecked = 0
-
-            $(".fl-list-check").each(function () {
-                if ($(this).prop("checked")) checked++
-
-                let amount = $(this).attr("data-val")
-                if (amount) {
-                    amount = parseFloat(amount)
-                    if ($(this).prop("checked")) sumChecked += amount
+        this.listRows.forEach(listRow => {
+            const i = listRow.i
+            const row = document.getElementById(`flListCheck-${ i }`)
+            row.onclick = (e) => {
+                if (e.shiftKey) {
+                    const max = i, state = row.checked
+                    let min = 0
+                    this.listRows.forEach(lr => {
+                        const i = lr.i, r = document.getElementById(`flListCheck-${ i }`)
+                        if (r.checked && i < max) min = i
+                    })
+                    this.listRows.forEach(lr => {
+                        const i = lr.i, r = document.getElementById(`flListCheck-${ i }`)
+                        if (i >= min && i <= max) r.checked = state
+                    })
                 }
-            })
 
-            if (checked > 0) {
-                $("#flListGroup").show()
-                $("#flListAdd").hide()
-                $(".fl-list-count").text(checked)
-                if (sumChecked) $(".fl-list-sum").text((Math.round(sumChecked * 100) / 100).toFixed(2))
-            }
-            else {
-                $("#flListGroup").hide()
-                $("#flListAdd").show()
-                $(".fl-list-count").text("")
-                $(".fl-list-sum").text("")
+                let checked = 0, sumChecked = 0
+                this.listRows.forEach(lr => {
+                    const i = lr.i, r = document.getElementById(`flListCheck-${ i }`)
+                    if (r.checked) checked++
+
+                    let sum = lr.sumable || 0
+                    if (r.checked) sumChecked += sum
+                })
+
+                if (checked > 0) {
+                    $("#flListGroup").show()
+                    $("#flListAdd").hide()
+                    $(".fl-list-count").text(checked)
+                    if (sumChecked) $(".fl-list-sum").text((Math.round(sumChecked * 100) / 100).toFixed(2))
+                }
+                else {
+                    $("#flListGroup").hide()
+                    $("#flListAdd").show()
+                    $(".fl-list-count").text("")
+                    $(".fl-list-sum").text("")
+                }
+    
             }
         })
 
-        // Trigger checking all
+        // Trigger checking all rows
+        const checkAll = (state) =>
+        {
+            this.listRows.forEach(lr => {
+                const i = lr.i, r = document.getElementById(`flListCheck-${ i }`)
+                r.checked = state
+            })
 
-        $(".fl-list-check-all").click(function () {
-            const state = $(this).prop("checked")
-            $(".fl-list-check").prop("checked", state)
-            $(".fl-list-check-all").prop("checked", state)
-
-            if (state) {
+            if (state)
+            {
                 $("#flListGroup").show()
                 $("#flListAdd").hide()
-
                 let count = 0, sum = 0
-                $(".fl-list-check").each(function () {
+                this.listRows.forEach(lr => {
                     count++
-                    let amount = $(this).attr("data-val")
-                    if (amount) {
-                        amount = parseFloat(amount)
-                        if ($(this).prop("checked")) sum += amount
-                    }
+                    sum += lr.sumable || 0
                 })
                 $(".fl-list-count").text(count)
                 if (sum) $(".fl-list-sum").text((Math.round(sum * 100) / 100).toFixed(2))
@@ -218,8 +234,20 @@ export default class List extends View
                 $("#flListGroup").hide()
                 $("#flListAdd").show()
                 $(".fl-list-count").text("")
-                if (sum) $(".fl-list-sum").text("")
+                $(".fl-list-sum").text("")
             }
-        })
+        }
+
+        const checkAllUp = document.getElementById("flListCheckAllUp")
+        const checkAllDown = document.getElementById("flListCheckAllDown")
+        document.getElementById("flListCheckAllUp").onclick = () => {
+            checkAllDown.checked = checkAllUp.checked
+            checkAll(checkAllUp.checked)
+        }
+
+        document.getElementById("flListCheckAllDown").onclick = () => {
+            checkAllUp.checked = checkAllDown.checked
+            checkAll(checkAllDown.checked)
+        }
     }
 }

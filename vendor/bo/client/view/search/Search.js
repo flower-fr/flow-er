@@ -1,14 +1,16 @@
 import View from "../View.js"
 import SearchFilter from "./SearchFilter.js"
+import Shortcut from "./Shortcut.js"
 
 export default class Search extends View
 {
-    constructor({ controller, entity, view, locale })
+    constructor({ controller, entity, view, locale, layout })
     {
         super({ controller })
         this.entity = entity
         this.view = view || "default"
         this.locale = locale
+        this.layout = layout
     }
 
     initialize = async () =>
@@ -61,8 +63,78 @@ export default class Search extends View
         return html.join("\n")
     }
 
+    buildShortcuts = () =>
+    {
+        const { controller, layout, properties } = this
+        document.getElementById("flShortcuts").innerHTML = layout.sidenavButton.render()
+        document.getElementById("flShortcuts").insertAdjacentHTML("beforeend", layout.searchKeywords.render())
+
+        // Quick keyword search
+        document.getElementById("flSearchKeywordsRefresh").addEventListener("click", () => {
+console.log("ici")
+            layout.refreshList({ where:`keywords:contains,${ document.getElementById("flSearchKeywords").value }` })
+        })
+
+        for (const [propertyId, property] of Object.entries(properties)) {
+            if (["date", "time", "datetime", "number"].includes(property.type)) {
+                if (document.getElementById(`flSearchMin-${propertyId}`).value || document.getElementById(`flSearchMax-${propertyId}`).value) {
+                    const shortcut = new Shortcut({ controller, propertyId, property: properties[propertyId] })
+                    document.getElementById("flShortcuts").insertAdjacentHTML("beforeend", shortcut.render())
+
+                    // Close shortcut
+                    document.getElementById(`flSearchShortcutClose-${ propertyId }`).addEventListener("click", () => {
+                        document.getElementById(`flSearchMin-${ propertyId }`).value = ""
+                        document.getElementById(`flSearchMax-${ propertyId }`).value = ""
+                        this.buildShortcuts()
+                        layout.refreshList({ where: this.extractFilters() })
+                    })
+                }
+            } else {
+                if (document.getElementById(`flSearch-${ propertyId }`).value) {
+                    const shortcut = new Shortcut({ controller, propertyId, property: properties[propertyId] })
+                    document.getElementById("flShortcuts").insertAdjacentHTML("beforeend", shortcut.render())
+
+                    // Close shortcut
+                    document.getElementById(`flSearchShortcutClose-${ propertyId }`).addEventListener("click", () => {
+                        const instance = mdb.Select.getInstance(`#flSearch-${ propertyId }`)
+                        if (instance) instance.setValue("")
+                        else document.getElementById(`flSearch-${ propertyId }`).value = ""
+                        this.buildShortcuts()
+                        layout.refreshList({ where: this.extractFilters() })
+                    })
+                }
+            }
+        }
+    }
+
+    extractFilters = () =>
+    {
+        const { properties } = this, filters = []
+        for (const [propertyId, property] of Object.entries(properties)) {
+            if (["date", "time", "datetime", "number"].includes(property.type)) {
+                const min = document.getElementById(`flSearchMin-${ propertyId }`).value
+                const max = document.getElementById(`flSearchMax-${ propertyId }`).value
+                if (min && max) {
+                    filters.push(`${ propertyId }:between,${ min },${ max }`)
+                } else if (min) {
+                    filters.push(`${ propertyId }:>=,${ min }`)
+                } else if (max) {
+                    filters.push(`${ propertyId }:<=,${ max }`)
+                }
+            } else {
+                const value = document.getElementById(`flSearch-${ propertyId }`).value
+                if (value) {
+                    filters.push(`${ propertyId }:contains,${ value }`)
+                }
+            }
+        }
+        return filters.join("|")
+    }
+
     trigger = () =>
     {
+        const { layout, properties } = this
+
         for (const filter of this.filters) {
             filter.trigger()
         }
@@ -72,5 +144,25 @@ export default class Search extends View
 
         const erase = document.getElementById("flSearchErase")
         new mdb.Ripple(erase, { rippleColor: "primary" })
+
+        document.getElementById("flSearchRefresh").onclick = () => {
+            layout.refreshList({ where: this.extractFilters() })
+            this.buildShortcuts()
+        }
+
+        document.getElementById("flSearchErase").onclick = () => {
+            layout.refreshList({})
+            for (const [propertyId, property] of Object.entries(properties)) {
+                if (["date", "time", "datetime", "number"].includes(property.type)) {
+                    document.getElementById(`flSearchMin-${ propertyId }`).value = ""
+                    document.getElementById(`flSearchMax-${ propertyId }`).value = ""
+                } else {
+                    const instance = mdb.Select.getInstance(`#flSearch-${ propertyId }`)
+                    if (instance) instance.setValue("")
+                    else document.getElementById(`flSearch-${ propertyId }`).value = ""
+                }
+            }
+            this.buildShortcuts()
+        }
     }
 }

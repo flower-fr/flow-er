@@ -21,6 +21,7 @@ const loadContext = (settings, logger) => {
         formattedName: "Démo CRITE",
         roles: settings.server.config.roles,
         locale: "fr_FR",
+        theme: "light",
         config: {}
     }
 

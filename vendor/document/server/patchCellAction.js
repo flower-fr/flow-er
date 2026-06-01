@@ -2,7 +2,7 @@ const { assert } = require("../../../core/api-utils")
 const { throwBadRequestError } = require("../../../core/api-utils")
 const util = require("util")
 
-const patchAction = async ({ req }, context, { sql, logger }) => {
+const patchCellAction = async ({ req }, context, { sql, logger }) => {
 
     const document_id = assert.notEmpty(req.params, "document_id"), action = assert.notEmpty(req.params, "action")
     const entity = assert.notEmpty(req.params, "entity")
@@ -36,5 +36,5 @@ const patchAction = async ({ req }, context, { sql, logger }) => {
 }
 
 module.exports = {
-    patchAction,
+    patchCellAction,
 }

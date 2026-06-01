@@ -1,4 +1,5 @@
 const { assert } = require("../../../core/api-utils")
+const util = require("util")
 
 const action = async ({ req }, { context, sql, logger }) => 
 {
@@ -7,6 +8,7 @@ const action = async ({ req }, { context, sql, logger }) =>
     const view = req.query.view || "default"
     const locale = req.query.locale || "default"
     const config = context.config[`viewModel_${ action }_${ entity }_${ view }`]
+    logger && logger.debug(util.inspect(config, { depth: null, colors: true }))
 
     for (const property of config.properties ? Object.values(config.properties) : []) {
         if (property.type == "vector") {
@@ -33,7 +35,6 @@ const action = async ({ req }, { context, sql, logger }) =>
 
         if (property.modalities) {
             for (const modality of Object.values(property.modalities)) {
-console.log(modality)
                 if (modality.label[locale]) modality.label = modality.label[locale]
                 else if (modality.label["default"]) modality.label = modality.label["default"]
             }

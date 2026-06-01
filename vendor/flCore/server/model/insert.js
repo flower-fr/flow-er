@@ -4,8 +4,8 @@ const { qi, qv } = require("./quote")
 
 const { encrypt } = require("./sql-client/encrypt")
 
-const insert = (context, entity, data, model, debug = false) => {
-
+const insert = (entity, data, model, user, context, debug = false) => {
+console.log({ model })
     const table = (model.entities[entity]) ? model.entities[entity].table : entity
 
     const pairs = {}
@@ -47,16 +47,16 @@ const insert = (context, entity, data, model, debug = false) => {
     if (model.properties.visibility) pairs[qi("visibility")] = qv("active")
     
     if (!pairs[qi("touched_at")]) pairs[qi("touched_at")] = `'${moment().format("YYYY-MM-DD HH:mm:ss")}'`
-    pairs[qi("touched_by")] = context.user.id
+    pairs[qi("touched_by")] = user.id
 
     /**
      * Access control
      */
     if (model.access) {
         for (const [modelProp, profileProp] of Object.entries(model.access)) {
-            if (context.user[profileProp]) {
+            if (user[profileProp]) {
                 const property = model.properties[modelProp], qEntity = `${qi(property.entity)}.`, qColumn = qi(property.column)
-                pairs[qi(modelProp)] = context.user[profileProp]
+                pairs[qi(modelProp)] = user[profileProp]
             }
         }
     }

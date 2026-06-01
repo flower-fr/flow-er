@@ -55,7 +55,7 @@ const getConnection = ({ logger, closure }) => async () =>
 const execute = ({ logger, closure }) => async (options) => 
 {
     const { context, type, entity } = options
-    if (!context) throw new Error("missing context")
+    // if (!context) throw new Error("missing context")
     if (!type) throw new Error("missing type")
     if (!entity) throw new Error("missing entity")
     logger && logger.debug(`request ${ type } executed on entity ${ entity }`)
@@ -76,33 +76,33 @@ const rollback = ({ logger, closure }) => async () =>
     logger && logger.debug("Transaction rolled back")
 }
 
-const sql = async ({ context, type, entity, columns, where, order, limit, vectors, args, ids, data, column, pairs, params, debug }, connection, logger) =>
+const sql = async ({ model, type, entity, columns, where, order, limit, vectors, args, ids, data, column, pairs, params, user, context, debug }, connection, logger) =>
 {
-    const model = context.config[`${ entity }/model`]
+    if (!model) model = context.config[`${ entity }/model`]
 
     if (type === "select") {
         
-        return await sqlSelect({ context, entity, columns, where, order, limit, debug }, model, connection, logger)
+        return await sqlSelect({ entity, columns, where, order, limit, user, context, debug }, model, connection, logger)
 
     } else if (type === "vectors") {
         
-        return await selectVectors({ context, vectors, args, debug }, model, connection, logger)
+        return await selectVectors({ vectors, args, user, context, debug }, model, connection, logger)
 
     } else if (type === "insert") {
 
-        return sqlInsert({ context, entity, data, params, debug }, model, connection, logger)
+        return sqlInsert({ entity, data, params, user, context, debug }, model, connection, logger)
 
     } else if (type === "update") {
 
-        return sqlUpdate({ context, entity, ids, data, debug }, model, connection, logger)
+        return sqlUpdate({ entity, ids, data, user, context, debug }, model, connection, logger)
 
     } else if (type === "updateCase") {
 
-        return sqlUpdateCase({ context, entity, column, pairs, debug }, model, connection, logger)
+        return sqlUpdateCase({ entity, column, pairs, user, context, debug }, model, connection, logger)
 
     } else if (type === "delete") {
 
-        return sqlDelete({ context, entity, ids, debug }, model, connection, logger)
+        return sqlDelete({ entity, ids, user, context, debug }, model, connection, logger)
     }
 }
 

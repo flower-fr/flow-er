@@ -4,13 +4,14 @@ const { decrypt } = require("./encrypt")
 const { select } = require("../select")
 const { sensitiveWhere } = require("./sensitiveWhere")
 
-const sqlSelect = async ({ context, entity, columns, where = {}, order, limit = 1000, debug }, model, connection, logger) =>
+const sqlSelect = async ({ entity, columns, where = {}, order, limit = 1000, user, context, debug }, model, connection, logger) =>
 {
+    if (!user) user = context?.user
     where = await sensitiveWhere({context, model, where}, connection, logger)
     for (const value of Object.values(where)) {
         if (value.length == 0) return [] // No rows matching a rule on sensitive property
     }
-    const request = select(context, entity, columns, where || {}, order, limit, model, debug)
+    const request = select(entity, columns, where || {}, order, limit, model, user, debug)
     logger && logger.debug(`SELECT request: ${request}`)
     const cursor = (await connection.execute(request))[0]
     const result = []

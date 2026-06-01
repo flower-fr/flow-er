@@ -57,7 +57,7 @@ export default class ListCell extends View
         }
 
         else if (property.type == "link") {
-            html.push(`<td>${(row[propertyId]) ? `<a href="${row[propertyId]}">${row[propertyId]}</a>` : ""}</td>`)
+            html.push(`<td>${(row[propertyId]) ? `<a href="${row[propertyId]}" target="_blank">${row[propertyId]}</a>` : ""}</td>`)
         }              
 
         else if (property.type == "tags") {

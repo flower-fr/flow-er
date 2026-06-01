@@ -1,6 +1,6 @@
 const { qi, qv } = require("./quote")
 
-const selectWhere = (context, table, where, model, joins) => {
+const selectWhere = (table, where, model, joins) => {
 
     const qTable = qi(table)
 
@@ -130,6 +130,4 @@ const selectWhere = (context, table, where, model, joins) => {
     return predicates
 }
 
-module.exports = {
-    selectWhere
-}
+module.exports = selectWhere

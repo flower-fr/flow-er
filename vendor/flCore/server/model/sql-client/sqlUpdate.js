@@ -3,8 +3,10 @@ const util = require("util")
 const { encrypt } = require("./encrypt")
 const { update } = require("../update")
 
-const sqlUpdate = async ({ context, entity, ids, data, debug }, model, connection, logger) =>
+const sqlUpdate = async ({ entity, ids, data, user, context, debug }, model, connection, logger) =>
 {
+    if (!user) user = context?.user
+
     // Encryption
     for (const [key, value] of Object.entries(data)) {
         if (model.properties[key].sensitive && value) {
@@ -12,7 +14,7 @@ const sqlUpdate = async ({ context, entity, ids, data, debug }, model, connectio
         }
     }
 
-    const request = update(context, entity, ids, data, model, debug)
+    const request = update(entity, ids, data, model, user, context, debug)
     logger && logger.debug(request)
     const result = await connection.execute(request)
     logger && logger.debug(util.inspect(result[0]))

@@ -89,7 +89,6 @@ const resendSmtp = async ({ context, sql, smtp, logger, ids }) =>
 
     const where = { "status": "new", "provider": "smtp" }
     if (ids) where.id = ids
-    // const rows = (await connection.execute(select(context, "interaction", ["id", "scheduled_at", "params", "body", "attachments"], where, null, null, model)))[0]
     const rows = await sql.execute({ context, type: "select", entity: "interaction", columns: ["id", "scheduled_at", "params", "body", "attachments"], where })
 
     /**
@@ -104,8 +103,6 @@ const resendSmtp = async ({ context, sql, smtp, logger, ids }) =>
     }
     if (Object.values(attachments).length > 0) {
         const where = ["in"].concat(Object.keys(attachments))
-        // const documentModel = context.config["document_binary/model"]
-        // const cursor = (await connection.execute(select(context, "document_binary", null, { "id": where }, null, null, documentModel)))[0]
         const cursor = await sql.execute({ context, type: "select", entity: "document_binary", where: { "id": where } })
         for (const attachment of cursor) {
             attachments[attachment.id] = attachment

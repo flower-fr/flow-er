@@ -3,8 +3,9 @@ const util = require("util")
 const { encrypt } = require("./encrypt")
 const { insert } = require("../insert")
 
-const sqlInsert = async ({ context, entity, data, params, debug }, model, connection, logger) =>
+const sqlInsert = async ({ entity, data, params, user, context, debug }, model, connection, logger) =>
 {
+    if (!user) user = context?.user
     logger && logger.debug(util.inspect({ entity, data, params }))
     logger && logger.debug(util.inspect({ model }, { depth: null, colors: true }))
     
@@ -15,7 +16,7 @@ const sqlInsert = async ({ context, entity, data, params, debug }, model, connec
         }
     }
     
-    const request = insert(context, entity, data, model, debug)
+    const request = insert(entity, data, model, user, context, debug)
     logger && logger.debug(util.inspect({ request, params }, { depth: null, colors: true }))
     const insertedRows = await connection.execute(request, params)
     logger && logger.debug(util.inspect(insertedRows))

@@ -1,6 +1,6 @@
 const { qi, qv } = require("./quote")
 
-const selectColumns = (context, table, columns, model, joins) => {
+const selectColumns = (table, columns, model, joins) => {
 
     const qTable = qi(table)
 
@@ -76,6 +76,4 @@ const selectColumns = (context, table, columns, model, joins) => {
     return { columnDict, groupBy }
 }
 
-module.exports = {
-    selectColumns
-}
+module.exports = selectColumns

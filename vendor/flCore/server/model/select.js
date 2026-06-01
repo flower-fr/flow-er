@@ -1,9 +1,9 @@
 const { qi, qv } = require("./quote")
-const { join } = require("./join")
-const { selectColumns } = require("./selectColumns")
-const { selectWhere } = require("./selectWhere")
+const join = require("./join")
+const selectColumns = require("./selectColumns")
+const selectWhere = require("./selectWhere")
 
-const select = (context, entity, columns, where, order = [], limit = null, model = [], debug = false) =>
+const select = (entity, columns, where, order = [], limit = null, model = [], user, debug = false) =>
 {
     const table = (model.entities[entity]) ? model.entities[entity].table : entity
     if (model.properties.visibility && (!where.visibility || where.visibility == "deleted") /* deleted never visible */) where.visibility = "active"
@@ -21,15 +21,13 @@ const select = (context, entity, columns, where, order = [], limit = null, model
      */
     if (model.access) {
         for (const [modelProp, profileProp] of Object.entries(model.access)) {
-            //if (context.user[profileProp]) {
-                if (!columns.includes(modelProp)) columns.push(modelProp)
-            //}
+            if (!columns.includes(modelProp)) columns.push(modelProp)
         }
     }
 
     const joins = join(entity, columns, where, order, model)
 
-    const { columnDict, groupBy } = selectColumns(context, entity, columns, model, joins)
+    const { columnDict, groupBy } = selectColumns(entity, columns, model, joins)
 
     const select = []
     for (let propertyId of Object.keys(columnDict)) {
@@ -41,16 +39,16 @@ const select = (context, entity, columns, where, order = [], limit = null, model
 
     request += `${Object.values(joins).join("\n")}\n`
 
-    const predicates = selectWhere(context, entity, where, model, joins)
+    const predicates = selectWhere(entity, where, model, joins)
 
     /**
      * Access control
      */
     if (model.access) {
         for (const [modelProp, profileProp] of Object.entries(model.access)) {
-            if (context.user[profileProp]) {
+            if (user[profileProp]) {
                 const property = model.properties[modelProp], qEntity = `${qi(property.entity)}.`, qColumn = qi(property.column)
-                predicates.push(`${qEntity}${qColumn} = ${ context.user[profileProp] }`)
+                predicates.push(`${qEntity}${qColumn} IN ${ user[profileProp] }`)
             }
         }
     }
@@ -58,7 +56,7 @@ const select = (context, entity, columns, where, order = [], limit = null, model
     if (predicates.length > 0) request += `WHERE ${predicates.join("\nAND ")}\n`    
 
     if (groupBy) request += `GROUP BY ${groupBy.join(", ")}\n`
-console.log(order)
+
     if (order != null && Object.keys(order).length != 0) {
         request += "ORDER BY "
         const orderArray = []

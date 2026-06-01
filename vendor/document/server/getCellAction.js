@@ -2,17 +2,16 @@ const { assert } = require("../../../core/api-utils")
 const { throwBadRequestError } = require("../../../core/api-utils")
 const util = require("util")
 
-const getAction = async ({ req }, context, { sql, logger }) => 
+const getCellAction = async ({ req }, context, { sql, logger }) => 
 {
     logger
 
     const identifier = req.params.identifier
     const document_id = assert.notEmpty(req.params, "document_id")
-    const entity = assert.notEmpty(req.params, "entity")
 
     // gestion des paramètres de query
     const query = req.query
-    const columns = query.columns ? query.columns.split(",") : ["identifier", "level", "parent", "previous", "content"]
+    const columns = query.columns ? query.columns.split(",") : ["identifier", "level", "parent", "predecessor", "content"]
     const where = { document_id }
 
     req.query?.where?.split("|").forEach(element => {
@@ -24,7 +23,7 @@ const getAction = async ({ req }, context, { sql, logger }) =>
     // fin gestion des paramètres de query
 
     try {
-        const documentCells = await sql.execute({ context, type: "select", entity, columns: ["id", "identifier", "is_canceled"], where })
+        const documentCells = await sql.execute({ context, type: "select", entity: "document_cell", columns: ["id", "identifier", "is_canceled"], where })
         const ids = {}
         for (const documentCell of documentCells) {
             if (!ids[documentCell.identifier] && documentCell.is_canceled === 0) {
@@ -36,7 +35,7 @@ const getAction = async ({ req }, context, { sql, logger }) =>
         }
         const id = Object.values(ids).map(id => id.id)
         
-        const result = await sql.execute({ context, type: "select", entity, columns, where : { id } })
+        const result = await sql.execute({ context, type: "select", entity: "document_cell", columns, where : { id } })
         if (result === null) { // si on a pas trouvé de cellule à renvoyer, on envoie une erreur
             throw throwBadRequestError("Document cell not found")
         }
@@ -50,5 +49,5 @@ const getAction = async ({ req }, context, { sql, logger }) =>
 }
 
 module.exports = {
-    getAction
+    getCellAction
 }

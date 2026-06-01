@@ -3,20 +3,25 @@ import Global from "../global/Global.js"
 import List from "../list/List.js"
 import Navbar from "../navbar/Navbar.js"
 import Search from "../search/Search.js"
+import SearchKeywords from "../search/SearchKeywords.js"
+import SidenavButton from "../search/SidenavButton.js"
 
 export default class Layout extends View
 {
-    constructor({ controller, application, tab, entity, view, locale })
+    constructor({ controller, application, tab, entity, view, locale, theme })
     {
         super({ controller })
         this.application = application
         this.tab = tab
         this.entity = entity
         this.view = view
-        this.navbar = new Navbar({ controller, application, tab, locale })
-        this.search = new Search({ controller, entity, view, locale })
+        this.locale = locale
+        this.navbar = new Navbar({ controller, application, tab, locale, theme })
+        this.search = new Search({ controller, entity, view, locale, layout: this })
         this.global = new Global({ controller, entity, view, locale })
-        this.list = new List({ controller, entity, view, locale })
+        this.list = new List({ controller, entity, view, locale, layout: this })
+        this.searchKeywords = new SearchKeywords({ controller, placeholder: "Nom, entreprise, coordonnées" })
+        this.sidenavButton = new SidenavButton({ controller })
     }
 
     initialize = async () =>
@@ -60,20 +65,13 @@ export default class Layout extends View
 
                 <div class="m-3">
                     <div class="row">
-                        <section class="p-4 d-flex flex-wrap w-100">
-                            <div>
-                                <button data-mdb-ripple-init="" data-mdb-toggle="sidenav" data-mdb-target="#flSidenav" class="btn btn-primary" aria-controls="#flSidenav" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fas fa-bars"></i>
-                                </button>
-                            </div>
-                            &nbsp;&nbsp;&nbsp;&nbsp;
-                            <div id="flShortcuts">
-                            </div>
-
+                        <section class="p-4 d-flex flex-wrap w-100" id="flShortcuts">
+                            ${ this.sidenavButton.render() }
+                            ${ this.searchKeywords.render() }
                         </section>
 
                         <div class="section">
-                            <div class="row">`)
+                            <div class="row" id="flList">`)
     
         html.push(this.list.render())
 
@@ -99,9 +97,25 @@ export default class Layout extends View
 
         this.navbar.trigger()
         this.search.trigger()
+        this.global.trigger()
         this.list.trigger()
 
         const element = document.getElementById("flSearchButton")
         new mdb.Button(element)
+    }
+
+    refreshList = async ({ where, orderProperty, orderDirection }) =>
+    {
+        if (orderProperty) {
+            this.orderProperty = orderProperty
+        }
+        if (orderDirection) {
+            this.orderDirection = orderDirection
+        }
+        const { controller, entity, view, locale } = this
+        this.list = new List({ controller, entity, view, where, orderProperty: this.orderProperty, orderDirection: this.orderDirection, locale, layout: this })
+        await this.list.initialize()
+        document.getElementById("flList").innerHTML = this.list.render()
+        this.list.trigger()
     }
 }

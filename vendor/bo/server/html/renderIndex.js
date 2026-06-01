@@ -12,7 +12,7 @@ const renderIndex = (context, application, tab, entity, view, title, theme, loca
         <body />
 
         ${ renderScripts() }
-        ${ renderCore(application, tab, entity, view, locale) }
+        ${ renderCore(application, tab, entity, view, theme, locale) }
 
     </html>`
 }

@@ -49,8 +49,15 @@ module.exports = {
         },
 
     },
+    profileMenu: {
+        toggleTheme: {
+            route: "/core/v1/profile",
+            label: "Mode clair vs sombre",
+        },
+    },
     translations: {
         "Change password": "Modifier le mot de passe",
+        "Light vs dark mode": "Mode clair vs sombre",
         "Log out": "Se déconnecter",
     }
 }

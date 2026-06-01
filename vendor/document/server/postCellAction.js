@@ -2,15 +2,14 @@ const { assert } = require("../../../core/api-utils")
 const { throwBadRequestError } = require("../../../core/api-utils")
 const util = require("util")
 
-const postAction = async ({ req }, context, { sql, logger }) => {
-
+const postCellAction = async ({ req }, context, { sql, logger }) =>
+{
     const document_id = assert.notEmpty(req.params, "document_id")
 
     logger && logger.debug(`postAction called with body: ${util.inspect(req.body)}`)
     
     checkParams(req, context) // we check that the params are valid
 
-    const entity = assert.notEmpty(req.params, "entity")
     const data = req.body
 
     // we set the state param at active
@@ -23,9 +22,9 @@ const postAction = async ({ req }, context, { sql, logger }) => {
     try {
         await sql.beginTransaction()
 
-        const id = await sql.execute({ context, type: "insert", entity, data })
+        const id = await sql.execute({ context, type: "insert", entity: "document_cell", data })
         if (!data.identifier) {
-            await sql.execute({ context, type: "update", entity, ids: [id], data: { identifier: id } })
+            await sql.execute({ context, type: "update", entity: "document_cell", ids: [id], data: { identifier: id } })
         }
         await sql.commit()
         return JSON.stringify({ response: "cellule insérée avec succès" })
@@ -52,5 +51,5 @@ const checkParams = (req, context) => {
 }
 
 module.exports = {
-    postAction,
+    postCellAction,
 }

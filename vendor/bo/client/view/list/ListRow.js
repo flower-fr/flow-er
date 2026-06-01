@@ -3,16 +3,21 @@ import ListCell from "./ListCell.js"
 
 export default class ListRow extends View
 {
-    constructor({ controller, row, properties, translations }) {
+    constructor({ i, controller, row, filledColumns, properties, sumable, translations }) {
         super({ controller })
+        this.i = i
         this.row = row
+        this.filledColumns = filledColumns
         this.properties = properties
+        this.sumable = sumable
         this.translations = translations
         this.listCells = []
 
         this.listRowColumns = []
         for (const [propertyId, property] of Object.entries(properties)) {
-            this.listCells.push(new ListCell({ controller, row, propertyId, property, translations }))
+            if (this.filledColumns.includes(propertyId)) {
+                this.listCells.push(new ListCell({ controller, row, propertyId, property, translations }))
+            }
         }
     }
 
@@ -20,13 +25,13 @@ export default class ListRow extends View
 
     render = () =>
     {
-        const html = [], row = this.row, translations = this.translations
+        const html = [], i = this.i, row = this.row, translations = this.translations
 
         html.push(`
         <tr class="listRow">
             <td>
                 <div class="text-center">
-                    <input type="checkbox" class="fl-list-check" id="flListCheck-${ row.id }"></input>
+                    <input type="checkbox" id="flListCheck-${ i }"></input>
                 </div>
             </td>
 

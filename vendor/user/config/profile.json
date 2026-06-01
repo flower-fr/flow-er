@@ -1,0 +1,27 @@
+{
+    "profile/model": {
+        "entities": {
+            "profile": { "table": "profile" },
+            "place": { "table": "place", "foreignKey": "place_id", "foreignEntity": "profile" }
+        },
+        "properties": {
+            "id": { "entity": "profile", "column": "id", "type": "primary" },
+            "n_first": { "entity": "profile", "column": "n_first" },
+            "n_last": { "entity": "profile", "column": "n_last" },
+            "n_fn": { "entity": "profile", "column": "n_fn", "type": "CONCAT", "components": ["n_first", "n_last"] },
+            "email": { "entity": "profile", "column": "email" },
+            "email_key": { "entity": "profile", "column": "email_key" },
+            "place_id": { "entity": "profile", "column": "place_id", "type": "int" },
+            "role": { "entity": "profile", "column": "role" },
+            "theme": { "entity": "profile", "column": "theme" },
+            "notifications": { "entity": "profile", "column": "notifications" },
+            "user_id": { "entity": "profile", "column": "user_id", "type": "int" },
+
+            "place_name": { "entity": "place", "column": "name" },
+
+            "visibility": { "entity": "profile", "column": "visibility", "audit": true },
+            "touched_at": { "entity": "profile", "column": "touched_at", "type": "datetime" },
+            "touched_by": { "entity": "profile", "column": "touched_by", "type": "int" }
+       }
+    }
+}

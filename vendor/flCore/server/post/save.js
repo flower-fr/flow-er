@@ -51,10 +51,8 @@ const mergePayload = async (context, entity, model, form, config, sql, logger) =
      */
 
     let cursor
-    // const request = select(context, entity, columns, where, null, null, model)
     try {
-        // [cursor] = await connection.execute(request)
-        cursor = await sql.execute({ context, type: "select", entity, columns, where, model })
+        cursor = await sql.execute({ context, type: "select", entity, columns, where, limit: null, model })
     }
     catch {
         throw (new Error("Bad request"))

@@ -23,7 +23,7 @@ const postAction = async ({ req }, context, { sql, logger }) => {
         await sql.beginTransaction()
 
         const model = context.config[`${entity}/model`]
-        logger && logger.debug(util.inspect({model}))
+        logger && logger.debug(util.inspect({model}, { depth: null, colors: true }))
 
         const form = req.body
         if (id !== 0) {
@@ -32,7 +32,7 @@ const postAction = async ({ req }, context, { sql, logger }) => {
             }
             form[0].id = id
         }
-        logger && logger.debug(util.inspect({form}))
+        logger && logger.debug(util.inspect({form}, { depth: null, colors: true }))
 
         /**
          * Find out the data to actually store in the database 

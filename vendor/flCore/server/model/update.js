@@ -1,7 +1,7 @@
 const moment = require("moment")
 const { qi, qv } = require("./quote")
 
-const update = (context, entity, ids, data, model = [], debug = false) => {
+const update = (entity, ids, data, model = [], user, context, debug = false) => {
 
     const table = (model.entities[entity]) ? model.entities[entity].table : entity
 
@@ -33,7 +33,7 @@ const update = (context, entity, ids, data, model = [], debug = false) => {
     }
 
     pairs[qi("touched_at")] = `'${moment().format("YYYY-MM-DD HH:mm:ss")}'`
-    pairs[qi("touched_by")] = context.user.id
+    pairs[qi("touched_by")] = user.id
 
     let request = ""
     request += `UPDATE ${table} SET\n`

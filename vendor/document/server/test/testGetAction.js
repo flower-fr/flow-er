@@ -1,9 +1,8 @@
 const { throwBadRequestError } = require("../../../../core/api-utils")
 const util = require("util")
 
-const testGetAction = async ({ req }, context, { sql, logger }) => {
-    req
-    sql
+const testGetAction = async ({ req }, context, { logger }) => {
+    const jwt = req.query.jwt
 
     const route = "http://0.0.0.0:5010/document/v1/document_cell", result = []
     const data = [
@@ -11,7 +10,7 @@ const testGetAction = async ({ req }, context, { sql, logger }) => {
             identifier: "",
             test: (result) => {
                 console.log("dans test")
-                if (result.length === 50) return "ok"
+                if (result.length === 54) return "ok"
                 else return "erreur : le nombre de cellules retournées n'est pas correct"
             }
         },
@@ -33,7 +32,7 @@ const testGetAction = async ({ req }, context, { sql, logger }) => {
 
     try {
         for (const { identifier, test } of data) {
-            const response = await fetch(`${route}/1/${identifier}`)
+            const response = await fetch(`${route}/1/${identifier}?jwt=${jwt}`)
             const message = await response.json()
             logger && logger.debug(`result: ${util.inspect(test(message))}`)
             result.push(test(message))

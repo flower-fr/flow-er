@@ -1,26 +1,28 @@
 import View from "../View.js"
 export default class Navbar extends View
 {
-    constructor({ controller, application, tab, locale })
+    constructor({ controller, application, tab, locale, theme })
     {
         super({ controller })
         this.locale = locale
         this.application = application
         this.tab = tab
+        this.theme = theme
     }
 
     initialize = async () =>
     {
         const response = await fetch(`/bo/navbar/${ this.application }/${ this.tab }?locale=${ this.locale }`)
-        const { logo, logoHeight, title, helpMenu, instance, user, menu, defaultTab, translations } = await response.json()
+        const { logo, logoHeight, title, helpMenu, instance, user, menu, profileMenu, defaultTab, translations } = await response.json()
         this.logo = logo
         this.logoHeight = logoHeight || "40"
         this.title = title
         this.helpMenu = helpMenu
         this.instance = instance
         this.user = user
-        this.defaultTab = defaultTab
         this.menu = menu,
+        this.profileMenu = profileMenu
+        this.defaultTab = defaultTab
         this.translations = translations
     }
 
@@ -84,17 +86,15 @@ export default class Navbar extends View
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                     <li><a class="dropdown-item" href="#">${ this.user.n_fn }</a></li>
+                                    <li id="flToggleTheme"><a class="dropdown-item" href="">${ this.profileMenu.toggleTheme.label }</a></li>
                                     <li><a class="dropdown-item" href="/user/change-password">${ this.translations["Change password"] }</a></li>
                                 </ul>
-                            </div>`)
-
-        html.push(`
+                            </div>
                             <div>
                                 <a href="/user/logout" class="link-secondary text-danger" title="${ this.translations["Log out"] }">
                                     <i class="fa-solid fa-lg fa-right-from-bracket"></i>
                                 </a>
                             </div>
-
                         </div>
                     </div>
                 </nav>
@@ -120,7 +120,20 @@ export default class Navbar extends View
         return html.join("\n")
     }
 
-    trigger = () => {
+    trigger = () =>
+    {
+        const { profileMenu } = this
+        $("#flToggleTheme").click((e) => {
+            e.preventDefault()
+            this.theme = this.theme === "light" ? "dark" : "light"
+            document.documentElement.setAttribute("data-mdb-theme", this.theme)
+            fetch(profileMenu.toggleTheme.route, {
+                method: "POST",
+                headers: new Headers({"content-type": "application/json"}),
+                body: JSON.stringify([{ id: this.user.profile_id, theme: this.theme }])
+            })
+        })
+
         if (mdb) {
             const element = document.getElementById("navbarDropdownMenuLink")
             new mdb.Dropdown(element)

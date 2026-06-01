@@ -65,12 +65,11 @@ export default class Form extends View
             const disabled = property.disabled
             const required = property.required
 
-            let value
+            let value = property.value
             if (data) {
                 value = data[propertyId] || ""
                 if (property.type === "percentage" && value) value = parseFloat(value * 100)
                 else if (property.value && !Array.isArray(property.value)) {
-                    value = property.value
                     if (value === "?id") value = data.id
                     else if (value.substring(0, 5) === "today") {
                         if (value && value.charAt(5) === "+") value = moment().add(value.substring(6), "days").format("YYYY-MM-DD")
@@ -308,6 +307,22 @@ export default class Form extends View
                 }
 
                 html.push("</tbody></table></div>")
+            }
+
+            else if (propertyType == "html") {
+
+                html.push(`
+                <div class="row mt-3">
+                    <label class="col-form-label">${(required) ? "* " : ""}${ label }</label>
+                </div>
+                <div class="row">
+                    <div class="card">
+                        <div class="container">
+                            <div>${ value }</div>
+                        </div>
+                    </div>
+                </div>`
+                )
             }
 
             else

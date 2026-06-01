@@ -101,11 +101,13 @@ const match = (payload, importConfig) => {
  * Import xlsx files
  */
 
-const getImportCsvAction = async ({ req }, context, db) => {
+const getImportCsvAction = async ({ req }, context, sql, logger) => {
     const entity = assert.notEmpty(req.params, "entity")
     const view = (req.query.view) ? req.query.view : "default"
 
-    const importConfig = context.config[`${entity}/import/default`]
+    let importConfig = context.config[`${entity}/import/${ view }`]
+    if (!importConfig) importConfig = context.config[`${entity}/import/default`]
+    logger && logger.debug(util.inspect(importConfig, { depth: null, color: true }))
 
     const result = {
         layout: {
@@ -124,10 +126,9 @@ const getImportCsvAction = async ({ req }, context, db) => {
         }
     }
 
-    const connection = await db.getConnection()
-
     const interactionModel = context.config["interaction/model"]
-    const [cursor] = await connection.execute(select(context, "interaction", ["id", "status", "endpoint", "body"], { "status": "new", "endpoint": `hub/import-csv/${entity}` }, null, null, interactionModel))
+    // const [cursor] = await connection.execute(select(context, "interaction", ["id", "status", "endpoint", "body"], { "status": "new", "endpoint": `hub/import-csv/${entity}` }, null, null, interactionModel))
+    const cursor = await sql.execute({ context, type: "select", entity: "interaction", columns : ["id", "status", "endpoint", "body"], where: { "status": "new", "endpoint": `hub/import-xlsx/${entity}` }, model: interactionModel })
     if (cursor.length > 0) {
         result.message = { default: "A previous import is pending", "fr_FR": "Un précédent import est en attente", level: "warning" }
         const interaction = cursor[0]
@@ -160,7 +161,7 @@ const getImportCsvAction = async ({ req }, context, db) => {
     return result
 }
 
-const postImportCsvAction = async ({ req }, context, db) => {
+const postImportCsvAction = async ({ req }, context, sql, logger) => {
     const entity = assert.notEmpty(req.params, "entity")
     const interactionId = req.params.id
     const view = req.query.view
@@ -178,8 +179,6 @@ const postImportCsvAction = async ({ req }, context, db) => {
         importConfig.properties[property.propertyId] = propertyDef
         importConfig.properties[property.propertyId].update = true
     }
-
-    const connection = await db.getConnection()
 
     const interactionModel = context.config["interaction/model"]
 
@@ -224,7 +223,8 @@ const postImportCsvAction = async ({ req }, context, db) => {
             "authorization": "bearer",
             "status_code": "200"
         }
-        const [insertedRow] = (await connection.execute(insert(context, "interaction", interactionData, interactionModel)))
+        // const [insertedRow] = (await connection.execute(insert(context, "interaction", interactionData, interactionModel)))
+        const insertId = await sql.execute({ context, type: "insert", entity: "interaction", data: interactionData, model: interactionModel })
 
         const result = {
             layout: {
@@ -245,7 +245,7 @@ const postImportCsvAction = async ({ req }, context, db) => {
                 action: "import-csv",
                 entity,
                 view,
-                id: insertedRow.insertId,
+                id: insertId,
                 labels: { default: "import", fr_FR: "Importer" },
                 renderer: "renderImportCsv"
             }
@@ -258,7 +258,8 @@ const postImportCsvAction = async ({ req }, context, db) => {
      * Read the previously loaded interaction
      */
 
-    const [cursor] = await connection.execute(select(context, "interaction", ["status", "endpoint", "body"], { "id": interactionId }, null, null, interactionModel))
+    // const [cursor] = await connection.execute(select(context, "interaction", ["status", "endpoint", "body"], { "id": interactionId }, null, null, interactionModel))
+    const cursor = await sql.execute({ context, type: "select", entity: "interaction", columns : ["status", "endpoint", "body"], where: { "id": interactionId }, model: interactionModel })
     if (cursor.length == 0) return JSON.stringify({ "status": "ko", "message": "Unknown interaction" })
     const interaction = cursor[0]
     if (interaction.endpoint != `hub/import-csv/${entity}`) return JSON.stringify({ "status": "ko", "message": "Not an import-csv interaction or entity not matching" })
@@ -286,13 +287,14 @@ const postImportCsvAction = async ({ req }, context, db) => {
     }
 
     const targetModel = context.config[`${entity}/model`]
-    const mergedPayload = await mergePayload(context, entity, targetModel, valid, importConfig, connection)
+    const mergedPayload = await mergePayload(context, entity, targetModel, valid, importConfig, sql, logger)
+    logger && logger.debug(util.inspect(mergedPayload, { depth: null, color: true }))
 
     /**
      * Find out the data to actually store in the database 
      */
 
-    await connection.beginTransaction()
+    await sql.beginTransaction()
 
     let { rowsToStore, rowsToReject } = dataToStore(targetModel, mergedPayload)
 
@@ -305,14 +307,13 @@ const postImportCsvAction = async ({ req }, context, db) => {
      */
 
     rowsToStore = entitiesToStore(entity, targetModel, rowsToStore)
-    await storeEntities(context, entity, rowsToStore, targetModel, connection)
-    await auditCells(context, rowsToStore, connection)
+    await storeEntities(context, entity, rowsToStore, targetModel, sql, logger)
+    await auditCells(context, rowsToStore, sql, logger)
 
-    await connection.execute(update(context, "interaction", [interactionId], { "status": "processed"}, interactionModel))
+    // await connection.execute(update(context, "interaction", [interactionId], { "status": "processed"}, interactionModel))
+    await sql.execute({ context, type: "update", entity: "interaction", ids: [interactionId], data: { "status": "processed"}, model: interactionModel })
 
-    await connection.commit()
-    await connection.release()
-
+    await sql.commit()
     return JSON.stringify({ "status": "ok", "stored": rowsToStore })
 }
 

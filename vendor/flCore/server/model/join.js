@@ -70,6 +70,4 @@ const join = (entity, columns, where, order, model) => {
     return joins
 }
 
-module.exports = {
-    join
-}
+module.exports = join

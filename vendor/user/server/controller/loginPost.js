@@ -5,7 +5,7 @@ const { select } = require("../../../flCore/server/model/select")
 const { update } = require("../../../flCore/server/model/update")
 const { renderLogin } = require("../view/renderLogin")
 
-const loginPost = async ({ req, res }, context, config, db) => {
+const loginPost = async ({ req, res }, context, config, sql) => {
 
     const [ csrfToken, email, password ] = assert.notEmpty(req.body, "csrfToken", "email", "password")
 
@@ -26,9 +26,7 @@ const loginPost = async ({ req, res }, context, config, db) => {
         return renderLogin({ context }, data)
     }
 
-    const model = context.config["user/model"]
-
-    const [result] = (await db.execute(select(context, "user", ["id", "status", "email", "locale", "password", "last_login", "last_updated", "login_failed"], { "email": email }, null, null, model)))
+    const result = await sql.execute({ context, type: "select", entity: "user", columns: ["id", "status", "email", "locale", "password", "last_login", "last_updated", "login_failed"], where: { "email": email } })
     const user = result[0]
     if (!user) {
         data.status = "403"
@@ -47,7 +45,7 @@ const loginPost = async ({ req, res }, context, config, db) => {
         userData.login_failed = 0
     }
 
-    await db.execute(update(context, "user", [user.id], userData, model))
+    await sql.execute({ context, type: "update", entity: "user", ids: [user.id], data: userData})
 
     if (!authorized) {
         data.status = "403"
@@ -58,8 +56,7 @@ const loginPost = async ({ req, res }, context, config, db) => {
 
     const payloadModel = config.tokenPayloadModel
     const filters = { "user_id": user.id }
-    const profileModel = context.config[payloadModel.model]
-    const [rows] = await db.execute(select(context, payloadModel.entity, Object.keys(payloadModel.columns), filters, null, null, profileModel))
+    const rows = await sql.execute({ context, type: "select", entity: payloadModel.entity, columns: Object.keys(payloadModel.columns), where: filters})
     user.user_id = user.id // Deprecated
     const payload = { id: user.id, locale: user.locale, status: user.status }
     for (const [key, value] of Object.entries(rows[0])) payload[payloadModel.columns[key]] = value

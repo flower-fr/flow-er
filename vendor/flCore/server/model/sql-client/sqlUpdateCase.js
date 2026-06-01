@@ -3,8 +3,10 @@ const util = require("util")
 const { encrypt } = require("./encrypt")
 const { updateCase } = require("../updateCase")
 
-const sqlUpdateCase = async ({ context, entity, column, pairs, debug }, model, connection, logger) =>
+const sqlUpdateCase = async ({ entity, column, pairs, user, context, debug }, model, connection, logger) =>
 {
+    if (!user) user = context?.user
+
     // Encryption
     if (model.properties[column].sensitive) {
         for (const [id, value] of Object.entries(pairs)) {
@@ -14,7 +16,7 @@ const sqlUpdateCase = async ({ context, entity, column, pairs, debug }, model, c
         }
     }
 
-    const request = updateCase(context, entity, column, pairs, model, debug)
+    const request = updateCase(entity, column, pairs, model, user, context, debug)
     logger && logger.debug(request)
     const result = await connection.execute(request)
     logger && logger.debug(util.inspect(result[0]))
