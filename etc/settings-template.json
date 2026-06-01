@@ -10,6 +10,20 @@
         "bindAddress": "0.0.0.0",
         "listenPort" : "$PORT",
         "middlewares": {
+            "bo": {
+                "dir": "../vendor/bo",
+                "prefix": "/bo/",
+                "db" : {
+                    "host": "$DB_HOST",
+                    "port": "$DB_PORT",
+                    "user": "$DB_USER",    
+                    "password": "$DB_PASSWORD"
+                },
+                "apiKey": "$API_KEY",
+                "defaultApp": "viewModel_navbar_flower",
+                "defaultTab": "account"
+
+            },
             "core": {
                 "dir": "../vendor/flCore",
                 "prefix": "/core/",
@@ -24,13 +38,14 @@
                     "iv": "$ENCRYPT_IV"
                 },
                 "apiKey": "$API_KEY",
+                "fileStorage": "../../fileStorage",
                 "smtp": {
                     "smtpServer": "$SMTP_SERVER",
                     "smtpPort": "$SMTP_PORT",
                     "smtpSecure": true,
                     "smtpUser": "$SMTP_USER",
                     "smtpPassword": "$SMTP_PASSWORD",
-                    "from": "contact@flow-er.fr"
+                    "from": "DC contact@flow-er.fr"
                 },
                 "imap": {
                     "imapServer": "$IMAP_SERVER",
@@ -83,6 +98,25 @@
                     "port": "$DB_PORT",
                     "user": "$DB_USER",    
                     "password": "$DB_PASSWORD"
+                },
+                "smtp": {
+                    "smtpServer": "$SMTP_SERVER",
+                    "smtpPort": "$SMTP_PORT",
+                    "smtpSecure": true,
+                    "smtpUser": "$SMTP_USER",
+                    "smtpPassword": "$SMTP_PASSWORD"
+                },
+                "apiKey": "$API_KEY",
+                "tokenPayloadModel": {
+                    "entity": "profile",
+                    "user_id": "user_id",
+                    "columns": ["n_first", "n_last", "n_fn", "email", "equipe", "role"]
+                },
+                "sms": {
+                    "apiKey": "$API_KEY",
+                    "apiSecret": "$API_SECRET",
+                    "sender": "Max DC",
+                    "sandbox": 1
                 }
             },
             "my": {
@@ -114,6 +148,36 @@
                     "port": "$DB_PORT",
                     "user": "$DB_USER",    
                     "password": "$DB_PASSWORD"
+                }
+            },
+            "user": {
+                "dir": "../vendor/user",
+                "prefix": "/user/",
+                "db" : {
+                    "host": "$DB_HOST",
+                    "port": "$DB_PORT",
+                    "user": "$DB_USER",    
+                    "password": "$DB_PASSWORD"
+                },
+                "smtp": {
+                    "smtpServer": "$SMTP_SERVER",
+                    "smtpPort": "$SMTP_PORT",
+                    "smtpSecure": true,
+                    "smtpUser": "$SMTP_USER",
+                    "smtpPassword": "$SMTP_PASSWORD",
+                    "to": "bruno@p-pit.fr"
+                },
+                "tokenExpirationTime": "$TOKEN_EXPIRATION_TIME",
+                "cookieDomain": "$COOKIE_DOMAIN",
+                "cookieSecure": false,
+                "cookieHttpOnly": false,
+                "apiUserId": "$API_USER_ID",
+                "apiUserPassword": "$API_USER_PASSWORD",
+                "apiKey": "$API_KEY",
+                "tokenPayloadModel": {
+                    "entity": "crm_profile",
+                    "columns": { "id": "profile_id", "n_fn": "n_fn", "place_id": "place_id", "role": "role", "theme": "theme" },
+                    "model": "crm_profile/model"
                 }
             }
        },
