@@ -2,91 +2,94 @@ import { Modal } from "../view/Modal.js"
 
 export default class Controller
 {
-    constructor()
+    constructor({ url })
     {
-        this.modals = [
-            new Modal({ controller: this, order: 1 }),
-            // new Modal({ controller: this, order: 2 })
-        ]
-        this.screenIndex = 0
-        this.stackView = []
+        this.url = url
+        this.modal = new Modal({ controller: this, order: 1 })
     }
 
     render = (object) => 
     {
         const html = []
-        if (this.screenIndex === 0) {
-            html.push(`<div id='flScreen1'>${ object.render() }</div>`)
-            html.push("<div id='flScreen2'></div>")
-            html.push(this.modals[0].render())
-            // html.push(this.modals[1].render())
-            $("body").html(html)
-        } else {
-            html.push(object.render())
-            $("#flModalTabs").html(html)
-        }
+        html.push(`<div id="flScreen1" class="screen">${ object.render() }</div>`)
+        html.push(`
+            <div id="flScreen2" class="screen hidden">
+                <button type="button" class="btn-close ripple-surface back-button" id="flScreen2BackButton" aria-label="Close"></button>
+                <div id="flScreen2Content"></div>
+            </div>`)
+        html.push(this.modal.render())
+        $("body").html(html)
         return html.join("\n")
     }
 
     trigger = (object) =>
     {
         object.trigger()
-        if (this.screenIndex === 0) {
-            this.modals[0].trigger()
-            // this.modals[1].trigger()
-        }
+        this.modal.trigger()
     }
 
-    stack = async (object, title, modal = false) =>
+    stack = async (object) =>
     {
         await object.initialize()
-        this.stackView.push(object)
-        if (this.screenIndex === 0) {
-            $("body").html(this.render(object))
-            this.trigger(object)
-        } else if (this.screenIndex === 1) {
-            if (modal) {
-                const content = object.render()
-                $("#flModalTabs").html(content)
-                $("#flModalForm").hide()
-                $(`#flModalToggleLabel${ this.screenIndex }`).html(title)
-                this.trigger(object)
-                const element = document.getElementById(`flModalToggle${ this.screenIndex }`)
-                try { // A mdbootstrap bug leading to try twice 
-                    const modal = mdb.Modal.getOrCreateInstance(element)
-                    modal.toggle()
-                } catch {
-                    const modal = mdb.Modal.getOrCreateInstance(element)
-                    modal.toggle()
+        const content = object.render()
+        // Hide screen 1 et show screen 2
+        document.getElementById("flScreen2Content").innerHTML = content
+        document.getElementById("flScreen1").classList.add("hidden")
+        document.getElementById("flScreen1").classList.remove("visible")
+        document.getElementById("flScreen2").classList.add("visible")
+        document.getElementById("flScreen2").classList.remove("hidden")
+        this.trigger(object)
+
+        // Update URL et history
+        history.pushState({ screen: "detail" }, "", this.url)
+
+        document.getElementById("flScreen2BackButton").onclick = () => {
+            this.unstack()
+        }
+
+        window.addEventListener("popstate", (event) => {
+            if (event.state) {
+                if (event.state.screen === "detail") {
+                    this.stack(object)
+                } else {
+                    this.unstack()
                 }
+            } else {
+                this.stack(object)
             }
-            else {
-                const content = object.render()
-                document.getElementById("flScreen2").innerHTML = content
-                document.getElementById("flScreen1").style.display = "none"
-                document.getElementById("flScreen2").style.display = "block"
-                this.trigger(object)
-            }
-        }
-        else {
-            const content = object.render()
-            $("#flModalTabs").hide()
-            $("#flModalForm").show()
-            $("#flModalForm").html(content)
-            this.trigger(object)
-        }
-        this.screenIndex++
+        })
+
     }
 
-    unstack = (modal = false) => {
-        if (modal) {
-            const element = document.getElementById(`flModalToggle${ this.screenIndex - 1 }`)
-            mdb.Modal.getInstance(element).hide()
-        } else {
-            this.screenIndex--
-            document.getElementById("flScreen2").style.display = "none"
-            document.getElementById("flScreen1").style.display = "block"
-        }
-        this.stackView.pop()
+    unstack = () => {
+        document.getElementById("flScreen2").classList.add("hidden")
+        document.getElementById("flScreen2").classList.remove("visible")
+        document.getElementById("flScreen1").classList.add("visible")
+        document.getElementById("flScreen1").classList.remove("hidden")
+
+        history.pushState({ screen: "index" }, "", this.url)
+    }
+
+    showModal = async (object, title) =>
+    {
+        await object.initialize()
+        const content = object.render()
+        $("#flModalTabs").html(content)
+        $("#flModalForm").hide()
+        $("#flModalToggleLabel1").html(title)
+        this.trigger(object)
+        const element = document.getElementById("flModalToggle1")
+        // try { // Try twice due to a mdbootstrap bug 
+            const modal = mdb.Modal.getOrCreateInstance(element)
+            modal.toggle()
+        // } catch {
+        //     const modal = mdb.Modal.getOrCreateInstance(element)
+        //     modal.toggle()
+        // }
+    }
+
+    hideModal = () => {
+        const element = document.getElementById("flModalToggle1")
+        mdb.Modal.getInstance(element).toggle()
     }
 }

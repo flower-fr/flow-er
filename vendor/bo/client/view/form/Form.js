@@ -382,7 +382,7 @@ export default class Form extends View
 
     trigger = () =>
     {
-        $("#flModalBtnClose").addClass("disabled")
+        // $("#flModalBtnClose").addClass("disabled")
 
         document.querySelectorAll(".form-outline").forEach(el => {
             if (el.classList.contains("fl-form-outline")) new mdb.Input(el)
@@ -435,11 +435,7 @@ export default class Form extends View
         }
 
         $("#flModalFormCancel").click(() => {
-            controller.unstack(false)
-            // $("#flModalBtnClose").removeClass("disabled")
-            // $("#flModalForm").hide()
-            // $("#flModalTabs").show()
-            // this.controller.screenIndex--
+            controller.hideModal()
         })
     }
 }

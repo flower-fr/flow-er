@@ -161,7 +161,7 @@ export default class List extends View
         // Enable detail action
         this.rows.forEach(row => {
             $(`#flListDetail-${ row.id }`).click(() => {
-                controller.stack(new Detail({ controller, entity, id: row.id, view: "default" }), row[this.identifier], true)
+                controller.stack(new Detail({ controller, entity, id: row.id, view: "default" }), row[this.identifier])
             })
         })
 

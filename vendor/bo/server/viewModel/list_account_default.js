@@ -9,7 +9,8 @@ module.exports = {
             label: {
                 "default": "Name",
                 "fr_FR": "Nom"
-            }
+            },
+            anchor: true,
         },
 
         email: {
@@ -17,7 +18,8 @@ module.exports = {
             label: {
                 "default": "Email",
                 "fr_FR": "E-mail"
-            }
+            },
+            anchor: true,
         },
 
         tel_cell: {
@@ -25,7 +27,8 @@ module.exports = {
             label: {
                 "default": "Cell phone",
                 "fr_FR": "Téléphone portable"
-            }
+            },
+            anchor: true,
         },
     },
     identifier: "n_fn",

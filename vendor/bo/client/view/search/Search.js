@@ -135,6 +135,8 @@ console.log("ici")
     {
         const { layout, properties } = this
 
+        this.buildShortcuts()
+
         for (const filter of this.filters) {
             filter.trigger()
         }

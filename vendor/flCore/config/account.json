@@ -24,6 +24,12 @@
             "email": { "entity": "vcard", "column": "email", "type": "email" },
             "tel_cell": { "entity": "vcard", "column": "tel_cell" },
 
+            "keywords": { 
+                "column": "keywords",
+                "type": "CONCAT",
+                "components": ["n_last", "n_first", "email", "tel_cell"] 
+            },
+
             "visibility": { "entity": "account", "column": "visibility", "audit": true },
             "touched_at": { "entity": "account", "column": "touched_at", "type": "datetime" },
             "touched_by": { "entity": "account", "column": "touched_by", "type": "int" }

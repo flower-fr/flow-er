@@ -272,7 +272,7 @@ export default class Card extends View
     getForm = () =>
     {
         const { controller, entity, id, view } = this
-        this.controller.stack(new Form({ controller, entity, view, id }), this.translations["Modify"])
+        this.controller.showModal(new Form({ controller, entity, view, id }), this.translations["Modify"])
     }
 
     trigger = () =>
