@@ -22,33 +22,6 @@ const renderHead = ({ title }) =>
         <link rel="stylesheet" href="/mdb/cli/resources/mdb/css/mdb.min.css" />
         <!-- MDB PLUGINS -->
         <link rel="stylesheet" href="/mdb/cli/resources/mdb/plugins/css/all.min.css" />
-        <style>
-            .screen {
-                transition: opacity 0.3s ease, transform 0.3s ease;
-                position: absolute;
-                width: 100%;
-                padding: 20px;
-            }
-
-            .screen.hidden {
-            opacity: 0;
-                transform: translateX(20px);
-                pointer-events: none;
-            }
-
-            .screen.visible {
-                opacity: 1;
-                transform: translateX(0);
-            }
-
-            /* Style pour le bouton Retour */
-            .back-button {
-                border: none;
-                cursor: pointer;
-                padding: 0;
-                margin-bottom: 20px;
-            }
-        </style>
    </head>`
 }
 

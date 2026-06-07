@@ -11,6 +11,35 @@ export default class Controller
     render = (object) => 
     {
         const html = []
+        html.push(`
+            <style>
+                .screen {
+                    transition: opacity 0.3s ease, transform 0.3s ease;
+                    position: absolute;
+                    width: 100%;
+                    padding: 20px;
+                }
+
+                .screen.hidden {
+                opacity: 0;
+                    transform: translateX(20px);
+                    pointer-events: none;
+                }
+
+                .screen.visible {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+
+                /* Style pour le bouton Retour */
+                .back-button {
+                    border: none;
+                    cursor: pointer;
+                    padding: 0;
+                    margin-bottom: 20px;
+                }
+            </style>`)
+
         html.push(`<div id="flScreen1" class="screen">${ object.render() }</div>`)
         html.push(`
             <div id="flScreen2" class="screen hidden">
