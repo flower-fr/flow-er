@@ -1,4 +1,6 @@
-const ddlProperty = (entity, propertyId, property) => {
+const util = require("util")
+
+const ddlProperty = (entity, propertyId, property, logger) => {
     const maxLength = (property.max_length) ? property.max_length : 255
     let type = (property.length) ? `CHAR(${property.length}) DEFAULT ''` : `VARCHAR(${maxLength}) DEFAULT ''`
     if (property.entity == entity && property.type != "tag") {
@@ -24,8 +26,10 @@ const ddlProperty = (entity, propertyId, property) => {
     return ""
 }
 
-const ddlEntity = (context, entity, propertyId) => {
+const ddlEntity = (context, entity, propertyId, logger) => {
     const model = context.config[`${entity}/model`]
+    logger && logger.debug(util.inspect({model}, {depth: null, colors: true}))
+
     let ddl = []
 
     if (propertyId) {

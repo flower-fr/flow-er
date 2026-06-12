@@ -8,12 +8,13 @@ import Detail from "../detail/Detail.js"
 
 export default class List extends View
 {
-    constructor({ controller, entity, view, where, orderProperty, orderDirection, layout })
+    constructor({ controller, entity, view, where, tags, orderProperty, orderDirection, layout })
     {
         super({ controller })
         this.entity = entity
         this.view = view || "default"
         this.where = where
+        this.tags = tags || ""
         this.orderProperty = orderProperty
         this.orderDirection = orderDirection
         this.layout = layout
@@ -30,7 +31,9 @@ export default class List extends View
 
         // Retrieve the data
         const columns = Object.keys(properties).join(",")
-        const where = this.where || Object.entries(params.where).map(([k, v]) => `${ k }:${ v }`).join("|")
+        let where = this.where
+        const tags = this.tags
+        if (!where && !tags) where = ((params.where) ? Object.entries(params.where).map(([k, v]) => `${ k }:${ v }`).join("|") : [])
         let orderProperty, orderDirection
         if (this.orderProperty) {
             orderProperty = this.orderProperty
@@ -42,7 +45,7 @@ export default class List extends View
         const order = this.orderProperty ? `${ (this.orderDirection === "desc") ? "-" : "" }${ this.orderProperty }` : Object.entries(params.order).map(([k, v]) => `${ v === "desc" ? "-" : "" }${ k }`).join("|")
 
         const limit = params.limit
-        response = await fetch(`/core/v1/${ this.entity }?columns=${ columns }&where=${ where }&order=${ order }${ limit ? `&limit=${ limit }` : "" }`)
+        response = await fetch(`/core/v1/${ this.entity }?columns=${ columns }&where=${ where }&tags=${ tags }&order=${ order }${ limit ? `&limit=${ limit }` : "" }`)
         const rows = (await response.json()).rows
         this.rows = rows
         this.filledColumns = []

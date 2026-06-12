@@ -1,7 +1,6 @@
 module.exports = {
     params: { 
         order: { touched_at: "desc" },
-        where: { status: "new" }
     },
     properties: {
         n_fn: {

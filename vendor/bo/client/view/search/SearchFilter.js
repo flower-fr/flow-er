@@ -78,10 +78,14 @@ const renderFilterDateTime = (propertyId, property, params) =>
 {
     let valueMin, valueMax
     if (params.where && params.where[propertyId]) {
-        const where = params.where[propertyId].split(",")
+        const where = params.where[propertyId]
         if (where[0] == "between") {
             valueMin = moment(where[1]).format("DD/MM/YYYY")
             valueMax = moment(where[2]).format("DD/MM/YYYY")
+        } else if (where[0] == "<=") {
+            valueMax = moment(where[1]).format("DD/MM/YYYY")
+        } else if (where[0] == ">=") {
+            valueMin = moment(where[1]).format("DD/MM/YYYY")
         }
     }
 

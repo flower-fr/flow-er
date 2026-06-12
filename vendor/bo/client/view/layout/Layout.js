@@ -104,7 +104,7 @@ export default class Layout extends View
         new mdb.Button(element)
     }
 
-    refreshList = async ({ where, orderProperty, orderDirection }) =>
+    refreshList = async ({ where, tags, orderProperty, orderDirection }) =>
     {
         if (orderProperty) {
             this.orderProperty = orderProperty
@@ -113,7 +113,7 @@ export default class Layout extends View
             this.orderDirection = orderDirection
         }
         const { controller, entity, view, locale } = this
-        this.list = new List({ controller, entity, view, where, orderProperty: this.orderProperty, orderDirection: this.orderDirection, locale, layout: this })
+        this.list = new List({ controller, entity, view, where, tags, orderProperty: this.orderProperty, orderDirection: this.orderDirection, locale, layout: this })
         await this.list.initialize()
         document.getElementById("flList").innerHTML = this.list.render()
         this.list.trigger()

@@ -24,8 +24,8 @@ const registerStudio = async ({ context, config, logger, app }) => {
     const upload = multer()
     
     app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
-    app.get(`${config.prefix}ddl/:entity`, execute(ddl, context))
-    app.get(`${config.prefix}ddl/:entity/:property`, execute(ddl, context))
+    app.get(`${config.prefix}ddl/:entity`, execute(ddl, context, logger))
+    app.get(`${config.prefix}ddl/:entity/:property`, execute(ddl, context, logger))
     app.get(`${config.prefix}model/:module/:release`, execute(model, context))
     app.post(`${config.prefix}model/:module/:release`, execute(postModel, context, db))
 
@@ -34,15 +34,15 @@ const registerStudio = async ({ context, config, logger, app }) => {
     app.post(`${config.prefix}notifRules/:entity`, upload.single("data"), executeImport)
 }
 
-const ddl = async ({ req }, context) => {
+const ddl = async ({ req }, context, logger) => {
     const entity = assert.notEmpty(req.params, "entity")
     const propertyId = req.params.property
     let ddl = []
     ddl.push("SET SQL_MODE = \"NO_AUTO_VALUE_ON_ZERO\";")
     ddl.push("START TRANSACTION;")
     ddl.push("SET time_zone = \"+00:00\";\n")
-    ddl = ddl.concat(ddlEntity(context, entity, propertyId))
-    ddl = ddl.concat(loadAll(context, entity))
+    ddl = ddl.concat(ddlEntity(context, entity, propertyId, logger))
+    ddl = ddl.concat(loadAll(context, entity, logger))
     ddl.push("COMMIT;")
     return ddl.join("\n")
 }

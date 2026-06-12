@@ -19,6 +19,9 @@ const getAction = async ({ req }, context, { sql, logger }) =>
     if (id) where.id = id
     logger && logger.debug(util.inspect({where}))
 
+    const tags = req.query.tags ? req.query.tags.split(",") : undefined
+    logger && logger.debug(util.inspect({tags}))
+
     const orderParam = (req.query.order) ? req.query.order.split(",") : []
     const order = {}
     for (const key of orderParam) {
@@ -37,12 +40,12 @@ const getAction = async ({ req }, context, { sql, logger }) =>
     try {
         if (vectors) {
             const result = {}
-            result.rows = await sql.execute({ context, type: "select", entity, columns, where, order, limit })
+            result.rows = await sql.execute({ context, type: "select", entity, columns, where, tags, order, limit })
             result.vectors = await sql.execute({context, type: "vectors", entity, vectors})
             return [200, result, "application/json"]
         }
         else {
-            const result = await sql.execute({ context, type: "select", entity, columns, where, order, limit, vectors })
+            const result = await sql.execute({ context, type: "select", entity, columns, where, tags, order, limit, vectors })
             return [200, result, "application/json"]
         }
     }
