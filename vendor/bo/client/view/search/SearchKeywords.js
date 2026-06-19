@@ -25,6 +25,7 @@ export default class SearchKeywords extends View
                         aria-label="Search"
                         aria-describedby="search-addon"
                     />
+                    &nbsp;&nbsp;&nbsp;&nbsp;
                 </div>
             </section>`)
 

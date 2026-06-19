@@ -57,7 +57,7 @@ const getProperties = async (sql, context, entity, view, propertyDefs, wherePara
             const rows = await sql.execute({ context, type: "select", entity, columns: [property.autocomplete], where: {}, order })
             property.values = []
             for (const row of rows) {
-                if (row[property.autocomplete].length !== 0) property.values.push(row[property.autocomplete])
+                if (row[property.autocomplete]?.length !== 0) property.values.push(row[property.autocomplete])
             }
         }
         /**

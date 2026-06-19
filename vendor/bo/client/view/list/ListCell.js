@@ -17,11 +17,12 @@ export default class ListCell extends View
         const html = [], row = this.row, propertyId = this.propertyId, property = this.property
         
         if (property.type == "select") {
-            html.push(`<td class="${(property.class) ? property.class[row[propertyId]] : ""}">
-                ${ (row[propertyId]) 
+            html.push(`
+                <td class="${(property.class) ? property.class[row[propertyId]] : ""}">
+                    ${ (row[propertyId]) 
         ? ( (property.modalities[row[propertyId]]) ? property.modalities[row[propertyId]].label : row[propertyId] )
         : "" }
-            </td>`)
+                </td>`)
         }
         
         else if (property.type == "multiselect") {
@@ -57,7 +58,7 @@ export default class ListCell extends View
         }
 
         else if (property.type == "link") {
-            html.push(`<td>${(row[propertyId]) ? `<a href="${row[propertyId]}" target="_blank">${row[propertyId]}</a>` : ""}</td>`)
+            html.push(`<td>${ (row[propertyId]) ? `<a href="${row[propertyId]}" target="_blank">${ ( property.prefix ) ? `&hellip;${ row[propertyId].substring(27) }` : row[propertyId] }</a>` : "" }</td>`)
         }              
 
         else if (property.type == "tags") {

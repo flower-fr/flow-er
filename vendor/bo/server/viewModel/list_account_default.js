@@ -12,6 +12,15 @@ module.exports = {
             anchor: true,
         },
 
+        revenue: {
+            type: "number",
+            label: {
+                "default": "Revenue",
+                "fr_FR": "Chiffre d'affaires"
+            },
+            anchor: true,
+        },
+
         email: {
             type: "email",
             label: {
@@ -31,6 +40,7 @@ module.exports = {
         },
     },
     identifier: "n_fn",
+    sumable: "revenue",
     translations: {
         "Add": "Ajouter",
         "Check all": "Tout sélectionner",

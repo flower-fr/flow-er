@@ -30,10 +30,9 @@ export default class ListHeader extends View
         html.push(`
             <th>
                 <div class="text-center">
-                    <small>
-                        <b class="fl-list-count" title="${ translations["Lines number"] }"></b>
-                        <br><b class="fl-list-sum" title="${ translations["Sum"] }"></b>
-                    </small>
+                    <div class="text-center">
+                        <input type="checkbox" id="flListCheckAllUp" data-toggle="tooltip" data-placement="top" title="${ translations["Check all"] }"></input>
+                    </div>
                 </div>
             </th>
             <th />`)

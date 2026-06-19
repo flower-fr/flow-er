@@ -9,7 +9,7 @@ const action = async ({ req }, { context, sql, logger }) =>
     const view = req.query.view || "default"
     const locale = req.query.locale || "default"
     const config = context.config[`viewModel_${ action }_${ entity }_${ view }`]
-    if (config.params.where) {
+    if (config.params?.where) {
         for (const [key, value] of Object.entries(config.params.where)) {
             if (Array.isArray(value)) {
                 config.params.where[key] = value.map(v => v === "today" ? moment().format("YYYY-MM-DD") : v)
