@@ -14,6 +14,7 @@
             "status": { "entity": "account", "column": "status", "audit": true },
             "place_id": { "entity": "account", "column": "place_id", "type": "int" },
             "contact_1_id": { "entity": "account", "column": "contact_1_id", "type": "int" },
+            "revenue": { "entity": "account", "column": "revenue", "type": "decimal(10, 2)" },
 
             "place_region": { "entity": "place", "column": "region" },
             "place_name": { "entity": "place", "column": "name" },

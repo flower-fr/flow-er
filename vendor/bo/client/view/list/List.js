@@ -24,10 +24,11 @@ export default class List extends View
     {
         // Retrieve the config and params
         let response = await fetch(`/bo/list/${ this.entity }?view=${ this.view }`)
-        const { properties, identifier, params, translations } = await response.json()
+        const { properties, identifier, params, sumable, translations } = await response.json()
         this.properties = properties
         this.identifier = identifier
         this.translations = translations
+        this.sumable = sumable
 
         // Retrieve the data
         const columns = Object.keys(properties).join(",")
@@ -77,35 +78,76 @@ export default class List extends View
                     </thead>
                     <tbody class="table-group-divider">`)
 
-        html.push(`
-                        <tr>
-                            <td>
-                                <div class="text-center">
-                                    <input type="checkbox" id="flListCheckAllUp" data-toggle="tooltip" data-placement="top" title="${ translations["Check all"] }"></input>
-                                </div>
-                            </td>
+//         // html.push(`
+//         //                 <tr>
+//         //                     <td/>
 
-                            <td class="text-center">
-                                <a 
-                                    href="#!"
-                                    class="text-primary"
-                                    id="flListAdd"
-                                    title="${ translations["Add"] }"
-                                >
-                                    <span class="fas fa-plus"></span>
-                                </a>
-                                <a 
-                                    href="#!"
-                                    class="text-primary"
-                                    id="flListGroup"
-                                    title="${ translations["Grouped actions"] }"
-                                >
-                                    <span class="fas fa-list"></span>
-                                </a>
-                            </td>
+//         //                     <td class="text-center">
+//         //                         <a 
+//         //                             href="#!"
+//         //                             class="text-primary"
+//         //                             id="flListAdd"
+//         //                             title="${ translations["Add"] }"
+//         //                         >
+//         //                             <span class="fas fa-plus"></span>
+//         //                         </a>
+//         //                     </td>`)
 
-                            <td colspan="${Object.keys(this.properties).length}" />
-                        </tr>`)
+//         for (const propertyId of this.filledColumns) {
+//             if (this.properties[propertyId]) {
+//                 html.push("<td>")
+//                 if (propertyId == "linkedin") {
+//                     const property = this.properties[propertyId]
+//                     html.push(`
+//                                 <div class="dropdown" id="flListEdit-linkedin">
+//                                     <button
+//                                         class="btn btn-sm btn-outline-primary dropdown-toggle"
+//                                         type="button"
+//                                         data-mdb-dropdown-init
+//                                         data-mdb-ripple-init
+//                                         aria-expanded="false"
+//                                         id="flListDropdown-linkedin"
+//                                         title="${ translations["Grouped actions"] }"
+//                                     >
+//                                         <small><i class="fas fa-edit me-md-2"></i></small>
+//                                     </button>
+//                                     <div class="dropdown-menu" style="width: 320px">
+//                                         <form class="px-4 py-3">
+//                                             <div class="form-outline mb-4">
+//                                                 <select class="form-select form-select-sm fl-modal-form-select" id="flList-template" data-mdb-size="sm">
+//                                                     <option />
+//                                                     <option value="1">Template 1</option>
+//                                                     <option value="2">Template 2</option>
+//                                                     <option value="3">Template 3</option>
+//                                                 </select>
+//                                                 <label class="form-label select-label">Template</label>
+//                                             </div>
+//                                             <div class="form-outline mb-4" data-mdb-input-init>
+//                                                 <textarea id="flList-text" class="form-control" rows="10">Bonjour { prenom }
+
+// Je me permets de vous contacter car j'ai vu que vous étiez en charge de { sujet } chez { entreprise }.
+
+// Chez Double Crème, nous aidons les entreprises du secteur de l'IT à vendre sans effort.
+
+// Seriez-vous disponible pour en discuter ? Je serais ravi de vous présenter comment nous pouvons vous aider à atteindre vos objectifs.
+
+// Cordialement,
+// { mon_prenom }</textarea>
+//                                                 <label class="form-label" for="flList-text">Message</label>
+//                                             </div>
+//                                             <div class="form-outline mb-4">
+//                                                 <button class="btn btn-warning">Envoyer l’Inmail</button>
+//                                             </div>
+//                                         </form>
+//                                     </div>
+
+//                                 </div>`)
+//                 } 
+//                 html.push("</td>")
+//             }
+//         }
+
+//         html.push("</tr>")
 
         this.listRows.map(listRow => html.push(listRow.render())).join("\n")
 
@@ -144,6 +186,8 @@ export default class List extends View
 
         this.listHeader.trigger()
 
+        this.listRows.forEach(x => x.trigger())
+
         // Extend the displayed list
 
         $(".fl-list-more").click(function () {
@@ -156,11 +200,6 @@ export default class List extends View
             controller.stack(new Form({ controller, entity, view }), translations["New"], true)
         })
 
-        // Enable group action
-        $("#flListGroup").click(() => {
-            controller.stack(new Group({ controller, entity, view }), translations["Grouped actions"], true)
-        })
-
         // Enable detail action
         this.rows.forEach(row => {
             $(`#flListDetail-${ row.id }`).click(() => {
@@ -168,9 +207,8 @@ export default class List extends View
             })
         })
 
-        $("#flListGroup").hide()
-
         // Trigger checking rows for group action
+        $("#flGroup").hide()
         this.listRows.forEach(listRow => {
             const i = listRow.i
             const row = document.getElementById(`flListCheck-${ i }`)
@@ -193,19 +231,22 @@ export default class List extends View
                     const i = lr.i, r = document.getElementById(`flListCheck-${ i }`)
                     if (r.checked) checked++
 
-                    let sum = lr.sumable || 0
+                    let sum = this.sumable ? Number.parseFloat(lr.row[this.sumable]) : 0
                     if (r.checked) sumChecked += sum
                 })
 
                 if (checked > 0) {
-                    $("#flListGroup").show()
-                    $("#flListAdd").hide()
+                    $("#flGroup").show()
+                    $("#flDashboard").hide()
+                    $("#flAdd").hide()
                     $(".fl-list-count").text(checked)
-                    if (sumChecked) $(".fl-list-sum").text((Math.round(sumChecked * 100) / 100).toFixed(2))
+                    $("#flGroupCount").text(checked)
+                    if (sumChecked) $(".fl-list-sum").text(`(${ (Math.round(sumChecked * 100) / 100).toFixed(2).toLocaleString("fr-FR", { minimumFractionDigits: 2 }) })`)
                 }
                 else {
-                    $("#flListGroup").hide()
-                    $("#flListAdd").show()
+                    $("#flDashboard").show()
+                    $("#flAdd").show()
+                    $("#flGroup").hide()
                     $(".fl-list-count").text("")
                     $(".fl-list-sum").text("")
                 }
@@ -223,19 +264,21 @@ export default class List extends View
 
             if (state)
             {
-                $("#flListGroup").show()
-                $("#flListAdd").hide()
+                $("#flGroup").show()
+                $("#flDashboard").hide()
+                $("#flAdd").hide()
                 let count = 0, sum = 0
                 this.listRows.forEach(lr => {
                     count++
-                    sum += lr.sumable || 0
+                    sum += this.sumable ? Number.parseFloat(lr.row[this.sumable]) : 0
                 })
                 $(".fl-list-count").text(count)
-                if (sum) $(".fl-list-sum").text((Math.round(sum * 100) / 100).toFixed(2))
+                if (sum) $(".fl-list-sum").text(`(${ (Math.round(sum * 100) / 100).toFixed(2).toLocaleString("fr-FR", { minimumFractionDigits: 2 }) })`)
             }
             else {
-                $("#flListGroup").hide()
-                $("#flListAdd").show()
+                $("#flDashboard").show()
+                $("#flAdd").show()
+                $("#flGroup").hide()
                 $(".fl-list-count").text("")
                 $(".fl-list-sum").text("")
             }

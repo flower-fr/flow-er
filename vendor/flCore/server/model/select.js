@@ -5,6 +5,7 @@ const selectWhere = require("./selectWhere")
 
 const select = (entity, columns, where, order = [], limit = null, model = [], user, debug = false) =>
 {
+console.log({ model })
     const table = (model.entities[entity]) ? model.entities[entity].table : entity
     if (model.properties.visibility && (!where.visibility || where.visibility == "deleted") /* deleted never visible */) where.visibility = "active"
 
