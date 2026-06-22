@@ -47,6 +47,17 @@ export default class ListRow extends View
                 >
                     <i class="fas fa-search"></i>
                 </a>
+                <a
+                    href="#!"
+                    id="flListTooltip-${ row.id }"
+                    title="
+                        <div><strong>22/05 (Démo CRITE)</strong></div>
+                        <div>Test</div>
+                        <div><strong>21/05 (import)</strong></div>
+                        <div>Import Linkedin</div>"
+                >
+                    <small><i class="fas fa-circle-exclamation me-md-2"></i></small>
+                </a>
             </td>
 
             ${ this.listCells.map(cell => cell.render()).join("\n") }
@@ -56,5 +67,10 @@ export default class ListRow extends View
         return html.join("\n")
     }
 
-    trigger = () => {}
+    trigger = () => {
+        const { row } = this
+        const tooltip = $(`#flListTooltip-${ row.id }`)
+        if (tooltip) new mdb.Tooltip(tooltip, { html: true, placement: "right" })
+
+    }
 }

@@ -1,21 +1,27 @@
 import View from "../View.js"
+import SearchTag from "../search/SearchTag.js"
 
 export default class Group extends View
 {
-    constructor({ controller, entity, view, layout })
+    constructor({ controller, entity, view, layout, locale })
     {
         super({ controller })
         this.entity = entity
         this.view = view
         this.layout = layout
+        this.locale = locale
     }
 
     initialize = async () =>
     {
-        const response = await fetch(`/bo/group/${ this.entity }?view=${ this.view }`)
+        let response = await fetch(`/bo/group/${ this.entity }?view=${ this.view }`)
         const { properties, translations } = await response.json()
         this.properties = properties
         this.translations = translations
+
+        response = await fetch(`/bo/search/${ this.entity }?view=${ this.view }&locale=${this.locale}`)
+        const { tags } = await response.json()
+        this.tags = tags.map(tag => new SearchTag({ controller: this.controller, name: tag.distinct_name }))
     }
 
     render = () =>
@@ -32,7 +38,11 @@ export default class Group extends View
                         </strong>
                     </div>
                 </div>
-                <div class="card-body">
+                <div class="card-body">`)
+
+        for (const tag of this.tags) html.push(tag.render())
+
+        html.push(`
                     <form>`)
 
         for (let [propertyId, property] of Object.entries(this.properties)) {

@@ -186,6 +186,8 @@ export default class List extends View
 
         this.listHeader.trigger()
 
+        this.listRows.forEach(x => x.trigger())
+
         // Extend the displayed list
 
         $(".fl-list-more").click(function () {
