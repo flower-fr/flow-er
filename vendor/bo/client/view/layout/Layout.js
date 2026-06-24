@@ -91,7 +91,7 @@ export default class Layout extends View
                 
                 <div class="m-3">
                     <div class="row">
-                        <div class="col-md-10">
+                        <div class="col-md-9">
                             <section class="p-4 d-flex flex-wrap w-100" id="flShortcuts">
                                 ${ this.sidenavButton.render() }
                                 ${ this.searchKeywords.render() }
@@ -106,7 +106,7 @@ export default class Layout extends View
                                 </div>
                             </div>
                         </div>
-                            <div class="col-md-2" id="flRightColumn">`)
+                            <div class="col-md-3" id="flRightColumn">`)
         
         html.push(this.dashboard.render())        
         html.push(this.group.render())

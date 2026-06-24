@@ -122,6 +122,9 @@ export default class Navbar extends View
 
     trigger = () =>
     {
+        const el = document.getElementById("navbarSupportedContent")
+        new mdb.Collapse(el, { toggle: false })
+
         const { profileMenu } = this
         $("#flToggleTheme").click((e) => {
             e.preventDefault()

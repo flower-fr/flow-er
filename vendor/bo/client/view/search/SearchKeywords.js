@@ -23,7 +23,6 @@ export default class SearchKeywords extends View
                         id="flSearchKeywords"
                         placeholder="${ this.placeholder }"
                         aria-label="Search"
-                        aria-describedby="search-addon"
                     />
                     &nbsp;&nbsp;&nbsp;&nbsp;
                 </div>

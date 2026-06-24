@@ -17,7 +17,7 @@ export default class Dashboard extends View
         const html = []
 
         html.push(`
-            <div class="section">
+            <div class="section" id="flDashboard">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="text-center">Appels</div>

@@ -1,5 +1,5 @@
 import View from "../View.js"
-import SearchTag from "../search/SearchTag.js"
+import GroupTag from "./GroupTag.js"
 
 export default class Group extends View
 {
@@ -21,7 +21,7 @@ export default class Group extends View
 
         response = await fetch(`/bo/search/${ this.entity }?view=${ this.view }&locale=${this.locale}`)
         const { tags } = await response.json()
-        this.tags = tags.map(tag => new SearchTag({ controller: this.controller, name: tag.distinct_name }))
+        this.tags = tags.map(tag => new GroupTag({ controller: this.controller, name: tag.distinct_name }))
     }
 
     render = () =>
@@ -39,8 +39,6 @@ export default class Group extends View
                     </div>
                 </div>
                 <div class="card-body">`)
-
-        for (const tag of this.tags) html.push(tag.render())
 
         html.push(`
                     <form>`)
@@ -80,6 +78,25 @@ export default class Group extends View
                             <button class="btn btn-warning">Modifier <span class="fl-list-count"></span></button>
                         </div>
                     </form>
+                    <hr>`)
+
+        html.push(`
+                    <div class="input-group mb-3" id="flGroupOutline-tag">
+                        <input
+                            type="text"
+                            class="form-control rounded"
+                            id="flGroup-tag"
+                            placeholder="Créer un #tag"
+                            aria-label="Créer un #tag"
+                        />
+                        <button class="btn btn-sm btn-warning" type="button" id="flGroupTagPlus" data-mdb-ripple-init>
+                            <i class="fas fa-plus"></i>                        
+                        </button>
+                    </div>`)
+
+        for (const tag of this.tags) html.push(tag.render())
+
+        html.push(`
                     <hr>
                     <form>
                         <div class="form-outline mb-3">
