@@ -27,6 +27,7 @@
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
     "dayjs": "^1.11.19",
+    "docx": "^9.7.1",
     "dotenv": "^16.4.4",
     "env": "^0.0.2",
     "exceljs": "^4.4.0",
