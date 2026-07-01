@@ -9,14 +9,30 @@ const action = async ({ req }, { context, sql, logger }) =>
     const view = req.query.view || "default"
     const locale = req.query.locale || "default"
     const config = context.config[`viewModel_${ action }_${ entity }_${ view }`]
-    if (config.params?.where) {
-        for (const [key, value] of Object.entries(config.params.where)) {
-            if (Array.isArray(value)) {
-                config.params.where[key] = value.map(v => v === "today" ? moment().format("YYYY-MM-DD") : v)
+
+    // Replace tokens in the where clauses with actual dates
+    for (const value of Object.values(config ?? {})) {
+        if (value?.where) {
+            for (const [k, v] of Object.entries(value.where)) {
+                if (Array.isArray(v)) {
+                    value.where[k] = v.map(token => {
+                        switch (token) {
+                            case "today":          return moment().format("YYYY-MM-DD")
+                            case "start_of_month": return moment().startOf("month").format("YYYY-MM-DD")
+                            case "start_of_year":  return moment().startOf("year").format("YYYY-MM-DD")
+                            default:               return token
+                        }
+                    })
+                }
             }
         }
     }
+
     logger && logger.debug(util.inspect(config, { depth: null, colors: true }))
+
+    // Title localization
+    if (config?.title?.label?.[locale]) config.title.label = config.title.label[locale]
+    else if (config?.title?.label?.["default"]) config.title.label = config.title.label["default"]
 
     for (const property of config.properties ? Object.values(config.properties) : []) {
         if (property.type == "vector") {

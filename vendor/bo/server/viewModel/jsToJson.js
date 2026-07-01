@@ -51,3 +51,8 @@ js = require("./search_account_default")
 fs.writeFileSync("../../config/viewModel_search_account_default.json", JSON.stringify({
     "viewModel_search_account_default": js
 }))
+
+js = require("./dashboard_account_default")
+fs.writeFileSync("../../config/viewModel_dashboard_account_default.json", JSON.stringify({
+    "viewModel_dashboard_account_default": js
+}))

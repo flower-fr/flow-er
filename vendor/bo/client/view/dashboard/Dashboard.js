@@ -10,6 +10,35 @@ export default class Dashboard extends View
 
     initialize = async () =>
     {
+        // Fetch the structure of the dashboard from the server
+        let response = await fetch(`/bo/dashboard/${ this.entity }?view=${ this.view }`)
+        if (!response.ok) return this.chartData = []
+        const structure = await response.json()
+        
+        // Fetch data for each property in the structure
+        const fetchPromises = Object.entries(structure).filter(([key, value]) => key !== "tags").map(([key, value]) => {
+            const where = value.where
+                ? "&where=" + Object.entries(value.where).map(([k, v]) => `${k}:${v}`).join("|")
+                : ""
+
+            return fetch(`/core/v1/${value.entity}?columns=${value.columns}${where}`).then(res => res.ok ? res.json() : {})
+        })
+
+        // Wait for all fetches to complete
+        const data = await Promise.all(fetchPromises)
+
+        // Prepare chart data based on the fetched data and the structure
+        const chartData = Object.entries(structure).filter(([key, value]) => key !== "tags").map(([key, value], index) => {
+            const count = data[index]?.rows?.length ?? 0
+            return {
+                id: `flDashboard-${ key }`,
+                label: value.title,
+                // labels: [value.title, "Restant"],
+                data: [count, Math.max(0, value.objective - count)],
+                background: value.background,
+            }
+        })
+        this.chartData = chartData
     }
 
     render = () =>
@@ -19,13 +48,13 @@ export default class Dashboard extends View
         html.push(`
             <div class="section" id="flDashboard">
                 <div class="row">
-                    <div class="col-md-6">
-                        <div class="text-center">Appels</div>
-                        <canvas id="flDashboard-appel"></canvas>
+                    <div class="col-6">
+                        <div class="text-center">${this.chartData[0]?.label}</div>
+                        <canvas id="${this.chartData[0]?.id}"></canvas>
                     </div>
-                    <div class="col-md-6" >
-                        <div class="text-center">Propositions</div>
-                        <canvas id="flDashboard-proposition"></canvas>
+                    <div class="col-6" >
+                        <div class="text-center">${this.chartData[1]?.label}</div>
+                        <canvas id="${this.chartData[1]?.id}"></canvas>
                     </div>
                 </div>
             <hr>
@@ -56,16 +85,6 @@ export default class Dashboard extends View
 
     trigger = () =>
     {
-        this.initializeChart({
-            id: "flDashboard-appel",
-            data: [15, 5],
-            background: "rgba(20, 164, 77, 0.5)",
-        })
-
-        this.initializeChart({
-            id: "flDashboard-proposition",
-            data: [9, 11],
-            background: "rgba(228, 65, 27, 0.5)",
-        })
+        this.chartData.forEach(chart => this.initializeChart(chart))
     }
 }

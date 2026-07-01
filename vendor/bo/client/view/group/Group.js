@@ -28,7 +28,7 @@ export default class Group extends View
     {
         const html = []
         html.push(`
-            <div class="card" id="flGroup">
+            <div class="card mb-3" id="flGroup">
                 <div class="card-header text-center">
                     <h5>Actions groupées</h5>
                     <div>

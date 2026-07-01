@@ -5,6 +5,7 @@ import Group from "../group/Group.js"
 import ListHeader from "./ListHeader.js"
 import ListRow from "./ListRow.js"
 import Detail from "../detail/Detail.js"
+import Card from "../card/Card.js"
 
 export default class List extends View
 {
@@ -72,7 +73,7 @@ export default class List extends View
         html.push(`
         <div class="table-responsive">
             <div class="col-md-12">
-                <table class="table table-sm table-hover">
+                <table class="table table-sm table-hover" id="flListTable">
                     <thead class="fl-list">
                         ${ this.listHeader.render() }
                     </thead>
@@ -183,6 +184,11 @@ export default class List extends View
     trigger = () =>
     {
         const controller = this.controller, entity = this.entity, view = this.view, translations = this.translations
+        const tableEl = document.getElementById("flListTable")
+        const cardEl = document.getElementById("flCard")
+        const dashboardEl = document.getElementById("flDashboard")
+        const groupEl = document.getElementById("flGroup")
+        const addEl = document.getElementById("flAdd")
 
         this.listHeader.trigger()
 
@@ -200,10 +206,42 @@ export default class List extends View
             controller.stack(new Form({ controller, entity, view }), translations["New"], true)
         })
 
-        // Enable detail action
+        // Enable card action
         this.rows.forEach(row => {
-            $(`#flListDetail-${ row.id }`).click(() => {
-                controller.stack(new Detail({ controller, entity, id: row.id, view: "default" }), row[this.identifier])
+            document.getElementById(`flListDetail-${row.id}`)?.addEventListener("click", async (el) => {
+                if (!cardEl) return
+                const tr = el.target.closest("tr")
+
+                // If the card is already open for this row, close it
+                if (cardEl.dataset.openId === String(row.id)) {
+                    cardEl.style.display = "none"
+                    cardEl.innerHTML = ""
+                    cardEl.dataset.openId = ""
+                    if (groupEl.style.display === "none") {
+                        dashboardEl.style.display = "block"
+                        addEl.style.display = "block"
+                    }
+                    tr?.classList.remove("table-active", "fw-bold")
+                    tableEl.classList.add("table-hover")
+                    return
+                }
+
+                // Handle the display of others side elements
+                if (groupEl.style.display === "none") dashboardEl.style.display = "block"
+                addEl.style.display = "none"
+
+                // Handle the highlighting of the row
+                document.querySelectorAll("tr.table-active").forEach(r => r.classList.remove("table-active", "fw-bold"))
+                tr?.classList.add("table-active", "fw-bold")
+                tableEl.classList.remove("table-hover")
+
+                // Render and display the card for this row
+                const card = new Card({ controller, entity, id: row.id, view })
+                await card.initialize()
+                cardEl.style.display = "block"
+                cardEl.dataset.openId = String(row.id)
+                cardEl.innerHTML = await card.render()
+                card.trigger()
             })
         })
 
@@ -245,7 +283,7 @@ export default class List extends View
                 }
                 else {
                     $("#flDashboard").show()
-                    $("#flAdd").show()
+                    if (!cardEl || cardEl.style.display === "none") $("#flAdd").show()
                     $("#flGroup").hide()
                     $(".fl-list-count").text("")
                     $(".fl-list-sum").text("")
@@ -277,7 +315,7 @@ export default class List extends View
             }
             else {
                 $("#flDashboard").show()
-                $("#flAdd").show()
+                if (!cardEl || cardEl.style.display === "none") $("#flAdd").show()
                 $("#flGroup").hide()
                 $(".fl-list-count").text("")
                 $(".fl-list-sum").text("")

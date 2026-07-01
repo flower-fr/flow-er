@@ -1,4 +1,10 @@
 module.exports = {
+    title: {
+        label: {
+            "default": "Details",
+            "fr_FR": "Détails"
+        }
+    },
     properties: {
         n_first: {
             type: "input",
