@@ -8,7 +8,8 @@ const logout = async ({ res }, context) => {
         footer: context.config.footer,
     }
 
-    res.clearCookie("session");
+    res.clearCookie("session")
+    res.clearCookie("access")
 
     return renderLogout({ context }, data)
 }

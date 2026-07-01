@@ -41,7 +41,6 @@ const sqlSelect = async ({ entity, columns, where = {}, tags, order, limit = 100
         }
         result.push(data)
     }
-    logger && logger.debug(`SELECT result: ${util.inspect(result)}`)
     return result
 }
 

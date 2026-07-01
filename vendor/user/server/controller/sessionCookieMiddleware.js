@@ -2,19 +2,23 @@ const { checkToken } = require("../../../../core/tools/security")
 
 const sessionCookieMiddleware = (config, context) => async (req, res, next) => {
 
-    const session = req.cookies["session"] || req.query.jwt
+    let session = req.cookies["session"] || req.query.jwt, token
     if (!session) {
-        return res.redirect("/user/login")
-    }
-
-    const [schema, token] = session.split(" ")
-
-    if (!token || schema !== "Bearer") {
-        return res.redirect("/user/login")
+        token = req.cookies["access"]
+        if (!token) {
+            return res.redirect("/user/login")
+        }
+    } else { // Deprecated
+        const [schema, t] = session.split(" ")
+        if (!t || schema !== "Bearer") {
+            return res.redirect("/user/login")
+        }
+        token = t
     }
 
     try {
         const { status, payload } = await checkToken(token, config.apiKey)
+console.log({ token, status, payload })
         if (status === "invalid") {
             return res.redirect("/user/login")
         }

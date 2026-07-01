@@ -88,7 +88,7 @@ function mdTextToDocx(text)
     return parts.filter(part => part.text !== "")
 }
 
-const mdToDocx = (content) => {
+const mdToDocxJson = (content) => {
     const lines = content.split("\n")
     const result = []
     let inCodeBlock = false
@@ -136,7 +136,7 @@ const mdToDocx = (content) => {
                 type: "list",
                 listType: currentListType,
                 level: currentListLevel,
-                children: listItems,
+                children: listItems.map(text => mdTextToDocx(text)),
             })
             listItems = []
         }
@@ -147,20 +147,22 @@ const mdToDocx = (content) => {
         if (tableRows.length > 0) {
             result.push({
                 type: "table",
-                headers: tableHeaders,
-                rows: tableRows,
+                headers: tableHeaders.map(header => mdTextToDocx(header)),
+                rows: tableRows.map(row => row.map(cell => mdTextToDocx(cell))),
             })
             tableHeaders = []
             tableRows = []
         }
+        inTable = false
+        isHeaderRow = true
     }
 
     // Fonction pour ajouter une image
     const addImage = (alt, url) => {
         result.push({
             type: "image",
-            alt: alt,
-            url: url,
+            alt,
+            url,
         })
     }
 
@@ -174,33 +176,6 @@ const mdToDocx = (content) => {
 
     // Parcourir chaque ligne
     for (const line of lines) {
-
-        // Liste à puces ou numérotée
-        const bulletMatch = line.match(/^(\s*)([*\-+]|\d+\.)\s+(.*?)$/)
-        if (bulletMatch) {
-            const [, indent, marker, text] = bulletMatch
-            const level = indent.length / 2 // Supposons 2 espaces par niveau
-            const isNumbered = /\d+\./.test(marker)
-
-            // Si on change de type de liste ou de niveau, finaliser la liste en cours
-            if (
-                currentListType !== (isNumbered ? "number" : "bullet") || currentListLevel !== level
-            ) {
-                addList()
-                currentListType = isNumbered ? "number" : "bullet"
-                currentListLevel = level
-            }
-
-            listItems.push(text)
-            continue
-        } else {
-            // Si on était dans une liste, la finaliser
-            if (currentListType) {
-                addList()
-                currentListType = null
-                currentListLevel = 0
-            }
-        }
 
         const trimmedLine = line.trim()
 
@@ -246,7 +221,6 @@ const mdToDocx = (content) => {
                 tableRows = []
                 tableHeaders = []
                 isHeaderRow = true
-
             }
 
             // Vérifier si c'est une ligne de séparation (ex: |---|---|)
@@ -259,7 +233,6 @@ const mdToDocx = (content) => {
 
             // Parser la ligne du tableau
             const row = trimmedLine.split("|").slice(1, -1).map(cell => cell.trim())
-        
 
             if (isHeaderRow) {
                 tableHeaders = row // Stocker les en-têtes
@@ -267,7 +240,6 @@ const mdToDocx = (content) => {
                 tableRows.push(row) // Stocker les lignes normales
             }
             continue
-
         } else if (inTable) {
             // Fin du tableau
             inTable = false
@@ -278,6 +250,7 @@ const mdToDocx = (content) => {
         const imageMatch = trimmedLine.match(/^!$$(.*?)$$$(.*?)$/)
         if (imageMatch) {
             addList() // Finaliser la liste en cours
+            addTable() // Finaliser le tableau en cours
             addImage(imageMatch[1], imageMatch[2])
             continue
         }
@@ -306,6 +279,33 @@ const mdToDocx = (content) => {
             continue
         }
 
+        // Liste à puces ou numérotée
+        const bulletMatch = trimmedLine.match(/^(\s*)([*\-+]|\d+\.)\s+(.*?)$/)
+        if (bulletMatch) {
+            const [, indent, marker, text] = bulletMatch
+            const level = Math.floor(indent.length / 2) // Supposons 2 espaces par niveau
+            const isNumbered = /\d+\./.test(marker)
+
+            // Si on change de type de liste ou de niveau, finaliser la liste en cours
+            if (
+                currentListType !== (isNumbered ? "number" : "bullet") || currentListLevel !== level
+            ) {
+                addList()
+                currentListType = isNumbered ? "number" : "bullet"
+                currentListLevel = level
+            }
+
+            listItems.push(text)
+            continue
+        } else {
+            // Si on était dans une liste, la finaliser
+            if (currentListType) {
+                addList()
+                currentListType = null
+                currentListLevel = 0
+            }
+        }
+
         // Paragraphe normal
         addTable() // Finaliser le tableau en cours
         addParagraphOrTitle(trimmedLine)
@@ -318,20 +318,20 @@ const mdToDocx = (content) => {
     return result
 }
 
-module.exports = {
-    mdTextToDocx,
-    mdToDocx
-}
-
-async function generateDocx(jsonStructure)
+async function mdToDocx(content)
 {
     const children = []
     let rows, headerRow
-
+    const jsonStructure = mdToDocxJson(content)
     for (const item of jsonStructure) {
         switch (item.type) {
         case "pageBreak":
-            children.push(new PageBreak())
+            children.push(
+                new Paragraph({
+                    text: "",
+                    pageBreakBefore: true,
+                })
+            )
             break
 
         case "heading1":
@@ -355,7 +355,6 @@ async function generateDocx(jsonStructure)
         case "heading3":
             children.push(
                 new Paragraph({
-                    text: item.children[0].text,
                     heading: HeadingLevel.HEADING_3,
                     children: item.children.map(child => new TextRun(child)),
                 })
@@ -371,10 +370,10 @@ async function generateDocx(jsonStructure)
             break
 
         case "list":
-            for (const text of item.children) {
+            for (const textRunArray of item.children) {
                 if (item.listType === "number") {
                     children.push(new Paragraph({
-                        text: text,
+                        chidren: textRunArray.map(textRun => new TextRun(textRun)),
                         bullet: {
                             level: item.level,
                         },
@@ -385,13 +384,10 @@ async function generateDocx(jsonStructure)
                     }))
                 } else {
                     children.push(new Paragraph({
-                        text: text,
+                        children: textRunArray.map(textRun => new TextRun(textRun)),
                         bullet: {
                             level: item.level,
                         },
-                        bullet: {
-                            level: item.level,
-                        }
                     }))
                 }
             }
@@ -401,11 +397,11 @@ async function generateDocx(jsonStructure)
             rows = []
             // Ajouter l'en-tête
             headerRow = new TableRow({
-                children: item.headers.map(headerText =>
+                children: item.headers.map(headerTextRuns =>
                     new TableCell({
                         children: [
                             new Paragraph({
-                                text: headerText,
+                                children: headerTextRuns.map(textRun => new TextRun(textRun)),
                                 bold: true,
                             }),
                         ],
@@ -415,20 +411,25 @@ async function generateDocx(jsonStructure)
             })
             rows.push(headerRow)
             
-            item.rows.forEach(
-                row => {
-                    rows.push(new TableRow({
-                        children: row.map(
-                            cell => new TableCell({
-                                children: [new Paragraph(cell)],
-                                width: { size: 20, type: WidthType.PERCENTAGE },
-                            })
-                        ),
-                    }))
-                }
-            )
+            for (const row of item.rows) {
+                const tableRow = new TableRow({
+                    children: row.map(cellTextRuns =>
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    children: cellTextRuns.map(textRun => new TextRun(textRun)),
+                                }),
+                            ],
+                            width: { size: 20, type: WidthType.PERCENTAGE },
+                        })
+                    ),
+                })
+                rows.push(tableRow)
+            }
+
             children.push(new Table({
-                rows: rows,
+                rows,
+                width: { size: 100, type: WidthType.PERCENTAGE },
             }))
             break
 
@@ -505,40 +506,4 @@ async function generateDocx(jsonStructure)
     return Packer.toBuffer(doc)
 }
 
-/**
- * Unit test
- */
-
-const test = `
-# Titre 1
-
-Ceci est un paragraphe normal avec du **texte en gras** et un [lien](https://example.com).
-
-## Titre 2
-
-- Élément 1
-- Élément 2
-  - Sous-élément 1
-  - Sous-élément 2
-
-1. Premier élément
-2. Deuxième élément
- | Colonne 1 | Colonne 2 |
- |-----------|-----------|
- | Ligne 1   | Ligne 1   |
- | Ligne 2   | Ligne 2   |
-
-![Image](https://example.com/image.png)
-`
-
-console.log(util.inspect(mdToDocx(test), { depth: null, colors: true }))
-
-const markdownContent = `# Titre 1
-
-Ceci est un paragraphe normal avec du **texte en gras** et un [lien](https://example.com).`
-
-const jsonStructure = mdToDocx(test)
-generateDocx(jsonStructure).then(buffer => {
-    require("fs").writeFileSync("document.docx", buffer)
-    console.log("Fichier généré : document.docx")
-})
+module.exports = mdToDocx
