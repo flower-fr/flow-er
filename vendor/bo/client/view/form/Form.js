@@ -2,13 +2,14 @@ import View from "../View.js"
 
 export default class Form extends View
 {
-    constructor({ controller, entity, view, id })
+    constructor({ controller, entity, view, id, onSuccess })
     {
         super({ controller })
         this.identifier = Date.now()
         this.entity = entity
         this.view = view
         this.id = id
+        this.onSuccess = onSuccess
     }
 
     initialize = async () => {
@@ -125,7 +126,7 @@ export default class Form extends View
                 html.push(`
                 <div class="col-md-6">
                     <div class="form-outline fl-form-outline ${ this.identifier }-input"" data-mdb-input-init>
-                        <input type="email" class="form-control form-control-sm fl-modal-form-input" data-fl-property="${ propertyId }" data-fl-type="email" ${ value ? `value=${ value }`: "" }  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
+                        <input type="email" class="form-control form-control-sm fl-modal-form-input" id="${ this.identifier }-${ propertyId }" data-fl-property="${ propertyId }" data-fl-type="email" ${ value ? `value=${ value }`: "" }  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
                         <label class="form-label">${ label }</label>
                     </div>
                 </div>`
@@ -295,7 +296,7 @@ export default class Form extends View
                 <div class="fl-modal-log">
                     <table class="table table-sm table-hover table-responsive">
                         <thead class="datatable-header" />
-                        <tbody class=""table-group-divider">`)
+                        <tbody class="table-group-divider">`)
 
                 for (const modality of property.modalities) {
                     html.push(`
@@ -347,6 +348,7 @@ export default class Form extends View
                     <button 
                         name="${ this.identifier }-${postId}" 
                         class="btn ${ (post.danger) ? "btn-outline-primary" : "btn-warning" } fl-detail-tab-submit"
+                        disabled
                         data-mdb-ripple-init
                         data-mdb-ripple-color="danger"
                         ${ (post.danger) ? "data-fl-danger=\"danger\"" : "" }
@@ -366,9 +368,9 @@ export default class Form extends View
 
         html.push(`
                 <div class="col-md-2 fl-submit-div p-3">
-                    <a href="#!" id="flModalFormCancel">
+                    <button type="button" id="flModalFormCancel" class="btn btn-link" disabled>
                         ${ this.translations["Cancel"] }
-                    </a>
+                    </button>
                 </div>`)
 
         html.push(`
@@ -382,8 +384,13 @@ export default class Form extends View
 
     trigger = () =>
     {
-        // $("#flModalBtnClose").addClass("disabled")
+        const properties = this.properties, posts = this.posts, controller = this.controller, data = this.data
+        const form = document.getElementById(this.identifier)
+        const cancelButton = document.getElementById("flModalFormCancel")
+        const backButton = document.getElementById("flScreen2BackButton")
+        const submitButtons = document.querySelectorAll(`[name^="${this.identifier}-"]`)
 
+        // Initialize MDB components
         document.querySelectorAll(".form-outline").forEach(el => {
             if (el.classList.contains("fl-form-outline")) new mdb.Input(el)
             else if (el.classList.contains("fl-date-outline")) new mdb.Datepicker(el)
@@ -400,13 +407,15 @@ export default class Form extends View
         })
 
         $(`.${ this.identifier }-message`).hide()
-        
-        const properties = this.properties, posts = this.posts, form = document.getElementById(this.identifier), controller = this.controller
+
+        // Form submission handler
         if (form) {
-            form.onsubmit = async function (event)
+            form.onsubmit = async (event) =>
             {
                 event.preventDefault()
                 form.checkValidity()
+
+                // Build the request body
                 const body = { touched_at: document.getElementById(`${ this.identifier }-touched_at`)?.value }
                 for (const [propertyId, property] of Object.entries(properties)) {
                     const input = document.getElementById(`${ this.identifier }-${ propertyId }`)
@@ -418,24 +427,57 @@ export default class Form extends View
                     }
                 }
 
+                // Submit the form
                 const submit = event.submitter, postId = submit.name.split("-")[1], post = posts[postId]
-                const response = await fetch(`/${ post.controller }/${ post.action }/${ post.entity }${ this.view ? `/${ this.view }` : "" }`, {
+                const response = await fetch(`/${ post.controller }/${ post.action }/${ post.entity }${ (post.id) ? `?id=${ data[post.id] }`: "" }`, {
                     method: post.method,
                     headers: new Headers({"content-type": "application/json"}),
                     body: JSON.stringify([body]),
                 })
+
+                // Handle response
                 if (response.status == 200) {
                     const body = await response.json()
-                    console.log(body.stored[0].entitiesToInsert[post.entity].rowId)
+                    backButton?.removeAttribute("disabled")
+                    cancelButton?.setAttribute("disabled", "true")
+                    submitButtons.forEach(btn => { btn?.setAttribute("disabled", "true") })
                     controller.unstack()
+                    this.onSuccess && this.onSuccess()
                 } else {
                     $(`#${ this.identifier }-messageServerError`).show()
                 }
             }
         }
 
-        $("#flModalFormCancel").click(() => {
-            controller.hideModal()
+
+        // Track changes to warn user if he tries to leave the page with unsaved changes
+        let isDirty = false
+        form?.addEventListener("input", () => {
+            isDirty = true
+            backButton?.setAttribute("disabled", "true")
+            cancelButton?.removeAttribute("disabled")
+            submitButtons.forEach(btn => { btn?.removeAttribute("disabled") })
         })
+        form?.addEventListener("change", () => {
+            isDirty = true
+            backButton?.setAttribute("disabled", "true")
+            cancelButton?.removeAttribute("disabled")
+            submitButtons.forEach(btn => { btn?.removeAttribute("disabled") })
+        })
+
+        // Cancel button click handler
+        if (cancelButton) cancelButton.onclick = () => {
+            if (isDirty) {
+                const confirmed = window.confirm(
+                    this.translations["You have unsaved changes. Do you want to discard them?"]
+                )
+                if (!confirmed) {return}
+            }
+            document.getElementById("flScreen2Content").innerHTML = this.render()
+            this.trigger()
+            backButton?.removeAttribute("disabled")
+            cancelButton?.setAttribute("disabled", "true")
+            submitButtons.forEach(btn => { btn?.setAttribute("disabled", "true") })
+        }
     }
 }

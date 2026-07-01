@@ -24,6 +24,10 @@
             "n_fn": { "column": "n_fn", "type": "CONCAT", "components": ["n_last", "n_first"] },
             "email": { "entity": "vcard", "column": "email", "type": "email" },
             "tel_cell": { "entity": "vcard", "column": "tel_cell" },
+            "tel_work": { "entity": "vcard", "column": "tel_work", "audit": true },
+            "adr_street": { "entity": "vcard", "column": "adr_street", "audit": true },
+            "adr_zip": { "entity": "vcard", "column": "adr_zip", "audit": true },
+            "adr_city": { "entity": "vcard", "column": "adr_city", "audit": true },
 
             "keywords": { 
                 "column": "keywords",

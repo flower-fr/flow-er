@@ -183,7 +183,7 @@ export default class List extends View
 
     trigger = () =>
     {
-        const controller = this.controller, entity = this.entity, view = this.view, translations = this.translations
+        const controller = this.controller, entity = this.entity, view = this.view, translations = this.translations, layout = this.layout
         const tableEl = document.getElementById("flListTable")
         const cardEl = document.getElementById("flCard")
         const dashboardEl = document.getElementById("flDashboard")
@@ -236,7 +236,7 @@ export default class List extends View
                 tableEl.classList.remove("table-hover")
 
                 // Render and display the card for this row
-                const card = new Card({ controller, entity, id: row.id, view })
+                const card = new Card({ controller, entity, id: row.id, view, layout })
                 await card.initialize()
                 cardEl.style.display = "block"
                 cardEl.dataset.openId = String(row.id)

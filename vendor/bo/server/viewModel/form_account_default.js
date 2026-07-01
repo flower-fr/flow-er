@@ -76,12 +76,13 @@ module.exports = {
         },
     },
     posts: {
-        add: {
+        update: {
             method: "POST",
             controller: "core",
             action: "v1",
-            entity: "crm_account",
-            label: "Ajouter",
+            entity: "account",
+            id: "id",
+            label: "Enregistrer",
         }
     },
     translations: {
@@ -91,5 +92,6 @@ module.exports = {
         "Technical error, Please try again later": "Erreur technique, veuillez ré-éssayer ultérieurement",
         "The data has changed in the meantime, please input again": "La donnée a été modifiée entretemps, veuillez saisir à nouveau",
         "The data already exists": "La donnée existe déjà",
+        "You have unsaved changes. Do you want to discard them?": "Vous avez des modifications non enregistrées. Voulez-vous les abandonner ?"
     }
 }

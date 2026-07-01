@@ -131,5 +131,6 @@ module.exports = {
     translations: {
         "DD/MM/YYYY": "JJ/MM/AAAA",
         "Modify": "Modifier",
+        "Update": "Mettre à jour"
     }
 }
