@@ -18,7 +18,6 @@ const sessionCookieMiddleware = (config, context) => async (req, res, next) => {
 
     try {
         const { status, payload } = await checkToken(token, config.apiKey)
-console.log({ token, status, payload })
         if (status === "invalid") {
             return res.redirect("/user/login")
         }
