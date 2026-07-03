@@ -8,6 +8,7 @@ import Navbar from "../navbar/Navbar.js"
 import Search from "../search/Search.js"
 import SearchKeywords from "../search/SearchKeywords.js"
 import SidenavButton from "../search/SidenavButton.js"
+import Toast from "../toast/Toast.js"
 
 export default class Layout extends View
 {
@@ -28,6 +29,8 @@ export default class Layout extends View
         this.searchKeywords = new SearchKeywords({ controller, placeholder: "Nom, entreprise, coordonnées" })
         this.sidenavButton = new SidenavButton({ controller })
         this.group = new Group({ controller, entity, view, layout: this })
+        this.toast = new Toast({ controller },
+            { title: "Todo list", message: "Voici la liste des personnes à contacter ce jour. C’est à votre portée!", type: "info", persistent: true })
     }
 
     initialize = async () =>
@@ -39,6 +42,7 @@ export default class Layout extends View
         await this.global.initialize()
         await this.list.initialize()
         await this.group.initialize()
+        await this.toast.initialize()
     }
 
     render = () =>
@@ -69,26 +73,7 @@ export default class Layout extends View
         html.push(this.navbar.render())
     
         html.push(`
-                </div>
-
-<div
-  class="toast show fade mx-auto"
-  id="static-example"
-  role="alert"
-  aria-live="assertive"
-  aria-atomic="true"
-  data-mdb-toast-init
-  data-mdb-color="success"
-  data-mdb-autohide="false"
->
-  <div class="toast-header">
-    <strong class="me-auto">Todo list</strong>
-    <small>17 juin</small>
-    <button type="button" class="btn-close" data-mdb-dismiss="toast" aria-label="Close"></button>
-  </div>
-  <div class="toast-body">Voici la liste des personnes à contacter ce jour. C’est à votre portée!</div>
-</div>
-                
+            </div>
                 <div class="m-3">
                     <div class="row">
                         <div class="col-md-9">
@@ -139,14 +124,10 @@ export default class Layout extends View
         this.group.trigger()
         this.list.trigger()
         this.addForm.trigger()
+        this.toast.trigger()
 
         const element = document.getElementById("flSearchButton")
         new mdb.Button(element)
-
-        const el = document.getElementById("static-example")
-        new mdb.Toast(el)
-        let instance = mdb.Toast.getInstance(document.getElementById("static-example"))
-        instance.update({ position: "top-right", })
     }
 
     refreshList = async ({ where, tags, orderProperty, orderDirection }) =>

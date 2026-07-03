@@ -8,11 +8,6 @@ module.exports = {
             type: "input",
             label: "Nom",
         },
-        business_name: {
-            type: "input",
-            label: "Entreprise",
-            required: true,
-        },
         email: {
             type: "email",
             label: "Email",
@@ -23,10 +18,21 @@ module.exports = {
             label: "Téléphone professionnel",
         },
     },
+    posts: {
+        add: {
+            method: "POST",
+            controller: "core",
+            action: "v1",
+            entity: "account",
+            label: "Ajouter",
+        }
+    },
     translations: {
         "Cancel": "Annuler",
         "DD/MM/YYYY": "JJ/MM/AAAA",
+        "Success": "Succès",
         "Request registered": "Demande enregistrée",
+        "Error": "Erreur",
         "Technical error, Please try again later": "Erreur technique, veuillez ré-éssayer ultérieurement",
         "The data already exists": "La donnée existe déjà",
     }

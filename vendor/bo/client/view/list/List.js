@@ -64,6 +64,7 @@ export default class List extends View
         this.listRows = rows.map(row => { 
             return new ListRow({ i: i++, controller: this.controller, row, filledColumns: this.filledColumns, properties, translations })
         })
+        this.checkedIds = new Set()
     }
 
     render = () =>
@@ -183,7 +184,7 @@ export default class List extends View
 
     trigger = () =>
     {
-        const controller = this.controller, entity = this.entity, view = this.view, translations = this.translations
+        const controller = this.controller, entity = this.entity, view = this.view, translations = this.translations, layout = this.layout
         const tableEl = document.getElementById("flListTable")
         const cardEl = document.getElementById("flCard")
         const dashboardEl = document.getElementById("flDashboard")
@@ -199,11 +200,6 @@ export default class List extends View
         $(".fl-list-more").click(function () {
             $("#flListLimitHidden").val(this.data.limit * 2)
             // triggerList({ context, entity, view })
-        })
-
-        // Enable add action
-        $("#flListAdd").click(() => {
-            controller.stack(new Form({ controller, entity, view }), translations["New"], true)
         })
 
         // Enable card action
@@ -236,7 +232,7 @@ export default class List extends View
                 tableEl.classList.remove("table-hover")
 
                 // Render and display the card for this row
-                const card = new Card({ controller, entity, id: row.id, view })
+                const card = new Card({ controller, entity, id: row.id, view, layout })
                 await card.initialize()
                 cardEl.style.display = "block"
                 cardEl.dataset.openId = String(row.id)
@@ -250,6 +246,7 @@ export default class List extends View
         this.listRows.forEach(listRow => {
             const i = listRow.i
             const row = document.getElementById(`flListCheck-${ i }`)
+            const id = listRow.row.id
             row.onclick = (e) => {
                 if (e.shiftKey) {
                     const max = i, state = row.checked
@@ -261,13 +258,16 @@ export default class List extends View
                     this.listRows.forEach(lr => {
                         const i = lr.i, r = document.getElementById(`flListCheck-${ i }`)
                         if (i >= min && i <= max) r.checked = state
+                        this.toggleChecked(lr.row.id, r.checked)
                     })
+                } else {
+                    this.toggleChecked(id, row.checked)
                 }
 
-                let checked = 0, sumChecked = 0
+                const checked = this.checkedIds.size
+                let sumChecked = 0
                 this.listRows.forEach(lr => {
                     const i = lr.i, r = document.getElementById(`flListCheck-${ i }`)
-                    if (r.checked) checked++
 
                     let sum = this.sumable ? Number.parseFloat(lr.row[this.sumable]) : 0
                     if (r.checked) sumChecked += sum
@@ -298,6 +298,7 @@ export default class List extends View
             this.listRows.forEach(lr => {
                 const i = lr.i, r = document.getElementById(`flListCheck-${ i }`)
                 r.checked = state
+                this.toggleChecked(lr.row.id, state)
             })
 
             if (state)
@@ -305,9 +306,9 @@ export default class List extends View
                 $("#flGroup").show()
                 $("#flDashboard").hide()
                 $("#flAdd").hide()
-                let count = 0, sum = 0
+                const count = this.checkedIds.size
+                let sum = 0
                 this.listRows.forEach(lr => {
-                    count++
                     sum += this.sumable ? Number.parseFloat(lr.row[this.sumable]) : 0
                 })
                 $(".fl-list-count").text(count)
@@ -333,5 +334,13 @@ export default class List extends View
             checkAllUp.checked = checkAllDown.checked
             checkAll(checkAllDown.checked)
         }
+    }
+
+    toggleChecked = (id, checked) =>
+    {
+        if (!this.checkedIds) this.checkedIds = new Set()
+
+        if (checked) this.checkedIds.add(id)
+        else this.checkedIds.delete(id)
     }
 }

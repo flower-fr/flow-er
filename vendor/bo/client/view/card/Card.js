@@ -4,12 +4,13 @@ import Form from "../form/Form.js"
 
 export default class Card extends View
 {
-    constructor({ controller, entity, id, view })
+    constructor({ controller, entity, id, view, layout })
     {
         super({ controller })
         this.entity = entity
         this.id = id
         this.view = view
+        this.layout = layout
     }
 
     initialize = async () =>
@@ -279,8 +280,18 @@ export default class Card extends View
 
     getForm = () =>
     {
-        const { controller, entity, id, view } = this
-        controller.showModal(new Form({ controller, entity, view, id }), this.translations["Modify"])
+        const { controller, entity, id, view, layout } = this
+        controller.stack(new Form({ controller, entity, view, id, onSuccess: async () => {
+            layout.refreshList({})
+
+            // Refresh the card
+            const cardEl = document.getElementById("flCard")
+            if (cardEl) {
+                await this.initialize()
+                cardEl.innerHTML = this.render()
+                this.trigger()
+            } 
+        }}))
     }
 
     trigger = () =>
@@ -293,7 +304,7 @@ export default class Card extends View
 
         // Update button
         document.getElementById("flCardUpdateButton").onclick = () => {
-            // this.getForm()
+            this.getForm()
         }
 
         // Close button

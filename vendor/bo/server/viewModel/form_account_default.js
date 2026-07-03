@@ -8,11 +8,6 @@ module.exports = {
             type: "input",
             label: "Nom",
         },
-        business_name: {
-            type: "input",
-            label: "Entreprise",
-            required: true,
-        },
         email: {
             type: "email",
             label: "Email",
@@ -21,11 +16,6 @@ module.exports = {
         tel_work: {
             type: "phone",
             label: "Téléphone professionnel",
-        },
-        identifier: {
-            type: "input",
-            label: "SIREN / SIRET",
-            required: true,
         },
         adr_street: {
             type: "input",
@@ -76,20 +66,24 @@ module.exports = {
         },
     },
     posts: {
-        add: {
+        update: {
             method: "POST",
             controller: "core",
             action: "v1",
-            entity: "crm_account",
-            label: "Ajouter",
+            entity: "account",
+            id: "id",
+            label: "Enregistrer",
         }
     },
     translations: {
         "Cancel": "Annuler",
         "DD/MM/YYYY": "JJ/MM/AAAA",
+        "Success": "Succès",
         "Request registered": "Demande enregistrée",
+        "Error": "Erreur",
         "Technical error, Please try again later": "Erreur technique, veuillez ré-éssayer ultérieurement",
         "The data has changed in the meantime, please input again": "La donnée a été modifiée entretemps, veuillez saisir à nouveau",
         "The data already exists": "La donnée existe déjà",
+        "You have unsaved changes. Do you want to discard them?": "Vous avez des modifications non enregistrées. Voulez-vous les abandonner ?"
     }
 }
