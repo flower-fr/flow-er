@@ -1,4 +1,5 @@
 import View from "../View.js"
+import Toast from "../toast/Toast.js"
 
 export default class Form extends View
 {
@@ -384,7 +385,7 @@ export default class Form extends View
 
     trigger = () =>
     {
-        const properties = this.properties, posts = this.posts, controller = this.controller, data = this.data
+        const { properties, posts, translations, controller, data } = this
         const form = document.getElementById(this.identifier)
         const cancelButton = document.getElementById("flModalFormCancel")
         const backButton = document.getElementById("flScreen2BackButton")
@@ -442,9 +443,20 @@ export default class Form extends View
                     cancelButton?.setAttribute("disabled", "true")
                     submitButtons.forEach(btn => { btn?.setAttribute("disabled", "true") })
                     controller.unstack()
+                    const toast = new Toast({ controller: this.controller }, {
+                        title: translations["Success"],
+                        message: translations["Request registered"],
+                        type: "success" })
+                    toast.trigger()
                     this.onSuccess && this.onSuccess()
                 } else {
-                    $(`#${ this.identifier }-messageServerError`).show()
+                    const toast = new Toast({ controller: this.controller }, {
+                        title: translations["Error"],
+                        message: translations["Technical error, Please try again later"],
+                        type: "danger",
+                        persistent: true })
+                    toast.trigger()
+                    // $(`#${ this.identifier }-messageServerError`).show()
                 }
             }
         }
