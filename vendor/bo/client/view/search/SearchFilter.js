@@ -90,13 +90,19 @@ const renderFilterDateTime = (propertyId, property, params) =>
     }
 
     return `
-        <div class="form-outline mb-1" id="flSearchFormOutlineMin-${propertyId}" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true">
-            <input type="text" class="form-control form-control-sm" id="flSearchMin-${propertyId}" ${ (valueMin) ? `value="${ valueMin }"` : "" } />
-            <label for="flSearchMin-${propertyId}" class="form-label">${ property.label } - Min</label>
-        </div>
-        <div class="form-outline mb-3" id="flSearchFormOutlineMax-${propertyId}" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true">
-            <input type="text" class="form-control form-control-sm" id="flSearchMax-${propertyId}" ${ (valueMax) ? `value="${ valueMax }"` : "" } />
-            <label for="searchMax-${propertyId}" class="form-label">Max</label>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-outline mb-1" id="flSearchFormOutlineMin-${propertyId}" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true">
+                    <input type="text" class="form-control form-control-sm" id="flSearchMin-${propertyId}" ${ (valueMin) ? `value="${ valueMin }"` : "" } />
+                    <label for="flSearchMin-${propertyId}" class="form-label">${ property.label } - Min</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-outline mb-3" id="flSearchFormOutlineMax-${propertyId}" data-mdb-datepicker-init data-mdb-input-init data-mdb-inline="true">
+                    <input type="text" class="form-control form-control-sm" id="flSearchMax-${propertyId}" ${ (valueMax) ? `value="${ valueMax }"` : "" } />
+                    <label for="flSearchMax-${propertyId}" class="form-label">Max</label>
+                </div>
+            </div>
         </div>`
 }
 

@@ -7,8 +7,9 @@ export default class SearchKeywords extends View
         this.placeholder = placeholder
     }
 
-    render = () =>
+    render = (placeholder) =>
     {
+        if (!placeholder) placeholder = this.placeholder
         const html = []
 
         html.push(`
@@ -21,10 +22,9 @@ export default class SearchKeywords extends View
                         type="search"
                         class="form-control rounded"
                         id="flSearchKeywords"
-                        placeholder="${ this.placeholder }"
+                        placeholder="${ placeholder }"
                         aria-label="Search"
                     />
-                    &nbsp;&nbsp;&nbsp;&nbsp;
                 </div>
             </section>`)
 

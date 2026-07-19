@@ -30,6 +30,7 @@ const transactionAction = async ({ req }, context, { sql, smtp, sms, logger }) =
     try {
         await sql.beginTransaction()
     
+        const result = {}
         let insertId
         for (const step of req.body.steps) {
             const stepId = step.id, stepFunction = postSteps[stepId]
@@ -44,8 +45,9 @@ const transactionAction = async ({ req }, context, { sql, smtp, sms, logger }) =
                 }
                 return dataRow
             })
+            result[stepId] = data
             if (!step.async) {
-                const result = await stepFunction({ req, entity: step.entity }, context, data, { sql, smtp, sms })
+                const result = await stepFunction({ req, entity: step.entity }, context, data, { sql, smtp, sms, logger })
                 result.stored.forEach(row => {
                     if (row.entitiesToInsert && row.entitiesToInsert[entity]) insertId = row.entitiesToInsert[entity].rowId
                 })
@@ -56,13 +58,13 @@ const transactionAction = async ({ req }, context, { sql, smtp, sms, logger }) =
     
         for (const [stepId, step] of Object.entries(req.body.steps)) {
             const stepFunction = postSteps[stepId]
-            if (step.async) stepFunction({ req, entity: step.entity }, context, rows, { sql, smtp, sms })
+            if (step.async) stepFunction({ req, entity: step.entity }, context, rows, { sql, smtp, sms, logger })
         }
     
-        return JSON.stringify({ "status": "ok" })    
+        return JSON.stringify({ "status": "ok", result })    
     }
     catch (err) {
-        logger && logger.debug(util.inspect(err))
+        logger && logger.debug(err)
         await sql.rollback()
         throw throwBadRequestError()
     }

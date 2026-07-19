@@ -1,10 +1,8 @@
 import View from "../View.js"
 
-import Form from "../form/Form.js"
-import Group from "../group/Group.js"
 import ListHeader from "./ListHeader.js"
+import ListGroup from "./ListGroup.js"
 import ListRow from "./ListRow.js"
-import Detail from "../detail/Detail.js"
 import Card from "../card/Card.js"
 
 export default class List extends View
@@ -61,9 +59,26 @@ export default class List extends View
         })
         this.listHeader = new ListHeader({ controller: this.controller, rows, filledColumns: this.filledColumns, properties, orderProperty, orderDirection, limit, translations, layout: this.layout })
         let i = 0
-        this.listRows = rows.map(row => { 
-            return new ListRow({ i: i++, controller: this.controller, row, filledColumns: this.filledColumns, properties, translations })
-        })
+
+        // Group rows by order property
+        this.groups = [], this.listRows = []
+        let currentPrefix, currentGroup
+        const orderType = this.properties[orderProperty].type
+        for (const row of rows) {
+            const pred = (orderType === "datetime") ? () => row[orderProperty].substr(0, 7) !== currentPrefix?.substr(0, 7) : () => row[orderProperty] !== currentPrefix
+            if (pred()) {
+                currentPrefix = row[orderProperty]
+                currentGroup = [new ListGroup({ controller: this.controller, value: row[orderProperty], size: Object.entries(row).length, translations })]
+                this.groups.push(currentGroup)
+            }
+            const listRow = new ListRow({ i: i++, controller: this.controller, row, filledColumns: this.filledColumns, properties, translations })
+            currentGroup.push(listRow)
+            this.listRows.push(listRow)
+        }
+
+        // this.listRows = rows.map(row => { 
+        //     return new ListRow({ i: i++, controller: this.controller, row, filledColumns: this.filledColumns, properties, translations })
+        // })
         this.checkedIds = new Set()
     }
 
@@ -72,6 +87,17 @@ export default class List extends View
         const html = [], translations = this.translations
 
         html.push(`
+        <style>
+        th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .table-responsive {
+            max-height: 100vh;
+            overflow-y: auto;
+        }
+        </style>
         <div class="table-responsive">
             <div class="col-md-12">
                 <table class="table table-sm table-hover" id="flListTable">
@@ -80,78 +106,8 @@ export default class List extends View
                     </thead>
                     <tbody class="table-group-divider">`)
 
-//         // html.push(`
-//         //                 <tr>
-//         //                     <td/>
-
-//         //                     <td class="text-center">
-//         //                         <a 
-//         //                             href="#!"
-//         //                             class="text-primary"
-//         //                             id="flListAdd"
-//         //                             title="${ translations["Add"] }"
-//         //                         >
-//         //                             <span class="fas fa-plus"></span>
-//         //                         </a>
-//         //                     </td>`)
-
-//         for (const propertyId of this.filledColumns) {
-//             if (this.properties[propertyId]) {
-//                 html.push("<td>")
-//                 if (propertyId == "linkedin") {
-//                     const property = this.properties[propertyId]
-//                     html.push(`
-//                                 <div class="dropdown" id="flListEdit-linkedin">
-//                                     <button
-//                                         class="btn btn-sm btn-outline-primary dropdown-toggle"
-//                                         type="button"
-//                                         data-mdb-dropdown-init
-//                                         data-mdb-ripple-init
-//                                         aria-expanded="false"
-//                                         id="flListDropdown-linkedin"
-//                                         title="${ translations["Grouped actions"] }"
-//                                     >
-//                                         <small><i class="fas fa-edit me-md-2"></i></small>
-//                                     </button>
-//                                     <div class="dropdown-menu" style="width: 320px">
-//                                         <form class="px-4 py-3">
-//                                             <div class="form-outline mb-4">
-//                                                 <select class="form-select form-select-sm fl-modal-form-select" id="flList-template" data-mdb-size="sm">
-//                                                     <option />
-//                                                     <option value="1">Template 1</option>
-//                                                     <option value="2">Template 2</option>
-//                                                     <option value="3">Template 3</option>
-//                                                 </select>
-//                                                 <label class="form-label select-label">Template</label>
-//                                             </div>
-//                                             <div class="form-outline mb-4" data-mdb-input-init>
-//                                                 <textarea id="flList-text" class="form-control" rows="10">Bonjour { prenom }
-
-// Je me permets de vous contacter car j'ai vu que vous étiez en charge de { sujet } chez { entreprise }.
-
-// Chez Double Crème, nous aidons les entreprises du secteur de l'IT à vendre sans effort.
-
-// Seriez-vous disponible pour en discuter ? Je serais ravi de vous présenter comment nous pouvons vous aider à atteindre vos objectifs.
-
-// Cordialement,
-// { mon_prenom }</textarea>
-//                                                 <label class="form-label" for="flList-text">Message</label>
-//                                             </div>
-//                                             <div class="form-outline mb-4">
-//                                                 <button class="btn btn-warning">Envoyer l’Inmail</button>
-//                                             </div>
-//                                         </form>
-//                                     </div>
-
-//                                 </div>`)
-//                 } 
-//                 html.push("</td>")
-//             }
-//         }
-
-//         html.push("</tr>")
-
-        this.listRows.map(listRow => html.push(listRow.render())).join("\n")
+        this.groups.forEach(group => group.map(listRow => html.push(listRow.render())).join("\n"))
+        // this.listRows.map(listRow => html.push(listRow.render())).join("\n")
 
         html.push(`
                         <tr class="listRow">

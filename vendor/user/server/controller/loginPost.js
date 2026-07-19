@@ -140,6 +140,7 @@ const loginPost = async ({ req, res }, context, config, sql) =>
     const payloadModel = config.tokenPayloadModel
     const filters = { "user_id": user.id }
     const rows = await sql.execute({ context, type: "select", entity: payloadModel.entity, columns: Object.keys(payloadModel.columns), where: filters})
+console.log(rows);
     const payload = { id: user.id, locale: user.locale, status: user.status }
     for (const [key, value] of Object.entries(rows[0])) payload[payloadModel.columns[key]] = value
     const expiresIn = config.tokenExpirationTime

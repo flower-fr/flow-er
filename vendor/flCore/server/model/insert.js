@@ -4,8 +4,8 @@ const { qi, qv } = require("./quote")
 
 const { encrypt } = require("./sql-client/encrypt")
 
-const insert = (entity, data, model, user, context, debug = false) => {
-console.log({ model })
+const insert = (entity, data, model, user, context, debug = false) =>
+{
     const table = (model.entities[entity]) ? model.entities[entity].table : entity
 
     const pairs = {}
@@ -62,7 +62,6 @@ console.log({ model })
     }
 
     const request = `INSERT INTO ${table} (${Object.keys(pairs).join(", ")})\n VALUES (${Object.values(pairs).join(", ")})\n`
-    if (debug) console.log(request)
     return request
 }
 

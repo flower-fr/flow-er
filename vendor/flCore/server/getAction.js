@@ -11,16 +11,17 @@ const getAction = async ({ req }, context, { sql, logger }) =>
     if (!columns.includes("id")) {
         columns.push("id")
     }
-    logger && logger.debug(util.inspect({columns}))
+    logger && logger.debug(util.inspect({columns}, {depth: null, colors: true}))
 
-    const whereParam = ((req.query.where) ? req.query.where.split("|") : []).map( x => x.split(":"))
+    const whereParam = ((req.query.where) ? req.query.where.split("|") : []).map( x => { const [key, ...value] = x.split(":"); return [key, value.join(":")] })
+
     const where = {}
     for (const [key, value] of whereParam) where[key] = value.split(",")
     if (id) where.id = id
-    logger && logger.debug(util.inspect({where}))
+    logger && logger.debug(util.inspect({where}, {depth: null, colors: true}))
 
     const tags = req.query.tags ? req.query.tags.split(",") : undefined
-    logger && logger.debug(util.inspect({tags}))
+    logger && logger.debug(util.inspect({tags}, {depth: null, colors: true}))
 
     const orderParam = (req.query.order) ? req.query.order.split(",") : []
     const order = {}
@@ -29,28 +30,29 @@ const getAction = async ({ req }, context, { sql, logger }) =>
         const direction = (key.charAt(0) === "-") ? "DESC" : "ASC"     
         order[column] = direction
     }
-    logger && logger.debug(util.inspect({order}))
+    logger && logger.debug(util.inspect({order}, {depth: null, colors: true}))
 
     const limit = (req.query.limit) ? req.query.limit : 1000
-    logger && logger.debug(util.inspect({limit}))
+    logger && logger.debug(util.inspect({limit}, {depth: null, colors: true}))
 
     const vectors = (req.query.vectors) ? req.query.vectors.split(",") : []
-    logger && logger.debug(util.inspect({vectors}))
+    logger && logger.debug(util.inspect({vectors}, {depth: null, colors: true}))
 
     try {
         if (vectors) {
             const result = {}
             result.rows = await sql.execute({ context, type: "select", entity, columns, where, tags, order, limit })
             result.vectors = await sql.execute({context, type: "vectors", entity, vectors})
+            logger && logger.debug(util.inspect({result}, {depth: null, colors: true}))
             return [200, result, "application/json"]
         }
-        else {
+        else { // Deprecated
             const result = await sql.execute({ context, type: "select", entity, columns, where, tags, order, limit, vectors })
             return [200, result, "application/json"]
         }
     }
     catch (err) {
-        console.log(util.inspect(err))
+        console.log(err)
         throw throwBadRequestError()
     }
 }

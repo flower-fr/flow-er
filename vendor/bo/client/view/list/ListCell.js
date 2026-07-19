@@ -38,7 +38,8 @@ export default class ListCell extends View
         }
     
         else if (property.type == "datetime") {
-            html.push(`<td>${ moment(row[propertyId]).format("DD/MM/YYYY HH:mm:ss") }</td>`)
+            const dow = ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"][moment(row[propertyId]).day()]
+            html.push(`<td class="text-muted"><strong>${ dow }</strong> ${ moment(row[propertyId]).format("DD/MM/YYYY HH:mm:ss") }</td>`)
         }
 
         else if (property.type == "number") {

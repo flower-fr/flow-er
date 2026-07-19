@@ -17,10 +17,10 @@ const action = async ({ req }, { context, sql, logger }) =>
                 if (Array.isArray(v)) {
                     value.where[k] = v.map(token => {
                         switch (token) {
-                            case "today":          return moment().format("YYYY-MM-DD")
-                            case "start_of_month": return moment().startOf("month").format("YYYY-MM-DD")
-                            case "start_of_year":  return moment().startOf("year").format("YYYY-MM-DD")
-                            default:               return token
+                        case "today":          return moment().format("YYYY-MM-DD")
+                        case "start_of_month": return moment().startOf("month").format("YYYY-MM-DD")
+                        case "start_of_year":  return moment().startOf("year").format("YYYY-MM-DD")
+                        default:               return token
                         }
                     })
                 }
@@ -35,7 +35,8 @@ const action = async ({ req }, { context, sql, logger }) =>
     else if (config?.title?.label?.["default"]) config.title.label = config.title.label["default"]
 
     for (const property of config.properties ? Object.values(config.properties) : []) {
-        if (property.type == "vector") {
+
+        if (["vector", "autocomplete"].includes(property.type)) {
             const { entity, key, format, columns, where, order } = property
             const items = await sql.execute({ context, type: "select", entity, columns, where, order })
             property.modalities = {}
@@ -51,6 +52,7 @@ const action = async ({ req }, { context, sql, logger }) =>
                 property.modalities[item[key]] = { label: formatted.join("") }
             }
         }
+        logger && logger.debug(util.inspect({ property }, { depth: null, colors: true }))
 
         // Localization
 

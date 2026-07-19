@@ -48,13 +48,17 @@ export default class Dashboard extends View
         html.push(`
             <div class="section" id="flDashboard">
                 <div class="row">
-                    <div class="col-6">
+                    <div class="col-4">
                         <div class="text-center">${this.chartData[0]?.label}</div>
                         <canvas id="${this.chartData[0]?.id}"></canvas>
                     </div>
-                    <div class="col-6" >
-                        <div class="text-center">${this.chartData[1]?.label}</div>
+                    <div class="col-4" >
+                        <div class="text-center">${ this.chartData[1] ? this.chartData[1].label : "" }</div>
                         <canvas id="${this.chartData[1]?.id}"></canvas>
+                    </div>
+                    <div class="col-4" >
+                        <div class="text-center">${ this.chartData[2] ? this.chartData[2].label : "" }</div>
+                        <canvas id="${this.chartData[2]?.id}"></canvas>
                     </div>
                 </div>
             <hr>

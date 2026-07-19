@@ -59,7 +59,7 @@ export default class Layout extends View
             >
                 <div class="container">`)
 
-        html.push(this.search.render())
+        // html.push(this.search.render())
         html.push(this.global.render())
 
         html.push(`
@@ -77,10 +77,10 @@ export default class Layout extends View
                 <div class="m-3">
                     <div class="row">
                         <div class="col-md-9">
-                            <section class="p-4 d-flex flex-wrap w-100" id="flShortcuts">
+                            <!--<section class="p-4 d-flex flex-wrap w-100" id="flShortcuts">
                                 ${ this.sidenavButton.render() }
                                 ${ this.searchKeywords.render() }
-                            </section>
+                            </section>-->
 
                             <div class="section">
                                 <div class="row" id="flList">`)
@@ -95,8 +95,12 @@ export default class Layout extends View
         
         html.push(this.dashboard.render())        
         html.push(this.group.render())
+
+        // html.push(this.search.render())
+
         html.push(this.addForm.render())
-        html.push(`<div class="card p-3 mb-3" id="flCard" style="display:none;"></div>`)
+        html.push(`
+                                <div class="card p-3 mb-3" id="flCard" style="display:none;"></div>`)
 
         html.push(`
                             </div>
@@ -118,7 +122,7 @@ export default class Layout extends View
         new mdb.Sidenav(sidenav)
 
         this.navbar.trigger()
-        this.search.trigger()
+        // this.search.trigger()
         this.global.trigger()
         this.dashboard.trigger()
         this.group.trigger()

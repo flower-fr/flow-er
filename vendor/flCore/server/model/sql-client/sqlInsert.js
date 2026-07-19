@@ -7,7 +7,6 @@ const sqlInsert = async ({ entity, data, params, user, context, debug }, model, 
 {
     if (!user) user = context?.user
     logger && logger.debug(util.inspect({ entity, data, params }))
-    logger && logger.debug(util.inspect({ model }, { depth: null, colors: true }))
     
     // Encryption
     for (const [key, value] of Object.entries(data)) {
@@ -19,7 +18,7 @@ const sqlInsert = async ({ entity, data, params, user, context, debug }, model, 
     const request = insert(entity, data, model, user, context, debug)
     logger && logger.debug(util.inspect({ request, params }, { depth: null, colors: true }))
     const insertedRows = await connection.execute(request, params)
-    logger && logger.debug(util.inspect(insertedRows))
+    logger && logger.debug({ insertId: insertedRows[0].insertId })
     return insertedRows[0].insertId
 }
 

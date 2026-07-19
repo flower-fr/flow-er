@@ -36,34 +36,30 @@ export default class Search extends View
         const html = []
 
         html.push(`
-        <div class="row my-3">
-            <div class="col-md-12 my-3">    
-                <a
-                    href="#!"
-                    class="text-primary"
-                    data-mdb-toggle="sidenav" data-mdb-target="#flSidenav"
-                    aria-controls="#flSidenav"
-                >
-                    <i class="fas fa-arrow-left"></i>
-                </a>
-            </div>`)
+        <div class="card mb-3" id="flGroup">
+            <div class="card-body">
+                <div class="row my-3">`)
 
         for (const filter of this.filters) html.push(filter.render())
     
         html.push(`
-            <div class="col-md-12">    
-                <div class="input-group text-center">
-                    <button type="button" class="btn btn-outline-primary" id="flSearchRefresh" title="${ this.translations["Refresh the list"] }">
-                        <i class="fa fa-sync-alt"></i>
-                    </button>
-                    <button type="button" class="btn btn-outline-primary" id="flSearchErase" title="${ this.translations["Erase"] }">
-                        <i class="fa fa-times"></i>
-                    </button>                
-                </div>
-            </div>
-        </div>`)
+                    <div class="col-md-12">    
+                        <div class="input-group text-center">
+                            <button type="button" class="btn btn-outline-primary" id="flSearchRefresh" title="${ this.translations["Refresh the list"] }">
+                                <i class="fa fa-sync-alt"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-primary" id="flSearchErase" title="${ this.translations["Erase"] }">
+                                <i class="fa fa-times"></i>
+                            </button>                
+                        </div>
+                    </div>
+                </div>`)
 
         for (const tag of this.tags) html.push(tag.render())
+    
+        html.push(`
+            </div>
+        </div>`)
 
         return html.join("\n")
     }

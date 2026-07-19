@@ -1,6 +1,6 @@
 import View from "../View.js"
 
-export default class GroupTag extends View
+export default class AddTag extends View
 {
     constructor({ controller, name })
     {
@@ -14,13 +14,13 @@ export default class GroupTag extends View
 
         html.push(`
             <div
-                class="chip chip-outline btn-outline-warning mb-3"
-                id="flGroupTag-${ this.name }"
+                class="chip chip-outline btn-outline-primary"
+                id="flAddTag-${ this.name }"
                 data-fl-checked="false"
                 data-mdb-chip-init
                 data-mdb-ripple-color="dark"
             >
-                ${ this.name }&nbsp;&nbsp;<i class="fas fa-trash" id="flGroupShortcutClose-${ this.name }"></i>
+                ${ this.name }
             </div>`)
 
         return html.join("\n")

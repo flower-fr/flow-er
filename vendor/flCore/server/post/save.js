@@ -1,3 +1,5 @@
+const util = require("util")
+
 const { assert } = require("../../../../core/api-utils")
 const { select } = require("../../../flCore/server/model/select")
 
@@ -124,7 +126,7 @@ const mergePayload = async (context, entity, model, form, config, sql, logger) =
     return payload
 }
 
-const save = async ({ req, entity }, context, rows, { sql }) =>
+const save = async ({ req, entity }, context, rows, { sql, logger }) =>
 {
     if (!entity) entity = req.params.entity
 
@@ -135,6 +137,7 @@ const save = async ({ req, entity }, context, rows, { sql }) =>
      */
     
     let { rowsToStore, rowsToReject } = dataToStore(model, rows)
+    logger && logger.debug(util.inspect({ rowsToReject }, { depth: null, colors: true }))
 
     // if (rowsToReject.length > 0) {
     //     return JSON.stringify({ "status": "ko", "errors": rowsToReject })
@@ -145,6 +148,7 @@ const save = async ({ req, entity }, context, rows, { sql }) =>
      */
     
     rowsToStore = entitiesToStore(entity, model, rowsToStore)
+    logger && logger.debug(util.inspect({ rowsToStore }, { depth: null, colors: true }))
 
     await storeEntities(context, entity, rowsToStore, model, sql)
     await auditCells(context, rowsToStore, sql)

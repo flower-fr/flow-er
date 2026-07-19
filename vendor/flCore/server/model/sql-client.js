@@ -16,7 +16,8 @@ const createSqlClient = async ({ config, logger, dbName }) =>
         port: config.port, 
         user: config.user, 
         password: config.password, 
-        database : (dbName) ? dbName : config.database
+        database : (dbName) ? dbName : config.database,
+        dateStrings: true
     })
     const closure = {
         db,
