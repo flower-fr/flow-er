@@ -223,7 +223,7 @@
                 },
                 {
                     "labels": { "default": "Tree table" },
-                    "route": "/doc/index/flow-erwi15TreeTable" 
+                    "route": "/doc/index/flow-er/wi15TreeTable" 
                 },
                 {
                     "labels": { "default": "Columns" },
