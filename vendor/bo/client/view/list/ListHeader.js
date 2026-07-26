@@ -1,9 +1,11 @@
 import View from "../View.js"
+import ListHeaderCell from "./ListHeaderCell.js"
 
 export default class ListHeader extends View
 {
-    constructor({ controller, rows, order, limit, filledColumns, properties, orderProperty, orderDirection, translations, layout }) {
+    constructor({ controller, list, rows, order, limit, filledColumns, properties, orderProperty, orderDirection, translations, layout }) {
         super({ controller })
+        this.list = list
         this.rows = rows
         this.order = order
         this.limit = limit
@@ -13,19 +15,19 @@ export default class ListHeader extends View
         this.layout = layout
         this.orderProperty = orderProperty
         this.orderDirection = orderDirection
-        // let direction = "+"
-        // if (this.order[0] === "-") {
-        //     direction = "-"
-        //     this.order = this.order.substring(1)
-        // }
-        // this.direction = direction
+        this.headerCells = {}
+        for (const [propertyId, property] of Object.entries(this.properties)) {
+            if (this.filledColumns.includes(propertyId)) {
+                this.headerCells[propertyId] = new ListHeaderCell({ controller, list, propertyId, property, orderProperty, orderDirection, translations, layout })
+            }
+        }
     }
 
     initialize = async () => {}
 
     render = () =>
     {
-        const html = [], translations = this.translations
+        const html = [], { properties, orderProperty, translations, headerCells } = this
 
         html.push(`
             <th>
@@ -37,17 +39,28 @@ export default class ListHeader extends View
             </th>
             <th />`)
 
-        for (const [propertyId, property] of Object.entries(this.properties)) {
-            if (this.filledColumns.includes(propertyId)) {
+        const group = properties[orderProperty].group
+        if (group) {
+            if (this.filledColumns.includes(orderProperty)) {
                 html.push(`
                 <th>
-                    ${ (property.anchor) ? `<button type="button" class="btn btn-link" id="flListOrderButton-${propertyId}" data-mdb-ripple-init data-mdb-ripple-color="dark">` : "<div>" }
-                        <span class="fl-modal-list-header-label">
-                            ${ property.label }
-                            ${ (propertyId === this.orderProperty) ? `<i class="fas ${ (this.orderDirection === "asc") ? "fa-arrow-down-short-wide" : "fa-arrow-down-wide-short" }"></i>` : "" }
-                        </span>
-                    ${ (property.anchor) ? "</button>" : "</div>" }
+                    <div>
+                        ${ headerCells[orderProperty].render() }
+                    </div>
                 </th>`)
+            }
+        }
+
+        for (const [propertyId, property] of Object.entries(this.properties)) {
+            if (propertyId !== orderProperty || !group) {
+                if (this.filledColumns.includes(propertyId)) {
+                    html.push(`
+                    <th>
+                        ${ (property.anchor) ? `<button type="button" class="btn btn-link" id="flListOrderButton-${propertyId}" data-mdb-ripple-init data-mdb-ripple-color="dark">` : "<div>" }
+                            ${ headerCells[propertyId].render() }
+                        ${ (property.anchor) ? "</button>" : "</div>" }
+                    </th>`)
+                }
             }
         }
 
@@ -55,14 +68,12 @@ export default class ListHeader extends View
     }
 
     trigger = () => {
-        const { layout } = this
-        for (const [propertyId, property] of Object.entries(this.properties)) {
-            if (this.filledColumns.includes(propertyId) && property.anchor) {
-                document.getElementById(`flListOrderButton-${propertyId}`).onclick = () => {
-                    const direction = (propertyId === this.orderProperty && this.orderDirection === "asc") ? "desc" : "asc"
-                    layout.refreshList({ orderProperty: propertyId, orderDirection: direction })
-                }
+        const { properties, filledColumns, headerCells } = this
+        for (const propertyId of Object.keys(properties)) {
+            if (filledColumns.includes(propertyId)) {
+                headerCells[propertyId].trigger()
             }
         }
+
     }
 }

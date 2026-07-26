@@ -34,15 +34,15 @@ export default class List extends View
         let where = this.where
         const tags = this.tags
         if (!where && !tags) where = ((params.where) ? Object.entries(params.where).map(([k, v]) => `${ k }:${ v }`).join("|") : [])
+
+        // Define order and grouping property
         let orderProperty, orderDirection
-        if (this.orderProperty) {
-            orderProperty = this.orderProperty
-            orderDirection = this.orderDirection
-        } else {
-            orderProperty = Object.keys(params.order)[0]
-            orderDirection = params.order[orderProperty]
-        }
         const order = this.orderProperty ? `${ (this.orderDirection === "desc") ? "-" : "" }${ this.orderProperty }` : Object.entries(params.order).map(([k, v]) => `${ v === "desc" ? "-" : "" }${ k }`).join("|")
+        if (!this.orderProperty) this.orderProperty = Object.keys(params.order)[0]
+        if (!this.orderDirection) this.orderDirection = params.order[orderProperty]
+        orderProperty = this.orderProperty
+        orderDirection = this.orderDirection
+        this.group = properties[orderProperty].group
 
         const limit = params.limit
         response = await fetch(`/core/v1/${ this.entity }?columns=${ columns }&where=${ where }&tags=${ tags }&order=${ order }${ limit ? `&limit=${ limit }` : "" }`)
@@ -57,24 +57,7 @@ export default class List extends View
                 }
             })
         })
-        this.listHeader = new ListHeader({ controller: this.controller, rows, filledColumns: this.filledColumns, properties, orderProperty, orderDirection, limit, translations, layout: this.layout })
-        let i = 0
-
-        // Group rows by order property
-        this.groups = [], this.listRows = []
-        let currentPrefix, currentGroup
-        const orderType = this.properties[orderProperty].type
-        for (const row of rows) {
-            const pred = (orderType === "datetime") ? () => row[orderProperty].substr(0, 7) !== currentPrefix?.substr(0, 7) : () => row[orderProperty] !== currentPrefix
-            if (pred()) {
-                currentPrefix = row[orderProperty]
-                currentGroup = [new ListGroup({ controller: this.controller, value: row[orderProperty], size: Object.entries(row).length, translations })]
-                this.groups.push(currentGroup)
-            }
-            const listRow = new ListRow({ i: i++, controller: this.controller, row, filledColumns: this.filledColumns, properties, translations })
-            currentGroup.push(listRow)
-            this.listRows.push(listRow)
-        }
+        this.listHeader = new ListHeader({ controller: this.controller, list: this, rows, filledColumns: this.filledColumns, properties, orderProperty, orderDirection, limit, translations, layout: this.layout })
 
         // this.listRows = rows.map(row => { 
         //     return new ListRow({ i: i++, controller: this.controller, row, filledColumns: this.filledColumns, properties, translations })
@@ -82,9 +65,51 @@ export default class List extends View
         this.checkedIds = new Set()
     }
 
+    groupRows = () =>
+    {
+        let i = 0
+        const { rows, properties, orderProperty, translations, group } = this
+        this.groups = [], this.listRows = []
+        let currentPrefix, currentGroup, identifier = 0
+        for (const row of rows) {
+            const pred = () => {
+                let prefix , current
+                switch (group) {
+                case "month":
+                    prefix = row[orderProperty].substr(0, 7)
+                    current = currentPrefix?.substr(0, 7)
+                    break
+                case "week":
+                    prefix = moment(row[orderProperty]).week()
+                    current = moment(currentPrefix).week()
+                    break
+                case "day":
+                    prefix = row[orderProperty].substr(0, 10)
+                    current = currentPrefix?.substr(0, 10)
+                    break
+                default:
+                    prefix = row[orderProperty]
+                    current = currentPrefix
+                    break
+                }
+                return prefix !== current
+            }
+            if (pred()) {
+                currentPrefix = row[orderProperty]
+                currentGroup = [new ListGroup({ controller: this.controller, identifier: identifier++, list: this, value: row[orderProperty], size: Object.entries(row).length, translations })]
+                this.groups.push(currentGroup)
+            }
+            const listRow = new ListRow({ i: i++, controller: this.controller, list: this, row, filledColumns: this.filledColumns, properties, orderProperty, translations })
+            currentGroup.push(listRow)
+            this.listRows.push(listRow)
+        }
+    }
+
     render = () =>
     {    
-        const html = [], translations = this.translations
+        const html = [], { group, translations } = this
+
+        this.groupRows()
 
         html.push(`
         <style>
@@ -106,8 +131,16 @@ export default class List extends View
                     </thead>
                     <tbody class="table-group-divider">`)
 
-        this.groups.forEach(group => group.map(listRow => html.push(listRow.render())).join("\n"))
-        // this.listRows.map(listRow => html.push(listRow.render())).join("\n")
+        if (group) {
+            this.groups.forEach(group => {
+                const h = []
+                group.map(listRow => h.push(listRow.render()))
+                h.push("</tbody>")
+                html.push(h.join("\n"))
+            })
+        } else {
+            this.listRows.map(listRow => html.push(listRow.render())).join("\n")
+        }
 
         html.push(`
                         <tr class="listRow">
@@ -140,7 +173,7 @@ export default class List extends View
 
     trigger = () =>
     {
-        const controller = this.controller, entity = this.entity, view = this.view, translations = this.translations, layout = this.layout
+        const { controller, group, entity, view, layout } = this
         const tableEl = document.getElementById("flListTable")
         const cardEl = document.getElementById("flCard")
         const dashboardEl = document.getElementById("flDashboard")
@@ -149,6 +182,7 @@ export default class List extends View
 
         this.listHeader.trigger()
 
+        if (group) this.groups.forEach(x => x[0].trigger())
         this.listRows.forEach(x => x.trigger())
 
         // Extend the displayed list
