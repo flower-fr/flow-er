@@ -18,14 +18,13 @@ export default class ListHeaderCell extends View
     render = () =>
     {
         const html = [], { list, propertyId, property, orderProperty, orderDirection, translations } = this, group = list.group
-
         html.push(`
             <span class="fl-modal-list-header-label">
                 ${ property.label }
                 <br>
                 ${ (propertyId === orderProperty) ? `
                     <i class="fas ${ (orderDirection === "asc") ? "fa-arrow-down-short-wide" : "fa-arrow-down-wide-short" }"></i>
-                    ${ (["date", "dateTime"].includes(property.type)) ? `
+                    ${ (["date", "datetime"].includes(property.type)) ? `
                         <span title="${ translations["Month"] }">
                             ${ (group !== "month") ? `<a id="flListHeaderAM-${ propertyId }" href="#!" class="text-primary">` : "" }/${ translations["Month"].substr(0, 1) }${ (group !== "month") ? "</a>" : "" }
                         </span>
