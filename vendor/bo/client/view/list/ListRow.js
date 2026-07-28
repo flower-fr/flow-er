@@ -3,7 +3,7 @@ import ListCell from "./ListCell.js"
 
 export default class ListRow extends View
 {
-    constructor({ i, controller, row, filledColumns, properties, sumable, translations }) {
+    constructor({ i, controller, row, filledColumns, params, properties, sumable, translations }) {
         super({ controller })
         this.i = i
         this.row = row
@@ -16,7 +16,7 @@ export default class ListRow extends View
         this.listRowColumns = []
         for (const [propertyId, property] of Object.entries(properties)) {
             if (this.filledColumns.includes(propertyId)) {
-                this.listCells.push(new ListCell({ controller, row, propertyId, property, translations }))
+                this.listCells.push(new ListCell({ controller, row, propertyId, params, property, translations }))
             }
         }
     }

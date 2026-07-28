@@ -5,6 +5,8 @@ import ListGroup from "./ListGroup.js"
 import ListRow from "./ListRow.js"
 import Card from "../card/Card.js"
 
+import { computeConsistencyIssues } from "../../utils/consistencyEngine.js"
+
 export default class List extends View
 {
     constructor({ controller, entity, view, where, tags, orderProperty, orderDirection, layout })
@@ -26,6 +28,7 @@ export default class List extends View
         const { properties, identifier, params, sumable, translations } = await response.json()
         this.properties = properties
         this.identifier = identifier
+        this.params = params
         this.translations = translations
         this.sumable = sumable
 
@@ -34,6 +37,7 @@ export default class List extends View
         let where = this.where
         const tags = this.tags
         if (!where && !tags) where = ((params.where) ? Object.entries(params.where).map(([k, v]) => `${ k }:${ v }`).join("|") : [])
+        this.where = where
         let orderProperty, orderDirection
         if (this.orderProperty) {
             orderProperty = this.orderProperty
@@ -48,6 +52,8 @@ export default class List extends View
         response = await fetch(`/core/v1/${ this.entity }?columns=${ columns }&where=${ where }&tags=${ tags }&order=${ order }${ limit ? `&limit=${ limit }` : "" }`)
         const rows = (await response.json()).rows
         this.rows = rows
+        await this.consistencyCheck()
+
         this.filledColumns = []
         if (orderProperty) this.filledColumns.push(this.orderProperty)
         this.rows.forEach(row => {
@@ -57,21 +63,21 @@ export default class List extends View
                 }
             })
         })
-        this.listHeader = new ListHeader({ controller: this.controller, rows, filledColumns: this.filledColumns, properties, orderProperty, orderDirection, limit, translations, layout: this.layout })
+        this.listHeader = new ListHeader({ controller: this.controller, rows: this.rows, filledColumns: this.filledColumns, properties, orderProperty, orderDirection, limit, translations, layout: this.layout })
         let i = 0
 
         // Group rows by order property
         this.groups = [], this.listRows = []
         let currentPrefix, currentGroup
         const orderType = this.properties[orderProperty].type
-        for (const row of rows) {
+        for (const row of this.rows) {
             const pred = (orderType === "datetime") ? () => row[orderProperty].substr(0, 7) !== currentPrefix?.substr(0, 7) : () => row[orderProperty] !== currentPrefix
             if (pred()) {
                 currentPrefix = row[orderProperty]
                 currentGroup = [new ListGroup({ controller: this.controller, value: row[orderProperty], size: Object.entries(row).length, translations })]
                 this.groups.push(currentGroup)
             }
-            const listRow = new ListRow({ i: i++, controller: this.controller, row, filledColumns: this.filledColumns, properties, translations })
+            const listRow = new ListRow({ i: i++, controller: this.controller, row, filledColumns: this.filledColumns, params, properties, translations })
             currentGroup.push(listRow)
             this.listRows.push(listRow)
         }
@@ -298,5 +304,66 @@ export default class List extends View
 
         if (checked) this.checkedIds.add(id)
         else this.checkedIds.delete(id)
+    }
+
+    // Check the consistency of the list
+    consistencyCheck = async () =>
+    {
+        const config = this.params?.consistency
+        if (!config) return
+
+        const columns = config.properties?.join(",")
+        const order = config.order
+
+        // Widen the where clause based on the consistency rules
+        const currentWhere = this.parseWhere(this.where)
+        const consistencyWhere = this.buildConsistencyWhere(currentWhere, config.rules)
+        const whereParam = Object.entries(consistencyWhere).map(([k, v]) => `${k}:${v}`).join("|")
+
+        // Fetch consistency data
+        const response = await fetch(`/core/v1/${ this.entity }?columns=${ columns }&where=${ whereParam }&order=${ order }&tags=${ this.tags }`)
+        const { rows: consistencyRows } = await response.json()
+
+        // Compute consistency issues
+        const issuesById = computeConsistencyIssues({
+            rows: consistencyRows,
+            rules: config.rules
+        })
+
+        // Update the list rows with consistency issues
+        this.rows = this.rows.map(row => ({
+            ...row,
+            consistencyIssues: issuesById.get(row.id) || {}
+        }))
+    }
+
+    buildConsistencyWhere(currentWhere, rules)
+    {
+        const widened = { ...currentWhere }
+
+        if (rules?.relax) {
+            for (const field of rules.relax) delete widened[field]
+        }
+
+        return widened
+    }
+
+    parseWhere(whereString)
+    {
+        if (!whereString || typeof whereString !== "string") return {}
+
+        const where = {}
+        whereString.split("|").forEach(pair => {
+            const [key, ...value] = pair.split(":")
+            where[key] = value.join(":").split(",")
+        })
+        return where
+    }
+
+    stringifyWhere(where)
+    {
+        return Object.entries(where)
+            .map(([key, value]) => `${key}:${(Array.isArray(value) ? value.join(",") : value)}`)
+            .join("|")
     }
 }
