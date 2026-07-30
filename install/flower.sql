@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost:8889
--- Généré le : jeu. 30 juil. 2026 à 07:51
+-- Généré le : jeu. 30 juil. 2026 à 08:37
 -- Version du serveur : 5.7.39
 -- Version de PHP : 7.4.33
 
@@ -1186,6 +1186,8 @@ CREATE TABLE `profile` (
   `place_id` int(11) DEFAULT '0',
   `role` varchar(255) DEFAULT '',
   `theme` varchar(255) NOT NULL DEFAULT '',
+  `kpis` mediumtext,
+  `alerts` mediumtext,
   `notifications` varchar(255) DEFAULT '',
   `user_id` int(11) DEFAULT '0',
   `visibility` varchar(255) DEFAULT '',
@@ -1197,9 +1199,9 @@ CREATE TABLE `profile` (
 -- Déchargement des données de la table `profile`
 --
 
-INSERT INTO `profile` (`id`, `n_first`, `n_last`, `n_fn`, `email`, `email_key`, `place_id`, `role`, `theme`, `notifications`, `user_id`, `visibility`, `touched_at`, `touched_by`) VALUES
-(10, 'Démo', 'CRITE', NULL, 'bruno@lartillot.net', '', NULL, 'responsible', 'light', 'email', 3, 'active', '2026-06-16 16:02:45', 1),
-(11, 'Test', 'TEST3107', '', 'test3107@test.com', '', 1, 'responsible', '', '', 0, 'active', '2025-07-31 12:11:25', 1);
+INSERT INTO `profile` (`id`, `n_first`, `n_last`, `n_fn`, `email`, `email_key`, `place_id`, `role`, `theme`, `kpis`, `alerts`, `notifications`, `user_id`, `visibility`, `touched_at`, `touched_by`) VALUES
+(10, 'Démo', 'CRITE', NULL, 'bruno@lartillot.net', '', NULL, 'responsible', 'light', '{}', '{}', 'email', 3, 'active', '2026-06-16 16:02:45', 1),
+(11, 'Test', 'TEST3107', '', 'test3107@test.com', '', 1, 'responsible', '', '{}', '{}', '', 0, 'active', '2025-07-31 12:11:25', 1);
 
 -- --------------------------------------------------------
 
