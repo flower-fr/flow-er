@@ -174,6 +174,8 @@
                 "apiUserId": "$API_USER_ID",
                 "apiUserPassword": "$API_USER_PASSWORD",
                 "apiKey": "$API_KEY",
+                "jwtCsrfSecret": "$JWT_CSRF_SECRET",
+                "jwtCsrfExpirationTime": "$JWT_CSRF_EXPIRATION_TIME",
                 "tokenPayloadModel": {
                     "entity": "crm_profile",
                     "columns": { "id": "profile_id", "n_fn": "n_fn", "place_id": "place_id", "role": "role", "theme": "theme" },

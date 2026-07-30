@@ -35,6 +35,8 @@ export default class AddForm extends View
 
                     ${ this.layout.searchKeywords.render(this.searchKeywords) }
 
+                    <hr>
+
                     <form id="flAddForm">`)
 
         for (const [propertyId, property] of Object.entries(this.properties)) {
@@ -139,7 +141,7 @@ export default class AddForm extends View
 
                             <button 
                                 name="flAdd-${postId}" 
-                                class="btn btn-warning flAdd-tab-submit"
+                                class="btn btn-sm btn-warning flAdd-tab-submit"
                                 data-mdb-ripple-init
                                 data-mdb-ripple-color="danger"
                                 ${ (post.method) ? `data-fl-method="${post.method}"`: "" }
@@ -170,7 +172,7 @@ export default class AddForm extends View
     retrieveExistingData = async () =>
     {
         const filters = {}, columns = []
-        for (const propertyId of this.identifier) {
+        for (const propertyId of this.identifier ? this.identifier : []) {
             columns.push(propertyId)
             const property = this.properties[propertyId]
             const input = document.getElementById(`flAdd-${ propertyId }`)
@@ -193,7 +195,7 @@ export default class AddForm extends View
             }
         }
 
-        for (const key of Object.keys(this.iterators)) {
+        for (const key of this.iterators ? Object.keys(this.iterators) : []) {
             const filter = ["in"] 
             for (const entry of this.scope) {
                 filter.push(entry[key])
@@ -240,7 +242,7 @@ export default class AddForm extends View
     triggerScopeChange = async () =>
     {
         this.scope = []
-        for (const [key, iterator] of Object.entries(this.iterators)) {
+        for (const [key, iterator] of this.iterators ? Object.entries(this.iterators) : []) {
             if (iterator.type === "dateRange") {
                 const min = document.getElementById(`flAddIterator-min_${ key }`).value
                 const max = document.getElementById(`flAddIterator-max_${ key }`).value
@@ -268,7 +270,7 @@ export default class AddForm extends View
 
         // Initialize and trigger MDB components for each iterator
         this.triggerScopeChange()
-        for (const [key, iterator] of Object.entries(iterators)) {
+        for (const [key, iterator] of iterators ? Object.entries(iterators) : []) {
             if (iterator.type == "dateRange") {
                 let el = document.getElementById(`flAddOutline-min_${ key }`)
                 new mdb.Datepicker(el,{ inline: true })
@@ -280,7 +282,7 @@ export default class AddForm extends View
         }
 
         // Trigger scope change
-        for (const key of identifier) {
+        for (const key of identifier ? identifier : []) {
             const property = properties[key] || iterators[key]
             let el
             if (property.type === "dateRange") {
@@ -422,21 +424,43 @@ export default class AddForm extends View
             })
         }
 
-        document.getElementById("flAddRefresh").onclick = () => {
+        // Quick keyword search
+        const quickSearch = document.getElementById("flSearchKeywordsRefresh")
+        new mdb.Ripple(quickSearch, { rippleColor: "primary" })
+        quickSearch.addEventListener("click", () => {
+            layout.refreshList({ where:`keywords:contains,${ document.getElementById("flSearchKeywords").value }`, tags: this.extractTags() })
+        })
+ 
+        const refresh = document.getElementById("flAddRefresh")
+        new mdb.Ripple(refresh, { rippleColor: "primary" })
+        refresh.onclick = () => {
             layout.refreshList({ where: this.extractFilters(), tags: this.extractTags() })
         }
 
-        // Quick keyword search
-        document.getElementById("flSearchKeywordsRefresh").addEventListener("click", () => {
-            layout.refreshList({ where:`keywords:contains,${ document.getElementById("flSearchKeywords").value }`, tags: this.extractTags() })
-        })
+        const erase = document.getElementById("flAddErase")
+        new mdb.Ripple(erase, { rippleColor: "primary" })
+        document.getElementById("flAddErase").onclick = () => {
+            layout.refreshList({})
+            for (const propertyId of Object.keys(properties)) {
+                const instance = mdb.Select.getInstance(`#flAdd-${ propertyId }`)
+                if (instance) instance.setValue("")
+                else document.getElementById(`flAdd-${ propertyId }`).value = ""
+                for (const tag of this.tags) {
+                    const tagElement = document.getElementById(`flAddTag-${ tag.name }`)
+                    tagElement.setAttribute("data-fl-checked", "false")
+                    tagElement.classList.remove("btn-outline-success")
+                    tagElement.classList.add("btn-outline-primary")
+                }
+            }
+            this.buildShortcuts()
+        }
     }
 
     extractFilters = () =>
     {
         const { properties, iterators } = this, filters = []
 
-        for (const [key, iterator] of Object.entries(iterators)) {
+        for (const [key, iterator] of iterators ? Object.entries(iterators) : []) {
             if (iterator.type == "dateRange") {
                 let min = document.getElementById(`flAddIterator-min_${ key }`).value
                 if (min) min = moment(min, "DD/MM/YYYY").format("YYYY-MM-DD")

@@ -49,7 +49,7 @@ export default class Dashboard extends View
             <div class="section" id="flDashboard">
                 <div class="row">
                     <div class="col-4">
-                        <div class="text-center">${this.chartData[0]?.label}</div>
+                        <!--<div class="text-center">${this.chartData[0]?.label}</div>-->
                         <canvas id="${this.chartData[0]?.id}"></canvas>
                     </div>
                     <div class="col-4" >

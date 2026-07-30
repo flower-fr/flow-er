@@ -14,7 +14,8 @@
             "place_id": { "entity": "profile", "column": "place_id", "type": "int" },
             "role": { "entity": "profile", "column": "role" },
             "theme": { "entity": "profile", "column": "theme" },
-            "notifications": { "entity": "profile", "column": "notifications" },
+            "kpis": { "entity": "profile", "column": "kpis", "type": "json" },
+            "alerts": { "entity": "profile", "column": "alerts", "type": "json" },
             "user_id": { "entity": "profile", "column": "user_id", "type": "int" },
 
             "place_name": { "entity": "place", "column": "name" },

@@ -3,20 +3,33 @@ import ListCell from "./ListCell.js"
 
 export default class ListRow extends View
 {
-    constructor({ i, controller, row, filledColumns, params, properties, sumable, translations }) {
+    constructor({ i, controller, list, row, filledColumns, params, properties, orderProperty, summable, translations }) {
         super({ controller })
+        this.list = list
         this.i = i
         this.row = row
         this.filledColumns = filledColumns
         this.properties = properties
-        this.sumable = sumable
+        this.orderProperty = orderProperty
+        this.summable = summable
         this.translations = translations
         this.listCells = []
 
         this.listRowColumns = []
+
+        const group = properties[orderProperty].group
+        if (group) {
+            if (this.filledColumns.includes(orderProperty)) {
+                const property = properties[orderProperty]
+                this.listCells.push(new ListCell({ controller, list, row, propertyId: orderProperty, property, orderProperty, translations }))
+            }
+        }
+
         for (const [propertyId, property] of Object.entries(properties)) {
-            if (this.filledColumns.includes(propertyId)) {
-                this.listCells.push(new ListCell({ controller, row, propertyId, params, property, translations }))
+            if (propertyId !== orderProperty || !group) {
+                if (this.filledColumns.includes(propertyId)) {
+                    this.listCells.push(new ListCell({ controller, list, row, propertyId, params, property, orderProperty, translations }))
+                }
             }
         }
     }

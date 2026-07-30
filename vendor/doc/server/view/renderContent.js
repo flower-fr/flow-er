@@ -1,5 +1,7 @@
 const renderContent = ({ context, entity, view }, content) => {
-
+    if (!content) {
+        return `<div class="alert alert-warning">Documentation not yet available for this page.</div>`
+    }
     const result = []
 
     for (let item of content) {

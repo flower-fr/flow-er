@@ -1,6 +1,6 @@
 module.exports = {
     params: { 
-        order: { touched_at: "desc" },
+        order: { n_fn: "asc" },
     },
     properties: {
         n_fn: {
@@ -40,7 +40,7 @@ module.exports = {
         },
     },
     identifier: "n_fn",
-    sumable: "revenue",
+    summable: "revenue",
     translations: {
         "Add": "Ajouter",
         "Check all": "Tout sélectionner",
