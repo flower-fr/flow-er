@@ -54,7 +54,7 @@ export default class ListCell extends View
         }
 
         else if (property.type === "number") {
-            html.push(`<td class="text-right">${ parseFloat(row[propertyId]).toLocaleString("fr-FR", { minimumFractionDigits: 2 }) }</td>`)
+            html.push(`<td class="text-end">${ parseFloat(row[propertyId]).toLocaleString("fr-FR", { minimumFractionDigits: 2 }) }</td>`)
         }
 
         else if (property.type === "percentage") {
@@ -78,8 +78,12 @@ export default class ListCell extends View
         }
 
         else {
-            const value = (Array.isArray(row[propertyId])) ? row[propertyId].join(", ") : row[propertyId]
-            html.push(`<td>${(value && value !== null) ? value : ""}</td>`)                  
+            if (propertyId === orderProperty && this.list.group) {
+                html.push("<td/>")
+            } else {
+                const value = (Array.isArray(row[propertyId])) ? row[propertyId].join(", ") : row[propertyId]
+                html.push(`<td>${(value && value !== null) ? value : ""}</td>`)
+            }
         }
 
         return html.join("\n")

@@ -3,7 +3,7 @@ import ListCell from "./ListCell.js"
 
 export default class ListRow extends View
 {
-    constructor({ i, controller, list, row, filledColumns, properties, orderProperty, sumable, translations }) {
+    constructor({ i, controller, list, row, filledColumns, properties, orderProperty, summable, translations }) {
         super({ controller })
         this.list = list
         this.i = i
@@ -11,7 +11,7 @@ export default class ListRow extends View
         this.filledColumns = filledColumns
         this.properties = properties
         this.orderProperty = orderProperty
-        this.sumable = sumable
+        this.summable = summable
         this.translations = translations
         this.listCells = []
 

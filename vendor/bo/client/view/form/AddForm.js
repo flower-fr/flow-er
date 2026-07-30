@@ -141,7 +141,7 @@ export default class AddForm extends View
 
                             <button 
                                 name="flAdd-${postId}" 
-                                class="btn btn-warning flAdd-tab-submit"
+                                class="btn btn-sm btn-warning flAdd-tab-submit"
                                 data-mdb-ripple-init
                                 data-mdb-ripple-color="danger"
                                 ${ (post.method) ? `data-fl-method="${post.method}"`: "" }

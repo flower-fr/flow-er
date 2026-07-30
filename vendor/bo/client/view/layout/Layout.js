@@ -95,9 +95,6 @@ export default class Layout extends View
         
         html.push(this.dashboard.render())        
         html.push(this.group.render())
-
-        // html.push(this.search.render())
-
         html.push(this.addForm.render())
         html.push(`
                                 <div class="card p-3 mb-3" id="flCard" style="display:none;"></div>`)

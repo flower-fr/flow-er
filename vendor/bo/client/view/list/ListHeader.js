@@ -55,7 +55,7 @@ export default class ListHeader extends View
             if (propertyId !== orderProperty || !group) {
                 if (this.filledColumns.includes(propertyId)) {
                     html.push(`
-                    <th>
+                    <th ${ (property.type === "number") ? "class=\"text-end\"" : "" }>
                         ${ (property.anchor) ? `<button type="button" class="btn btn-link" id="flListOrderButton-${propertyId}" data-mdb-ripple-init data-mdb-ripple-color="dark">` : "<div>" }
                             ${ headerCells[propertyId].render() }
                         ${ (property.anchor) ? "</button>" : "</div>" }

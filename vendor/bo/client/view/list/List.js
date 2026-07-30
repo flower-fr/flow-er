@@ -23,11 +23,11 @@ export default class List extends View
     {
         // Retrieve the config and params
         let response = await fetch(`/bo/list/${ this.entity }?view=${ this.view }`)
-        const { properties, identifier, params, sumable, translations } = await response.json()
+        const { properties, identifier, params, summable, translations } = await response.json()
         this.properties = properties
         this.identifier = identifier
         this.translations = translations
-        this.sumable = sumable
+        this.summable = summable
 
         // Retrieve the data
         const columns = Object.keys(properties).join(",")
@@ -259,7 +259,7 @@ export default class List extends View
                 this.listRows.forEach(lr => {
                     const i = lr.i, r = document.getElementById(`flListCheck-${ i }`)
 
-                    let sum = this.sumable ? Number.parseFloat(lr.row[this.sumable]) : 0
+                    let sum = this.summable ? Number.parseFloat(lr.row[this.summable]) : 0
                     if (r.checked) sumChecked += sum
                 })
 
@@ -267,7 +267,7 @@ export default class List extends View
                     $("#flGroup").show()
                     $("#flDashboard").hide()
                     $("#flAdd").hide()
-                    $(".fl-list-count").text(checked)
+                    $(".fl-list-count").text(checked ? `(${ checked })` : "")
                     $("#flGroupCount").text(checked)
                     if (sumChecked) $(".fl-list-sum").text(`(${ (Math.round(sumChecked * 100) / 100).toFixed(2).toLocaleString("fr-FR", { minimumFractionDigits: 2 }) })`)
                 }
@@ -299,7 +299,7 @@ export default class List extends View
                 const count = this.checkedIds.size
                 let sum = 0
                 this.listRows.forEach(lr => {
-                    sum += this.sumable ? Number.parseFloat(lr.row[this.sumable]) : 0
+                    sum += this.summable ? Number.parseFloat(lr.row[this.summable]) : 0
                 })
                 $(".fl-list-count").text(count)
                 if (sum) $(".fl-list-sum").text(`(${ (Math.round(sum * 100) / 100).toFixed(2).toLocaleString("fr-FR", { minimumFractionDigits: 2 }) })`)

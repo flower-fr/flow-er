@@ -40,6 +40,7 @@ const action = async ({ req }, { context, sql, logger }) =>
             const { entity, key, format, columns, where, order } = property
             const items = await sql.execute({ context, type: "select", entity, columns, where, order })
             property.modalities = {}
+            property.rows = {}
             for (const item of items) {
                 const formatted = []
                 let i = 1
@@ -50,6 +51,7 @@ const action = async ({ req }, { context, sql, logger }) =>
                     i++
                 }
                 property.modalities[item[key]] = { label: formatted.join("") }
+                property.rows[item[key]] = item
             }
         }
         logger && logger.debug(util.inspect({ property }, { depth: null, colors: true }))
