@@ -1,4 +1,12 @@
 import View from "../View.js"
+
+const DEFAULT_BACKGROUND = [
+    "rgba(40, 90, 190, 0.6)",
+    "rgba(200, 50, 50, 0.6)",
+    "rgba(15, 150, 70, 0.6)",
+    "rgba(220, 130, 25, 0.6)", 
+]
+
 export default class Dashboard extends View
 {
     constructor({ controller, entity, view })
@@ -10,35 +18,33 @@ export default class Dashboard extends View
 
     initialize = async () =>
     {
-        // Fetch the structure of the dashboard from the server
+        // Fetch the config of the dashboard from the server
         let response = await fetch(`/bo/dashboard/${ this.entity }?view=${ this.view }`)
         if (!response.ok) return this.chartData = []
-        const structure = await response.json()
-        
-        // Fetch data for each property in the structure
-        const fetchPromises = Object.entries(structure).filter(([key, value]) => key !== "tags").map(([key, value]) => {
-            const where = value.where
-                ? "&where=" + Object.entries(value.where).map(([k, v]) => `${k}:${v}`).join("|")
-                : ""
+        const res = await response.json()
+        const configs =  Object.entries(res).filter(([key]) => key !== "tags")
 
-            return fetch(`/core/v1/${value.entity}?columns=${value.columns}${where}`).then(res => res.ok ? res.json() : {})
-        })
+        const datas = []
+        for (const [, config] of configs) {
+            // Fetch data for each indicator in the config
+            const fetchPromises = (config.indicators ?? []).map(indicator => {
+                return fetch(`/core/v1/${indicator.entity}?columns=${indicator.aggregator}:${indicator.column}&where=${indicator.where}`).then(res => res.ok ? res.json() : {})
+            })
+            // Wait for all fetches to complete
+            const indicatorData = await Promise.all(fetchPromises).then(results => results.map(result => result?.rows?.[0]?.id ?? 0))
+            datas.push(indicatorData)
+        }
 
-        // Wait for all fetches to complete
-        const data = await Promise.all(fetchPromises)
-
-        // Prepare chart data based on the fetched data and the structure
-        const chartData = Object.entries(structure).filter(([key, value]) => key !== "tags").map(([key, value], index) => {
-            const count = data[index]?.rows?.length ?? 0
+        this.chartData = configs.map(([key, config], index) => {
+            const labels = (config.indicators ?? []).map(indicator => indicator.label)
             return {
-                id: `flDashboard-${ key }`,
-                label: value.title,
-                // labels: [value.title, "Restant"],
-                data: [count, Math.max(0, value.objective - count)],
-                background: value.background,
+                id: `flDashboard-${key}`,
+                label: config.title,
+                labels,
+                data: datas[index],
+                background: config.background ?? DEFAULT_BACKGROUND,
             }
         })
-        this.chartData = chartData
     }
 
     render = () =>
@@ -47,20 +53,19 @@ export default class Dashboard extends View
 
         html.push(`
             <div class="section" id="flDashboard">
-                <div class="row">
-                    <div class="col-4">
-                        <!--<div class="text-center">${this.chartData[0]?.label}</div>-->
-                        <canvas id="${this.chartData[0]?.id}"></canvas>
-                    </div>
-                    <div class="col-4" >
-                        <div class="text-center">${ this.chartData[1] ? this.chartData[1].label : "" }</div>
-                        <canvas id="${this.chartData[1]?.id}"></canvas>
-                    </div>
-                    <div class="col-4" >
-                        <div class="text-center">${ this.chartData[2] ? this.chartData[2].label : "" }</div>
-                        <canvas id="${this.chartData[2]?.id}"></canvas>
-                    </div>
-                </div>
+                <div class="row justify-content-center">`)
+
+        this.chartData.forEach(chart => {
+            if (!chart.data || chart.data.length === 0) return
+            html.push(`
+                    <div class="col-12 col-sm-${12 / this.chartData.length} d-flex flex-column align-items-center">
+                        <div class="text-center mb-2">${chart.label ?? ""}</div>
+                        <div class="ratio ratio-16x9" style="max-height: 120px; max-width: 350px;">
+                            <canvas id="${chart.id}"></canvas>
+                        </div>
+                    </div>`)})
+
+        html.push(`</div>
             <hr>
             </div>`)
 
@@ -69,22 +74,33 @@ export default class Dashboard extends View
 
     initializeChart = ({ id, label, labels, data, background }) =>
     {
-        const chart = document.getElementById(id)
-        const dataDoughnut = {
+        const canvas = document.getElementById(id)
+
+        const chartData = {
             type: "doughnut",
             data: {
+                labels,
                 datasets: [{
-                    backgroundColor: [
-                        background,
-                        "rgba(255, 255, 255, 0.5)",
-                    ],
+                    label,
+                    data,
+                    backgroundColor: background,
                 }],
             },
         }
-        dataDoughnut.data.labels = labels
-        dataDoughnut.data.datasets[0].label = label
-        dataDoughnut.data.datasets[0].data = data
-        new mdb.Chart(chart, dataDoughnut)
+    
+        const chartOptions = {
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: "right"
+                    }
+                }
+            }
+        }
+
+        new mdb.Chart(canvas, chartData, chartOptions)
     }
 
     trigger = () =>

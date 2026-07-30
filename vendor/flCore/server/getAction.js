@@ -6,9 +6,14 @@ const getAction = async ({ req }, context, { sql, logger }) =>
 {
     const entity = assert.notEmpty(req.params, "entity")
 
-    const columns = (req.query.columns) ? req.query.columns.split(",") : []
+    const columns = (req.query.columns) ? req.query.columns.split(",").map(col => {
+        const parts = col.split(":")
+        return parts.length > 1 ? [parts[0], parts[1]] : parts[0]
+    }) : []
+
     const id = req.params.id
-    if (!columns.includes("id")) {
+    const hasAggregator = columns.some(c => Array.isArray(c))
+    if (!hasAggregator && !columns.includes("id")) {
         columns.push("id")
     }
     logger && logger.debug(util.inspect({columns}, {depth: null, colors: true}))
