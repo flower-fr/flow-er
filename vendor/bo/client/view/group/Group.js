@@ -34,8 +34,8 @@ export default class Group extends View
                     <h5>Actions groupées</h5>
                     <div>
                         <strong>
-                            <span class="fl-list-count"></span>&nbsp;&nbsp;
-                            <span class="fl-list-sum"></span>
+                            <span class="fl-group-count"></span>
+                            <span class="fl-group-sum"></span>
                         </strong>
                     </div>
                 </div>
@@ -65,17 +65,26 @@ export default class Group extends View
                     
                     if (property.text) {
                         html.push(`
-                            <div class="form-outline mb-3" data-mdb-input-init>
+                            <div class="form-outline mb-3" id="flGroupTextOutline-${ tabId }-${ propertyId }" data-mdb-input-init>
                                 <textarea id="flGroupText-${ tabId }-${ propertyId }" class="form-control" rows="4"></textarea>
                                     <label class="form-label">${ this.translations["Text"] }</label>
                             </div>`) 
                     }
+
                 } else if (property.type === "date") {
                     html.push(`
                             <div class="form-outline mb-3" id="flGroupOutline-${ tabId }-${ propertyId }" data-mdb-datepicker-init data-mdb-input-init>
-                                <input class="form-control form-control-sm fl-modal-form-input" id="flGroup-${ tabId }-${ propertyId }" />
+                                <input class="form-control form-control-sm" id="flGroup-${ tabId }-${ propertyId }" />
                                 <label class="form-label select-label">${property.label}</label>
                             </div>`)
+
+                } else if (["time", "duration"].includes(property.type)) {
+                    html.push(`
+                            <div class="form-outline mb-3" id="flGroupOutline-${ tabId }-${propertyId}" data-mdb-timepicker-init data-mdb-input-init>
+                                <input class="form-control form-control-sm" id="flGroup-${ tabId }-${propertyId}" />
+                                <label class="form-label select-label">${property.label}</label>
+                            </div>`)
+
                 } else {
                     html.push(`
                             <div class="form-outline mb-3" id="flGroupOutline-${ tabId }-${ propertyId }" data-mdb-input-init>
@@ -87,7 +96,7 @@ export default class Group extends View
 
             html.push(`
                             <div class="form-outline mb-3">
-                                <button class="btn btn-sm ${ (tab.post.class === "danger") ? "btn-danger" : "btn-warning" }">${ tab.post.label } <span class="fl-list-count"></span></button>
+                                <button class="btn btn-sm ${ (tab.post.class === "danger") ? "btn-danger" : "btn-warning" }">${ tab.post.label } <span class="fl-group-btn-count"></span></button>
                             </div>
                         </form>
                         <hr>`)
@@ -124,9 +133,20 @@ export default class Group extends View
                 if (["select", "vector"].includes(property.type)) {
                     const el = document.getElementById(`flGroup-${ tabId }-${ propertyId }`)
                     new mdb.Select(el)
+                    if (property.text) {
+                        new mdb.Input(document.getElementById(`flGroupTextOutline-${ tabId }-${ propertyId }`)).init()
+                        el.addEventListener("change", () => {
+                            const modalityId = el.value
+                            document.getElementById(`flGroupText-${ tabId }-${ propertyId }`).innerHTML = property.rows[modalityId][property.text]
+                            new mdb.Input(document.getElementById(`flGroupTextOutline-${ tabId }-${ propertyId }`)).init()
+                        })
+                    }
                 } else if (property.type == "date") {
                     const el = document.getElementById(`flGroupOutline-${ tabId }-${ propertyId }`)
                     new mdb.Datepicker(el,{ inline: true })
+                } else if (["time", "duration"].includes(property.type)) {
+                    const el = document.getElementById(`flGroupOutline-${ tabId }-${ propertyId }`)
+                    new mdb.Timepicker(el,{ format24: true, increment: true }) 
                 } else {
                     const el = document.getElementById(`flGroupOutline-${ tabId }-${ propertyId }`)
                     new mdb.Input(el)

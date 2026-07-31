@@ -265,7 +265,7 @@ export default class List extends View
                 this.listRows.forEach(lr => {
                     const i = lr.i, r = document.getElementById(`flListCheck-${ i }`)
 
-                    let sum = this.summable ? Number.parseFloat(lr.row[this.summable]) : 0
+                    let sum = this.summable ? Number.parseFloat(lr.row[this.summable.propertyId]) : 0
                     if (r.checked) sumChecked += sum
                 })
 
@@ -273,16 +273,18 @@ export default class List extends View
                     $("#flGroup").show()
                     $("#flDashboard").hide()
                     $("#flAdd").hide()
-                    $(".fl-list-count").text(checked ? `(${ checked })` : "")
-                    $("#flGroupCount").text(checked)
-                    if (sumChecked) $(".fl-list-sum").text(`(${ (Math.round(sumChecked * 100) / 100).toFixed(2).toLocaleString("fr-FR", { minimumFractionDigits: 2 }) })`)
+                    const sumLabel = (sumChecked) ? `${ new Intl.NumberFormat("fr-FR", this.summable.format ? this.summable.format : {}).format(sumChecked) }${ this.summable.unit ? ` ${ this.summable.unit }` : "" }` : ""
+                    $(".fl-group-count").text(checked ? checked : "")
+                    $(".fl-group-btn-count").text(checked ? `(${ checked })` : "")
+                    if (sumChecked) $(".fl-group-sum").text(`(${ sumLabel })`)
                 }
                 else {
                     $("#flDashboard").show()
                     if (!cardEl || cardEl.style.display === "none") $("#flAdd").show()
                     $("#flGroup").hide()
-                    $(".fl-list-count").text("")
-                    $(".fl-list-sum").text("")
+                    $(".fl-group-count").text("")
+                    $(".fl-group-btn-count").text("")
+                    $(".fl-group-sum").text("")
                 }
     
             }
@@ -305,17 +307,20 @@ export default class List extends View
                 const count = this.checkedIds.size
                 let sum = 0
                 this.listRows.forEach(lr => {
-                    sum += this.summable ? Number.parseFloat(lr.row[this.summable]) : 0
+                    sum += this.summable ? Number.parseFloat(lr.row[this.summable.propertyId]) : 0
                 })
-                $(".fl-list-count").text(count)
-                if (sum) $(".fl-list-sum").text(`(${ (Math.round(sum * 100) / 100).toFixed(2).toLocaleString("fr-FR", { minimumFractionDigits: 2 }) })`)
+                const sumLabel = (sum) ? `${ new Intl.NumberFormat("fr-FR", this.summable.format ? this.summable.format : {}).format(sum) }${ this.summable.unit ? ` ${ this.summable.unit }` : "" }` : ""
+                $(".fl-group-count").text(count)
+                $(".fl-group-btn-count").text(`(${ count })`)
+                if (sum) $(".fl-group-sum").text(`(${ sumLabel })`)
             }
             else {
                 $("#flDashboard").show()
                 if (!cardEl || cardEl.style.display === "none") $("#flAdd").show()
                 $("#flGroup").hide()
-                $(".fl-list-count").text("")
-                $(".fl-list-sum").text("")
+                $(".fl-group-count").text("")
+                $(".fl-group-btn-count").text("")
+                $(".fl-group-sum").text("")
             }
         }
 

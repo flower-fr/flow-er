@@ -328,7 +328,7 @@ export default class AddForm extends View
                 new mdb.Datepicker(el,{ inline: true })
             } else if (["time", "duration"].includes(property.type)) {
                 const el = document.getElementById(`flAddOutline-${ propertyId }`)
-                new mdb.Timepicker(el,{ format24: true, increment: (property.type === "duration") ? true : false }) 
+                new mdb.Timepicker(el,{ format24: true, increment: true }) 
             } else {
                 const el = document.getElementById(`flAddOutline-${ propertyId }`)
                 new mdb.Input(el)

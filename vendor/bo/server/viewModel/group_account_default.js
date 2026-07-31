@@ -1,4 +1,30 @@
 module.exports = {
+    tabs: {
+        update: {
+            properties: ["status", "callback_date"],
+            post: {
+                method: "POST",
+                controller: "core",
+                action: "v1",
+                entity: "account",
+                payload: {
+                    status: "this",
+                    callback_date: "this",
+                },
+                label: "Modifier",
+            },
+        },
+        delete: {
+            post: {
+                method: "DELETE",
+                controller: "core",
+                action: "v1",
+                entity: "account",
+                label: "Supprimer",
+                class: "danger",
+            },
+        },
+    },
     properties: {
         status: {
             type: "select",

@@ -15,8 +15,8 @@ module.exports = {
         revenue: {
             type: "number",
             label: {
-                "default": "Revenue",
-                "fr_FR": "Chiffre d'affaires"
+                "default": "Revenue (€)",
+                "fr_FR": "Chiffre d'affaires (€)"
             },
             anchor: true,
         },
@@ -40,7 +40,14 @@ module.exports = {
         },
     },
     identifier: "n_fn",
-    summable: "revenue",
+    summable: { 
+        propertyId: "revenue", 
+        format: { 
+            style: "currency",
+            currency: "EUR",
+            maximumFractionDigits: 0,
+        }
+    },
     translations: {
         "Add": "Ajouter",
         "Check all": "Tout sélectionner",
