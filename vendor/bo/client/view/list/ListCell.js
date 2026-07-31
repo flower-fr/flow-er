@@ -53,6 +53,10 @@ export default class ListCell extends View
             }
         }
 
+        else if (property.type === "duration") {
+            html.push(`<td class="text-end">${ Math.floor(row[propertyId] / 60) }h${ (x => x ? x : "")(row[propertyId] % 60) }</td>`)
+        }
+
         else if (property.type === "number") {
             html.push(`<td class="text-end">${ parseFloat(row[propertyId]).toLocaleString("fr-FR", { minimumFractionDigits: 2 }) }</td>`)
         }

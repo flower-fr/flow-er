@@ -7,7 +7,7 @@ const action = async ({ req }, { context, sql, logger }) =>
     const action = assert.notEmpty(req.params, "action")
     const entity = assert.notEmpty(req.params, "entity")
     const view = req.query.view || "default"
-    const locale = req.query.locale || "default"
+    const locale = req.query.locale || context.user.locale
     const config = context.config[`viewModel_${ action }_${ entity }_${ view }`]
 
     // Replace tokens in the where clauses with actual dates
