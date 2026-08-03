@@ -96,7 +96,7 @@ export default class Group extends View
 
             html.push(`
                             <div class="form-outline mb-3">
-                                <button class="btn btn-sm ${ (tab.post.class === "danger") ? "btn-danger" : "btn-warning" }">${ tab.post.label } <span class="fl-group-btn-count"></span></button>
+                                <button class="btn btn-sm ${ (tab.post.class === "danger") ? "btn-danger" : "btn-warning" }">${ tab.post.label } <span class="fl-group-btn-count" id="flGroupBtnCount-${ tabId }"></span></button>
                             </div>
                         </form>
                         <hr>`)
@@ -125,7 +125,7 @@ export default class Group extends View
         return html.join("\n")
     }
 
-    trigger = async () =>
+    trigger = () =>
     {
         for (let [tabId, tab] of Object.entries(this.tabs ?? {})) {
             for (const propertyId of (tab.properties) ? tab.properties : []) {
@@ -152,6 +152,30 @@ export default class Group extends View
                     new mdb.Input(el)
                 }
             }
+        }
+    }
+
+    eventRowChecked = (summable, checkedRows) =>
+    {
+        const checked = checkedRows.length, sumChecked = checkedRows.reduce((accumulator, current) => accumulator + parseFloat(current[summable.propertyId]), 0)
+        if (checked > 0) {
+            const sumLabel = (sumChecked) ? `${ new Intl.NumberFormat("fr-FR", summable.format ? summable.format : {}).format(sumChecked) }${ summable.unit ? ` ${ summable.unit }` : "" }` : ""
+            $(".fl-group-count").text(checked ? checked : "")
+            for (const [tabId, tab] of Object.entries(this.tabs ?? {})) {
+                const match = (row) => {
+                    if (!tab.restriction) return true
+                    return !Object.entries(tab.restriction).find(([property, value]) => {
+                        return row[property] !== value
+                    })
+                }
+                const kept = checkedRows.reduce((acc, cur) => match(cur) ? acc+1 : acc, 0)
+                $(`#flGroupBtnCount-${ tabId }`).text(kept ? `(${ kept })` : "")
+            }
+            if (sumChecked) $(".fl-group-sum").text(`(${ sumLabel })`)
+        } else {
+            $(".fl-group-count").text("")
+            $(".fl-group-btn-count").text("")
+            $(".fl-group-sum").text("")
         }
     }
 }

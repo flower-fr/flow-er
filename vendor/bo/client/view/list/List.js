@@ -9,11 +9,12 @@ import { computeConsistencyIssues } from "../../utils/consistencyEngine.js"
 
 export default class List extends View
 {
-    constructor({ controller, entity, view, where, tags, orderProperty, orderDirection, layout })
+    constructor({ controller, entity, view, group, where, tags, orderProperty, orderDirection, layout })
     {
         super({ controller })
         this.entity = entity
         this.view = view || "default"
+        this.group = group
         this.where = where
         this.tags = tags || ""
         this.orderProperty = orderProperty
@@ -41,12 +42,13 @@ export default class List extends View
 
         // Define order and grouping property
         let orderProperty, orderDirection
-        const order = this.orderProperty ? `${ (this.orderDirection === "desc") ? "-" : "" }${ this.orderProperty }` : Object.entries(params.order).map(([k, v]) => `${ v === "desc" ? "-" : "" }${ k }`).join("|")
+        let order = this.orderProperty ? `${ (this.orderDirection === "desc") ? "-" : "" }${ this.orderProperty }` : Object.entries(params.order).map(([k, v]) => `${ v === "desc" ? "-" : "" }${ k }`).join(",")
+        if (this.params.defaultOrder) order += "," + Object.entries(params.defaultOrder).map(([k, v]) => `${ v === "desc" ? "-" : "" }${ k }`).join(",")
         if (!this.orderProperty) this.orderProperty = Object.keys(params.order)[0]
         if (!this.orderDirection) this.orderDirection = params.order[orderProperty]
         orderProperty = this.orderProperty
         orderDirection = this.orderDirection
-        this.group = properties[orderProperty].group
+        this.grouping = properties[orderProperty].group
 
         const limit = params.limit
         response = await fetch(`/core/v1/${ this.entity }?columns=${ columns }&where=${ where }&tags=${ tags }&order=${ order }${ limit ? `&limit=${ limit }` : "" }`)
@@ -74,13 +76,13 @@ export default class List extends View
     groupRows = () =>
     {
         let i = 0
-        const { rows, properties, orderProperty, translations, group, params } = this
+        const { rows, properties, orderProperty, translations, grouping, params } = this
         this.groups = [], this.listRows = []
         let currentPrefix, currentGroup, identifier = 0
         for (const row of rows) {
             const pred = () => {
-                let prefix , current
-                switch (group) {
+                let prefix, current
+                switch (grouping) {
                 case "month":
                     prefix = row[orderProperty].substr(0, 7)
                     current = currentPrefix?.substr(0, 7)
@@ -113,7 +115,7 @@ export default class List extends View
 
     render = () =>
     {    
-        const html = [], { group, translations } = this
+        const html = [], { grouping, translations } = this
 
         this.groupRows()
 
@@ -137,7 +139,7 @@ export default class List extends View
                     </thead>
                     <tbody class="table-group-divider">`)
 
-        if (group) {
+        if (grouping) {
             this.groups.forEach(group => {
                 const h = []
                 group.map(listRow => h.push(listRow.render()))
@@ -179,7 +181,7 @@ export default class List extends View
 
     trigger = () =>
     {
-        const { controller, group, entity, view, layout } = this
+        const { controller, grouping, entity, view, group, layout } = this
         const tableEl = document.getElementById("flListTable")
         const cardEl = document.getElementById("flCard")
         const dashboardEl = document.getElementById("flDashboard")
@@ -188,7 +190,7 @@ export default class List extends View
 
         this.listHeader.trigger()
 
-        if (group) this.groups.forEach(x => x[0].trigger())
+        if (grouping) this.groups.forEach(x => x[0].trigger())
         this.listRows.forEach(x => x.trigger())
 
         // Extend the displayed list
@@ -260,39 +262,32 @@ export default class List extends View
                     this.toggleChecked(id, row.checked)
                 }
 
-                const checked = this.checkedIds.size
-                let sumChecked = 0
+                const checked = this.checkedIds.size, checkedRows = []
                 this.listRows.forEach(lr => {
                     const i = lr.i, r = document.getElementById(`flListCheck-${ i }`)
-
-                    let sum = this.summable ? Number.parseFloat(lr.row[this.summable.propertyId]) : 0
-                    if (r.checked) sumChecked += sum
+                    if (r.checked) {
+                        checkedRows.push(lr.row)
+                    }
                 })
 
                 if (checked > 0) {
                     $("#flGroup").show()
                     $("#flDashboard").hide()
                     $("#flAdd").hide()
-                    const sumLabel = (sumChecked) ? `${ new Intl.NumberFormat("fr-FR", this.summable.format ? this.summable.format : {}).format(sumChecked) }${ this.summable.unit ? ` ${ this.summable.unit }` : "" }` : ""
-                    $(".fl-group-count").text(checked ? checked : "")
-                    $(".fl-group-btn-count").text(checked ? `(${ checked })` : "")
-                    if (sumChecked) $(".fl-group-sum").text(`(${ sumLabel })`)
                 }
                 else {
                     $("#flDashboard").show()
                     if (!cardEl || cardEl.style.display === "none") $("#flAdd").show()
                     $("#flGroup").hide()
-                    $(".fl-group-count").text("")
-                    $(".fl-group-btn-count").text("")
-                    $(".fl-group-sum").text("")
                 }
-    
+                group.eventRowChecked(this.summable, checkedRows)                
             }
         })
 
         // Trigger checking all rows
         const checkAll = (state) =>
         {
+            const checkedRows = []
             this.listRows.forEach(lr => {
                 const i = lr.i, r = document.getElementById(`flListCheck-${ i }`)
                 r.checked = state
@@ -304,23 +299,13 @@ export default class List extends View
                 $("#flGroup").show()
                 $("#flDashboard").hide()
                 $("#flAdd").hide()
-                const count = this.checkedIds.size
-                let sum = 0
-                this.listRows.forEach(lr => {
-                    sum += this.summable ? Number.parseFloat(lr.row[this.summable.propertyId]) : 0
-                })
-                const sumLabel = (sum) ? `${ new Intl.NumberFormat("fr-FR", this.summable.format ? this.summable.format : {}).format(sum) }${ this.summable.unit ? ` ${ this.summable.unit }` : "" }` : ""
-                $(".fl-group-count").text(count)
-                $(".fl-group-btn-count").text(`(${ count })`)
-                if (sum) $(".fl-group-sum").text(`(${ sumLabel })`)
+                group.eventRowChecked(this.summable, this.listRows.map(lr => lr.row))
             }
             else {
                 $("#flDashboard").show()
                 if (!cardEl || cardEl.style.display === "none") $("#flAdd").show()
                 $("#flGroup").hide()
-                $(".fl-group-count").text("")
-                $(".fl-group-btn-count").text("")
-                $(".fl-group-sum").text("")
+                group.eventRowChecked(this.summable, [])
             }
         }
 

@@ -19,7 +19,7 @@ export default class ListGroup extends View
         const html = [], { identifier, value, list, size } = this
 
         let label, dow
-        switch (list.group) {
+        switch (list.grouping) {
         case "month":
             label = `${ ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"][parseInt(value.substr(5, 7)) - 1] } ${ value.substr(0, 4) }`
             break

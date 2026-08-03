@@ -28,7 +28,7 @@ export default class Dashboard extends View
         for (const [, config] of configs) {
             // Fetch data for each indicator in the config
             const fetchPromises = (config.indicators ?? []).map(indicator => {
-                return fetch(`/core/v1/${indicator.entity}?columns=${indicator.aggregator}:${indicator.column}&where=${indicator.where}`).then(res => res.ok ? res.json() : {})
+                return fetch(`/core/v1/${indicator.entity}?columns=${indicator.aggregator}:${indicator.column}${ indicator.where ? `&where=${indicator.where}` : "" }`).then(res => res.ok ? res.json() : {})
             })
             // Wait for all fetches to complete
             const indicatorData = await Promise.all(fetchPromises).then(results => results.map(result => result?.rows?.[0]?.id ?? 0))

@@ -17,22 +17,22 @@ export default class ListHeaderCell extends View
 
     render = () =>
     {
-        const html = [], { list, propertyId, property, orderProperty, orderDirection, translations } = this, group = list.group
+        const html = [], { list, propertyId, property, orderProperty, orderDirection, translations } = this, grouping = list.grouping
         html.push(`
             <span class="fl-modal-list-header-label">
                 ${ property.label }
                 <br>
                 ${ (propertyId === orderProperty) ? `
                     <i class="fas ${ (orderDirection === "asc") ? "fa-arrow-down-short-wide" : "fa-arrow-down-wide-short" }"></i>
-                    ${ (["date", "datetime"].includes(property.type)) ? `
+                    ${ (grouping && ["date", "datetime"].includes(property.type)) ? `
                         <span title="${ translations["Month"] }">
-                            ${ (group !== "month") ? `<a id="flListHeaderAM-${ propertyId }" href="#!" class="text-primary">` : "" }/${ translations["Month"].substr(0, 1) }${ (group !== "month") ? "</a>" : "" }
+                            ${ (grouping !== "month") ? `<a id="flListHeaderAM-${ propertyId }" href="#!" class="text-primary">` : "" }/${ translations["Month"].substr(0, 1) }${ (grouping !== "month") ? "</a>" : "" }
                         </span>
                         <span title="${ translations["Week"] }">
-                            ${ (group !== "week") ? `<a id="flListHeaderAW-${ propertyId }" href="#!" class="text-primary">` : "" }/${ translations["Week"].substr(0, 1) }${ (group !== "week") ? "</a>" : "" }
+                            ${ (grouping !== "week") ? `<a id="flListHeaderAW-${ propertyId }" href="#!" class="text-primary">` : "" }/${ translations["Week"].substr(0, 1) }${ (grouping !== "week") ? "</a>" : "" }
                         </span>
                         <span title="${ translations["Day"] }">
-                            ${ (group !== "day") ? `<a id="flListHeaderAD-${ propertyId }" href="#!" class="text-primary">` : "" }/${ translations["Day"].substr(0, 1) }${ (group !== "day") ? "</a>" : "" }
+                            ${ (grouping !== "day") ? `<a id="flListHeaderAD-${ propertyId }" href="#!" class="text-primary">` : "" }/${ translations["Day"].substr(0, 1) }${ (grouping !== "day") ? "</a>" : "" }
                         </span>` : "" }` : "" }
             </span>`)
 
@@ -53,7 +53,7 @@ export default class ListHeaderCell extends View
         el = document.getElementById(`flListHeaderAM-${ propertyId }`)
         if (el) {
             el.onclick = () => {
-                list.group = "month"
+                list.grouping = "month"
                 document.getElementById("flList").innerHTML = list.render()
                 list.trigger()
             }
@@ -61,7 +61,7 @@ export default class ListHeaderCell extends View
         el = document.getElementById(`flListHeaderAW-${ propertyId }`)
         if (el) {
             el.onclick = () => {
-                list.group = "week"
+                list.grouping = "week"
                 document.getElementById("flList").innerHTML = list.render()
                 list.trigger()
             }
@@ -69,7 +69,7 @@ export default class ListHeaderCell extends View
         el = document.getElementById(`flListHeaderAD-${ propertyId }`)
         if (el) {
             el.onclick = () => {
-                list.group = "day"
+                list.grouping = "day"
                 document.getElementById("flList").innerHTML = list.render()
                 list.trigger()
             }

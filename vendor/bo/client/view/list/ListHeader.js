@@ -39,8 +39,8 @@ export default class ListHeader extends View
             </th>
             <th />`)
 
-        const group = properties[orderProperty].group
-        if (group) {
+        const grouping = properties[orderProperty].group
+        if (grouping) {
             if (this.filledColumns.includes(orderProperty)) {
                 html.push(`
                 <th>
@@ -52,7 +52,7 @@ export default class ListHeader extends View
         }
 
         for (const [propertyId, property] of Object.entries(this.properties)) {
-            if (propertyId !== orderProperty || !group) {
+            if (propertyId !== orderProperty || !grouping) {
                 if (this.filledColumns.includes(propertyId)) {
                     html.push(`
                     <th ${ (property.type === "number") ? "class=\"text-end\"" : "" }>

@@ -17,8 +17,8 @@ export default class ListRow extends View
 
         this.listRowColumns = []
 
-        const group = properties[orderProperty].group
-        if (group) {
+        const grouping = properties[orderProperty].group
+        if (grouping) {
             if (this.filledColumns.includes(orderProperty)) {
                 const property = properties[orderProperty]
                 this.listCells.push(new ListCell({ controller, list, row, propertyId: orderProperty, property, orderProperty, translations }))
@@ -26,7 +26,7 @@ export default class ListRow extends View
         }
 
         for (const [propertyId, property] of Object.entries(properties)) {
-            if (propertyId !== orderProperty || !group) {
+            if (propertyId !== orderProperty || !grouping) {
                 if (this.filledColumns.includes(propertyId)) {
                     this.listCells.push(new ListCell({ controller, list, row, propertyId, params, property, orderProperty, translations }))
                 }

@@ -20,8 +20,9 @@ export default class ListCell extends View
         const html = [], { row, propertyId, property, orderProperty } = this
         
         if (property.type == "select") {
+            const modalityClass = property.modalities[row[propertyId]]?.class
             html.push(`
-                <td class="${(property.class) ? property.class[row[propertyId]] : ""} ${this.consistencyClass()}">
+                <td class="${(modalityClass) ? modalityClass : ""} ${this.consistencyClass()}">
                     ${ (row[propertyId]) 
         ? ( (property.modalities[row[propertyId]]) ? property.modalities[row[propertyId]].label : row[propertyId] )
         : "" }
@@ -37,20 +38,26 @@ export default class ListCell extends View
         }
 
         else if (property.type === "date") {
-            if (propertyId === orderProperty && this.list.group === "day") {
-                html.push("<td/>")
+            if (row[propertyId]) {
+                if (propertyId === orderProperty && this.list.grouping === "day") {
+                    html.push("<td/>")
+                } else {
+                    const dow = ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"][moment(row[propertyId]).day()]
+                    html.push(`<td class="${this.consistencyClass()} || "text-muted"" class="text-muted"><strong>${ dow }</strong>&nbsp;${ moment(row[propertyId]).format("DD/MM/YYYY") }</td>`)
+                }
             } else {
-                const dow = ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"][moment(row[propertyId]).day()]
-                html.push(`<td class="${this.consistencyClass()} || "text-muted"" class="text-muted"><strong>${ dow }</strong>&nbsp;${ moment(row[propertyId]).format("DD/MM/YYYY") }</td>`)
+                html.push("<td/>")
             }
         }
     
         else if (property.type === "datetime") {
-            if (propertyId === orderProperty && this.list.group === "day") {
-                html.push(`<td class="text-muted">${ moment(row[propertyId]).format("HH:mm") }</td>`)
-            } else {
-                const dow = ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"][moment(row[propertyId]).day()]
-                html.push(`<td class="${this.consistencyClass() || "text-muted"}"><strong>${ dow }</strong> ${ moment(row[propertyId]).format("DD/MM/YYYY HH:mm") }</td>`)
+            if (row[propertyId]) {
+                if (propertyId === orderProperty && this.list.grouping === "day") {
+                    html.push(`<td class="text-muted">${ moment(row[propertyId]).format("HH:mm") }</td>`)
+                } else {
+                    const dow = ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"][moment(row[propertyId]).day()]
+                    html.push(`<td class="${this.consistencyClass() || "text-muted"}"><strong>${ dow }</strong> ${ moment(row[propertyId]).format("DD/MM/YYYY HH:mm") }</td>`)
+                }
             }
         }
 
@@ -83,7 +90,7 @@ export default class ListCell extends View
         }
 
         else {
-            if (propertyId === orderProperty && this.list.group) {
+            if (propertyId === orderProperty && this.list.grouping) {
                 html.push("<td/>")
             } else {
                 const value = (Array.isArray(row[propertyId])) ? row[propertyId].join(", ") : row[propertyId]

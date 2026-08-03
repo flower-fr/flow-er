@@ -2,6 +2,7 @@ const { throwBadRequestError } = require("../../../core/api-utils")
 const util = require("util")
 
 const { addEvent } = require("./post/addEvent")
+const ensure = require("./post/ensure")
 const { registerHistory } = require("./post/registerHistory")
 const { registerSmtp } = require("./post/registerSmtp")
 const { registerSms } = require("./post/registerSms")
@@ -25,7 +26,7 @@ const transactionAction = async ({ req }, context, { sql, smtp, sms, logger }) =
         }    
     }
 
-    const postSteps = { addEvent, registerHistory, registerSmtp, registerSms, save, sendSmtp, sendSms }
+    const postSteps = { addEvent, ensure, registerHistory, registerSmtp, registerSms, save, sendSmtp, sendSms }
 
     try {
         await sql.beginTransaction()
@@ -47,18 +48,18 @@ const transactionAction = async ({ req }, context, { sql, smtp, sms, logger }) =
             })
             result[stepId] = data
             if (!step.async) {
-                const result = await stepFunction({ req, entity: step.entity }, context, data, { sql, smtp, sms, logger })
+                const result = await stepFunction({ req, step, entity: step.entity }, context, data, { sql, smtp, sms, logger })
                 result.stored.forEach(row => {
                     if (row.entitiesToInsert && row.entitiesToInsert[entity]) insertId = row.entitiesToInsert[entity].rowId
                 })
             }
         }
     
-        await sql.commit()
+        await sql.rollback()
     
         for (const [stepId, step] of Object.entries(req.body.steps)) {
             const stepFunction = postSteps[stepId]
-            if (step.async) stepFunction({ req, entity: step.entity }, context, rows, { sql, smtp, sms, logger })
+            if (step.async) stepFunction({ req, step, entity: step.entity }, context, rows, { sql, smtp, sms, logger })
         }
     
         return JSON.stringify({ "status": "ok", result })    

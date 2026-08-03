@@ -16,6 +16,7 @@ class Document extends Ddl
         name: { entity: "document", column: "name" },
         mime: { entity: "document", column: "mime" },
         version: { entity: "document", column: "version", type: "smallint" },
+        content: { entity: "document", column: "content", type: "mediumtext" },
         // content_vector: { entity: "document", column: "content_vector", type: "mediumtext" }, // Deprecated
 
         visibility: { entity: "document", column: "visibility", audit: true },

@@ -25,10 +25,10 @@ export default class Layout extends View
         this.dashboard = new Dashboard({ controller, entity, view })
         this.addForm = new AddForm({ controller, entity, view, layout: this })
         this.global = new Global({ controller, entity, view, locale })
-        this.list = new List({ controller, entity, view, locale, layout: this })
         this.searchKeywords = new SearchKeywords({ controller, placeholder: "Nom, entreprise, coordonnées" })
         this.sidenavButton = new SidenavButton({ controller })
         this.group = new Group({ controller, entity, view, layout: this })
+        this.list = new List({ controller, entity, view, group: this.group, layout: this })
         this.toast = new Toast({ controller },
             { title: "Todo list", message: "Voici la liste des personnes à contacter ce jour. C’est à votre portée!", type: "info", persistent: true })
     }
@@ -139,8 +139,8 @@ export default class Layout extends View
         if (orderDirection) {
             this.orderDirection = orderDirection
         }
-        const { controller, entity, view, locale } = this
-        this.list = new List({ controller, entity, view, where, tags, orderProperty: this.orderProperty, orderDirection: this.orderDirection, locale, layout: this })
+        const { controller, entity, view, group } = this
+        this.list = new List({ controller, entity, view, group, where, tags, orderProperty: this.orderProperty, orderDirection: this.orderDirection, layout: this })
         await this.list.initialize()
         document.getElementById("flList").innerHTML = this.list.render()
         this.list.trigger()

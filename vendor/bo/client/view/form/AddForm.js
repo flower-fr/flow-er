@@ -40,7 +40,12 @@ export default class AddForm extends View
                     <form id="flAddForm">`)
 
         for (const [propertyId, property] of Object.entries(this.properties)) {
-            if (["select", "vector"].includes(property.type)) {
+            
+            if (property.type === "hidden") {
+                html.push(`
+                        <input type="hidden" id="flAdd-${propertyId}" value="" />`)
+                        
+            } else if (["select", "vector"].includes(property.type)) {
                 html.push(`
                         <div class="form-outline mb-3" id="flAddOutline-${propertyId}">
                             <select class="form-select form-select-sm" id="flAdd-${propertyId}" data-mdb-size="sm" ${ property.required ? "required" : "" } >
@@ -311,7 +316,7 @@ export default class AddForm extends View
             if (["select", "vector"].includes(property.type)) {
                 const el = document.getElementById(`flAdd-${ propertyId }`)
                 new mdb.Select(el)
-            } else if (property.type == "autocomplete") {
+            } else if (property.type === "autocomplete") {
                 const data = Object.values(property.modalities).map(x => x.label)
                 const el = document.getElementById(`flAddOutline-${ propertyId }`)
                 const dataFilter = (value) => {
@@ -323,7 +328,20 @@ export default class AddForm extends View
                     filter: dataFilter,
                     noResults: property.noResults,
                 })
-            } else if (property.type == "date") {
+
+                const setForeignKey = (value) => {
+                    const matchs = Object.entries(property.modalities).find(([id, modality]) => modality.label === value ? id : null)
+                    const id = matchs ? matchs[0] : ""
+                    document.getElementById(`flAdd-${ property.foreignKey }`).value = id
+                }
+                el.addEventListener("itemSelect.mdb.autocomplete", (e) => {
+                    setForeignKey(e.value)
+                })
+                document.getElementById(`flAdd-${ propertyId }`).addEventListener("change", (e) => {
+                    setForeignKey(e.target.value)
+                })
+
+            } else if (property.type === "date") {
                 const el = document.getElementById(`flAddOutline-${ propertyId }`)
                 new mdb.Datepicker(el,{ inline: true })
             } else if (["time", "duration"].includes(property.type)) {
