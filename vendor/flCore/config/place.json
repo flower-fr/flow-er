@@ -6,6 +6,7 @@
         "properties": {
             "id": { "entity": "place", "column": "id" },
             "status": { "entity": "place", "column": "status", "audit": true },
+            "identifier": { "entity": "place", "column": "identifier", "audit": true },
             "name": { "entity": "place", "column": "name", "audit": true },
             "region": { "entity": "place", "column": "region", "audit": true },
             "logo": { "entity": "place", "column": "logo", "audit": true },
