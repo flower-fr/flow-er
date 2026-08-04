@@ -55,7 +55,7 @@ const transactionAction = async ({ req }, context, { sql, smtp, sms, logger }) =
             }
         }
     
-        await sql.rollback()
+        await sql.commit()
     
         for (const [stepId, step] of Object.entries(req.body.steps)) {
             const stepFunction = postSteps[stepId]
