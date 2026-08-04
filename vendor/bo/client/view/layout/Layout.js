@@ -8,11 +8,11 @@ import Navbar from "../navbar/Navbar.js"
 import Search from "../search/Search.js"
 import SearchKeywords from "../search/SearchKeywords.js"
 import SidenavButton from "../search/SidenavButton.js"
-import Toast from "../toast/Toast.js"
+import AlertsManager from "../toast/AlertsManager.js"
 
 export default class Layout extends View
 {
-    constructor({ controller, application, tab, entity, view, locale, theme })
+    constructor({ controller, application, tab, entity, view, locale, theme, profileId })
     {
         super({ controller })
         this.application = application
@@ -29,8 +29,7 @@ export default class Layout extends View
         this.sidenavButton = new SidenavButton({ controller })
         this.group = new Group({ controller, entity, view, layout: this })
         this.list = new List({ controller, entity, view, group: this.group, layout: this })
-        this.toast = new Toast({ controller },
-            { title: "Todo list", message: "Voici la liste des personnes à contacter ce jour. C’est à votre portée!", type: "info", persistent: true })
+        this.alertsManager = new AlertsManager({ controller, profileId })
     }
 
     initialize = async () =>
@@ -42,7 +41,7 @@ export default class Layout extends View
         await this.global.initialize()
         await this.list.initialize()
         await this.group.initialize()
-        await this.toast.initialize()
+        await this.alertsManager.initialize()
     }
 
     render = () =>
@@ -125,7 +124,7 @@ export default class Layout extends View
         this.group.trigger()
         this.list.trigger()
         this.addForm.trigger()
-        this.toast.trigger()
+        this.alertsManager.trigger()
 
         const element = document.getElementById("flSearchButton")
         new mdb.Button(element)

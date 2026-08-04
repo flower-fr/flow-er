@@ -12,14 +12,16 @@ export default class Toast extends View
      * @param {string} [options.type='info'] - Visual variant (success, danger, warning, info).
      * @param {number} [options.delay=3000] - Autohide delay in ms.
      * @param {boolean} [options.persistent=false] - If true, toast only closes on manual dismiss.
+     * @param {Function} [options.onClose=null] - Callback function to execute when the toast is manually closed.
      */
-    constructor({ controller }, { title, message, type = "info", delay = 3000, persistent = false }) {
+    constructor({ controller }, { title, message, type = "info", delay = 3000, persistent = false, onClose = null }) {
         super({ controller })
         this.title = title
         this.message = message
         this.type = type
         this.delay = delay
         this.persistent = persistent
+        this.onClose = onClose
         this.id = `toast-${Toast.#counter++}`
     }
 
@@ -63,6 +65,9 @@ export default class Toast extends View
 
         // Remove the toast element from the DOM after it is hidden
         toastEl.addEventListener("hidden.mdb.toast", () => {
+            if (typeof this.onClose === "function") {
+                this.onClose()
+            }
             toastEl.remove()
         }, { once: true })
     }
