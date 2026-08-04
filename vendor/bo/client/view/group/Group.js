@@ -157,7 +157,7 @@ export default class Group extends View
 
     eventRowChecked = (summable, checkedRows) =>
     {
-        const checked = checkedRows.length, sumChecked = checkedRows.reduce((accumulator, current) => accumulator + parseFloat(current[summable.propertyId]), 0)
+        const checked = checkedRows.length, sumChecked = (summable) ? checkedRows.reduce((accumulator, current) => accumulator + parseFloat(current[summable.propertyId]), 0) : 0
         if (checked > 0) {
             const sumLabel = (sumChecked) ? `${ new Intl.NumberFormat("fr-FR", summable.format ? summable.format : {}).format(sumChecked) }${ summable.unit ? ` ${ summable.unit }` : "" }` : ""
             $(".fl-group-count").text(checked ? checked : "")
