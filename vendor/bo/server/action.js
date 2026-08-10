@@ -58,8 +58,8 @@ const action = async ({ req }, { context, sql, logger }) =>
 
         // Localization
 
-        if (property.label[locale]) property.label = property.label[locale]
-        else if (property.label["default"]) property.label = property.label["default"]
+        if (property.label?.[locale]) property.label = property.label[locale]
+        else if (property.label?.["default"]) property.label = property.label["default"]
 
         if (property.modalities) {
             for (const modality of Object.values(property.modalities)) {

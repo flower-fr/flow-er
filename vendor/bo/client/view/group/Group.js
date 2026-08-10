@@ -1,5 +1,8 @@
 import View from "../View.js"
 import GroupTag from "./GroupTag.js"
+import Toast from "../toast/Toast.js"
+
+import exportXlsx from "../../utils/exportXlsx.js"
 
 export default class Group extends View
 {
@@ -10,6 +13,7 @@ export default class Group extends View
         this.view = view
         this.layout = layout
         this.locale = locale
+        this.checkedRows = []
     }
 
     initialize = async () =>
@@ -42,9 +46,10 @@ export default class Group extends View
                 <div class="card-body">`)
 
         for (let [tabId, tab] of Object.entries(this.tabs ?? {})) {
+            const action = tab.post ?? tab.clientAction
 
             html.push(`
-                        <form>`)
+                        <form data-tab-id="${ tabId }">`)
 
             for (const propertyId of (tab.properties) ? tab.properties : []) {
                 const property = this.properties[propertyId]
@@ -96,7 +101,7 @@ export default class Group extends View
 
             html.push(`
                             <div class="form-outline mb-3">
-                                <button class="btn btn-sm ${ (tab.post.class === "danger") ? "btn-danger" : "btn-warning" }">${ tab.post.label } <span class="fl-group-btn-count" id="flGroupBtnCount-${ tabId }"></span></button>
+                                <button class="btn btn-sm ${ (action.class === "danger") ? "btn-danger" : "btn-warning" }">${ action.label } <span class="fl-group-btn-count" id="flGroupBtnCount-${ tabId }"></span></button>
                             </div>
                         </form>
                         <hr>`)
@@ -153,10 +158,22 @@ export default class Group extends View
                 }
             }
         }
+
+        // Handle click on submit
+        document.querySelectorAll("#flGroup form").forEach(form => {
+            form.addEventListener("submit", event => {
+                event.preventDefault()
+                const tab = this.tabs[form.dataset.tabId]
+
+                if (tab.clientAction) return this.clientActionHandler(tab)
+                return this.postHandler()
+            })
+        })
     }
 
     eventRowChecked = (summable, checkedRows) =>
     {
+        this.checkedRows = checkedRows
         const checked = checkedRows.length, sumChecked = (summable) ? checkedRows.reduce((accumulator, current) => accumulator + parseFloat(current[summable.propertyId]), 0) : 0
         if (checked > 0) {
             const sumLabel = (sumChecked) ? `${ new Intl.NumberFormat("fr-FR", summable.format ? summable.format : {}).format(sumChecked) }${ summable.unit ? ` ${ summable.unit }` : "" }` : ""
@@ -177,5 +194,27 @@ export default class Group extends View
             $(".fl-group-btn-count").text("")
             $(".fl-group-sum").text("")
         }
+    }
+
+    clientActionHandler = (tab) => {
+        if (tab.clientAction.type === "export") return this.runExport(tab)
+    }
+
+    runExport = async (tab) => {
+        let response = await fetch(`/bo/export/${ this.entity }?view=${ tab.clientAction.view }`)
+        const config = await response.json()
+        
+        const rows = this.getMatchingRows(tab)
+        if (rows.length === 0)
+            return (new Toast({ controller: this.controller }, { title: config.translations["Excel export"], message: config.translations["No rows to export"], type: "warning" })).trigger()
+        
+        const resolvedToken = config.params.fileName?.params?.[0] === "today" ? new Date().toISOString().split("T")[0] : ""
+        const fileName = config.params.fileName.template.replace("%s", resolvedToken)
+        await exportXlsx(fileName, config, rows)
+    }
+    
+    getMatchingRows = (tab) => {
+        const match = row => !tab.restriction || !Object.entries(tab.restriction).find(([key, value]) => row[key] !== value)
+        return (this.checkedRows ?? []).filter(match)
     }
 }

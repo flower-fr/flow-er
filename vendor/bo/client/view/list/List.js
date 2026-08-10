@@ -60,7 +60,7 @@ export default class List extends View
         if (orderProperty) this.filledColumns.push(this.orderProperty)
         this.rows.forEach(row => {
             Object.keys(row).forEach(column => {
-                if (row[column] && row[column].toString().trim()) {
+                if (row[column] && row[column].toString().trim() && properties[column]?.type != "hidden") {
                     if (!this.filledColumns.includes(column)) this.filledColumns.push(column)
                 }
             })

@@ -9,7 +9,7 @@ function computeConsistencyIssues({ rows, rules })
 {
     const issuesById = new Map()
 
-	// Detect resource conflicts for each resource field specified in the rules
+    // Detect resource conflicts for each resource field specified in the rules
     for (const [resourceType, resource] of Object.entries(rules.conflictResources)) {
         const conflicts = detectResourceConflicts(rows, resource.fields)
         for (const { idA, idB } of conflicts) {
@@ -25,7 +25,7 @@ function detectResourceConflicts(rows, fields) {
     const conflicts = []
     const grouped = new Map()
 
-	// Group rows by resource ID and convert them to intervals
+    // Group rows by resource ID and convert them to intervals
     for (const row of rows) {
         if (fields.some(f => row[f] == null || row[f] === "" || row[f] == 0)) continue
         const resourceKey = fields.map(f => row[f]).join("_")
@@ -33,8 +33,8 @@ function detectResourceConflicts(rows, fields) {
         grouped.get(resourceKey).push(toInterval(row))
     }
 
-	// For each group of intervals, check for overlaps and record conflicts
-    for (const [resourceKey, intervals] of grouped) {
+    // For each group of intervals, check for overlaps and record conflicts
+    for (const [, intervals] of grouped) {
         for (let i = 0; i < intervals.length; i++) {
             for (let j = i + 1; j < intervals.length; j++) {
                 if (intervals[j].start >= intervals[i].end) break
