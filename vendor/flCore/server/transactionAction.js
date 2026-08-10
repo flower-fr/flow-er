@@ -14,18 +14,6 @@ const transactionAction = async ({ req }, context, { sql, smtp, sms, logger }) =
 {
     const entity = req.params.entity
     const id = req.params.id
-    
-    let rows
-    if (req.body.rows) rows = req.body.rows // Batch upsert
-    else if (id) rows = [{"id": id}] // unitary update
-    else rows = [{}] // unitary insert
-
-    for (let row of rows) {
-        for (const [propertyId, value] of Object.entries((req.body.payload) ? req.body.payload : req.body)) {
-            if (value) row[propertyId] = value
-        }    
-    }
-
     const postSteps = { addEvent, ensure, registerHistory, registerSmtp, registerSms, save, sendSmtp, sendSms }
 
     try {
@@ -34,6 +22,18 @@ const transactionAction = async ({ req }, context, { sql, smtp, sms, logger }) =
         const result = {}
         let insertId
         for (const step of req.body.steps) {
+    
+            let rows
+            if (req.body.rows) rows = req.body.rows // Batch upsert
+            else if (id) rows = [{"id": id}] // unitary update
+            else rows = [{}] // unitary insert
+
+            // for (let row of rows) {
+            //     for (const [propertyId, value] of Object.entries((req.body.payload) ? req.body.payload : req.body)) {
+            //         if (value) row[propertyId] = value
+            //     }    
+            // }
+
             const stepId = step.id, stepFunction = postSteps[stepId]
             const data = rows.map(row => {
                 const dataRow = {}
@@ -55,9 +55,15 @@ const transactionAction = async ({ req }, context, { sql, smtp, sms, logger }) =
             }
         }
     
-        await sql.commit()
+        await sql.rollback()
     
         for (const [stepId, step] of Object.entries(req.body.steps)) {
+    
+            let rows
+            if (req.body.rows) rows = req.body.rows // Batch upsert
+            else if (id) rows = [{"id": id}] // unitary update
+            else rows = [{}] // unitary insert
+
             const stepFunction = postSteps[stepId]
             if (step.async) stepFunction({ req, step, entity: step.entity }, context, rows, { sql, smtp, sms, logger })
         }

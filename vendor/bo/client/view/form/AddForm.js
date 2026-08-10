@@ -28,18 +28,18 @@ export default class AddForm extends View
 
     render = () =>
     {
-        const html = []
+        const html = [], { properties, searchKeywords, iterators, identifier, posts, translations } = this
         html.push(`
             <div class="card" id="flAdd">
                 <div class="card-body">
 
-                    ${ this.layout.searchKeywords.render(this.searchKeywords) }
+                    ${ this.layout.searchKeywords.render(searchKeywords) }
 
                     <hr>
 
                     <form id="flAddForm">`)
 
-        for (const [propertyId, property] of Object.entries(this.properties)) {
+        for (const [propertyId, property] of Object.entries(properties)) {
             
             if (property.type === "hidden") {
                 html.push(`
@@ -62,9 +62,54 @@ export default class AddForm extends View
 
             } else if (property.type === "date") {
                 html.push(`
-                        <div class="form-outline mb-3" id="flAddOutline-${propertyId}" data-mdb-datepicker-init data-mdb-input-init>
-                            <input class="form-control form-control-sm" id="flAdd-${propertyId}" ${ property.required ? "required" : "" } />
-                            <label class="form-label select-label">${ property.required ? "* " : "" }${property.label}</label>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <div class="form-outline" id="flAddOutline-${ propertyId }" data-mdb-datepicker-init data-mdb-input-init>
+                                    <input class="form-control form-control-sm" id="flAdd-${ propertyId }" value="${ new Date().toISOString().split("T")[0].split("-").reverse().join("/") }" />
+                                    <label class="form-label select-label">${ property.required ? "* " : "" }${property.label}</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="input-group text-center">
+                                    <span title="${ translations["Day"] }" title="${ translations["Day"] }">
+                                        <a id="flAdd-d_${ propertyId }" href="#!" class="${ property.frame === "day" ? "text-info" : "text-primary" }">
+                                            <i class="fas fa-calendar-day"></i>
+                                        </a>
+                                    </span>
+                                    &nbsp;&nbsp;
+                                    <span title="${ translations["Week"] }" title="${ translations["Week"] }">
+                                        <a id="flAdd-w_${ propertyId }" href="#!" class="${ property.frame === "week" ? "text-info" : "text-primary" }">
+                                            <i class="fas fa-calendar-week"></i>
+                                        </a>
+                                    </span>
+                                    &nbsp;&nbsp;
+                                    <span title="${ translations["Month"] }" title="${ translations["Month"] }">
+                                        <a id="flAdd-m_${ propertyId }" href="#!" class="${ property.frame === "month" ? "text-info" : "text-primary" }">
+                                            <i class="fas fa-calendar-days"></i>
+                                        </a>
+                                    </span>
+                                    &nbsp;&nbsp;
+                                    <span title="${ translations["Year"] }" title="${ translations["Year"] }">
+                                        <a id="flAdd-y_${ propertyId }" href="#!" class="${ property.frame === "year" ? "text-info" : "text-primary" }">
+                                            <i class="fas fa-calendar"></i>
+                                        </a>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-outline" id="flAddOutlineDays_${ propertyId }">
+                                    <select class="form-select form-select-sm" id="flAdd-days_${ propertyId }" data-mdb-size="sm" multiple>
+                                        <option value="1">Lu</option>
+                                        <option value="2">Ma</option>
+                                        <option value="3">Me</option>
+                                        <option value="4">Je</option>
+                                        <option value="5">Ve</option>
+                                        <option value="6">Sa</option>
+                                        <option value="0">Di</option>
+                                    </select>
+                                    <label class="form-label select-label">Jours</label>
+                                </div>
+                            </div>
                         </div>`)
 
             } else if (["time", "duration"].includes(property.type)) {
@@ -90,12 +135,12 @@ export default class AddForm extends View
             }
         }
 
-        if (this.iterators) {
+        if (iterators) {
 
             html.push(`
                         ${ "<hr>" }`)
 
-            for (const [key, iterator] of Object.entries(this.iterators)) {
+            for (const [key, iterator] of Object.entries(iterators)) {
                 if (iterator.type === "dateRange") {
                     html.push(`
                         <div class="row mb-3">
@@ -120,9 +165,7 @@ export default class AddForm extends View
                                         <option value="4">Je</option>
                                         <option value="5">Ve</option>
                                         <option value="6">Sa</option>
-                                        <option value="0">Di</option>`)
-
-                    html.push(`
+                                        <option value="0">Di</option>
                                     </select>
                                     <label class="form-label select-label">${ iterator.label[2] }</label>
                                 </div>
@@ -132,38 +175,39 @@ export default class AddForm extends View
             }
         }
 
-        for (const [postId, post] of Object.entries(this.posts)) {
-            html.push(`
-                <div class="form-outline mb-3">
-                    <div class="col-md-12">    
-                        <div class="input-group text-center">
-                            <button type="button" class="btn btn-outline-primary" id="flAddRefresh" title="${ this.translations["Refresh the list"] }">
-                                <i class="fa fa-sync-alt"></i>
-                            </button>
-                            <button type="button" class="btn btn-outline-primary" id="flAddErase" title="${ this.translations["Erase"] }">
-                                <i class="fa fa-times"></i>
-                            </button>                
+        html.push(`
+            <div class="form-outline mb-3">
+                <div class="col-md-12">    
+                    <div class="input-group text-center">
+                        <button type="button" class="btn btn-outline-primary" id="flSearchRefresh" title="${ translations["Refresh the list"] }">
+                            <i class="fa fa-sync-alt"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-primary" id="flSearchErase" title="${ translations["Erase"] }">
+                            <i class="fa fa-times"></i>
+                        </button>`)
 
-                            <button 
-                                name="flAdd-${postId}" 
-                                class="btn btn-sm btn-warning flAdd-tab-submit"
-                                data-mdb-ripple-init
-                                data-mdb-ripple-color="danger"
-                                ${ (post.method) ? `data-fl-method="${post.method}"`: "" }
-                                data-fl-controller="${post.controller}"
-                                data-fl-action="${post.action}"
-                                data-fl-entity="${post.entity}"
-                                data-fl-transaction="${postId}">
-                                    ${post.label} <span class="fl-add-count"></span>
-                            </button>
-                        </div>
-                    </div>
-                </div>`)
+        for (const [postId, post] of Object.entries(posts)) {
+            html.push(`
+                        <button 
+                            name="flAdd-${postId}" 
+                            class="btn btn-sm btn-warning flAdd-tab-submit"
+                            data-mdb-ripple-init
+                            data-mdb-ripple-color="danger"
+                            ${ (post.method) ? `data-fl-method="${post.method}"`: "" }
+                            data-fl-controller="${post.controller}"
+                            data-fl-action="${post.action}"
+                            data-fl-entity="${post.entity}"
+                            data-fl-transaction="${postId}">
+                            ${post.label} <span class="fl-add-count"></span>
+                        </button>`)
         }
 
         html.push(`
-                    </form>
-                    <hr>`)
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <hr>`)
 
         for (const tag of this.tags) html.push(tag.render())
 
@@ -273,6 +317,59 @@ export default class AddForm extends View
         const {properties, iterators, identifier, posts, translations, controller, layout} = this
         const form = document.getElementById("flAddForm")
 
+        const searchRefresh = document.getElementById("flSearchRefresh")
+        const keywordsRefresh = document.getElementById("flSearchKeywordsRefresh")
+ 
+        // Search refresh and erase
+
+        const refresh = document.getElementById("flSearchRefresh")
+        new mdb.Ripple(refresh, { rippleColor: "primary" })
+        refresh.onclick = () => {
+            layout.refreshList({ where: this.extractFilters(), tags: this.extractTags() })
+        }
+
+        const erase = document.getElementById("flSearchErase")
+        new mdb.Ripple(erase, { rippleColor: "primary" })
+        document.getElementById("flSearchErase").onclick = () => {
+
+            searchRefresh.classList.remove("btn-primary")
+            searchRefresh.classList.add("btn-outline-primary")
+            keywordsRefresh.classList.remove("btn-primary")
+            keywordsRefresh.classList.add("btn-outline-primary")
+
+            layout.refreshList({})
+            for (const [propertyId, property] of Object.entries(properties)) {
+                if (["select", "vector"].includes(property.type)) {
+                    const instance = mdb.Select.getInstance(`#flAdd-${ propertyId }`)
+                    instance.setValue("")
+                    instance.dispose()
+                    new mdb.Select(document.getElementById(`flAdd-${ propertyId }`))
+
+                } else if (property.type === "autocomplete") {
+                    document.getElementById(`flAdd-${ propertyId }`).value = ""
+                    const instance = mdb.Autocomplete.getInstance(`#flAddOutline-${ propertyId }`)
+                    instance.dispose()
+                    new mdb.Autocomplete(document.getElementById(`flAddOutline-${ propertyId }`))
+
+                } else if (property.type === "date") {
+                    document.getElementById(`flAdd-${ propertyId }`).value = ""
+
+                } else if (["time", "duration"].includes(property.type)) {
+                    document.getElementById(`flAdd-${ propertyId }`).value = ""
+
+                } else {
+                    document.getElementById(`flAdd-${ propertyId }`).value = ""
+                }
+            }
+            for (const tag of this.tags) {
+                const tagElement = document.getElementById(`flAddTag-${ tag.name }`)
+                tagElement.setAttribute("data-fl-checked", "false")
+                tagElement.classList.remove("btn-outline-success")
+                tagElement.classList.add("btn-outline-primary")
+            }
+            document.getElementById("flSearchKeywords").value = ""
+        }
+
         // Initialize and trigger MDB components for each iterator
         this.triggerScopeChange()
         for (const [key, iterator] of iterators ? Object.entries(iterators) : []) {
@@ -290,7 +387,7 @@ export default class AddForm extends View
         for (const key of identifier ? identifier : []) {
             const property = properties[key] || iterators[key]
             let el
-            if (property.type === "dateRange") {
+            if (property.type === "dateRange") { // Deprecated
                 el = document.getElementById(`flAddOutline-min_${ key }`)
                 el.addEventListener("change", this.triggerScopeChange)
                 el.addEventListener("valueChanged.mdb.datepicker", this.triggerScopeChange)
@@ -299,8 +396,7 @@ export default class AddForm extends View
                 el.addEventListener("valueChanged.mdb.datepicker", this.triggerScopeChange)
                 el = document.getElementById(`flAddOutline-days_${ key }`)
                 el.addEventListener("change", this.triggerScopeChange)
-            }
-            else {
+            } else {
                 el = document.getElementById(`flAddOutline-${ key }`)
                 el.addEventListener("change", this.triggerScopeChange)
                 if (["time", "duration"].includes(property.type)) {
@@ -316,6 +412,18 @@ export default class AddForm extends View
             if (["select", "vector"].includes(property.type)) {
                 const el = document.getElementById(`flAdd-${ propertyId }`)
                 new mdb.Select(el)
+
+                const setLabel = (selected) => {
+                    const match = Object.entries(property.modalities).find(([id]) => id === selected)
+                    const label = match ? match[1].label : ""
+                    document.getElementById(`flAdd-${ property.foreignIdentifier }`).value = label
+                }
+                el.addEventListener("change", () => {
+                    searchRefresh.classList.remove("btn-outline-primary")
+                    searchRefresh.classList.add("btn-primary")
+                    setLabel(document.getElementById(`flAdd-${ propertyId }`).value)
+                })
+
             } else if (property.type === "autocomplete") {
                 const data = Object.values(property.modalities).map(x => x.label)
                 const el = document.getElementById(`flAddOutline-${ propertyId }`)
@@ -330,25 +438,83 @@ export default class AddForm extends View
                 })
 
                 const setForeignKey = (value) => {
-                    const matchs = Object.entries(property.modalities).find(([id, modality]) => modality.label === value ? id : null)
+                    const matchs = Object.entries(property.modalities).find(([id, modality]) => (modality.label === value) ? id : null)
                     const id = matchs ? matchs[0] : ""
                     document.getElementById(`flAdd-${ property.foreignKey }`).value = id
                 }
                 el.addEventListener("itemSelect.mdb.autocomplete", (e) => {
+                    searchRefresh.classList.remove("btn-outline-primary")
+                    searchRefresh.classList.add("btn-primary")
                     setForeignKey(e.value)
                 })
                 document.getElementById(`flAdd-${ propertyId }`).addEventListener("change", (e) => {
+                    searchRefresh.classList.remove("btn-outline-primary")
+                    searchRefresh.classList.add("btn-primary")
                     setForeignKey(e.target.value)
                 })
 
             } else if (property.type === "date") {
-                const el = document.getElementById(`flAddOutline-${ propertyId }`)
-                new mdb.Datepicker(el,{ inline: true })
+                let el = document.getElementById(`flAddOutline-${ propertyId }`)
+                document.getElementById(`flAdd-${ propertyId }`).addEventListener("change", () => {
+                    searchRefresh.classList.remove("btn-outline-primary")
+                    searchRefresh.classList.add("btn-primary")
+                })
+
+                const datePickerOptions = {
+                    inline: true,
+                }
+                if (property.mdb) {
+                    datePickerOptions.datepicker = { 
+                        format: property.mdb.dateFormat
+                    }
+                    datePickerOptions.monthsFull = property.mdb.monthsFull
+                    datePickerOptions.weekdaysNarrow = property.mdb.weekdaysNarrow
+                }
+                new mdb.Datepicker(el, datePickerOptions)
+
+                el = document.getElementById(`flAdd-days_${ propertyId }`)
+                new mdb.Select(el)
+                const switcher = (newFrame) => {
+                    ["flAdd-d_", "flAdd-w_", "flAdd-m_", "flAdd-y_"].forEach(prefix => {
+                        const element = document.getElementById(`${ prefix }${ propertyId }`)
+                        if (element) {
+                            if (prefix === `flAdd-${ newFrame[0] }_`) {
+                                element.classList.remove("text-primary")
+                                element.classList.add("text-info")
+                            } else {
+                                element.classList.remove("text-info")
+                                element.classList.add("text-primary")
+                            }
+                        }
+                    })
+                }
+                ["day", "week", "month", "year"].forEach(prefix => {
+                    const element = document.getElementById(`flAdd-${ prefix[0] }_${ propertyId }`)
+                    if (element) {
+                        element.addEventListener("click", () => {
+                            searchRefresh.classList.remove("btn-outline-primary")
+                            searchRefresh.classList.add("btn-primary")
+                            property.frame = prefix
+                            switcher(prefix)
+                            this.triggerScopeChange()
+                        })
+                    }
+                })
+
             } else if (["time", "duration"].includes(property.type)) {
                 const el = document.getElementById(`flAddOutline-${ propertyId }`)
+                el.addEventListener("valueChanged.mdb.timepicker", () => {
+                    searchRefresh.classList.remove("btn-outline-primary")
+                    searchRefresh.classList.add("btn-primary")
+                })
                 new mdb.Timepicker(el,{ format24: true, increment: true }) 
+
             } else {
                 const el = document.getElementById(`flAddOutline-${ propertyId }`)
+                document.getElementById(`flAdd-${ propertyId }`).addEventListener("change", () => {
+                    searchRefresh.classList.remove("btn-outline-primary")
+                    searchRefresh.classList.add("btn-primary")
+                })
                 new mdb.Input(el)
             }
         }
@@ -441,37 +607,6 @@ export default class AddForm extends View
                 layout.refreshList({ where: this.extractFilters(), tags: this.extractTags() })
             })
         }
-
-        // Quick keyword search
-        const quickSearch = document.getElementById("flSearchKeywordsRefresh")
-        new mdb.Ripple(quickSearch, { rippleColor: "primary" })
-        quickSearch.addEventListener("click", () => {
-            layout.refreshList({ where:`keywords:contains,${ document.getElementById("flSearchKeywords").value }`, tags: this.extractTags() })
-        })
- 
-        const refresh = document.getElementById("flAddRefresh")
-        new mdb.Ripple(refresh, { rippleColor: "primary" })
-        refresh.onclick = () => {
-            layout.refreshList({ where: this.extractFilters(), tags: this.extractTags() })
-        }
-
-        const erase = document.getElementById("flAddErase")
-        new mdb.Ripple(erase, { rippleColor: "primary" })
-        document.getElementById("flAddErase").onclick = () => {
-            layout.refreshList({})
-            for (const propertyId of Object.keys(properties)) {
-                const instance = mdb.Select.getInstance(`#flAdd-${ propertyId }`)
-                if (instance) instance.setValue("")
-                else document.getElementById(`flAdd-${ propertyId }`).value = ""
-                for (const tag of this.tags) {
-                    const tagElement = document.getElementById(`flAddTag-${ tag.name }`)
-                    tagElement.setAttribute("data-fl-checked", "false")
-                    tagElement.classList.remove("btn-outline-success")
-                    tagElement.classList.add("btn-outline-primary")
-                }
-            }
-            this.buildShortcuts()
-        }
     }
 
     extractFilters = () =>
@@ -495,9 +630,32 @@ export default class AddForm extends View
         }
 
         for (const [propertyId, property] of Object.entries(properties)) {
-            const value = document.getElementById(`flAdd-${ propertyId }`).value
-            if (value) {
-                filters.push(`${ propertyId }:contains,${ value }`)
+            if (property.type === "date") {
+                const value = document.getElementById(`flAdd-${ propertyId }`).value
+                if (value) {
+                    if (property.frame === "week") {
+                        const startOfWeek = moment(value, "DD/MM/YYYY").startOf("week").format("YYYY-MM-DD")
+                        const endOfWeek = moment(value, "DD/MM/YYYY").endOf("week").format("YYYY-MM-DD")
+                        filters.push(`${ propertyId }:between,${ startOfWeek },${ endOfWeek }`)
+                    } else if (property.frame === "month") {
+                        const startOfMonth = moment(value, "DD/MM/YYYY").startOf("month").format("YYYY-MM-DD")
+                        const endOfMonth = moment(value, "DD/MM/YYYY").endOf("month").format("YYYY-MM-DD")
+                        filters.push(`${ propertyId }:between,${ startOfMonth },${ endOfMonth }`)
+                    } else if (property.frame === "year") {
+                        const startOfYear = moment(value, "DD/MM/YYYY").startOf("year").format("YYYY-MM-DD")
+                        const endOfYear = moment(value, "DD/MM/YYYY").endOf("year").format("YYYY-MM-DD")
+                        filters.push(`${ propertyId }:between,${ startOfYear },${ endOfYear }`)
+                    }
+                    else {
+                        const formattedValue = moment(value, "DD/MM/YYYY").format("YYYY-MM-DD")
+                        filters.push(`${ propertyId }:${ property.frame },${ formattedValue }`)
+                    }
+                }
+            } else {
+                const value = document.getElementById(`flAdd-${ propertyId }`).value
+                if (value) {
+                    filters.push(`${ propertyId }:contains,${ value }`)
+                }
             }
         }
         return filters.join("|")

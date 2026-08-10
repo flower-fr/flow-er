@@ -7,7 +7,7 @@ import List from "../list/List.js"
 import Navbar from "../navbar/Navbar.js"
 import Search from "../search/Search.js"
 import SearchKeywords from "../search/SearchKeywords.js"
-import SidenavButton from "../search/SidenavButton.js"
+// import SidenavButton from "../search/SidenavButton.js"
 import AlertsManager from "../toast/AlertsManager.js"
 
 export default class Layout extends View
@@ -25,8 +25,8 @@ export default class Layout extends View
         this.dashboard = new Dashboard({ controller, entity, view })
         this.addForm = new AddForm({ controller, entity, view, layout: this })
         this.global = new Global({ controller, entity, view, locale })
-        this.searchKeywords = new SearchKeywords({ controller, placeholder: "Nom, entreprise, coordonnées" })
-        this.sidenavButton = new SidenavButton({ controller })
+        this.searchKeywords = new SearchKeywords({ controller, placeholder: "Nom, entreprise, coordonnées", layout: this })
+        // this.sidenavButton = new SidenavButton({ controller })
         this.group = new Group({ controller, entity, view, layout: this })
         this.list = new List({ controller, entity, view, group: this.group, layout: this })
         this.alertsManager = new AlertsManager({ controller, profileId })
@@ -76,11 +76,6 @@ export default class Layout extends View
                 <div class="m-3">
                     <div class="row">
                         <div class="col-md-9">
-                            <!--<section class="p-4 d-flex flex-wrap w-100" id="flShortcuts">
-                                ${ this.sidenavButton.render() }
-                                ${ this.searchKeywords.render() }
-                            </section>-->
-
                             <div class="section">
                                 <div class="row" id="flList">`)
         
@@ -120,10 +115,12 @@ export default class Layout extends View
         this.navbar.trigger()
         // this.search.trigger()
         this.global.trigger()
+        this.searchKeywords.trigger()
         this.dashboard.trigger()
         this.group.trigger()
-        this.list.trigger()
+        // this.list.trigger()
         this.addForm.trigger()
+        this.refreshList({ where: this.addForm.extractFilters(), tags: this.addForm.extractTags() })
         this.alertsManager.trigger()
 
         const element = document.getElementById("flSearchButton")

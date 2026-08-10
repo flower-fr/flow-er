@@ -1,0 +1,47 @@
+module.exports = {
+    "entities": {
+        "account": { "table": "account" },
+        "place": { "table": "place", "foreignKey": "place_id", "foreignEntity": "account" },
+        "vcard": { "table": "vcard", "foreignKey": "contact_1_id", "foreignEntity": "account" }
+    },
+    "properties": {
+        "id": { "entity": "account", "column": "id", "type": "int" },
+        "status": { "entity": "account", "column": "status", "audit": true },
+        "place_id": { "entity": "account", "column": "place_id", "type": "int" },
+        "contact_1_id": { "entity": "account", "column": "contact_1_id", "type": "int" },
+        "revenue": { "entity": "account", "column": "revenue", "type": "decimal(10, 2)" },
+
+        "place_region": { "entity": "place", "column": "region" },
+        "place_name": { "entity": "place", "column": "name" },
+
+        "n_first": { "entity": "vcard", "column": "n_first" },
+        "n_last": { "entity": "vcard", "column": "n_last" },
+        "n_fn": { "column": "n_fn", "type": "CONCAT", "components": ["n_last", "n_first"] },
+        "email": { "entity": "vcard", "column": "email", "type": "email" },
+        "tel_cell": { "entity": "vcard", "column": "tel_cell" },
+        "tel_work": { "entity": "vcard", "column": "tel_work" },
+        "adr_street": { "entity": "vcard", "column": "adr_street" },
+        "adr_zip": { "entity": "vcard", "column": "adr_zip" },
+        "adr_city": { "entity": "vcard", "column": "adr_city" },
+
+        "keywords": { 
+            "column": "keywords",
+            "type": "CONCAT",
+            "components": ["n_last", "n_first", "email", "tel_cell"] 
+        },
+
+        "visibility": { "entity": "account", "column": "visibility", "audit": true },
+        "touched_at": { "entity": "account", "column": "touched_at", "type": "datetime" },
+        "touched_by": { "entity": "account", "column": "touched_by", "type": "int" }
+    },
+    "vectors": {
+        "places": {
+            "entity": "place",
+            "foreignKey": "place_id",
+            "foreignEntity": "account",
+            "columns": ["id", "status", "name", "region"],
+            "where": { "status":"new" },
+            "order": "name"
+        }
+    }
+}

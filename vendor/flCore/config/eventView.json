@@ -1,21 +1,4 @@
 {
-    "event/model": {
-        "entities": {},
-        "properties": {
-            "id": { "entity": "event", "column": "id", "type": "primary" },
-            "caption": { "entity": "event", "column": "caption" },
-            "date": { "entity": "event", "column": "date", "type": "date" },
-            "start_time": { "entity": "event", "column": "start_time", "type": "time" },
-            "end_date": { "entity": "event", "column": "end_date", "type": "date" },
-            "end_time": { "entity": "event", "column": "end_time", "type": "time" },
-            "location": { "entity": "event", "column": "location" },
-
-            "visibility": { "entity": "event", "column": "visibility", "length": 8, "audit": true },
-            "touched_at": { "entity": "event", "column": "touched_at", "type": "datetime" },
-            "touched_by": { "entity": "event", "column": "touched_by", "type": "int" }
-       }
-    },
-
     "event/property/caption": {
         "definition": "inline",
         "type": "input",

@@ -16,7 +16,7 @@ export default class Search extends View
 
     initialize = async () =>
     {
-        const response = await fetch(`/bo/search/${ this.entity }?view=${ this.view }&locale=${this.locale}`)
+        const response = await fetch(`/bo/search/${ this.entity }?view=${ this.view }`)
         const { properties, params, tags, translations } = await response.json()
         this.properties = properties
         this.params = params

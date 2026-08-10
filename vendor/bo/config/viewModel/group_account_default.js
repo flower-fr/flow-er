@@ -1,7 +1,7 @@
 module.exports = {
     tabs: {
         update: {
-            properties: ["status", "callback_date"],
+            properties: ["status"/*, "callback_date"*/],
             post: {
                 method: "POST",
                 controller: "core",
@@ -9,7 +9,7 @@ module.exports = {
                 entity: "account",
                 payload: {
                     status: "this",
-                    callback_date: "this",
+                    // callback_date: "this",
                 },
                 label: "Modifier",
             },
@@ -53,10 +53,10 @@ module.exports = {
                 }
             },
         },
-        callback_date: {
-            type: "date",
-            label: "Date de rappel",
-        },
+        // callback_date: {
+        //     type: "date",
+        //     label: "Date de rappel",
+        // },
     },
     translations: {
         "Cancel": "Annuler",

@@ -1,10 +1,11 @@
 import View from "../View.js"
 export default class SearchKeywords extends View
 {
-    constructor({ controller, placeholder })
+    constructor({ controller, placeholder, layout })
     {
         super({ controller })
         this.placeholder = placeholder
+        this.layout = layout
     }
 
     render = (placeholder) =>
@@ -29,5 +30,42 @@ export default class SearchKeywords extends View
             </section>`)
 
         return html.join("\n")
+    }
+
+    trigger = async () =>
+    {
+        const {layout} = this
+
+        const keywords = document.getElementById("flSearchKeywords")
+        const keywordsRefresh = document.getElementById("flSearchKeywordsRefresh")
+
+        // Quick keyword search
+
+        new mdb.Ripple(keywordsRefresh, { rippleColor: "primary" })
+        keywords.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault()
+                layout.refreshList({ where:`keywords:contains,${ keywords.value }`, tags: this.extractTags() })
+                keywordsRefresh.classList.remove("btn-primary")
+                keywordsRefresh.classList.add("btn-outline-primary")
+            } else {
+                keywordsRefresh.classList.remove("btn-outline-primary")
+                keywordsRefresh.classList.add("btn-primary")
+            }
+        })
+        keywords.addEventListener("focusout", () => {
+            if (keywords.value === "") {
+                keywordsRefresh.classList.remove("btn-primary")
+                keywordsRefresh.classList.add("btn-outline-primary")
+            } else {
+                keywordsRefresh.classList.remove("btn-outline-primary")
+                keywordsRefresh.classList.add("btn-primary")
+            }
+        })
+        keywordsRefresh.addEventListener("click", () => {
+            layout.refreshList({ where:`keywords:contains,${ keywords.value }` })
+            keywordsRefresh.classList.remove("btn-primary")
+            keywordsRefresh.classList.add("btn-outline-primary")
+        })
     }
 }
