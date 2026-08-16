@@ -24,18 +24,19 @@ export default class Group extends View
         this.properties = properties
         this.translations = translations
 
-        response = await fetch(`/bo/search/${ this.entity }?view=${ this.view }&locale=${this.locale}`)
+        response = await fetch(`/bo/search/${ this.entity }?view=${ this.view }`)
         const { tags } = await response.json()
         this.tags = tags.map(tag => new GroupTag({ controller: this.controller, name: tag.distinct_name }))
     }
 
     render = () =>
     {
+        const { translations } = this
         const html = []
         html.push(`
             <div class="card mb-3" id="flGroup">
                 <div class="card-header text-center">
-                    <h5>Actions groupées</h5>
+                    <h5>${ translations.groupedActions }</h5>
                     <div>
                         <strong>
                             <span class="fl-group-count"></span>
@@ -148,7 +149,19 @@ export default class Group extends View
                     }
                 } else if (property.type == "date") {
                     const el = document.getElementById(`flGroupOutline-${ tabId }-${ propertyId }`)
-                    new mdb.Datepicker(el,{ inline: true })
+                    
+                    const datePickerOptions = {
+                        inline: true,
+                    }
+                    if (property.mdb) {
+                        datePickerOptions.datepicker = { 
+                            format: property.mdb.dateFormat
+                        }
+                        datePickerOptions.monthsFull = property.mdb.monthsFull,
+                        datePickerOptions.weekdaysNarrow = property.mdb.weekdaysNarrow
+                    }
+                    new mdb.Datepicker(el, datePickerOptions)
+
                 } else if (["time", "duration"].includes(property.type)) {
                     const el = document.getElementById(`flGroupOutline-${ tabId }-${ propertyId }`)
                     new mdb.Timepicker(el,{ format24: true, increment: true }) 

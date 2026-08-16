@@ -1,9 +1,10 @@
 import View from "../View.js"
 
+import Card from "../card/Card.js"
 import ListHeader from "./ListHeader.js"
 import ListGroup from "./ListGroup.js"
 import ListRow from "./ListRow.js"
-import Card from "../card/Card.js"
+import ListTooltip from "./ListTooltip.js"
 
 import { computeConsistencyIssues } from "../../utils/consistencyEngine.js"
 
@@ -26,7 +27,7 @@ export default class List extends View
     {
         // Retrieve the config and params
         let response = await fetch(`/bo/list/${ this.entity }?view=${ this.view }`)
-        const { properties, identifier, params, summable, translations } = await response.json()
+        const { properties, identifier, params, eventConfig, summable, translations } = await response.json()
         this.properties = properties
         this.identifier = identifier
         this.params = params
@@ -67,6 +68,11 @@ export default class List extends View
         })
         this.listHeader = new ListHeader({ controller: this.controller, list: this, rows: this.rows, filledColumns: this.filledColumns, properties, orderProperty, orderDirection, limit, translations, layout: this.layout })
 
+        if (eventConfig) {
+            this.listTooltips = new ListTooltip({ controller: this.controller, list: this, eventConfig })
+            this.listTooltips.initialize()
+        }
+
         // this.listRows = rows.map(row => { 
         //     return new ListRow({ i: i++, controller: this.controller, row, filledColumns: this.filledColumns, properties, translations })
         // })
@@ -76,7 +82,7 @@ export default class List extends View
     groupRows = () =>
     {
         let i = 0
-        const { rows, properties, orderProperty, translations, grouping, params } = this
+        const { rows, properties, orderProperty, translations, grouping, params, eventConfig } = this
         this.groups = [], this.listRows = []
         let currentPrefix, currentGroup, identifier = 0
         for (const row of rows) {
@@ -107,7 +113,7 @@ export default class List extends View
                 currentGroup = [new ListGroup({ controller: this.controller, identifier: identifier++, list: this, value: row[orderProperty], size: Object.entries(row).length, translations })]
                 this.groups.push(currentGroup)
             }
-            const listRow = new ListRow({ i: i++, controller: this.controller, list: this, row, filledColumns: this.filledColumns, params, properties, orderProperty, translations })
+            const listRow = new ListRow({ i: i++, controller: this.controller, list: this, row, filledColumns: this.filledColumns, params, properties, eventConfig, orderProperty, translations })
             currentGroup.push(listRow)
             this.listRows.push(listRow)
         }

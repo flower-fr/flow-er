@@ -25,14 +25,15 @@ export default class ListHeaderCell extends View
                 ${ (propertyId === orderProperty) ? `
                     <i class="fas ${ (orderDirection === "asc") ? "fa-arrow-down-short-wide" : "fa-arrow-down-wide-short" }"></i>
                     ${ (grouping && ["date", "datetime"].includes(property.type)) ? `
-                        <span title="${ translations["Month"] }">
-                            ${ (grouping !== "month") ? `<a id="flListHeaderAM-${ propertyId }" href="#!" class="text-primary">` : "" }/${ translations["Month"].substr(0, 1) }${ (grouping !== "month") ? "</a>" : "" }
-                        </span>
-                        <span title="${ translations["Week"] }">
-                            ${ (grouping !== "week") ? `<a id="flListHeaderAW-${ propertyId }" href="#!" class="text-primary">` : "" }/${ translations["Week"].substr(0, 1) }${ (grouping !== "week") ? "</a>" : "" }
-                        </span>
-                        <span title="${ translations["Day"] }">
-                            ${ (grouping !== "day") ? `<a id="flListHeaderAD-${ propertyId }" href="#!" class="text-primary">` : "" }/${ translations["Day"].substr(0, 1) }${ (grouping !== "day") ? "</a>" : "" }
+                        <a id="flListHeaderAM-${ propertyId }" href="#!">
+                            <span class="${ (grouping !== "month") ? "text-primary" : "text-info" } title="${ translations["Month"] }">/${ translations["Month"].substr(0, 1) }</span>
+                        </a>
+                        <a id="flListHeaderAW-${ propertyId }" href="#!">
+                            <span class="${ (grouping !== "week") ? "text-primary" : "text-info" } title="${ translations["Week"] }">/${ translations["Week"].substr(0, 1) }</span>
+                        </a>
+                        <a id="flListHeaderAD-${ propertyId }" href="#!">
+                            <span class="${ (grouping !== "day") ? "text-primary" : "text-info" } title="${ translations["Day"] }">/${ translations["Day"].substr(0, 1) }</span>
+                        </a>
                         </span>` : "" }` : "" }
             </span>`)
 

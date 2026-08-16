@@ -18,7 +18,7 @@ const sqlInsert = async ({ entity, data, params, user, context, debug }, model, 
     const request = insert(entity, data, model, user, context, debug)
     logger && logger.debug(util.inspect({ request, params }, { depth: null, colors: true }))
     const insertedRows = await connection.execute(request, params)
-    logger && logger.debug({ insertId: insertedRows[0].insertId })
+    logger && logger.debug(util.inspect({ insertId: insertedRows[0].insertId }, { depth: null, colors: true }))
     return insertedRows[0].insertId
 }
 

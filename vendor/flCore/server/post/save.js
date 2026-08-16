@@ -126,6 +126,7 @@ const mergePayload = async (context, entity, model, form, config, sql, logger) =
 const save = async ({ req, entity }, context, rows, { sql, logger }) =>
 {
     if (!entity) entity = req.params.entity
+    logger && logger.debug(util.inspect({ step: "save", entity, rows }, { depth: null, colors: true }))
 
     const model = context.config[`${entity}/model`]
     

@@ -2,7 +2,9 @@ const util = require("util")
 
 const ensure = async ({ req, step }, context, rows, { sql, logger }) =>
 {
-    const { entity, foreignKey, identifier, match } = step
+    const { entity, foreignKey, columns, identifier, match } = step
+    logger && logger.debug(util.inspect({ step: "ensure", entity, foreignKey, columns, identifier, match }, { depth: null, colors: true }))
+
     const data = req.body.rows
 
     /**
@@ -10,13 +12,12 @@ const ensure = async ({ req, step }, context, rows, { sql, logger }) =>
      */
     const existingIdentifiers = Array.from(data.reduce((set, row) => (row[match]) ? set.add(row[match]) : set, new Set()))
     const model = context.config[`${ entity }/model`], where = {}
-console.log({ existingIdentifiers });
-    where[identifier] = ["in"].concat(existingIdentifiers)
-    const cursor = (existingIdentifiers.length > 0) ? await sql.execute({ context, type: "select", entity, columns: ["id", identifier], where, limit: null, model }) : []
+    // where[identifier] = ["in"].concat(existingIdentifiers)
+    const cursor = (existingIdentifiers.length > 0) ? await sql.execute({ context, type: "select", entity, columns/*, where*/, limit: null, model }) : []
 
     const addedRows = {}
     for (const row of data) {
-        if (!cursor.find(cursorRow => cursorRow[identifier] === row[match])) {
+        if (row[match] && !cursor.find(cursorRow => cursorRow[identifier] === row[match])) {
             addedRows[row[match]] = row[match]
         }
     }
@@ -37,7 +38,7 @@ console.log({ existingIdentifiers });
         if (!row[foreignKey]) row[foreignKey] = addedRows[row[match]]
     }
 
-    logger && logger.debug(util.inspect({ addedRows }, { depth: null, colors: true }))
+    logger && logger.debug(util.inspect({ data }, { depth: null, colors: true }))
     return { status: "ok", stored: Object.keys(addedRows).map(([key, id]) => ({ id: id, [identifier]: key })) }
 }
 

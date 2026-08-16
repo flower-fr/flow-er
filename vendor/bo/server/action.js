@@ -10,6 +10,16 @@ const action = async ({ req }, { context, sql, logger }) =>
     const locale = req.query.locale || context.user.locale
     const config = context.config[`viewModel_${ action }_${ entity }_${ view }`]
 
+    // Check has role to acces this action
+    const roles = context.user.roles || [context.user.role]
+    if (config.acl?.roles) {
+        if (!config.acl?.roles.includes("user")) {
+            if (!roles.some(role => config.acl?.roles.includes(role))) {
+                return [403, null, "application/json"]
+            }
+        }
+    }
+
     // Replace tokens in the where clauses with actual dates
     for (const value of Object.values(config ?? {})) {
         if (value?.where) {
@@ -34,7 +44,14 @@ const action = async ({ req }, { context, sql, logger }) =>
     if (config?.title?.label?.[locale]) config.title.label = config.title.label[locale]
     else if (config?.title?.label?.["default"]) config.title.label = config.title.label["default"]
 
-    for (const property of config.properties ? Object.values(config.properties) : []) {
+    const model = context.config[`${ entity }/model`], aclProperties = {}
+    for (const [propertyId, property] of config.properties ? Object.entries(config.properties) : []) {
+
+        // Check property authorization
+        if (model.acl) {
+            if (!Object.keys(model.acl.get.properties).includes(propertyId)) continue
+            if (model.acl.get.properties[propertyId].roles && !roles.some(role => model.acl.get.properties[propertyId].roles.includes(role))) continue
+        }
 
         if (["vector", "autocomplete"].includes(property.type)) {
             const { entity, key, format, columns, where, order } = property
@@ -56,7 +73,7 @@ const action = async ({ req }, { context, sql, logger }) =>
         }
         logger && logger.debug(util.inspect({ property }, { depth: null, colors: true }))
 
-        // Localization
+        // Property localization
 
         if (property.label?.[locale]) property.label = property.label[locale]
         else if (property.label?.["default"]) property.label = property.label["default"]
@@ -67,13 +84,22 @@ const action = async ({ req }, { context, sql, logger }) =>
                 else if (modality.label["default"]) modality.label = modality.label["default"]
             }
         } 
+
+        aclProperties[propertyId] = property
     }
+    config.properties = aclProperties
 
     // Tags
     const tags = await sql.execute({ context, type: "select", entity: "tag", columns: ["distinct_name"], where: { entity }, order: { name: "asc" }, limit: null })
-
     config.tags = tags
 
+    // Translations
+    if (config.translations[locale]) {
+        config.translations = config.translations[locale]
+    } else if (config.translations.default) {
+        config.translations = config.translations.default
+    }
+    
     return [200, config, "application/json"]
 }
 
