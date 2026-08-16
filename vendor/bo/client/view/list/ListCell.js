@@ -43,7 +43,7 @@ export default class ListCell extends View
                     html.push("<td/>")
                 } else {
                     const dow = ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"][moment(row[propertyId]).day()]
-                    html.push(`<td class="${this.consistencyClass()} || "text-muted"" class="text-muted"><strong>${ dow }</strong>&nbsp;${ moment(row[propertyId]).format("DD/MM/YYYY") }</td>`)
+                    html.push(`<td class="${this.consistencyClass() || "text-muted" }"><strong>${ dow }</strong>&nbsp;${ moment(row[propertyId]).format("DD/MM/YYYY") }</td>`)
                 }
             } else {
                 html.push("<td/>")
@@ -62,31 +62,31 @@ export default class ListCell extends View
         }
 
         else if (property.type === "duration") {
-            html.push(`<td class="text-end">${ Math.floor(row[propertyId] / 60) }h${ (x => x ? x : "")(row[propertyId] % 60) }</td>`)
+            html.push(`<td class="text-end ${this.consistencyClass() || "text-muted"}">${ Math.floor(row[propertyId] / 60) }h${ (x => x ? x : "")(row[propertyId] % 60) }</td>`)
         }
 
         else if (property.type === "number") {
-            html.push(`<td class="text-end ${this.consistencyClass()}">${ parseFloat(row[propertyId]).toLocaleString("fr-FR", { minimumFractionDigits: 2 }) }</td>`)
+            html.push(`<td class="text-end ${this.consistencyClass() || "text-muted"}">${ parseFloat(row[propertyId]).toLocaleString("fr-FR", { minimumFractionDigits: 2 }) }</td>`)
         }
 
         else if (property.type === "percentage") {
-            html.push(`<td class="text-right ${this.consistencyClass()}">${ parseFloat(row[propertyId] * 100).toLocaleString("fr-FR") }%</td>`)
+            html.push(`<td class="text-right ${this.consistencyClass() || "text-muted"}">${ parseFloat(row[propertyId] * 100).toLocaleString("fr-FR") }%</td>`)
         }
 
         else if (property.type === "email") {
-            html.push(`<td class="${this.consistencyClass()}">${(row[propertyId]) ? `<a href="mailto:${row[propertyId]}">${row[propertyId]}</a>` : ""}</td>`)
+            html.push(`<td class="${this.consistencyClass() || "text-muted"}">${(row[propertyId]) ? `<a href="mailto:${row[propertyId]}">${row[propertyId]}</a>` : ""}</td>`)
         }              
 
         else if (property.type === "phone") {
-            html.push(`<td class="${this.consistencyClass()}"><a href="tel:${row[propertyId]}">${row[propertyId]}</a></td>`)
+            html.push(`<td class="${this.consistencyClass() || "text-muted"}"><a href="tel:${row[propertyId]}">${row[propertyId]}</a></td>`)
         }
 
         else if (property.type === "link") {
-            html.push(`<td class="${this.consistencyClass()}">${ (row[propertyId]) ? `<a href="${row[propertyId]}" target="_blank">${ ( property.prefix ) ? `&hellip;${ row[propertyId].substring(27) }` : row[propertyId] }</a>` : "" }</td>`)
+            html.push(`<td class="${this.consistencyClass() || "text-muted"}">${ (row[propertyId]) ? `<a href="${row[propertyId]}" target="_blank">${ ( property.prefix ) ? `&hellip;${ row[propertyId].substring(27) }` : row[propertyId] }</a>` : "" }</td>`)
         }              
 
         else if (property.type === "tags") {
-            html.push(`<td class="listTagsName ${this.consistencyClass()}" id="listTagsName-${propertyId}-${row.id}">${row[propertyId]}</td>`)
+            html.push(`<td class="listTagsName ${this.consistencyClass() || "text-muted"}" id="listTagsName-${propertyId}-${row.id}">${row[propertyId]}</td>`)
         }
 
         else {
@@ -94,7 +94,7 @@ export default class ListCell extends View
                 html.push("<td/>")
             } else {
                 const value = (Array.isArray(row[propertyId])) ? row[propertyId].join(", ") : row[propertyId]
-                html.push(`<td class="${this.consistencyClass()}">${(value && value !== null) ? value : ""}</td>`)
+                html.push(`<td class="${this.consistencyClass() || "text-muted"}">${(value && value !== null) ? value : ""}</td>`)
             }
         }
 

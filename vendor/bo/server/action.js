@@ -47,7 +47,7 @@ const action = async ({ req }, { context, sql, logger }) =>
     const model = context.config[`${ entity }/model`], aclProperties = {}
     for (const [propertyId, property] of config.properties ? Object.entries(config.properties) : []) {
 
-        // Check property authorized on GET
+        // Check property authorization
         if (model.acl) {
             if (!Object.keys(model.acl.get.properties).includes(propertyId)) continue
             if (model.acl.get.properties[propertyId].roles && !roles.some(role => model.acl.get.properties[propertyId].roles.includes(role))) continue
