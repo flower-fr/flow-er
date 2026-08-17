@@ -2,7 +2,7 @@ import View from "../View.js"
 import GroupTag from "./GroupTag.js"
 import Toast from "../toast/Toast.js"
 
-// import exportXlsx from "../../utils/exportXlsx.js"
+import exportXlsx from "../../utils/exportXlsx.js"
 
 export default class Group extends View
 {
@@ -179,7 +179,6 @@ export default class Group extends View
                 const tab = this.tabs[form.dataset.tabId]
 
                 if (tab.clientAction) return this.clientActionHandler(tab)
-                return this.postHandler()
             })
         })
     }

@@ -1,3 +1,4 @@
+const express = require("express")
 const { noCacheMiddleware, notFoundMiddleware, handleCorsMiddleware } = require("../../core/api-utils")
 const { sessionCookieMiddleware } = require("../user/server/controller/sessionCookieMiddleware");
 const { executeService } = require("../../core/api-utils")
@@ -19,6 +20,8 @@ const register = async ({ context, config, logger, app }) => {
 
     // Default tab
     // app.get("/", execute(defaultTab, { config, context }))
+    
+    app.use("/", express.static("vendor/bo/client/public/"))
 
     app.get(`${config.prefix}index/:application/:tab`, execute(indexAction, { context, logger }))
     app.get(`${config.prefix}navbar/:application/:tab`, execute(navbarAction, { context, logger }))
