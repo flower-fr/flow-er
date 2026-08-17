@@ -35,7 +35,7 @@ export default class ListGroup extends View
             break
         }
 
-        const textClass = (value == moment().format("AAAA-MM-JJ")) ? "text-success" : ""
+        const textClass = (value == moment().format("YYYY-MM-DD")) ? "text-success" : ""
 
         html.push(`
         <tbody>
