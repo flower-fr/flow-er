@@ -1,4 +1,5 @@
 import View from "../View.js"
+import ToastForm from "./ToastForm.js"
 
 export default class Toast extends View
 {
@@ -14,8 +15,12 @@ export default class Toast extends View
      * @param {boolean} [options.persistent=false] - If true, toast only closes on manual dismiss.
      * @param {Function} [options.onClose=null] - Callback function to execute when the toast is manually closed.
      */
-    constructor({ controller }, { title, message, type = "info", delay = 3000, persistent = false, onClose = null }) {
+    constructor({ controller, entity, view, properties, template, action, translations }, { title, message, type = "info", delay = 3000, persistent = false, onClose = null }) {
         super({ controller })
+        this.entity = entity
+        this.view = view
+        this.template = template
+        this.action = action
         this.title = title
         this.message = message
         this.type = type
@@ -23,12 +28,16 @@ export default class Toast extends View
         this.persistent = persistent
         this.onClose = onClose
         this.id = `toast-${Toast.#counter++}`
+
+        if (this.action) this.toastForm = new ToastForm({ controller, entity, view, properties, action, translations })
     }
 
     initialize = async () => {}
 
     render = () => {
-        const html = `
+        const html = []
+
+        html.push(`
             <div 
                 class="toast fade"
                 id="${this.id}"
@@ -46,10 +55,17 @@ export default class Toast extends View
                     <strong class="me-auto">${this.title}</strong>
                     <button type="button" class="btn-close" data-mdb-dismiss="toast" aria-label="Close"></button>
                 </div>
-                <div class="toast-body">${this.message}</div>
-            </div>`
+                <div class="toast-body">
+                    ${this.message}
+                    <hr>`)
 
-        return html
+        if (this.toastForm) html.push(this.toastForm.render())
+
+        html.push(`
+                </div>
+            </div>`)
+
+        return html.join("\n")
     }
 
     trigger = () => {
@@ -70,5 +86,7 @@ export default class Toast extends View
             }
             toastEl.remove()
         }, { once: true })
+
+        if (this.toastForm) this.toastForm.trigger()
     }
 }

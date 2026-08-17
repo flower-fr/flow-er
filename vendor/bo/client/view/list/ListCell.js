@@ -43,7 +43,7 @@ export default class ListCell extends View
                     html.push("<td/>")
                 } else {
                     const dow = ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"][moment(row[propertyId]).day()]
-                    html.push(`<td class="${this.consistencyClass() || "text-muted" }"><strong>${ dow }</strong>&nbsp;${ moment(row[propertyId]).format("DD/MM/YYYY") }</td>`)
+                    html.push(`<td class="${ (row[propertyId] == moment().format("AAAA-MM-JJ")) ? "text-success" : (this.consistencyClass() || "text-muted") }"><strong>${ dow }</strong>&nbsp;${ moment(row[propertyId]).format("DD/MM/YYYY") }</td>`)
                 }
             } else {
                 html.push("<td/>")

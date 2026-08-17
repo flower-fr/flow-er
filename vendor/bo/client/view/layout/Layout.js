@@ -12,7 +12,7 @@ import AlertsManager from "../toast/AlertsManager.js"
 
 export default class Layout extends View
 {
-    constructor({ controller, application, tab, entity, view, locale, theme, profileId })
+    constructor({ controller, application, tab, entity, view, locale, theme, profile_id })
     {
         super({ controller })
         this.application = application
@@ -29,7 +29,7 @@ export default class Layout extends View
         // this.sidenavButton = new SidenavButton({ controller })
         this.group = new Group({ controller, entity, view, layout: this })
         this.list = new List({ controller, entity, view, group: this.group, layout: this })
-        this.alertsManager = new AlertsManager({ controller, profileId })
+        this.alertsManager = new AlertsManager({ controller, entity, view, profile_id })
     }
 
     initialize = async () =>

@@ -94,10 +94,12 @@ const action = async ({ req }, { context, sql, logger }) =>
     config.tags = tags
 
     // Translations
-    if (config.translations[locale]) {
-        config.translations = config.translations[locale]
-    } else if (config.translations.default) {
-        config.translations = config.translations.default
+    if (config.translations) {
+        if (config.translations[locale]) {
+            config.translations = config.translations[locale]
+        } else if (config.translations.default) {
+            config.translations = config.translations.default
+        }
     }
     
     return [200, config, "application/json"]

@@ -2,7 +2,7 @@ import View from "../View.js"
 import GroupTag from "./GroupTag.js"
 import Toast from "../toast/Toast.js"
 
-import exportXlsx from "../../utils/exportXlsx.js"
+// import exportXlsx from "../../utils/exportXlsx.js"
 
 export default class Group extends View
 {

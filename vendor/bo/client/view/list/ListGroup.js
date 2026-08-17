@@ -35,6 +35,8 @@ export default class ListGroup extends View
             break
         }
 
+        const textClass = (value == moment().format("AAAA-MM-JJ")) ? "text-success" : ""
+
         html.push(`
         <tbody>
             <tr class="listRow">
@@ -55,7 +57,7 @@ export default class ListGroup extends View
                         <i class="fas fa-angle-up"></i>
                     </button>
                 </td>
-                <td>${ label }</td>
+                <td class="${ textClass }">${ label }</td>
                 <td colspan="${ size - 1 }" />
             </tr>
         </tbody>

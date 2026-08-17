@@ -106,7 +106,7 @@ export default class List extends View
                     current = currentPrefix
                     break
                 }
-                return prefix !== current
+                return !currentGroup || prefix !== current
             }
             if (pred()) {
                 currentPrefix = row[orderProperty]
