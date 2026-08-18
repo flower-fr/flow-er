@@ -22,10 +22,11 @@ export default class Dashboard extends View
         let response = await fetch(`/bo/dashboard/${ this.entity }?view=${ this.view }`)
         if (!response.ok) return this.chartData = []
         const res = await response.json()
-        const configs =  Object.entries(res).filter(([key]) => key !== "tags")
+        const configs = res.dashboards
+        if (!configs || configs.length === 0) return this.chartData = []
 
         const datas = []
-        for (const [, config] of configs) {
+        for (const config of configs) {
             // Fetch data for each indicator in the config
             const fetchPromises = (config.indicators ?? []).map(indicator => {
                 return fetch(`/core/v1/${indicator.entity}?columns=${indicator.aggregator}:${indicator.column}${ indicator.where ? `&where=${indicator.where}` : "" }`).then(res => res.ok ? res.json() : {})
@@ -35,10 +36,10 @@ export default class Dashboard extends View
             datas.push(indicatorData)
         }
 
-        this.chartData = configs.map(([key, config], index) => {
+        this.chartData = configs.map((config, index) => {
             const labels = (config.indicators ?? []).map(indicator => indicator.label)
             return {
-                id: `flDashboard-${key}`,
+                id: `flDashboard-${index}`,
                 label: config.title,
                 labels,
                 data: datas[index],
