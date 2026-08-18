@@ -21,7 +21,7 @@ export default class ToastForm extends View
         const html = []
 
         html.push(`
-            <form>`)
+            <form id="flToastForm">`)
 
         for (const propertyId of action.properties) {
             const property = properties[propertyId]
@@ -75,8 +75,7 @@ export default class ToastForm extends View
                             <div class="form-outline mb-3">
                                 <button class="btn btn-sm ${ (action.class === "danger") ? "btn-danger" : "btn-warning" }">${ action.post.label } <span class="fl-group-btn-count" id="flToastFormBtnCount"></span></button>
                             </div>
-                        </form>
-                        <hr>`)
+                        </form>`)
 
         return html.join("\n")
     }
@@ -136,10 +135,13 @@ export default class ToastForm extends View
         }
 
         // Handle click on submit
-        document.querySelectorAll("#flToastForm form").forEach(form => {
-            form.addEventListener("submit", event => {
-                event.preventDefault()
-            })
-        })
+        document.getElementById("toastBodyConfirm").style.display = "none"
+        const form = document.getElementById("flToastForm")
+        form.onsubmit = (event) => {
+            console.log("ici")
+            event.preventDefault()
+            document.getElementById("toastBodyContent").style.display = "none"
+            document.getElementById("toastBodyConfirm").style.display = "block"
+        }
     }
 }
