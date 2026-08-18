@@ -43,7 +43,7 @@ export default class AlertsManager extends View
         this.alerts = data.rows?.[0]?.alerts ?? []
 
         // Create Toast instances for each active alert
-        this.toasts = [this.alerts.find(alert => alert.visibility !== "hidden")].map((alert) => new Toast({ 
+        this.toasts = this.alerts.find(alert => (alert.visibility !== "hidden") ? alert : false)?.map((alert) => new Toast({ 
             controller, 
             entity, 
             view, 
@@ -60,14 +60,14 @@ export default class AlertsManager extends View
             onClose: () => this.dismissAlert(alert)
         }
         ))
-        this.toasts.forEach(async alert => await alert.initialize())
+        this.toasts?.forEach(async alert => await alert.initialize())
     }
 
     render = () => {}
 
     trigger = () =>
     {
-        this.toasts.forEach((toast) => toast.trigger())
+        this.toasts?.forEach((toast) => toast.trigger())
     }
 
     /**
