@@ -43,7 +43,8 @@ export default class AlertsManager extends View
         this.alerts = data.rows?.[0]?.alerts ?? []
 
         // Create Toast instances for each active alert
-        this.toasts = this.alerts.find(alert => (alert.visibility !== "hidden") ? alert : false)?.map((alert) => new Toast({ 
+        const alert = this.alerts.find(alert => (alert.visibility !== "hidden") ? alert : false)
+        this.toasts = (alert ? [alert] : []).map((alert) => new Toast({ 
             controller, 
             entity, 
             view, 
