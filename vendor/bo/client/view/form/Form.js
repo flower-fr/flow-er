@@ -477,6 +477,17 @@ export default class Form extends View
             submitButtons.forEach(btn => { btn?.removeAttribute("disabled") })
         })
 
+        document.querySelectorAll(".form-outline").forEach(el => {
+            if (el.classList.contains("fl-date-outline")) {
+                el.addEventListener("open.mdb.datepicker", (e) => {
+                    isDirty = true
+                    backButton?.setAttribute("disabled", "true")
+                    cancelButton?.removeAttribute("disabled")
+                    submitButtons.forEach(btn => { btn?.removeAttribute("disabled") })
+                })
+            }
+        })
+
         // Cancel button click handler
         if (cancelButton) cancelButton.onclick = () => {
             if (isDirty) {

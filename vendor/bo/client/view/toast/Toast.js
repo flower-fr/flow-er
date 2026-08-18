@@ -56,12 +56,16 @@ export default class Toast extends View
                     <button type="button" class="btn-close" data-mdb-dismiss="toast" aria-label="Close"></button>
                 </div>
                 <div class="toast-body">
-                    ${this.message}
-                    <hr>`)
+                    <div id="toastBodyContent">
+                        ${this.message}
+                        <hr>`)
 
         if (this.toastForm) html.push(this.toastForm.render())
 
         html.push(`
+                    </div>
+                    ${ (this.action?.post.confirmMessage) ? `<div id="toastBodyConfirm">${ this.action.post.confirmMessage.join("<br>") }</div>` : "" }
+
                 </div>
             </div>`)
 
