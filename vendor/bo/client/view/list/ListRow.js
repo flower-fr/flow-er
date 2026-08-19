@@ -54,9 +54,6 @@ export default class ListRow extends View
                     class="text-primary"
                     id="flListDetail-${ row.id }"
                     title="${ translations["Detail"] }"
-                    data-bs-toggle="modal"
-                    data-mdb-modal-init
-                    data-mdb-target="#flModalToggle1"
                 >
                     <i class="fas fa-search"></i>
                 </a>
