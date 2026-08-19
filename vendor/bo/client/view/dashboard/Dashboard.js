@@ -1,4 +1,6 @@
 import View from "../View.js"
+import dateValue from "../../utils/dateValue.js"
+import dateLabel from "../../utils/dateLabel.js"
 
 const DEFAULT_BACKGROUND = [
     "rgba(40, 90, 190, 0.6)",
@@ -29,7 +31,8 @@ export default class Dashboard extends View
         for (const config of configs) {
             // Fetch data for each indicator in the config
             const fetchPromises = (config.indicators ?? []).map(indicator => {
-                return fetch(`/core/v1/${indicator.entity}?columns=${indicator.aggregator}:${indicator.column}${ indicator.where ? `&where=${indicator.where}` : "" }`).then(res => res.ok ? res.json() : {})
+                const where = (indicator.where) ? Object.entries(indicator.where).map(([key, value]) => `${key}:${dateValue(value)}`).join("|") : undefined
+                return fetch(`/core/v1/${indicator.entity}?columns=${indicator.aggregator}:${indicator.column}${ where ? `&where=${where}` : "" }`).then(res => res.ok ? res.json() : {})
             })
             // Wait for all fetches to complete
             const indicatorData = await Promise.all(fetchPromises).then(results => results.map(result => result?.rows?.[0]?.id ?? 0))
@@ -37,7 +40,7 @@ export default class Dashboard extends View
         }
 
         this.chartData = configs.map((config, index) => {
-            const labels = (config.indicators ?? []).map(indicator => indicator.label)
+            const labels = (config.indicators ?? []).map(indicator => dateLabel(indicator.label))
             return {
                 id: `flDashboard-${index}`,
                 label: config.title,
@@ -59,7 +62,7 @@ export default class Dashboard extends View
         this.chartData.forEach(chart => {
             if (!chart.data || chart.data.length === 0) return
             html.push(`
-                    <div class="col-12 col-sm-${12 / this.chartData.length} d-flex flex-column align-items-center">
+                    <div class="col-12 col-sm-${12 / (this.chartData.length - 2)} d-flex flex-column align-items-center">
                         <div class="text-center mb-2">${chart.label ?? ""}</div>
                         <div class="ratio ratio-16x9" style="max-height: 120px; max-width: 350px;">
                             <canvas id="${chart.id}"></canvas>

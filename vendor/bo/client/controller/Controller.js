@@ -47,7 +47,6 @@ export default class Controller
                 <div id="flScreen2Content"></div>
             </div>`)
         html.push(this.modal.render())
-        $("body").html(html)
         return html.join("\n")
     }
 
@@ -59,6 +58,7 @@ export default class Controller
 
     stack = async (object) =>
     {
+        console.log("in stack")
         await object.initialize()
         const content = object.render()
         // Hide screen 1 et show screen 2
@@ -70,27 +70,28 @@ export default class Controller
         this.trigger(object)
 
         // Update URL et history
-        history.pushState({ screen: "detail" }, "", this.url)
+        // history.pushState({ screen: "detail" }, "", this.url)
 
         document.getElementById("flScreen2BackButton").onclick = () => {
             this.unstack()
         }
 
-        window.addEventListener("popstate", (event) => {
-            if (event.state) {
-                if (event.state.screen === "detail") {
-                    this.stack(object)
-                } else {
-                    this.unstack()
-                }
-            } else {
-                this.stack(object)
-            }
-        })
+        // window.addEventListener("popstate", (event) => {
+        //     if (event.state) {
+        //         if (event.state.screen === "detail") {
+        //             this.stack(object)
+        //         } else {
+        //             this.unstack()
+        //         }
+        //     } else {
+        //         this.stack(object)
+        //     }
+        // })
 
     }
 
     unstack = () => {
+        console.log("in unstack")
         document.getElementById("flScreen2").classList.add("hidden")
         document.getElementById("flScreen2").classList.remove("visible")
         document.getElementById("flScreen1").classList.add("visible")
@@ -101,6 +102,7 @@ export default class Controller
 
     showModal = async (object, title) =>
     {
+        console.log("in showModal")
         await object.initialize()
         const content = object.render()
         $("#flModalTabs").html(content)
@@ -108,17 +110,13 @@ export default class Controller
         $("#flModalToggleLabel1").html(title)
         this.trigger(object)
         const element = document.getElementById("flModalToggle1")
-        // try { // Try twice due to a mdbootstrap bug 
-            const modal = mdb.Modal.getOrCreateInstance(element)
-            modal.toggle()
-        // } catch {
-        //     const modal = mdb.Modal.getOrCreateInstance(element)
-        //     modal.toggle()
-        // }
+        const modal = mdb.Modal.getOrCreateInstance(element)
+        modal.show()
     }
 
-    hideModal = () => {
-        const element = document.getElementById("flModalToggle1")
-        mdb.Modal.getInstance(element).toggle()
-    }
+    // hideModal = () => {
+    //     console.log("in hideModal")
+    //     const element = document.getElementById("flModalToggle1")
+    //     mdb.Modal.getInstance(element).toggle()
+    // }
 }

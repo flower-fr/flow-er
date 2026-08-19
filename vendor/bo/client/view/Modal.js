@@ -12,8 +12,8 @@ class Modal extends View
         const order = this.order
         return `
             <!-- First modal dialog -->
-            <div class="modal fade" id="flModalToggle${ order }" data-mdb-backdrop="static">
-                <div class="modal-dialog modal-xl">
+            <div class="modal fade right" id="flModalToggle${ order }" data-mdb-backdrop="static">
+                <div class="modal-dialog modal-lg modal-side modal-top-right">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="flModalToggleLabel${ order }">Modal ${ order }</h5>

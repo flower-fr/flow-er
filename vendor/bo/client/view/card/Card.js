@@ -16,8 +16,9 @@ export default class Card extends View
     initialize = async () =>
     {
         let response = await fetch(`/bo/card/${ this.entity }?view=${ this.view }`)
-        const { properties, translations, title } = await response.json()
+        const { properties, layout, translations, title } = await response.json()
         this.properties = properties
+        this.layout = layout ? layout : [{ properties }]
         this.translations = translations
         this.title = title?.label ?? ""
 
@@ -29,7 +30,7 @@ export default class Card extends View
 
     render = () => 
     {
-        const data = this.data
+        const { layout, properties, data } = this
 
         const html = []
 
@@ -44,225 +45,243 @@ export default class Card extends View
         <div class="my-3 mt-4" id="flCardContent">
             <form class="row g-4">`)
 
-        for (const [propertyId, property] of Object.entries(this.properties)) {
-            const label = property.label
-            const propertyType = property.type
+        const blocs = []
+        for (const bloc of layout) {
+
+            const blocHtml = []
+
+            if (!Object.keys(bloc.properties).find(x => data[x])) continue
+
+            if (bloc.title) {
+                blocHtml.push(`
+                <h6 class="text-center col-xl-12 my-1">${ bloc.title }</h6>`)
+            }
+
+            for (const [propertyId, options] of Object.entries(bloc.properties)) {
+                const property = properties[propertyId]
+                const label = property.label
+                const propertyType = property.type
+                const divClass = options.class ? options.class : "col-md-6"
+
+                let value = data[propertyId] || ""
+                if (property.type === "percentage" && value) value = parseFloat(value * 100)
+                else if (property.value && !Array.isArray(property.value)) {
+                    value = property.value
+                    if (value.substring(0, 5) === "today") {
+                        value = moment().format("YYYY-MM-DD")
+                    }
+                }
+
+                if (!value) continue
+
+                // Input
+
+                if (property.type === "input")
+                {
+                    blocHtml.push(`
+                    <div class="${ divClass }">
+                        <div class="form-outline fl-form-outline" data-mdb-input-init>
+                            <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ value }"  disabled />
+                            <label class="form-label">${ label }</label>
+                        </div>
+                    </div>`
+                    )
+                }
+
+                // Password
+
+                else if (property.type === "password")
+                {
+                    blocHtml.push(`
+                    <div class="${ divClass }">
+                        <div class="form-outline fl-form-outline" data-mdb-input-init>
+                            <input type="password" class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ value }" disabled />
+                            <label class="form-label">${ label }</label>
+                        </div>
+                    </div>`
+                    )
+                }
+
+                // Email
+
+                else if (property.type === "email")
+                {
+                    blocHtml.push(`
+                    <div class="${ divClass }">
+                        <div class="form-outline fl-form-outline" data-mdb-input-init>
+                            <input type="email" class="form-control form-control-sm" data-fl-property="${ propertyId }" value="${ value }" disabled />
+                            <label class="form-label">${ label }</label>
+                        </div>
+                    </div>`
+                    )
+                }
+
+                // Phone
+
+                else if (property.type === "phone")
+                {
+                    blocHtml.push(`
+                    <div class="${ divClass }">
+                        <div class="form-outline fl-form-outline" data-mdb-input-init>
+                            <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ value }" disabled />
+                            <label class="form-label">${ label }</label>
+                        </div>
+                    </div>`
+                    )              
+                }
         
-            let value = data[propertyId] || ""
-            if (property.type === "percentage" && value) value = parseFloat(value * 100)
-            else if (property.value && !Array.isArray(property.value)) {
-                value = property.value
-                if (value.substring(0, 5) === "today") {
-                    value = moment().format("YYYY-MM-DD")
+                // Date or datetime
+
+                else if (["date", "datetime"].includes(property.type))
+                {
+                    blocHtml.push(`
+                    <div class="${ divClass }">
+                        <div class="form-outline fl-date-outline" data-mdb-input-init>
+                            <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ value ? moment(value).format("DD/MM/YYYY") : "" }"  disabled />
+                            <label class="form-label">${ label }</label>
+                        </div>
+                    </div>`
+                    )
+                }
+
+                // Birth year
+
+                else if (propertyType === "birth_year")
+                {
+                    blocHtml.push(`
+                    <div class="${ divClass }">
+                        <div class="form-outline fl-form-outline" data-mdb-input-init>
+                            <select class="form-control form-control-sm" id="${ this.id }-${ propertyId }" disabled>
+                                <option />
+                                ${() => { for (let year = 1950; year < new Date.getFullYear(); year++) `<option value="${ year }" ${ value === year ? "selected=\"selected\"" : ""}>${ year }</option>` }}
+                            </select>
+                            <label class="form-label">${ label }</label>
+                        </div>
+                    </div>`
+                    )
+                }
+
+                // Time
+
+                else if (propertyType == "time")
+                {
+                    blocHtml.push(`
+                    <div class="${ divClass }">
+                        <div class="form-outline fl-time-outline" data-mdb-input-init>
+                            <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ value }" disabled />
+                            <label class="form-label">${ label }</label>
+                        </div>
+                    </div>`
+                    )
+                }
+
+                // Number
+
+                else if (propertyType == "number")
+                {
+                    blocHtml.push(`
+                    <div class="${ divClass }">
+                        <div class="form-outline fl-form-outline" data-mdb-input-init>
+                            <input type="number" class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ value }" disabled />
+                            <label class="form-label">${label}</label>
+                        </div>
+                    </div>`
+                    )
+                }
+
+                // Percentage
+
+                else if (propertyType == "percentage")
+                {
+                    blocHtml.push(`
+                    <div class="${ divClass }">
+                        <div class="form-outline fl-form-outline" data-mdb-input-init>
+                            <input type="number" class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ value }" disabled />
+                            <label class="form-label">${ label }</label>
+                        </div>
+                    </div>`
+                    )
+                }
+
+                // Textarea
+
+                else if (propertyType == "textarea")
+                {
+                    blocHtml.push(`
+                    <div class="${ divClass }">
+                        <div class="form-outline fl-form-outline" data-mdb-input-init>
+                            <textarea class="form-control form-control-sm" id="${ this.id }-${ propertyId }" rows="5" disabled>${ value }</textarea>
+                            <label class="form-label" for="${ this.id }-${ propertyId }">${ label }</label>
+                        </div>
+                    </div>`
+                    )
+                }
+
+                // Select
+
+                else if (propertyType == "select")
+                {
+                    let values
+                    if (value) {
+                        if (Number.isInteger(value)) values = [value]
+                        else values = value.split(",") 
+                    }
+                    else values = []
+                    values = values.map(v => property.modalities[v].label)
+
+                    blocHtml.push(`
+                    <div class="${ divClass }">
+                        <div class="form-outline fl-form-outline" data-mdb-input-init>
+                            <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ values.join(",") }" disabled />
+                            <label class="form-label" for="${ this.id }-${ propertyId }">${ label }</label>
+                        </div>
+                    </div>`)
+                }
+
+                // Log
+
+                else if (propertyType == "log")
+                {
+                    blocHtml.push(`
+                    <div class="${ divClass }">
+                        <div class="form-outline fl-form-outline mb-2">
+                            <textarea class="form-control form-control-sm" id="${ this.id }-${ propertyId }" disabled></textarea>
+                            <label class="form-label">${ label }</label>
+                        </div>
+                    </div>
+                    <div class="fl-modal-log">
+                        <table class="table table-sm table-hover table-responsive">
+                            <thead class="datatable-header" />
+                            <tbody class=""table-group-divider">`)
+
+                    for (const modality of property.modalities) {
+                        html.push(`
+                        <tr>
+                            <td><strong>${ moment(modality.touched_at).format("DD/MM/YYYY HH:mm:ss") }</strong></td>
+                            <td><strong>${ modality.owner_n_fn.trim() !== "" ? `(${ modality.owner_n_fn })` : `(${ modality.chanel })` }</strong></td>
+                            <td>${ modality.summary.split("\n").join("<br>") }</td>
+                        </tr>`)
+                    }
+
+                    blocHtml.push("</tbody></table></div>")
+                }
+
+                else
+                {
+                    blocHtml.push(`
+                    <div class="${ divClass }">
+                        <div class="form-outline fl-form-outline" data-mdb-input-init>
+                            <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ value }" disabled />
+                            <label class="form-label select-label">${ label }</label>
+                        </div>
+                    </div>`
+                    )
                 }
             }
 
-            if (!value) continue
-
-            // Input
-
-            if (property.type === "input")
-            {
-                html.push(`
-                <div class="col-xl-6">
-                    <div class="form-outline fl-form-outline" data-mdb-input-init>
-                        <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ value }"  disabled />
-                        <label class="form-label">${ label }</label>
-                    </div>
-                </div>`
-                )
-            }
-
-            // Password
-
-            else if (property.type === "password")
-            {
-                html.push(`
-                <div class="col-xl-6">
-                    <div class="form-outline fl-form-outline" data-mdb-input-init>
-                        <input type="password" class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ value }" disabled />
-                        <label class="form-label">${ label }</label>
-                    </div>
-                </div>`
-                )
-            }
-
-            // Email
-
-            else if (property.type === "email")
-            {
-                html.push(`
-                <div class="col-xl-6">
-                    <div class="form-outline fl-form-outline" data-mdb-input-init>
-                        <input type="email" class="form-control form-control-sm" data-fl-property="${ propertyId }" value="${ value }" disabled />
-                        <label class="form-label">${ label }</label>
-                    </div>
-                </div>`
-                )
-            }
-
-            // Phone
-
-            else if (property.type === "phone")
-            {
-                html.push(`
-                <div class="col-xl-6">
-                    <div class="form-outline fl-form-outline" data-mdb-input-init>
-                        <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ value }" disabled />
-                        <label class="form-label">${ label }</label>
-                    </div>
-                </div>`
-                )              
-            }
-    
-            // Date or datetime
-
-            else if (["date", "datetime"].includes(property.type))
-            {
-                html.push(`
-                <div class="col-xl-6">
-                    <div class="form-outline fl-date-outline" data-mdb-input-init>
-                        <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ value ? moment(value).format("DD/MM/YYYY") : "" }"  disabled />
-                        <label class="form-label">${ label }</label>
-                    </div>
-                </div>`
-                )
-            }
-
-            // Birth year
-
-            else if (propertyType === "birth_year")
-            {
-                html.push(`
-                <div class="col-xl-6">
-                    <div class="form-outline fl-form-outline" data-mdb-input-init>
-                        <select class="form-control form-control-sm" id="${ this.id }-${ propertyId }" disabled>
-                            <option />
-                            ${() => { for (let year = 1950; year < new Date.getFullYear(); year++) `<option value="${ year }" ${ value === year ? "selected=\"selected\"" : ""}>${ year }</option>` }}
-                        </select>
-                        <label class="form-label">${ label }</label>
-                    </div>
-                </div>`
-                )
-            }
-
-            // Time
-
-            else if (propertyType == "time")
-            {
-                html.push(`
-                <div class="col-xl-6">
-                    <div class="form-outline fl-time-outline" data-mdb-input-init>
-                        <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ value }" disabled />
-                        <label class="form-label">${ label }</label>
-                    </div>
-                </div>`
-                )
-            }
-
-            // Number
-
-            else if (propertyType == "number")
-            {
-                html.push(`
-                <div class="col-xl-6">
-                    <div class="form-outline fl-form-outline" data-mdb-input-init>
-                        <input type="number" class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ value }" disabled />
-                        <label class="form-label">${label}</label>
-                    </div>
-                </div>`
-                )
-            }
-
-            // Percentage
-
-            else if (propertyType == "percentage")
-            {
-                html.push(`
-                <div class="col-xl-6">
-                    <div class="form-outline fl-form-outline" data-mdb-input-init>
-                        <input type="number" class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ value }" disabled />
-                        <label class="form-label">${ label }</label>
-                    </div>
-                </div>`
-                )
-            }
-
-            // Textarea
-
-            else if (propertyType == "textarea")
-            {
-                html.push(`
-                <div class="col-xl-6">
-                    <div class="form-outline fl-form-outline" data-mdb-input-init>
-                        <textarea class="form-control form-control-sm" id="${ this.id }-${ propertyId }" rows="5" disabled>${ value }</textarea>
-                        <label class="form-label" for="${ this.id }-${ propertyId }">${ label }</label>
-                    </div>
-                </div>`
-                )
-            }
-
-            // Select
-
-            else if (propertyType == "select")
-            {
-                let values
-                if (value) {
-                    if (Number.isInteger(value)) values = [value]
-                    else values = value.split(",") 
-                }
-                else values = []
-                values = values.map(v => property.modalities[v].label)
-
-                html.push(`
-                <div class="col-xl-6">
-                    <div class="form-outline fl-form-outline" data-mdb-input-init>
-                        <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ values.join(",") }" disabled />
-                        <label class="form-label" for="${ this.id }-${ propertyId }">${ label }</label>
-                    </div>
-                </div>`)
-            }
-
-            // Log
-
-            else if (propertyType == "log")
-            {
-                html.push(`
-                <div class="col-xl-6">
-                    <div class="form-outline fl-form-outline mb-2">
-                        <textarea class="form-control form-control-sm" id="${ this.id }-${ propertyId }" disabled></textarea>
-                        <label class="form-label">${ label }</label>
-                    </div>
-                </div>
-                <div class="fl-modal-log">
-                    <table class="table table-sm table-hover table-responsive">
-                        <thead class="datatable-header" />
-                        <tbody class=""table-group-divider">`)
-
-                for (const modality of property.modalities) {
-                    html.push(`
-                    <tr>
-                        <td><strong>${ moment(modality.touched_at).format("DD/MM/YYYY HH:mm:ss") }</strong></td>
-                        <td><strong>${ modality.owner_n_fn.trim() !== "" ? `(${ modality.owner_n_fn })` : `(${ modality.chanel })` }</strong></td>
-                        <td>${ modality.summary.split("\n").join("<br>") }</td>
-                    </tr>`)
-                }
-
-                html.push("</tbody></table></div>")
-            }
-
-            else
-            {
-                html.push(`
-                <div class="col-lg-6">
-                    <div class="form-outline fl-form-outline" data-mdb-input-init>
-                        <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ value }" disabled />
-                        <label class="form-label select-label">${ label }</label>
-                    </div>
-                </div>`
-                )
-            }
+            blocs.push(blocHtml.join("\n"))
         }
+        html.push(blocs.join("<hr>"))
     
         html.push(`
                 <div class="col-12">
@@ -281,7 +300,7 @@ export default class Card extends View
     getForm = () =>
     {
         const { controller, entity, id, view, layout } = this
-        controller.stack(new Form({ controller, entity, view, id, onSuccess: async () => {
+        controller.showModal(new Form({ controller, entity, view, id, onSuccess: async () => {
             layout.refreshList({})
 
             // Refresh the card
@@ -309,9 +328,16 @@ export default class Card extends View
 
         // Close button
         document.getElementById("flCardCloseButton").onclick = () => {
+
+            // document.getElementById("flMainView").classList.remove("col-md-6")
+            // document.getElementById("flMainView").classList.add("col-md-9")
+            // document.getElementById("flRightColumn").classList.remove("col-md-6")
+            // document.getElementById("flRightColumn").classList.add("col-md-3")
+
             const cardEl = document.getElementById("flCard")
             const tableEl = document.getElementById("flListTable")
             const groupEl = document.getElementById("flGroup")
+            const dashboardEl = document.getElementById("flDashboard")
             const addEl = document.getElementById("flAdd")
 
             if (cardEl) {
@@ -322,7 +348,10 @@ export default class Card extends View
             document.querySelectorAll("tr.table-active").forEach(r => r.classList.remove("table-active", "fw-bold"))
             tableEl?.classList.add("table-hover")
 
-            if (addEl && (!groupEl || groupEl.style.display === "none")) addEl.style.display = "block"
+            if (addEl && (!groupEl || groupEl.style.display === "none")) {
+                dashboardEl.style.display = "block"
+                addEl.style.display = "block"
+            }
         }
     }
 }

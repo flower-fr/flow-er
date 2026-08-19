@@ -91,6 +91,12 @@ export default class Group extends View
                                 <label class="form-label select-label">${property.label}</label>
                             </div>`)
 
+                } else if (property.type === "wysiwyg") {
+                    html.push(`
+                            <div class="form-outline mb-3" id="flGroupOutline-${ tabId }-${propertyId}">
+                                <div class="wysiwyg" id="flGroupWysiwyg-${ tabId }-${ propertyId }" data-mdb-wysiwyg-init>TEST</div>
+                            </div>`)
+
                 } else {
                     html.push(`
                             <div class="form-outline mb-3" id="flGroupOutline-${ tabId }-${ propertyId }" data-mdb-input-init>
@@ -147,6 +153,7 @@ export default class Group extends View
                             new mdb.Input(document.getElementById(`flGroupTextOutline-${ tabId }-${ propertyId }`)).init()
                         })
                     }
+
                 } else if (property.type == "date") {
                     const el = document.getElementById(`flGroupOutline-${ tabId }-${ propertyId }`)
                     
@@ -164,7 +171,11 @@ export default class Group extends View
 
                 } else if (["time", "duration"].includes(property.type)) {
                     const el = document.getElementById(`flGroupOutline-${ tabId }-${ propertyId }`)
-                    new mdb.Timepicker(el,{ format24: true, increment: true }) 
+                    new mdb.Timepicker(el,{ format24: true, increment: true })
+
+                } else if (property.type === "wysiwyg") {
+                    const el = document.getElementById(`flGroupWysiwyg-${ tabId }-${ propertyId }`)
+
                 } else {
                     const el = document.getElementById(`flGroupOutline-${ tabId }-${ propertyId }`)
                     new mdb.Input(el)

@@ -75,7 +75,7 @@ export default class Layout extends View
             </div>
                 <div class="m-3">
                     <div class="row">
-                        <div class="col-md-9">
+                        <div class="col-md-9" id="flMainView">
                             <div class="section">
                                 <div class="row" id="flList">`)
         
@@ -85,7 +85,7 @@ export default class Layout extends View
                                 </div>
                             </div>
                         </div>
-                            <div class="col-md-3" id="flRightColumn">`)
+                        <div class="col-md-3" id="flRightColumn">`)
         
         html.push(this.dashboard.render())        
         html.push(this.group.render())
@@ -94,9 +94,9 @@ export default class Layout extends View
                                 <div class="card p-3 mb-3" id="flCard" style="display:none;"></div>`)
 
         html.push(`
-                            </div>
                         </div>
                     </div>
+                </div>
                 
                 <!-- Footer -->
                 <div id="flFooter"

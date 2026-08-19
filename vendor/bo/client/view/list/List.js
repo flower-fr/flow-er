@@ -209,6 +209,12 @@ export default class List extends View
         // Enable card action
         this.rows.forEach(row => {
             document.getElementById(`flListDetail-${row.id}`)?.addEventListener("click", async (el) => {
+
+                // document.getElementById("flMainView").classList.remove("col-md-9")
+                // document.getElementById("flMainView").classList.add("col-md-6")
+                // document.getElementById("flRightColumn").classList.remove("col-md-3")
+                // document.getElementById("flRightColumn").classList.add("col-md-6")
+                
                 if (!cardEl) return
                 const tr = el.target.closest("tr")
 
@@ -228,6 +234,7 @@ export default class List extends View
 
                 // Handle the display of others side elements
                 if (groupEl.style.display === "none") dashboardEl.style.display = "block"
+                dashboardEl.style.display = "none"
                 addEl.style.display = "none"
 
                 // Handle the highlighting of the row
@@ -242,6 +249,9 @@ export default class List extends View
                 cardEl.dataset.openId = String(row.id)
                 cardEl.innerHTML = await card.render()
                 card.trigger()
+
+                const animate = new mdb.Animate(cardEl, { animation: "pulse", animationStart: "onLoad" })
+                animate.init()
             })
         })
 
