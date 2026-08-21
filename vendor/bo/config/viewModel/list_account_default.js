@@ -3,6 +3,10 @@ module.exports = {
         order: { n_fn: "asc" },
     },
     properties: {
+        id: {
+            type: "hidden"
+        },
+        
         n_fn: {
             type: "input",
             label: {
