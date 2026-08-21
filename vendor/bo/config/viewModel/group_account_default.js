@@ -1,15 +1,17 @@
 module.exports = {
     tabs: {
         update: {
-            properties: ["status"/*, "callback_date"*/],
+            form: ["status"],
             post: {
                 method: "POST",
                 controller: "core",
                 action: "v1",
                 entity: "account",
-                payload: {
-                    status: "this",
-                    // callback_date: "this",
+                body: {
+                    rows: {
+                        id: "matchingRow",
+                        status: "form",
+                    }
                 },
                 label: "Modifier",
             },
@@ -26,6 +28,9 @@ module.exports = {
         },
     },
     properties: {
+        id: {
+            type: "input",
+        },
         status: {
             type: "select",
             label: "Statut",
@@ -61,6 +66,7 @@ module.exports = {
     translations: {
         "Cancel": "Annuler",
         "DD/MM/YYYY": "JJ/MM/AAAA",
+        "Error": "Erreur",
         "Request registered": "Demande enregistrée",
         "Technical error, Please try again later": "Erreur technique, veuillez ré-éssayer ultérieurement",
         "The data has changed in the meantime, please input again": "La donnée a été modifiée entretemps, veuillez saisir à nouveau",

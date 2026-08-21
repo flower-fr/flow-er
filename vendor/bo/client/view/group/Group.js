@@ -50,9 +50,9 @@ export default class Group extends View
             const action = tab.post ?? tab.clientAction
 
             html.push(`
-                        <form data-tab-id="${ tabId }">`)
+                        <form id="flGroupForm-${ tabId }">`)
 
-            for (const propertyId of (tab.properties) ? tab.properties : []) {
+            for (const propertyId of (tab.form) ? tab.form : []) {
                 const property = this.properties[propertyId]
                 if (["select", "vector"].includes(property.type)) {
                     html.push(`
@@ -140,7 +140,7 @@ export default class Group extends View
     trigger = () =>
     {
         for (let [tabId, tab] of Object.entries(this.tabs ?? {})) {
-            for (const propertyId of (tab.properties) ? tab.properties : []) {
+            for (const propertyId of (tab.form) ? tab.form : []) {
                 const property = this.properties[propertyId]
                 if (["select", "vector"].includes(property.type)) {
                     const el = document.getElementById(`flGroup-${ tabId }-${ propertyId }`)
@@ -184,14 +184,24 @@ export default class Group extends View
         }
 
         // Handle click on submit
-        document.querySelectorAll("#flGroup form").forEach(form => {
+        for (let [tabId, tab] of Object.entries(this.tabs ?? {})) {
+            const form = document.getElementById(`flGroupForm-${ tabId }`)
             form.addEventListener("submit", event => {
                 event.preventDefault()
-                const tab = this.tabs[form.dataset.tabId]
 
-                if (tab.clientAction) return this.clientActionHandler(tab)
+                if (!form.checkValidity()) {
+                    form.classList.add("was-validated")
+                    return
+                }
+
+                if (tab.clientAction) {
+                    return this.clientActionHandler(tab)
+                } else if (tab.post) {
+                    this.postHandler({ tabId, tab })
+                    form.reset()
+                }
             })
-        })
+        }
     }
 
     eventRowChecked = (summable, checkedRows) =>
@@ -216,6 +226,69 @@ export default class Group extends View
             $(".fl-group-count").text("")
             $(".fl-group-btn-count").text("")
             $(".fl-group-sum").text("")
+        }
+    }
+
+    async postHandler({ tabId, tab })
+    {
+        const { controller, properties, layout, translations } = this
+
+        // Build the request body
+
+        if (tab.post) {
+            const matchingRows = this.getMatchingRows(tab)
+            const rows = []
+            for (const matchingRow of matchingRows) {
+                const row = {}
+                for (const [propertyId, target] of tab.post.body?.rows ? Object.entries(tab.post.body.rows) : {}) {
+                    if (target === "matchingRow") {
+                        row[propertyId] = matchingRow[propertyId]
+                    } else if (target === "form") {
+                        const property = properties[propertyId]
+                        const input = document.getElementById(`flGroup-${ tabId }-${ propertyId }`)
+                        if (property.type === "date") {
+                            const val = input.value
+                            row[propertyId] = val ? val.substring(6, 10) + "-" + val.substring(3, 5) + "-" + val.substring(0, 2) : ""
+                        } else if (property.type === "duration") {
+                            const val = input.value
+                            if (val) {
+                                const [hours, minutes] = val.split(":").map(Number)
+                                row[propertyId] = hours * 60 + minutes
+                            } else {
+                                row[propertyId] = 0
+                            }
+                        } else {
+                            row[propertyId] = input.value
+                        }
+                    }
+                }
+                rows.push(row)
+            }
+
+            const post = {
+                method: tab.post.method,
+                headers: new Headers({"content-type": "application/json"}),
+            }
+            if (tab.post.body?.rows) post.body = JSON.stringify(rows)
+            const response = await fetch(`/${ tab.post.controller }/${ tab.post.action }/${ tab.post.entity }`, post)
+
+            // Handle the response
+            if (response.ok) {
+                layout.refreshList({})
+                const toast = new Toast({ controller }, {
+                    title: translations["success"],
+                    message: translations["requestRegistered"],
+                    type: "success" })
+                toast.trigger()
+            } else {
+                console.error("Group submit error:", response.status, response.statusText)
+                const toast = new Toast({ controller: controller }, {
+                    title: translations["error"],
+                    message: translations["technicalError"],
+                    type: "danger",
+                    persistent: true })
+                toast.trigger()
+            }
         }
     }
 
