@@ -16,39 +16,19 @@ const selectWhere = (table, where, model, joins) => {
                 if (property.type == "CONCAT") {
                     qEntity = ""
                     const components = []
+                    let first = true
                     for (let component of property.components) {
+                        if (!first) components.push(qv((property.separator) ? property.separator : " "))
                         if (model.properties[component]) {
-                            const e = model.properties[component].entity, c = model.properties[component].column
-                            if (model.properties[component].type == "month-MMMM") {
-                                const comp = `${qi(model.properties[model.properties[component].components[0]].entity)}.${qi(model.properties[model.properties[component].components[0]].column)}`
-                                components.push(`
-                                CASE
-                                    WHEN MONTH(${ comp }) = 1 THEN 'janvier'
-                                    WHEN MONTH(${ comp }) = 2 THEN 'février'
-                                    WHEN MONTH(${ comp }) = 3 THEN 'mars'
-                                    WHEN MONTH(${ comp }) = 4 THEN 'avril'
-                                    WHEN MONTH(${ comp }) = 5 THEN 'mai'
-                                    WHEN MONTH(${ comp }) = 6 THEN 'juin'
-                                    WHEN MONTH(${ comp }) = 7 THEN 'juillet'
-                                    WHEN MONTH(${ comp }) = 8 THEN 'août'
-                                    WHEN MONTH(${ comp }) = 9 THEN 'septembre'
-                                    WHEN MONTH(${ comp }) = 10 THEN 'octobre'
-                                    WHEN MONTH(${ comp }) = 11 THEN 'novembre'
-                                    WHEN MONTH(${ comp }) = 12 THEN 'décembre'
-                                END`)
-                            }
-                            else if (model.properties[component].type == "year") {
-                                const comp = `${qi(model.properties[model.properties[component].components[0]].entity)}.${qi(model.properties[model.properties[component].components[0]].column)}`
-                                components.push(`YEAR(${ comp })`)
-                            }
-                            else if (e == table || Object.keys(joins).includes(e)) {
-                                components.push(`REPLACE(COALESCE(${ qi(e) }.${ qi(c) }, ''), ' ' , '')`)
+                            const e = model.properties[component].entity
+                            if (e == table || Object.keys(joins).includes(e)) {
+                                first = false
+                                components.push(`COALESCE(${qi(model.properties[component].entity)}.${qi(model.properties[component].column)}, '')`)
                             }
                         }
                         else components.push(`COALESCE(${ qv(component) }, '')`)
-                        components.push(qv("|"))
                     }
-                    qColumn = `CONCAT(${components.join(", ")})`    
+                    qColumn = `CONCAT(${components.join(", ")})`
                 }
                 else {
                     qEntity = `${qi(property.entity)}.`

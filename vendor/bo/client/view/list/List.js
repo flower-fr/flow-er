@@ -191,6 +191,7 @@ export default class List extends View
         const tableEl = document.getElementById("flListTable")
         const cardEl = document.getElementById("flCard")
         const dashboardEl = document.getElementById("flDashboard")
+        const globalEl = document.getElementById("flGlobal")
         const groupEl = document.getElementById("flGroup")
         const addEl = document.getElementById("flAdd")
 
@@ -290,11 +291,13 @@ export default class List extends View
                     $("#flGroup").show()
                     $("#flDashboard").hide()
                     $("#flAdd").hide()
+                    if (globalEl) globalEl.style.display = "none"
                 }
                 else {
                     $("#flDashboard").show()
                     if (!cardEl || cardEl.style.display === "none") $("#flAdd").show()
                     $("#flGroup").hide()
+                    if (globalEl) globalEl.style.display = "block"
                 }
                 group.eventRowChecked(this.summable, checkedRows)                
             }
@@ -315,12 +318,14 @@ export default class List extends View
                 $("#flGroup").show()
                 $("#flDashboard").hide()
                 $("#flAdd").hide()
+                if (globalEl) globalEl.style.display = "none"
                 group.eventRowChecked(this.summable, this.listRows.map(lr => lr.row))
             }
             else {
                 $("#flDashboard").show()
                 if (!cardEl || cardEl.style.display === "none") $("#flAdd").show()
                 $("#flGroup").hide()
+                if (globalEl) globalEl.style.display = "block"
                 group.eventRowChecked(this.summable, [])
             }
         }
