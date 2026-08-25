@@ -133,14 +133,21 @@ export default class Global extends View
         response = await fetch(`/core/v1/${ action.entity }?columns=${ columnsParam }&where=identifier:${ encodeURIComponent(identifierString) }|${ whereParam }`)
         const data = await response.json()
 
-        // Run the importXlsx function to determine which rows to update and which to reject
-        const { toUpdate, rejected } = importXlsx(rows, config, data.rows)
-
-        await fetch("/core/v1/interaction", {
+        const logInteraction = (status, responseBody) => fetch("/core/v1/interaction", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify([{ status: "processed", provider: "flow-er", endpoint: "bo/import-xlsx", method: "POST", body: JSON.stringify(rows) }])
+            body: JSON.stringify([{
+                status,
+                provider: "flow-er",
+                endpoint: "bo/import-xlsx",
+                method: "POST",
+                body: JSON.stringify(rows),
+                response_body: JSON.stringify(responseBody),
+            }])
         })
+
+        // Run the importXlsx function to determine which rows to update and which to reject
+        const { toUpdate, rejected } = importXlsx(rows, config, data.rows)
 
         // Show rejected rows in a toast
         if (Object.keys(rejected).length > 0) {
@@ -153,6 +160,7 @@ export default class Global extends View
 
         // If there are no rows to update, show a toast and return
         if (toUpdate.length === 0) {
+            await logInteraction("processed", { toUpdate, rejected })
             const toast = new Toast({ controller: this.controller }, { title: "Importation", message: "Aucune donnée à mettre à jour." })
             toast.initialize()
             toast.trigger()
@@ -167,8 +175,11 @@ export default class Global extends View
         })
         const result = await response.json()
 
+        const updateFailed = !response.ok || result.error
+        await logInteraction(updateFailed ? "error" : "processed", { toUpdate, rejected, result })
+
         // Handle error response
-        if (!response.ok || result.error) {
+        if (updateFailed) {
             const toast = new Toast({ controller: this.controller },
                 { title: "Importation", message: "Une erreur est survenue lors de la mise à jour.", type: "error", persistent: true })
             toast.initialize()
