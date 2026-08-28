@@ -21,14 +21,14 @@ export default class ListRow extends View
         if (grouping) {
             if (this.filledColumns.includes(orderProperty)) {
                 const property = properties[orderProperty]
-                this.listCells.push(new ListCell({ controller, list, row, propertyId: orderProperty, property, orderProperty, translations }))
+                this.listCells.push(new ListCell({ controller, list, listRow: this, row, propertyId: orderProperty, property, orderProperty, translations }))
             }
         }
 
         for (const [propertyId, property] of Object.entries(properties)) {
             if (propertyId !== orderProperty || !grouping) {
                 if (this.filledColumns.includes(propertyId)) {
-                    this.listCells.push(new ListCell({ controller, list, row, propertyId, params, property, orderProperty, translations }))
+                    this.listCells.push(new ListCell({ controller, list, listRow: this, row, propertyId, params, property, orderProperty, translations }))
                 }
             }
         }
@@ -38,7 +38,14 @@ export default class ListRow extends View
 
     render = () =>
     {
-        const html = [], i = this.i, row = this.row, translations = this.translations
+        const html = [], i = this.i, { row, properties, translations } = this
+        let rowClass
+        for (const [propertyId, property] of Object.entries(properties)) {
+            if (property.type === "select") {
+                rowClass = Object.entries(property.modalities).find(([mod, spec]) => spec.rowClass && row[propertyId] === mod)
+                if (rowClass) this.rowClass = rowClass[1].rowClass
+            }
+        }
 
         html.push(`
         <tr class="listRow">

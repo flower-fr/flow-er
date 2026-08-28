@@ -85,13 +85,25 @@ export default class Layout extends View
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-3" id="flRightColumn">`)
+                        <div class="col-md-3" id="flRightColumn">
+                            <div class="row" id="flDashboard">`)
         
         html.push(this.dashboard.render())        
-        html.push(this.group.render())
-        html.push(this.addForm.render())
+
         html.push(`
-                                <div class="card p-3 mb-3" id="flCard" style="display:none;"></div>`)
+                            </div>
+                            <div class="card mb-3" id="flGroup">`)
+
+        html.push(this.group.render())
+
+        html.push(`
+                            </div>
+                            <div class="row" id="flAddForm">`)
+
+        html.push(this.addForm.render())
+
+        html.push(`
+                            <div class="card p-3 mb-3" id="flCard" style="display:none;"></div>`)
 
         html.push(`
                         </div>
@@ -127,6 +139,18 @@ export default class Layout extends View
         new mdb.Button(element)
     }
 
+    refreshGroup = async () =>
+    {
+        const { controller, entity, view } = this
+        this.group = new Group({ controller, entity, view, layout: this })
+        await this.group.initialize()
+        document.getElementById("flGroup").innerHTML = this.group.render()
+        this.group.trigger()
+        this.list.group = this.group
+        this.list.trigger()
+        $("#flGroup").show()
+    }
+    
     refreshList = async ({ where, tags, orderProperty, orderDirection }) =>
     {
         if (orderProperty) {

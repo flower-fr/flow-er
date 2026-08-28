@@ -52,7 +52,7 @@ const action = async ({ req }, { context, sql, logger }) =>
             if (!Object.keys(model.acl.get.properties).includes(propertyId)) continue
             if (model.acl.get.properties[propertyId].roles && !roles.some(role => model.acl.get.properties[propertyId].roles.includes(role))) continue
         }
-
+console.log({ propertyId, property })
         if (["vector", "autocomplete"].includes(property.type)) {
             const { entity, key, format, columns, where, order } = property
             const items = await sql.execute({ context, type: "select", entity, columns, where, order })
@@ -88,6 +88,16 @@ const action = async ({ req }, { context, sql, logger }) =>
         aclProperties[propertyId] = property
     }
     config.properties = aclProperties
+
+    // Data
+    const data = {}
+    for (const [paramId, specifier] of Object.entries(config.dataSpecifiers || {})) {
+        data[paramId] = {}
+        const { entity, where, columns, order } = specifier
+        const rows = await sql.execute({ context, type: "select", entity, columns, where, order, limit: null })
+        for (const row of rows) data[paramId][row.id] = row
+    }
+    config.data = data
 
     // Tags
     const tags = await sql.execute({ context, type: "select", entity: "tag", columns: ["distinct_name"], where: { entity }, order: { name: "asc" }, limit: null })

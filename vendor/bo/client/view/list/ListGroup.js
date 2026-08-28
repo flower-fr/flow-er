@@ -18,28 +18,35 @@ export default class ListGroup extends View
     {
         const html = [], { identifier, value, list, size } = this
 
-        let label, dow
-        switch (list.grouping) {
-        case "month":
-            label = `${ ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"][parseInt(value.substr(5, 7)) - 1] } ${ value.substr(0, 4) }`
-            break
-        case "week":
-            label = `${ value.substr(0,4) }&nbsp;S${ moment(value).week() }`
-            break
-        case "day":
-            dow = ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"][moment(value).day()]
-            label = `${ dow }&nbsp;${ moment(value).format("DD/MM/YYYY") }`
-            break
-        default:
-            label = value
-            break
+        let label, dow, textClass = "", month
+        if (!value) {
+            label = ""
         }
-
-        const textClass = (value == moment().format("YYYY-MM-DD")) ? "text-success" : ""
+        else {
+            switch (list.grouping) {
+            case "month":
+                month = parseInt(value.substr(5, 7))
+                label = `${ ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"][month - 1] } ${ value.substr(0, 4) }`
+                if (month === parseInt(moment().format("MM"))) textClass = "fst-italic"
+                break
+            case "week":
+                label = `${ value.substr(0, 4) }&nbsp;S${ moment(value).week() }`
+                if (label === `${ value.substr(0, 4) }&nbsp;S${ moment().week() }`) textClass = "fst-italic"
+                break
+            case "day":
+                dow = ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"][moment(value).day()]
+                label = `${ dow }&nbsp;${ moment(value).format("DD/MM/YYYY") }`
+                if (value == moment().format("YYYY-MM-DD")) textClass = "fst-italic"
+                break
+            default:
+                label = value
+                break
+            }
+        }
 
         html.push(`
         <tbody>
-            <tr class="listRow">
+            <tr class="listRow" id="flListRow-${ label }">
                 <td/>
                 <td class="text-center">
                     <button 
