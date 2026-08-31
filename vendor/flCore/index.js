@@ -6,7 +6,9 @@ const { sessionCookieMiddleware } = require("../user/server/controller/sessionCo
 
 const { getAction } = require("./server/getAction")
 const { postAction, postFormAction } = require("./server/postAction")
+const postTagAction = require("./server/postTagAction")
 const { deleteAction } = require("./server/deleteAction")
+const deleteTagAction = require("./server/deleteTagAction")
 const { transactionAction } = require("./server/transactionAction")
 const { smtpAction } = require("./server/smtpAction")
 const { createSqlClient } = require("./server/model/sql-client")
@@ -66,11 +68,13 @@ const register = async ({ context, config, logger, app }) => {
 
     app.get(`${config.prefix}v1/:entity`, execute(getAction, context, { sql, logger }))
     app.get(`${config.prefix}v1/:entity/:id`, execute(getAction, context, { sql, logger }))
+    app.post(`${config.prefix}v1/tag`, execute(postTagAction, context, { sql, logger }))
     app.post(`${config.prefix}v1/:entity`, execute(postAction, context, { sql, logger }))
     app.post(`${config.prefix}file/:entity`, upload.single("attachment"), executeFile)
     app.post(`${config.prefix}transaction/:entity`, execute(transactionAction, context, { sql, smtp, sms, logger }))
     app.post(`${config.prefix}transaction`, execute(transactionAction, context, { sql, smtp, sms, logger }))
     app.post(`${config.prefix}smtp/:id`, execute(smtpAction, context, { sql, smtp, logger }))
+    app.delete(`${config.prefix}v1/tag`, execute(deleteTagAction, context, { sql, logger }))
     app.delete(`${config.prefix}v1/:entity/:id`, execute(deleteAction, context, { sql, logger }))
     app.delete(`${config.prefix}v1/:entity`, execute(deleteAction, context, { sql, logger }))
 

@@ -50,9 +50,16 @@ const selectColumns = (table, columns, model, joins) => {
             }
             else if (property.type == "year") {
                 const component = `${qi(model.properties[property.components[0]].entity)}.${qi(model.properties[property.components[0]].column)}`
-                expression = `YEAR(${ component })`
+                expression = `DAYOFWEEK(${ component })`
             }
-            else if (property.type == "DISTINCT") {
+            else if (property.type == "unary") {
+                const property = model.properties[propertyId]
+                const entityId = property.entity
+                const qEntity = qi(entityId)
+                const qColumn = qi(property.argument)
+                expression = `${property.operator}(${qEntity}.${qColumn})`
+            }
+            else if (property.type == "DISTINCT") { // Deprecated
                 const property = model.properties[propertyId]
                 const entityId = property.entity
                 const qEntity = qi(entityId)

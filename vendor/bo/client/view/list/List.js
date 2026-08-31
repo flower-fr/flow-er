@@ -27,10 +27,11 @@ export default class List extends View
     {
         // Retrieve the config and params
         let response = await fetch(`/bo/list/${ this.entity }?view=${ this.view }`)
-        const { properties, identifier, params, eventConfig, summable, translations } = await response.json()
+        const { properties, identifier, params, cellClass, eventConfig, summable, translations } = await response.json()
         this.properties = properties
         this.identifier = identifier
         this.params = params
+        this.cellClass = cellClass
         this.translations = translations
         this.summable = summable
 
@@ -84,21 +85,21 @@ export default class List extends View
         let i = 0
         const { rows, properties, orderProperty, translations, grouping, params, eventConfig } = this
         this.groups = [], this.listRows = []
-        let currentPrefix, currentGroup, identifier = 0
+        let currentPrefix, currentGroup, identifier = 0, first = true
         for (const row of rows) {
             const pred = () => {
                 let prefix, current
                 switch (grouping) {
                 case "month":
-                    prefix = row[orderProperty].substr(0, 7)
+                    prefix = row[orderProperty]?.substr(0, 7)
                     current = currentPrefix?.substr(0, 7)
                     break
                 case "week":
-                    prefix = moment(row[orderProperty]).week()
-                    current = moment(currentPrefix).week()
+                    prefix = row[orderProperty] && moment(row[orderProperty]).week()
+                    current = currentPrefix && moment(currentPrefix).week()
                     break
                 case "day":
-                    prefix = row[orderProperty].substr(0, 10)
+                    prefix = row[orderProperty]?.substr(0, 10)
                     current = currentPrefix?.substr(0, 10)
                     break
                 default:
@@ -108,7 +109,8 @@ export default class List extends View
                 }
                 return !currentGroup || prefix !== current
             }
-            if (pred()) {
+            if (!row[orderProperty] && first || pred()) {
+                first = false
                 currentPrefix = row[orderProperty]
                 currentGroup = [new ListGroup({ controller: this.controller, identifier: identifier++, list: this, value: row[orderProperty], size: Object.entries(row).length, translations })]
                 this.groups.push(currentGroup)
@@ -194,6 +196,32 @@ export default class List extends View
         const globalEl = document.getElementById("flGlobal")
         const groupEl = document.getElementById("flGroup")
         const addEl = document.getElementById("flAdd")
+
+        if (grouping) {
+            let label, dow
+            const today = moment().format("YYYY-MM-DD")
+            switch (grouping) {
+            case "month":
+                label = `${ ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"][parseInt(today.substr(5, 7)) - 1] } ${ today.substr(0, 4) }`
+                break
+            case "week":
+                label = `${ today.substr(0,4) }-S${ moment(today).week() }`
+                break
+            case "day":
+                dow = ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"][moment(today).day()]
+                label = `${ dow }&nbsp;${ moment(today).format("DD/MM/YYYY") }`
+                break
+            default:
+                label = today
+                break
+            }
+
+            const targetRow = document.getElementById(`flListRow-${ label }`)
+            targetRow?.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            })
+        }
 
         this.listHeader.trigger()
 
@@ -410,5 +438,17 @@ export default class List extends View
         return Object.entries(where)
             .map(([key, value]) => `${key}:${(Array.isArray(value) ? value.join(",") : value)}`)
             .join("|")
+    }
+
+    // Scroll the list to the value nearest to argument in the ordered column (orderProperty) 
+    scrollTo(target) {
+        // const { rows, orderProperty } = this
+        // target = moment(target, "YYYY-MM-DD")
+        // const nearestIndex = this.rows.reduce((bestIdx, currVal, currIdx) => 
+        //     Math.abs(moment(currVal, "YYYY-MM-DD") - target) < Math.abs(rows[bestIdx][orderProperty] - target) ? currIdx : bestIdx, 0)
+        target.scrollIntoView({
+            behavior: "smooth",
+            block: "top"
+        })
     }
 }

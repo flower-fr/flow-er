@@ -1,4 +1,5 @@
 import View from "../View.js"
+import GroupNewTag from "./GroupNewTag.js"
 import GroupTag from "./GroupTag.js"
 import Toast from "../toast/Toast.js"
 
@@ -18,15 +19,18 @@ export default class Group extends View
 
     initialize = async () =>
     {
+        const { controller, entity, layout } = this
         let response = await fetch(`/bo/group/${ this.entity }?view=${ this.view }`)
-        const { tabs, properties, translations } = await response.json()
+        const { tabs, properties, translations, tags } = await response.json()
         this.tabs = tabs
         this.properties = properties
         this.translations = translations
 
-        response = await fetch(`/bo/search/${ this.entity }?view=${ this.view }`)
-        const { tags } = await response.json()
-        this.tags = tags.map(tag => new GroupTag({ controller: this.controller, name: tag.distinct_name }))
+        // response = await fetch(`/bo/search/${ this.entity }?view=${ this.view }`)
+        // const { tags } = await response.json()
+        this.tags = tags.map(tag => new GroupTag({ controller, entity, name: tag.distinct_name, group: this, layout, translations }))
+
+        this.newTag = new GroupNewTag({ controller, entity, group: this, tags: this.tags, layout, translations })
     }
 
     render = () =>
@@ -34,7 +38,6 @@ export default class Group extends View
         const { translations } = this
         const html = []
         html.push(`
-            <div class="card mb-3" id="flGroup">
                 <div class="card-header text-center">
                     <h5>${ translations.groupedActions }</h5>
                     <div>
@@ -114,25 +117,12 @@ export default class Group extends View
                         <hr>`)
         }
 
-        html.push(`
-                    <div class="input-group mb-3" id="flGroupOutline-tag">
-                        <input
-                            type="text"
-                            class="form-control rounded"
-                            id="flGroup-tag"
-                            placeholder="Créer un #tag"
-                            aria-label="Créer un #tag"
-                        />
-                        <button class="btn btn-warning" type="button" id="flGroupTagPlus" data-mdb-ripple-init>
-                            <i class="fas fa-plus"></i>                        
-                        </button>
-                    </div>`)
+        html.push(this.newTag.render())
 
         for (const tag of this.tags) html.push(tag.render())
 
         html.push(`
-                </div>
-            </div>`)
+                </div>`)
 
         return html.join("\n")
     }
@@ -184,7 +174,7 @@ export default class Group extends View
         }
 
         // Handle click on submit
-        for (let [tabId, tab] of Object.entries(this.tabs ?? {})) {
+        for (const [tabId, tab] of Object.entries(this.tabs ?? {})) {
             const form = document.getElementById(`flGroupForm-${ tabId }`)
             form.addEventListener("submit", event => {
                 event.preventDefault()
@@ -201,6 +191,12 @@ export default class Group extends View
                     form.reset()
                 }
             })
+        }
+
+        this.newTag.trigger()
+
+        for (const tag of this.tags) {
+            tag.trigger()
         }
     }
 
@@ -240,7 +236,7 @@ export default class Group extends View
             const rows = []
             for (const matchingRow of matchingRows) {
                 const row = {}
-                for (const [propertyId, target] of tab.post.body?.rows ? Object.entries(tab.post.body.rows) : {}) {
+                for (const [propertyId, target] of Object.entries(tab.post.body?.rows ? tab.post.body.rows : {})) {
                     if (target === "matchingRow") {
                         row[propertyId] = matchingRow[propertyId]
                     } else if (target === "form") {

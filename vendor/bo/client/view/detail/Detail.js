@@ -1,5 +1,4 @@
 import View from "../View.js"
-import Form from "../form/Form.js"
 import Card from "../card/Card.js"
 
 export default class Detail extends View

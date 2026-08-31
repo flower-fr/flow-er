@@ -5,7 +5,7 @@ const { dElete } = require("../delete")
 const sqlDelete = async ({ entity, ids, user, context, debug }, model, connection, logger) =>
 {
     if (!user) user = context?.user
-    const request = dElete(entity, ids, model, user, context, debug)
+    const request = dElete(entity, ids, user, context, debug)
     logger && logger.debug(request)
     const result = await connection.execute(request)
     logger && logger.debug(util.inspect(result))

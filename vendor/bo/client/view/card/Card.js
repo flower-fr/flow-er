@@ -175,6 +175,20 @@ export default class Card extends View
                     )
                 }
 
+                // Duration
+                
+                else if (propertyType === "duration")
+                {
+                    blocHtml.push(`
+                    <div class="${ divClass }">
+                        <div class="form-outline fl-form-outline" data-mdb-input-init>
+                            <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ Math.floor(value / 60) }h${ (x => x ? x : "")(value % 60) }"  disabled />
+                            <label class="form-label">${ label }</label>
+                        </div>
+                    </div>`
+                    )
+                }
+
                 // Number
 
                 else if (propertyType == "number")

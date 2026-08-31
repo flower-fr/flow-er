@@ -7,7 +7,7 @@ const { encrypt } = require("./sql-client/encrypt")
 const insert = (entity, data, model, user, context, debug = false) =>
 {
     const table = (model.entities[entity]) ? model.entities[entity].table : entity
-
+console.log({ user })
     const pairs = {}
     for (let key of Object.keys(data)) {
         if (!["instance_id"/*, "touched_at"*/, "touched_by"].includes(key)) {

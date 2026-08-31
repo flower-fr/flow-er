@@ -30,6 +30,12 @@ const selectWhere = (table, where, model, joins) => {
                     }
                     qColumn = `CONCAT(${components.join(", ")})`
                 }
+                else if (property.type == "unary") {
+                    qEntity = ""
+                    const argumentProperty = model.properties[property.argument]
+                    const entityId = argumentProperty.entity
+                    qColumn = `${property.operator}(${ qi(entityId) }.${ qi(argumentProperty.column) })`
+                }
                 else {
                     qEntity = `${qi(property.entity)}.`
                     qColumn = qi(property.column)
@@ -48,6 +54,9 @@ const selectWhere = (table, where, model, joins) => {
 
                     if (operator == "in") {
                         value.shift()
+                        if (property.type === "unary" && property.operator === "DAYOFWEEK") {
+                            value = value.map(x => parseInt(x) + 1) // Week starts at 1 vs 0 in mySQL 
+                        }
                         predicates.push(`${qEntity}${qColumn} IN (${value.map(x => (isNaN(x)) ? qv(x) : x).join(", ")})`)
                     }
                     else if (operator == "ni") {
