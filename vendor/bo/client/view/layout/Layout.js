@@ -24,7 +24,7 @@ export default class Layout extends View
         // this.search = new Search({ controller, entity, view, locale, layout: this })
         this.dashboard = new Dashboard({ controller, entity, view })
         this.addForm = new AddForm({ controller, entity, view, layout: this })
-        this.global = new Global({ controller, entity, view, locale })
+        this.global = new Global({ controller, entity, view, locale, layout: this })
         this.searchKeywords = new SearchKeywords({ controller, placeholder: "Nom, entreprise, coordonnées", layout: this })
         // this.sidenavButton = new SidenavButton({ controller })
         this.group = new Group({ controller, entity, view, layout: this })
@@ -59,7 +59,6 @@ export default class Layout extends View
                 <div class="container">`)
 
         // html.push(this.search.render())
-        html.push(this.global.render())
 
         html.push(`
                 </div>
@@ -89,7 +88,6 @@ export default class Layout extends View
                             <div class="row" id="flDashboard">`)
         
         html.push(this.dashboard.render())        
-
         html.push(`
                             </div>
                             <div class="card mb-3" id="flGroup">`)
@@ -103,7 +101,14 @@ export default class Layout extends View
         html.push(this.addForm.render())
 
         html.push(`
-                            <div class="card p-3 mb-3" id="flCard" style="display:none;"></div>`)
+                            <div class="card p-3 mb-3" id="flCard" style="display:none;"></div>
+
+                            <div class="row" id="flAddForm">`)
+
+        html.push(this.global.render())
+
+        html.push(`
+                            </div>`)
 
         html.push(`
                         </div>
