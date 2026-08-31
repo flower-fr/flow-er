@@ -5,7 +5,7 @@ import Global from "../global/Global.js"
 import Group from "../group/Group.js"
 import List from "../list/List.js"
 import Navbar from "../navbar/Navbar.js"
-import Search from "../search/Search.js"
+// import Search from "../search/Search.js"
 import SearchKeywords from "../search/SearchKeywords.js"
 // import SidenavButton from "../search/SidenavButton.js"
 import AlertsManager from "../toast/AlertsManager.js"
@@ -21,7 +21,7 @@ export default class Layout extends View
         this.view = view
         this.locale = locale
         this.navbar = new Navbar({ controller, application, tab, locale, theme })
-        this.search = new Search({ controller, entity, view, locale, layout: this })
+        // this.search = new Search({ controller, entity, view, locale, layout: this })
         this.dashboard = new Dashboard({ controller, entity, view })
         this.addForm = new AddForm({ controller, entity, view, layout: this })
         this.global = new Global({ controller, entity, view, locale })
@@ -35,7 +35,7 @@ export default class Layout extends View
     initialize = async () =>
     {
         await this.navbar.initialize()
-        await this.search.initialize()
+        // await this.search.initialize()
         await this.dashboard.initialize()
         await this.addForm.initialize()
         await this.global.initialize()

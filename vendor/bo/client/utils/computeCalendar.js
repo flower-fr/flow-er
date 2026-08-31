@@ -49,9 +49,6 @@ export default function computeCalendar(date, frame, specifier, weekDays)
                 if (!defaultTemplate.offDays.includes(formatted.substr(5, 10))) {
                     result.push(formatted)
                 }
-                else {
-                    console.log(formatted)
-                }
             }
         }
     }

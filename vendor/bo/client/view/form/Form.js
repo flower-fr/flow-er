@@ -29,6 +29,25 @@ export default class Form extends View
         }
     }
 
+    formatValueFromData = (propertyId, property, data) =>
+    {
+        let value = property.value
+        if (data) {
+            value = data[propertyId] || ""
+            if (property.type === "percentage" && value) value = parseFloat(value * 100)
+            else if (property.value && !Array.isArray(property.value)) {
+                if (value === "?id") value = data.id
+                else if (value.substring(0, 5) === "today") {
+                    if (value && value.charAt(5) === "+") value = moment().add(value.substring(6), "days").format("YYYY-MM-DD")
+                    else if (value && value.charAt(5) === "-") value = moment().subtract(value.substring(6), "days").format("YYYY-MM-DD")
+                    else if (property.type == "datetime") value = moment().format("YYYY-MM-DD HH:mm:ss")    
+                    else value = moment().format("YYYY-MM-DD")
+                }
+            }
+        }
+        return value
+    }
+
     render = () => 
     {
         const { layout, properties, post, data } = this
@@ -81,20 +100,7 @@ export default class Form extends View
                 const disabled = property.disabled
                 const required = property.required
 
-                let value = property.value
-                if (data) {
-                    value = data[propertyId] || ""
-                    if (property.type === "percentage" && value) value = parseFloat(value * 100)
-                    else if (property.value && !Array.isArray(property.value)) {
-                        if (value === "?id") value = data.id
-                        else if (value.substring(0, 5) === "today") {
-                            if (value && value.charAt(5) === "+") value = moment().add(value.substring(6), "days").format("YYYY-MM-DD")
-                            else if (value && value.charAt(5) === "-") value = moment().subtract(value.substring(6), "days").format("YYYY-MM-DD")
-                            else if (property.type == "datetime") value = moment().format("YYYY-MM-DD HH:mm:ss")    
-                            else value = moment().format("YYYY-MM-DD")
-                        }
-                    }
-                }
+                const value = this.formatValueFromData(propertyId, property, data)
 
                 // Title
 
@@ -207,6 +213,20 @@ export default class Form extends View
                     )
                 }
 
+                // Duration
+                
+                else if (propertyType === "duration")
+                {
+                    blocHtml.push(`
+                    <div class="${ divClass }">
+                        <div class="form-outline" id="flFormOutline-${propertyId}" data-mdb-input-init>
+                            <input class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }" value="${ Math.floor(value / 60) }:${ (x => x ? x : "")(value % 60) }" data-fl-disabled="${ disabled }" ${ required } />
+                            <label class="form-label">${ label }</label>
+                        </div>
+                    </div>`
+                    )
+                }
+
                 // Number
 
                 else if (propertyType == "number")
@@ -266,7 +286,7 @@ export default class Form extends View
                     <div class="${ divClass }">
                         <div class="form-outline" id="flFormOutline-${propertyId}">
                             <select class="form-select form-select-sm fl-modal-form-select" id="flForm-${ propertyId }" data-fl-type="select" data-mdb-size="sm" data-mdb-select-init ${ (required) ? "data-mdb-validation=\"true\" data-mdb-invalid-feedback=\" \" data-mdb-valid-feedback=\" \"" : "" } ${( multiple ) ? "multiple" : ""}  data-fl-disabled="${ disabled }" ${ required }>
-                                <option />`
+                                ${( !multiple ) ? "<option />" : "" }`
                     )
 
                     for (let [modalityId, modality] of Object.entries(property.modalities)) {
@@ -400,6 +420,9 @@ export default class Form extends View
 
         // Initialize MDB components
         for (const [propertyId, property] of Object.entries(properties)) {
+
+            const value = this.formatValueFromData(propertyId, property, data)
+
             if (property.type === "select") {
                 const el = document.getElementById(`flForm-${ propertyId }`)
                 new mdb.Select(el)
@@ -435,7 +458,11 @@ export default class Form extends View
                 }
                 new mdb.Datepicker(el, datePickerOptions)
             }
-            else if (["time", "duration"].includes(property.type)) {
+            else if (property.type === "time") {
+                const el = document.getElementById(`flFormOutline-${ propertyId }`)
+                new mdb.Timepicker(el,{ format24: true, increment: true }) 
+            }
+            else if (property.type === "duration") {
                 const el = document.getElementById(`flFormOutline-${ propertyId }`)
                 new mdb.Timepicker(el,{ format24: true, increment: true }) 
             }
@@ -467,8 +494,14 @@ export default class Form extends View
                     if (property.type === "date") {
                         const val = input.value
                         row[propertyId] = val ? val.substring(6, 10) + "-" + val.substring(3, 5) + "-" + val.substring(0, 2) : ""
+                    } else if (property.type === "duration") {
+                        const val = input.value
+                        if (val) {
+                            const [hours, minutes] = val.split(":").map(Number)
+                            row[propertyId] = hours * 60 + minutes
+                        }
                     } else {
-                        row[propertyId] = input.value
+                        if (input?.value) row[propertyId] = input.value
                     }
                 }
 

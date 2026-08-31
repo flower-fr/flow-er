@@ -21,13 +21,13 @@ export default class Group extends View
     {
         const { controller, entity, layout } = this
         let response = await fetch(`/bo/group/${ this.entity }?view=${ this.view }`)
-        const { tabs, properties, translations } = await response.json()
+        const { tabs, properties, translations, tags } = await response.json()
         this.tabs = tabs
         this.properties = properties
         this.translations = translations
 
-        response = await fetch(`/bo/search/${ this.entity }?view=${ this.view }`)
-        const { tags } = await response.json()
+        // response = await fetch(`/bo/search/${ this.entity }?view=${ this.view }`)
+        // const { tags } = await response.json()
         this.tags = tags.map(tag => new GroupTag({ controller, entity, name: tag.distinct_name, group: this, layout, translations }))
 
         this.newTag = new GroupNewTag({ controller, entity, group: this, tags: this.tags, layout, translations })

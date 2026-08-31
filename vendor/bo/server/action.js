@@ -52,7 +52,6 @@ const action = async ({ req }, { context, sql, logger }) =>
             if (!Object.keys(model.acl.get.properties).includes(propertyId)) continue
             if (model.acl.get.properties[propertyId].roles && !roles.some(role => model.acl.get.properties[propertyId].roles.includes(role))) continue
         }
-console.log({ propertyId, property })
         if (["vector", "autocomplete"].includes(property.type)) {
             const { entity, key, format, columns, where, order } = property
             const items = await sql.execute({ context, type: "select", entity, columns, where, order })

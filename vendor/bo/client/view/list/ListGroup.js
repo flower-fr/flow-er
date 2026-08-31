@@ -30,8 +30,8 @@ export default class ListGroup extends View
                 if (month === parseInt(moment().format("MM"))) textClass = "fst-italic"
                 break
             case "week":
-                label = `${ value.substr(0, 4) }&nbsp;S${ moment(value).week() }`
-                if (label === `${ value.substr(0, 4) }&nbsp;S${ moment().week() }`) textClass = "fst-italic"
+                label = `${ value.substr(0, 4) }-S${ moment(value).week() }`
+                if (label === `${ value.substr(0, 4) }-S${ moment().week() }`) textClass = "fst-italic"
                 break
             case "day":
                 dow = ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"][moment(value).day()]

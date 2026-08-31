@@ -60,8 +60,8 @@ export default class AddForm extends View
             } else if (["select", "vector"].includes(property.type)) {
                 html.push(`
                         <div class="form-outline mb-3" id="flAddOutline-${propertyId}">
-                            <select class="form-select form-select-sm" id="flAdd-${propertyId}" data-mdb-size="sm" ${ property.required ? "required" : "" } >
-                                <option />`)
+                            <select class="form-select form-select-sm" id="flAdd-${propertyId}" data-mdb-size="sm" ${ property.required ? "required" : "" } ${ property.multiple ? "multiple" : "" } >
+                                ${ !property.multiple ? "<option />" : "" }`)
 
                 for (let [modalityId, modality] of Object.entries(property.modalities)) {
                     html.push(`<option value="${modalityId}" ${ modality.archive ? "disabled" : "" }>${modality.label}</option>`)
@@ -416,17 +416,19 @@ export default class AddForm extends View
                 const el = document.getElementById(`flAdd-${ propertyId }`)
                 new mdb.Select(el)
 
-                const setLabel = (selected) => {
-                    const match = Object.entries(property.modalities).find(([id]) => id === selected)
-                    const label = match ? match[1].label : ""
-                    document.getElementById(`flAdd-${ property.foreignIdentifier }`).value = label
+                if (property.foreignIdentifier) {
+                    const setLabel = (selected) => {
+                        const match = Object.entries(property.modalities).find(([id]) => id === selected)
+                        const label = match ? match[1].label : ""
+                        document.getElementById(`flAdd-${ property.foreignIdentifier }`).value = label
+                    }
+                    el.addEventListener("change", () => {
+                        searchRefresh.classList.remove("btn-outline-primary")
+                        searchRefresh.classList.add("btn-primary")
+                        btnAnimation.startAnimation()
+                        setLabel(document.getElementById(`flAdd-${ propertyId }`).value)
+                    })
                 }
-                el.addEventListener("change", () => {
-                    searchRefresh.classList.remove("btn-outline-primary")
-                    searchRefresh.classList.add("btn-primary")
-                    btnAnimation.startAnimation()
-                    setLabel(document.getElementById(`flAdd-${ propertyId }`).value)
-                })
             }
             else if (property.type === "autocomplete") {
                 const data = Object.values(property.modalities).map(x => x.label)

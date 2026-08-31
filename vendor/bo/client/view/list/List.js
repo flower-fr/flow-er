@@ -204,7 +204,7 @@ export default class List extends View
                 label = `${ ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"][parseInt(today.substr(5, 7)) - 1] } ${ today.substr(0, 4) }`
                 break
             case "week":
-                label = `${ today.substr(0,4) }&nbsp;S${ moment(today).week() }`
+                label = `${ today.substr(0,4) }-S${ moment(today).week() }`
                 break
             case "day":
                 dow = ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"][moment(today).day()]
@@ -220,7 +220,6 @@ export default class List extends View
                 behavior: "smooth",
                 block: "center"
             })
-
         }
 
         this.listHeader.trigger()

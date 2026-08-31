@@ -29,7 +29,6 @@ const ddlProperty = (entity, propertyId, property, logger) => {
 const ddlEntity = (context, entity, propertyId, logger) => {
     const model = context.config[`${entity}/model`]
     logger && logger.debug(util.inspect({model}, {depth: null, colors: true}))
-
     let ddl = []
 
     if (propertyId) {
