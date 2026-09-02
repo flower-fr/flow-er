@@ -75,7 +75,7 @@ export default class ListCell extends View
         }
 
         else if (property.type === "duration") {
-            html.push(`<td class="text-end ${ rowClass   || ""}">${ Math.floor(row[propertyId] / 60) }h${ (x => x ? x : "")(row[propertyId] % 60) }</td>`)
+            html.push(`<td class="${ rowClass   || ""}">${ Math.floor(row[propertyId] / 60) }h${ (x => x ? x : "")(row[propertyId] % 60) }</td>`)
         }
 
         else if (property.type === "number") {

@@ -353,6 +353,7 @@ export default class Card extends View
             const groupEl = document.getElementById("flGroup")
             const dashboardEl = document.getElementById("flDashboard")
             const addEl = document.getElementById("flAdd")
+            const globalEl = document.getElementById("flGlobal")
 
             if (cardEl) {
                 cardEl.style.display = "none"
@@ -365,6 +366,7 @@ export default class Card extends View
             if (addEl && (!groupEl || groupEl.style.display === "none")) {
                 dashboardEl.style.display = "block"
                 addEl.style.display = "block"
+                globalEl.style.display = "block"
             }
         }
     }

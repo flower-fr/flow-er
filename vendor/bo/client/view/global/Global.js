@@ -29,21 +29,22 @@ export default class Global extends View
         const html = []
 
         if (this.actions) {
-            html.push("<hr />")
             html.push(
-                `<div class="card mb-3" id="flGlobal">
+                `<div class="card" id="flGlobal">
                 <div class="card-body">`)
+
+            const actionHtml = []
             for (const [actionId, action] of Object.entries(this.actions)) {
 
                 if (action.type === "import") {
-                    html.push(`
+                    actionHtml.push(`
                         <input type="file" class="form-control form-control-sm mb-2" id="flGlobalImportFile-${ actionId }" />
                         <button type="button" class="btn ${ (action.class === "danger") ? "btn-danger" : "btn-warning" }" id="flGlobal-${ actionId }">
                             <i ${ (action.glyph) ? `class="fa ${action.glyph}"` : "" }></i> ${ action.label }
                         </button>`)
 
                 } else if (!action.type || action.type == "modal") {
-                    html.push(`
+                    actionHtml.push(`
                         <button
                             type="button"
                             class="btn btn-outline-primary"
@@ -53,7 +54,7 @@ export default class Global extends View
                         </button>`)
 
                 } else {
-                    html.push(`
+                    actionHtml.push(`
                         <a
                             type="button"
                             class="btn btn-outline-primary"
@@ -62,9 +63,9 @@ export default class Global extends View
                             <i ${ (action.glyph) ? `class="fa ${action.glyph}"` : "" }></i> ${ action.label }
                         </a>`)
                 }
-
-                html.push("<hr />")
             }
+            html.push(actionHtml.join("<hr />"))
+
             html.push(`
                     </div>
                 </div>`)   

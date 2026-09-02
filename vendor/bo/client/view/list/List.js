@@ -235,6 +235,8 @@ export default class List extends View
             // triggerList({ context, entity, view })
         })
 
+        layout.hideGroupMode()
+
         // Enable card action
         this.rows.forEach(row => {
             document.getElementById(`flListDetail-${row.id}`)?.addEventListener("click", async (el) => {
@@ -252,19 +254,13 @@ export default class List extends View
                     cardEl.style.display = "none"
                     cardEl.innerHTML = ""
                     cardEl.dataset.openId = ""
-                    if (groupEl.style.display === "none") {
-                        dashboardEl.style.display = "block"
-                        addEl.style.display = "block"
-                    }
                     tr?.classList.remove("table-active", "fw-bold")
                     tableEl.classList.add("table-hover")
                     return
                 }
 
                 // Handle the display of others side elements
-                if (groupEl.style.display === "none") dashboardEl.style.display = "block"
-                dashboardEl.style.display = "none"
-                addEl.style.display = "none"
+                layout.hideGroupMode()
 
                 // Handle the highlighting of the row
                 document.querySelectorAll("tr.table-active").forEach(r => r.classList.remove("table-active", "fw-bold"))
@@ -285,7 +281,6 @@ export default class List extends View
         })
 
         // Trigger checking rows for group action
-        $("#flGroup").hide()
         this.listRows.forEach(listRow => {
             const i = listRow.i
             const row = document.getElementById(`flListCheck-${ i }`)
@@ -316,16 +311,10 @@ export default class List extends View
                 })
 
                 if (checked > 0) {
-                    $("#flGroup").show()
-                    $("#flDashboard").hide()
-                    $("#flAdd").hide()
-                    if (globalEl) globalEl.style.display = "none"
+                    layout.showGroupMode()
                 }
                 else {
-                    $("#flDashboard").show()
-                    if (!cardEl || cardEl.style.display === "none") $("#flAdd").show()
-                    $("#flGroup").hide()
-                    if (globalEl) globalEl.style.display = "block"
+                    layout.hideGroupMode()
                 }
                 group.eventRowChecked(this.summable, checkedRows)                
             }
@@ -343,17 +332,11 @@ export default class List extends View
 
             if (state)
             {
-                $("#flGroup").show()
-                $("#flDashboard").hide()
-                $("#flAdd").hide()
-                if (globalEl) globalEl.style.display = "none"
+                layout.showGroupMode()
                 group.eventRowChecked(this.summable, this.listRows.map(lr => lr.row))
             }
             else {
-                $("#flDashboard").show()
-                if (!cardEl || cardEl.style.display === "none") $("#flAdd").show()
-                $("#flGroup").hide()
-                if (globalEl) globalEl.style.display = "block"
+                layout.hideGroupMode()
                 group.eventRowChecked(this.summable, [])
             }
         }

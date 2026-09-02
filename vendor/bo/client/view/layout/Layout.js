@@ -85,12 +85,12 @@ export default class Layout extends View
                             </div>
                         </div>
                         <div class="col-md-3" id="flRightColumn">
-                            <div class="row" id="flDashboard">`)
+                            <div class="row mb-3" id="flDashboard">`)
         
         html.push(this.dashboard.render())        
         html.push(`
                             </div>
-                            <div class="card mb-3" id="flGroup">`)
+                            <div class="card" id="flGroup">`)
 
         html.push(this.group.render())
 
@@ -101,9 +101,10 @@ export default class Layout extends View
         html.push(this.addForm.render())
 
         html.push(`
+                            </div>
                             <div class="card p-3 mb-3" id="flCard" style="display:none;"></div>
 
-                            <div class="row" id="flAddForm">`)
+                            <div class="row mt-3" id="flGroupForm">`)
 
         html.push(this.global.render())
 
@@ -158,6 +159,8 @@ export default class Layout extends View
     
     refreshList = async ({ where, tags, orderProperty, orderDirection }) =>
     {
+        if (!where) where = this.addForm.extractFilters()
+        if (!tags) tags = this.addForm.extractTags()
         if (orderProperty) {
             this.orderProperty = orderProperty
         }
@@ -169,5 +172,29 @@ export default class Layout extends View
         await this.list.initialize()
         document.getElementById("flList").innerHTML = this.list.render()
         this.list.trigger()
+    }
+
+    showGroupMode = () =>
+    {
+        const dashboardEl = document.getElementById("flDashboard")
+        const globalEl = document.getElementById("flGlobal")
+        const groupEl = document.getElementById("flGroup")
+        const addEl = document.getElementById("flAdd")
+        dashboardEl.style.display = "none"
+        addEl.style.display = "none"
+        globalEl.style.display = "none"
+        groupEl.style.display = "block"
+    }
+
+    hideGroupMode = () =>
+    {
+        const dashboardEl = document.getElementById("flDashboard")
+        const globalEl = document.getElementById("flGlobal")
+        const groupEl = document.getElementById("flGroup")
+        const addEl = document.getElementById("flAdd")
+        dashboardEl.style.display = "block"
+        addEl.style.display = "block"
+        globalEl.style.display = "block"
+        groupEl.style.display = "none"
     }
 }
