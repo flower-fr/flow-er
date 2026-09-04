@@ -51,11 +51,11 @@ export default class AddForm extends View
         for (const propertyId of Object.keys(columnLayout ? columnLayout : properties)) {
             const property = properties[propertyId]
             const options = columnLayout ? columnLayout[propertyId] : {}
-            const initialValue = (options.initialValue === "today") ? moment().format("DD/MM/YYYY") : ""
+            const initialValue = (options.initialValue === "today") ? moment().format("DD/MM/YYYY") : options.initialValue
 
             if (property.type === "hidden") {
                 html.push(`
-                        <input type="hidden" id="flAdd-${propertyId}" value="" />`)
+                        <input type="hidden" id="flAdd-${propertyId}" value="${ initialValue }" />`)
                         
             } else if (["select", "vector"].includes(property.type)) {
                 html.push(`
@@ -64,7 +64,7 @@ export default class AddForm extends View
                                 ${ !property.multiple ? "<option />" : "" }`)
 
                 for (let [modalityId, modality] of Object.entries(property.modalities)) {
-                    html.push(`<option value="${modalityId}" ${ modality.archive ? "disabled" : "" }>${modality.label}</option>`)
+                    html.push(`<option value="${modalityId}" ${ modality.archive ? "disabled" : "" } ${ modalityId === initialValue ? "selected" : "" }>${modality.label}</option>`)
                 }
 
                 html.push(`
@@ -178,8 +178,7 @@ export default class AddForm extends View
                         </div>
                     </div>
                 </div>
-            </form>
-            <hr>`)
+            </form>`)
 
         for (const tag of this.tags) html.push(tag.render())
 
@@ -621,9 +620,17 @@ export default class AddForm extends View
 
     extractFilters = () =>
     {
-        const { properties } = this, filters = []
-        for (const [propertyId, property] of Object.entries(properties)) {
-            if (property.type !== "hidden") {
+        const { properties, columnLayout } = this, filters = []
+        for (const propertyId of Object.keys(columnLayout ? columnLayout : properties)) {
+            const property = properties[propertyId]
+            const options = columnLayout ? columnLayout[propertyId] : {}
+            const initialValue = (options.initialValue === "today") ? moment().format("DD/MM/YYYY") : options.initialValue
+            if (property.type === "hidden") {
+                if (initialValue) {
+                    filters.push(`${ propertyId }:${ initialValue }`)
+                }
+            }
+            else {
                 if (property.type === "date") {
 
                     // Date interval depending on selected frame
@@ -638,8 +645,8 @@ export default class AddForm extends View
                             const endOfMonth = moment(value, "DD/MM/YYYY").endOf("month").format("YYYY-MM-DD")
                             filters.push(`${ propertyId }:between,${ startOfMonth },${ endOfMonth }`)
                         } else if (property.frame === "year") {
-                            const startOfYear = moment(value, "DD/MM/YYYY").startOf("year").format("YYYY-MM-DD")
-                            const endOfYear = moment(value, "DD/MM/YYYY").endOf("year").format("YYYY-MM-DD")
+                            const startOfYear = moment(value, "DD/MM/YYYY").subtract(7, "months").startOf("year").add(7, "months").format("YYYY-MM-DD")
+                            const endOfYear = moment(value, "DD/MM/YYYY").subtract(7, "months").endOf("year").add(7, "months").format("YYYY-MM-DD")
                             filters.push(`${ propertyId }:between,${ startOfYear },${ endOfYear }`)
                         }
                         else {
@@ -668,6 +675,9 @@ export default class AddForm extends View
                     const value = document.getElementById(`flAdd-${ propertyId }`).value
                     if (value) {
                         filters.push(`${ propertyId }:contains,${ value }`)
+                    }
+                    else if (property.defaultWhere) {
+                        filters.push(`${ propertyId}:${ property.defaultWhere }`)
                     }
                 }
             }

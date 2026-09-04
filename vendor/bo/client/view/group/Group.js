@@ -57,19 +57,25 @@ export default class Group extends View
 
             for (const propertyId of (tab.form) ? tab.form : []) {
                 const property = this.properties[propertyId]
+
                 if (["select", "vector"].includes(property.type)) {
                     html.push(`
-                            <div class="form-outline mb-3" id="flGroupOutline-${tabId}-${propertyId}">
-                                <select class="form-select form-select-sm fl-modal-form-select" id="flGroup-${tabId}-${propertyId}" data-mdb-size="sm">
-                                    <option />`)
+                            <div class="input-group mb-3">
+                                <div class="input-group-text">
+                                    <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
+                                </div>
+                                <div class="form-outline" id="flGroupOutline-${tabId}-${propertyId}">
+                                    <select class="form-select form-select-sm fl-modal-form-select" id="flGroup-${tabId}-${propertyId}" data-mdb-size="sm">
+                                        <option />`)
 
                     for (let [modalityId, modality] of Object.entries(property.modalities)) {
                         html.push(`<option value="${modalityId}" ${ modality.archive ? "disabled" : "" }>${modality.label}</option>`)
                     }
 
                     html.push(`
-                                </select>
-                                <label class="form-label select-label">${property.label}</label>
+                                    </select>
+                                    <label class="form-label select-label">${property.label}</label>
+                                </div>
                             </div>`)
                     
                     if (property.text) {
@@ -82,29 +88,49 @@ export default class Group extends View
 
                 } else if (property.type === "date") {
                     html.push(`
-                            <div class="form-outline mb-3" id="flGroupOutline-${ tabId }-${ propertyId }" data-mdb-datepicker-init data-mdb-input-init>
-                                <input class="form-control form-control-sm" id="flGroup-${ tabId }-${ propertyId }" />
-                                <label class="form-label select-label">${property.label}</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-text">
+                                    <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
+                                </div>
+                                <div class="form-outline mb-3" id="flGroupOutline-${ tabId }-${ propertyId }" data-mdb-datepicker-init data-mdb-input-init>
+                                    <input class="form-control form-control-sm" id="flGroup-${ tabId }-${ propertyId }" />
+                                    <label class="form-label select-label">${property.label}</label>
+                                </div>
                             </div>`)
 
                 } else if (["time", "duration"].includes(property.type)) {
                     html.push(`
-                            <div class="form-outline mb-3" id="flGroupOutline-${ tabId }-${propertyId}" data-mdb-timepicker-init data-mdb-input-init>
-                                <input class="form-control form-control-sm" id="flGroup-${ tabId }-${propertyId}" />
-                                <label class="form-label select-label">${property.label}</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-text">
+                                    <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
+                                </div>
+                                <div class="form-outline mb-3" id="flGroupOutline-${ tabId }-${propertyId}" data-mdb-timepicker-init data-mdb-input-init>
+                                    <input class="form-control form-control-sm" id="flGroup-${ tabId }-${propertyId}" />
+                                    <label class="form-label select-label">${property.label}</label>
+                                </div>
                             </div>`)
 
                 } else if (property.type === "wysiwyg") {
                     html.push(`
-                            <div class="form-outline mb-3" id="flGroupOutline-${ tabId }-${propertyId}">
-                                <div class="wysiwyg" id="flGroupWysiwyg-${ tabId }-${ propertyId }" data-mdb-wysiwyg-init>TEST</div>
+                            <div class="input-group mb-3">
+                                <div class="input-group-text">
+                                    <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
+                                </div>
+                                <div class="form-outline mb-3" id="flGroupOutline-${ tabId }-${propertyId}">
+                                    <div class="wysiwyg" id="flGroupWysiwyg-${ tabId }-${ propertyId }" data-mdb-wysiwyg-init>TEST</div>
+                                </div>
                             </div>`)
 
                 } else {
                     html.push(`
-                            <div class="form-outline mb-3" id="flGroupOutline-${ tabId }-${ propertyId }" data-mdb-input-init>
-                                <input class="form-control form-control-sm fl-modal-form-input" id="flGroup-${ tabId }-${ propertyId }" />
-                                <label class="form-label select-label">${property.label}</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-text">
+                                    <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
+                                </div>
+                                <div class="form-outline mb-3" id="flGroupOutline-${ tabId }-${ propertyId }" data-mdb-input-init>
+                                    <input class="form-control form-control-sm fl-modal-form-input" id="flGroup-${ tabId }-${ propertyId }" />
+                                    <label class="form-label select-label">${property.label}</label>
+                                </div>
                             </div>`)
                 }
             }
@@ -170,6 +196,18 @@ export default class Group extends View
                     const el = document.getElementById(`flGroupOutline-${ tabId }-${ propertyId }`)
                     new mdb.Input(el)
                 }
+
+                // Handle input change to check the checkbox
+                const check = (propertyId) => {
+                    document.getElementById(`flGroupCheck-${ tabId }-${ propertyId }`).checked = true
+                }
+                const input = document.getElementById(`flGroup-${ tabId }-${ propertyId }`)
+                input.addEventListener("change", () => { check(propertyId) })
+                input.addEventListener("input", () => { check(propertyId) })
+                const outline = document.getElementById(`flGroupOutline-${ tabId }-${ propertyId }`)
+                outline?.addEventListener("valueChanged.mdb.datepicker", () => { check(propertyId) })
+                outline?.addEventListener("valueChanged.mdb.timepicker", () => { check(propertyId) })
+                outline?.addEventListener("itemSelect.mdb.autocomplete", () => { check(propertyId) })
             }
         }
 
@@ -240,6 +278,10 @@ export default class Group extends View
                     if (target === "matchingRow") {
                         row[propertyId] = matchingRow[propertyId]
                     } else if (target === "form") {
+
+                        // Only send the value if the checkbox is checked
+                        if (!document.getElementById(`flGroupCheck-${tabId}-${propertyId}`).checked) continue
+
                         const property = properties[propertyId]
                         const input = document.getElementById(`flGroup-${ tabId }-${ propertyId }`)
                         if (property.type === "date") {

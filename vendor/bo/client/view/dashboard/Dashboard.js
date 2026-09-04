@@ -70,7 +70,6 @@ export default class Dashboard extends View
                     </div>`)})
 
         html.push(`</div>
-            <hr>
             </div>`)
 
         return html.join("\n")
