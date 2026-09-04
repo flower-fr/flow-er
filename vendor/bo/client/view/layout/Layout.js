@@ -174,6 +174,18 @@ export default class Layout extends View
         this.list.trigger()
     }
 
+    showMainMode = () =>
+    {
+        const dashboardEl = document.getElementById("flDashboard")
+        const globalEl = document.getElementById("flGlobal")
+        const groupEl = document.getElementById("flGroup")
+        const addEl = document.getElementById("flAdd")
+        dashboardEl.style.display = "block"
+        addEl.style.display = "block"
+        globalEl.style.display = "block"
+        groupEl.style.display = "none"
+    }
+
     showGroupMode = () =>
     {
         const dashboardEl = document.getElementById("flDashboard")
@@ -186,15 +198,15 @@ export default class Layout extends View
         groupEl.style.display = "block"
     }
 
-    hideGroupMode = () =>
+    showCardMode = () =>
     {
         const dashboardEl = document.getElementById("flDashboard")
         const globalEl = document.getElementById("flGlobal")
         const groupEl = document.getElementById("flGroup")
         const addEl = document.getElementById("flAdd")
-        dashboardEl.style.display = "block"
-        addEl.style.display = "block"
-        globalEl.style.display = "block"
+        dashboardEl.style.display = "none"
+        addEl.style.display = "none"
+        globalEl.style.display = "none"
         groupEl.style.display = "none"
     }
 }

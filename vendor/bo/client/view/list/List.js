@@ -235,7 +235,7 @@ export default class List extends View
             // triggerList({ context, entity, view })
         })
 
-        layout.hideGroupMode()
+        layout.showMainMode()
 
         // Enable card action
         this.rows.forEach(row => {
@@ -260,7 +260,7 @@ export default class List extends View
                 }
 
                 // Handle the display of others side elements
-                layout.hideGroupMode()
+                layout.showCardMode()
 
                 // Handle the highlighting of the row
                 document.querySelectorAll("tr.table-active").forEach(r => r.classList.remove("table-active", "fw-bold"))
@@ -314,7 +314,7 @@ export default class List extends View
                     layout.showGroupMode()
                 }
                 else {
-                    layout.hideGroupMode()
+                    layout.showMainMode()
                 }
                 group.eventRowChecked(this.summable, checkedRows)                
             }
@@ -336,7 +336,7 @@ export default class List extends View
                 group.eventRowChecked(this.summable, this.listRows.map(lr => lr.row))
             }
             else {
-                layout.hideGroupMode()
+                layout.showMainMode()
                 group.eventRowChecked(this.summable, [])
             }
         }
