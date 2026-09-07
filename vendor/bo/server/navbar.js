@@ -9,6 +9,7 @@ const navbarAction = async ({ req }, { context }) =>
     if (config.title[locale]) config.title = config.title[locale]
     config.defaultTab = tab
     config.user = context.user
+console.log({config})
     Object.values(config.menu).forEach(entry => { 
         if (entry.label[locale]) entry.label = entry.label[locale]
         else if (entry.label["default"]) entry.label = entry.label["default"]
