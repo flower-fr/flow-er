@@ -104,7 +104,7 @@ export default class Layout extends View
                             </div>
                             <div class="card p-3 mb-3" id="flCard" style="display:none;"></div>
 
-                            <div class="row mt-3" id="flGroupForm">`)
+                            <div class="row mt-3" id="flGlobal">`)
 
         html.push(this.global.render())
 
