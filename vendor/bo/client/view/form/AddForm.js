@@ -32,21 +32,21 @@ export default class AddForm extends View
             }
         }
 
-        this.tags = tags.map(tag => new AddTag({ controller: this.controller, name: tag.distinct_name }))
+        this.tags = tags.map(tag => new AddTag({ controller: this.controller, name: tag.distinct_name, layout: this.layout }))
     }
 
     render = () =>
     {
-        const html = [], { properties, columnLayout, searchKeywords, posts, translations } = this
+        const html = [], { properties, columnLayout, searchKeywords, posts, translations, layout } = this
         html.push(`
-            <div class="card" id="flAdd">
+            <div class="card" id="flAdd-${ layout.screenIndex }">
                 <div class="card-body">
 
                     ${ this.layout.searchKeywords.render(searchKeywords) }
 
                     <hr>
 
-                    <form id="flAddForm">`)
+                    <form id="flAddForm-${ layout.screenIndex }">`)
 
         for (const propertyId of Object.keys(columnLayout ? columnLayout : properties)) {
             const property = properties[propertyId]
@@ -55,12 +55,12 @@ export default class AddForm extends View
 
             if (property.type === "hidden") {
                 html.push(`
-                        <input type="hidden" id="flAdd-${propertyId}" value="${ initialValue }" />`)
+                        <input type="hidden" id="flAdd-${propertyId}-${ layout.screenIndex }" value="${ initialValue }" />`)
                         
             } else if (["select", "vector"].includes(property.type)) {
                 html.push(`
-                        <div class="form-outline mb-3" id="flAddOutline-${propertyId}">
-                            <select class="form-select form-select-sm" id="flAdd-${propertyId}" data-mdb-size="sm" ${ property.required ? "required" : "" } ${ property.multiple ? "multiple" : "" } >
+                        <div class="form-outline mb-3" id="flAddOutline-${propertyId}-${ layout.screenIndex }">
+                            <select class="form-select form-select-sm" id="flAdd-${propertyId}-${ layout.screenIndex }" data-mdb-size="sm" ${ property.required ? "required" : "" } ${ property.multiple ? "multiple" : "" } >
                                 ${ !property.multiple ? "<option />" : "" }`)
 
                 for (let [modalityId, modality] of Object.entries(property.modalities)) {
@@ -76,41 +76,41 @@ export default class AddForm extends View
                 html.push(`
                         <div class="row mb-3">
                             <div class="col-md-4">
-                                <div class="form-outline" id="flAddOutline-${ propertyId }" data-mdb-datepicker-init data-mdb-input-init>
-                                    <input class="form-control form-control-sm" id="flAdd-${ propertyId }" value="${ initialValue }" />
+                                <div class="form-outline" id="flAddOutline-${ propertyId }-${ layout.screenIndex }" data-mdb-datepicker-init data-mdb-input-init>
+                                    <input class="form-control form-control-sm" id="flAdd-${ propertyId }-${ layout.screenIndex }" value="${ initialValue }" />
                                     <label class="form-label select-label">${ property.required ? "* " : "" }${property.label}</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="input-group text-center">
                                     <span title="${ translations["Day"] }" title="${ translations["Day"] }">
-                                        <a id="flAdd-d_${ propertyId }" href="#!" class="${ property.frame === "day" ? "text-info" : "text-primary" }">
+                                        <a id="flAdd-d_${ propertyId }-${ layout.screenIndex }" href="#!" class="${ property.frame === "day" ? "text-info" : "text-primary" }">
                                             <i class="fas fa-calendar-day"></i>
                                         </a>
                                     </span>
                                     &nbsp;&nbsp;
                                     <span title="${ translations["Week"] }" title="${ translations["Week"] }">
-                                        <a id="flAdd-w_${ propertyId }" href="#!" class="${ property.frame === "week" ? "text-info" : "text-primary" }">
+                                        <a id="flAdd-w_${ propertyId }-${ layout.screenIndex }" href="#!" class="${ property.frame === "week" ? "text-info" : "text-primary" }">
                                             <i class="fas fa-calendar-week"></i>
                                         </a>
                                     </span>
                                     &nbsp;&nbsp;
                                     <span title="${ translations["Month"] }" title="${ translations["Month"] }">
-                                        <a id="flAdd-m_${ propertyId }" href="#!" class="${ property.frame === "month" ? "text-info" : "text-primary" }">
+                                        <a id="flAdd-m_${ propertyId }-${ layout.screenIndex }" href="#!" class="${ property.frame === "month" ? "text-info" : "text-primary" }">
                                             <i class="fas fa-calendar-days"></i>
                                         </a>
                                     </span>
                                     &nbsp;&nbsp;
                                     <span title="${ translations["Year"] }" title="${ translations["Year"] }">
-                                        <a id="flAdd-y_${ propertyId }" href="#!" class="${ property.frame === "year" ? "text-info" : "text-primary" }">
+                                        <a id="flAdd-y_${ propertyId }-${ layout.screenIndex }" href="#!" class="${ property.frame === "year" ? "text-info" : "text-primary" }">
                                             <i class="fas fa-calendar"></i>
                                         </a>
                                     </span>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="form-outline" id="flAddOutline-days_${ propertyId }">
-                                    <select class="form-select form-select-sm" id="flAdd-days_${ propertyId }" data-mdb-size="sm" multiple>
+                                <div class="form-outline" id="flAddOutline-days_${ propertyId }-${ layout.screenIndex }">
+                                    <select class="form-select form-select-sm" id="flAdd-days_${ propertyId }-${ layout.screenIndex }" data-mdb-size="sm" multiple>
                                         <option value="1">Lu</option>
                                         <option value="2">Ma</option>
                                         <option value="3">Me</option>
@@ -126,23 +126,23 @@ export default class AddForm extends View
 
             } else if (["time", "duration"].includes(property.type)) {
                 html.push(`
-                        <div class="form-outline mb-3" id="flAddOutline-${propertyId}" data-mdb-timepicker-init data-mdb-input-init>
-                            <input class="form-control form-control-sm" id="flAdd-${propertyId}" ${ property.required ? "required" : "" } />
+                        <div class="form-outline mb-3" id="flAddOutline-${propertyId}-${layout.screenIndex}" data-mdb-timepicker-init data-mdb-input-init>
+                            <input class="form-control form-control-sm" id="flAdd-${propertyId}-${layout.screenIndex}" ${ property.required ? "required" : "" } />
                             <label class="form-label select-label">${ property.required ? "* " : "" }${property.label}</label>
                         </div>`)
 
             } else if (property.type === "email"){
                 html.push(`
-                        <div class="form-outline mb-3" id="flAddOutline-${propertyId}" data-mdb-input-init>
-                            <input type="email" class="form-control form-control-sm" id="flAdd-${propertyId}" ${ property.required ? "required" : "" } />
+                        <div class="form-outline mb-3" id="flAddOutline-${propertyId}-${ layout.screenIndex }" data-mdb-input-init>
+                            <input type="email" class="form-control form-control-sm" id="flAdd-${propertyId}-${layout.screenIndex}" ${ property.required ? "required" : "" } />
                             <label class="form-label select-label">${ property.required ? "* " : "" }${property.label}</label>
                         </div>`)
 
             } else {
                 html.push(`
-                        <div class="form-outline mb-3" id="flAddOutline-${propertyId}" data-mdb-input-init>
-                            <input type="text" class="form-control form-control-sm" id="flAdd-${propertyId}" ${ property.required ? "required" : "" } />
-                            <label class="form-label" for="flAdd-${propertyId}">${ property.required ? "* " : "" }${property.label}</label>
+                        <div class="form-outline mb-3" id="flAddOutline-${propertyId}-${layout.screenIndex}" data-mdb-input-init>
+                            <input type="text" class="form-control form-control-sm" id="flAdd-${propertyId}-${layout.screenIndex}" ${ property.required ? "required" : "" } />
+                            <label class="form-label" for="flAdd-${propertyId}-${layout.screenIndex}">${ property.required ? "* " : "" }${property.label}</label>
                         </div>`)
             }
         }
@@ -151,10 +151,10 @@ export default class AddForm extends View
             <div class="form-outline mb-3">
                 <div class="col-md-12">    
                     <div class="input-group text-center">
-                        <button type="button" class="btn btn-outline-primary" id="flSearchRefresh" title="${ translations["Refresh the list"] }">
+                        <button type="button" class="btn btn-outline-primary" id="flSearchRefresh-${layout.screenIndex}" title="${ translations["Refresh the list"] }">
                             <i class="fa fa-sync-alt"></i>
                         </button>
-                        <button type="button" class="btn btn-outline-primary" id="flSearchErase" title="${ translations["Erase"] }">
+                        <button type="button" class="btn btn-outline-primary" id="flSearchErase-${ layout.screenIndex }" title="${ translations["Erase"] }">
                             <i class="fa fa-times"></i>
                         </button>`)
 
@@ -195,7 +195,7 @@ export default class AddForm extends View
         for (const propertyId of this.identifier ? this.identifier : []) {
             columns.push(propertyId)
             const property = this.properties[propertyId]
-            const input = document.getElementById(`flAdd-${ propertyId }`)
+            const input = document.getElementById(`flAdd-${ propertyId }-${this.layout.screenIndex}`)
             if (input) {
                 if (property.type === "date") {
                     const filter = ["in"] 
@@ -241,7 +241,7 @@ export default class AddForm extends View
         let formComplete = true
         for (const [propertyId, property] of Object.entries(this.properties)) {
             if (property.required) {
-                const input = document.getElementById(`flAdd-${ propertyId }`)
+                const input = document.getElementById(`flAdd-${ propertyId }-${this.layout.screenIndex}`)
                 if (!input.value) formComplete = false
             }
         }
@@ -262,9 +262,9 @@ export default class AddForm extends View
         for (const propertyId of this.iterators) {
             const property = this.properties[propertyId]
             if (property.type === "date") {
-                const value = document.getElementById(`flAdd-${ propertyId }`).value
+                const value = document.getElementById(`flAdd-${ propertyId }-${this.layout.screenIndex}`).value
                 if (value) {
-                    const days = Array.from(document.getElementById(`flAdd-days_${ propertyId }`).selectedOptions).map(option => parseInt(option.value))
+                    const days = Array.from(document.getElementById(`flAdd-days_${ propertyId }-${this.layout.screenIndex}`).selectedOptions).map(option => parseInt(option.value))
                     const scope = computeCalendar(moment(value, "DD/MM/YYYY").format("YYYY-MM-DD"), property.frame, this.calendars, days)
                     for (const date of scope) {
                         this.scope.push((res => { res[propertyId] = date; return res })({}))
@@ -272,7 +272,7 @@ export default class AddForm extends View
                 }
             }
             else {
-                const value = document.getElementById(`flAdd-${ propertyId }`).value
+                const value = document.getElementById(`flAdd-${ propertyId }-${this.layout.screenIndex}`).value
                 if (value) {
                     this.scope.push((res => { res[propertyId] = value; return res })({}))
                 }
@@ -287,7 +287,7 @@ export default class AddForm extends View
     {
         const {properties, identifier, posts, translations, controller, layout} = this
 
-        const searchRefresh = document.getElementById("flSearchRefresh")
+        const searchRefresh = document.getElementById(`flSearchRefresh-${ layout.screenIndex }`)
         const btnAnimation = new mdb.Animate(searchRefresh, {
             animation: "fade-in",
             animationStart: "manually",
@@ -295,11 +295,11 @@ export default class AddForm extends View
             animationRepeat: true,
         })
         
-        const keywordsRefresh = document.getElementById("flSearchKeywordsRefresh")
+        const keywordsRefresh = document.getElementById(`flSearchKeywordsRefresh-${ layout.screenIndex }`)
         
         const switcher = (propertyId, newFrame) => {
             ["flAdd-d_", "flAdd-w_", "flAdd-m_", "flAdd-y_"].forEach(prefix => {
-                const element = document.getElementById(`${ prefix }${ propertyId }`)
+                const element = document.getElementById(`${ prefix }${ propertyId }-${layout.screenIndex}`)
                 if (element) {
                     if (newFrame && prefix === `flAdd-${ newFrame[0] }_`) {
                         element.classList.remove("text-primary")
@@ -314,7 +314,7 @@ export default class AddForm extends View
 
         // Search refresh and erase
 
-        const refresh = document.getElementById("flSearchRefresh")
+        const refresh = document.getElementById(`flSearchRefresh-${ layout.screenIndex }`)
         new mdb.Ripple(refresh, { rippleColor: "primary" })
         refresh.onclick = () => {
             searchRefresh.classList.remove("btn-primary")
@@ -327,9 +327,9 @@ export default class AddForm extends View
             layout.refreshList({ where: this.extractFilters(), tags: this.extractTags() })
         }
 
-        const erase = document.getElementById("flSearchErase")
+        const erase = document.getElementById(`flSearchErase-${ layout.screenIndex }`)
         new mdb.Ripple(erase, { rippleColor: "primary" })
-        document.getElementById("flSearchErase").onclick = () => {
+        document.getElementById(`flSearchErase-${ layout.screenIndex }`).onclick = () => {
 
             searchRefresh.classList.remove("btn-primary")
             searchRefresh.classList.add("btn-outline-primary")
@@ -340,40 +340,40 @@ export default class AddForm extends View
             layout.refreshList({})
             for (const [propertyId, property] of Object.entries(properties)) {
                 if (["select", "vector"].includes(property.type)) {
-                    const instance = mdb.Select.getInstance(`#flAdd-${ propertyId }`)
+                    const instance = mdb.Select.getInstance(`#flAdd-${ propertyId }-${layout.screenIndex}`)
                     instance.setValue("")
                     instance.dispose()
-                    new mdb.Select(document.getElementById(`flAdd-${ propertyId }`))
+                    new mdb.Select(document.getElementById(`flAdd-${ propertyId }-${layout.screenIndex}`))
 
                 } else if (property.type === "autocomplete") {
-                    document.getElementById(`flAdd-${ propertyId }`).value = ""
-                    const instance = mdb.Autocomplete.getInstance(`#flAddOutline-${ propertyId }`)
+                    document.getElementById(`flAdd-${ propertyId }-${layout.screenIndex}`).value = ""
+                    const instance = mdb.Autocomplete.getInstance(`#flAddOutline-${ propertyId }-${layout.screenIndex}`)
                     instance.dispose()
-                    new mdb.Autocomplete(document.getElementById(`flAddOutline-${ propertyId }`))
+                    new mdb.Autocomplete(document.getElementById(`flAddOutline-${ propertyId }-${layout.screenIndex}`))
 
                 } else if (property.type === "date") {
-                    document.getElementById(`flAdd-${ propertyId }`).value = ""
-                    document.getElementById(`flAdd-days_${ propertyId }`)
-                    const instance = mdb.Select.getInstance(`#flAdd-days_${ propertyId }`)
+                    document.getElementById(`flAdd-${ propertyId }-${layout.screenIndex}`).value = ""
+                    document.getElementById(`flAdd-days_${ propertyId }-${layout.screenIndex}`)
+                    const instance = mdb.Select.getInstance(`#flAdd-days_${ propertyId }-${layout.screenIndex}`)
                     instance.setValue("")
                     instance.dispose()
-                    new mdb.Select(document.getElementById(`flAdd-days_${ propertyId }`))
+                    new mdb.Select(document.getElementById(`flAdd-days_${ propertyId }-${ layout.screenIndex }`))
                     switcher(propertyId, property.defaultFrame)
 
                 } else if (["time", "duration"].includes(property.type)) {
-                    document.getElementById(`flAdd-${ propertyId }`).value = ""
+                    document.getElementById(`flAdd-${ propertyId }-${layout.screenIndex}`).value = ""
 
                 } else {
-                    document.getElementById(`flAdd-${ propertyId }`).value = ""
+                    document.getElementById(`flAdd-${ propertyId }-${layout.screenIndex}`).value = ""
                 }
             }
             for (const tag of this.tags) {
-                const tagElement = document.getElementById(`flAddTag-${ tag.name }`)
+                const tagElement = document.getElementById(`flAddTag-${ tag.name }-${ layout.screenIndex }`)
                 tagElement.setAttribute("data-fl-checked", "false")
                 tagElement.classList.remove("btn-outline-success")
                 tagElement.classList.add("btn-outline-primary")
             }
-            document.getElementById("flSearchKeywords").value = ""
+            document.getElementById(`flSearchKeywords-${ layout.screenIndex }`).value = ""
         }
 
         // Initialize and trigger MDB components for each property
@@ -384,13 +384,13 @@ export default class AddForm extends View
             const property = properties[key]
             let el
             if (property.type === "date") {
-                el = document.getElementById(`flAddOutline-${ key }`)
+                el = document.getElementById(`flAddOutline-${ key }-${ layout.screenIndex }`)
                 el.addEventListener("change", this.triggerScopeChange)
                 el.addEventListener("valueChanged.mdb.datepicker", this.triggerScopeChange)
-                el = document.getElementById(`flAdd-days_${ key }`)
+                el = document.getElementById(`flAdd-days_${ key }-${ layout.screenIndex }`)
                 el.addEventListener("change", this.triggerScopeChange)
             } else {
-                el = document.getElementById(`flAddOutline-${ key }`)
+                el = document.getElementById(`flAddOutline-${ key }-${ layout.screenIndex }`)
                 el.addEventListener("change", this.triggerScopeChange)
                 if (["time", "duration"].includes(property.type)) {
                     el.addEventListener("valueChanged.mdb.timepicker", this.triggerScopeChange)
@@ -403,7 +403,7 @@ export default class AddForm extends View
         // Initialize MDB components for each property
         for (const [propertyId, property] of Object.entries(properties)) {
             if (property.type === "select") {
-                const el = document.getElementById(`flAdd-${ propertyId }`)
+                const el = document.getElementById(`flAdd-${ propertyId }-${ layout.screenIndex }`)
                 new mdb.Select(el)
                 el.addEventListener("change", () => {
                     searchRefresh.classList.remove("btn-outline-primary")
@@ -412,26 +412,26 @@ export default class AddForm extends View
                 })
             }
             else if (property.type === "vector") {
-                const el = document.getElementById(`flAdd-${ propertyId }`)
+                const el = document.getElementById(`flAdd-${ propertyId }-${ layout.screenIndex }`)
                 new mdb.Select(el)
 
                 if (property.foreignIdentifier) {
                     const setLabel = (selected) => {
                         const match = Object.entries(property.modalities).find(([id]) => id === selected)
                         const label = match ? match[1].label : ""
-                        document.getElementById(`flAdd-${ property.foreignIdentifier }`).value = label
+                        document.getElementById(`flAdd-${ property.foreignIdentifier }-${ layout.screenIndex }`).value = label
                     }
                     el.addEventListener("change", () => {
                         searchRefresh.classList.remove("btn-outline-primary")
                         searchRefresh.classList.add("btn-primary")
                         btnAnimation.startAnimation()
-                        setLabel(document.getElementById(`flAdd-${ propertyId }`).value)
+                        setLabel(document.getElementById(`flAdd-${ propertyId }-${ layout.screenIndex }`).value)
                     })
                 }
             }
             else if (property.type === "autocomplete") {
                 const data = Object.values(property.modalities).map(x => x.label)
-                const el = document.getElementById(`flAddOutline-${ propertyId }`)
+                const el = document.getElementById(`flAddOutline-${ propertyId }-${ layout.screenIndex }`)
                 const dataFilter = (value) => {
                     return data.filter((item) => {
                         return item.toLowerCase().includes(value.toLowerCase())
@@ -445,7 +445,7 @@ export default class AddForm extends View
                 const setForeignKey = (value) => {
                     const matchs = Object.entries(property.modalities).find(([id, modality]) => (modality.label === value) ? id : null)
                     const id = matchs ? matchs[0] : ""
-                    const el = document.getElementById(`flAdd-${ property.foreignKey }`)
+                    const el = document.getElementById(`flAdd-${ property.foreignKey }-${ layout.screenIndex }`)
                     if (el) el.value = id
                 }
                 el.addEventListener("itemSelect.mdb.autocomplete", (e) => {
@@ -454,7 +454,7 @@ export default class AddForm extends View
                     btnAnimation.startAnimation()
                     setForeignKey(e.value)
                 })
-                document.getElementById(`flAdd-${ propertyId }`).addEventListener("change", (e) => {
+                document.getElementById(`flAdd-${ propertyId }-${ layout.screenIndex }`).addEventListener("change", (e) => {
                     searchRefresh.classList.remove("btn-outline-primary")
                     searchRefresh.classList.add("btn-primary")
                     btnAnimation.startAnimation()
@@ -462,13 +462,13 @@ export default class AddForm extends View
                 })
             }
             else if (property.type === "date") {
-                let el = document.getElementById(`flAddOutline-${ propertyId }`)
+                let el = document.getElementById(`flAddOutline-${ propertyId }-${ layout.screenIndex }`)
                 el.addEventListener("valueChanged.mdb.datepicker", () => {
                     searchRefresh.classList.remove("btn-outline-primary")
                     searchRefresh.classList.add("btn-primary")
                     btnAnimation.startAnimation()
                 })
-                document.getElementById(`flAdd-${ propertyId }`).addEventListener("change", () => {
+                document.getElementById(`flAdd-${ propertyId }-${ layout.screenIndex }`).addEventListener("change", () => {
                     searchRefresh.classList.remove("btn-outline-primary")
                     searchRefresh.classList.add("btn-primary")
                     btnAnimation.startAnimation()
@@ -486,7 +486,7 @@ export default class AddForm extends View
                 }
                 new mdb.Datepicker(el, datePickerOptions)
 
-                el = document.getElementById(`flAdd-days_${ propertyId }`)
+                el = document.getElementById(`flAdd-days_${ propertyId }-${ layout.screenIndex }`)
                 new mdb.Select(el)
                 el.addEventListener("change", () => {
                     searchRefresh.classList.remove("btn-outline-primary")
@@ -496,7 +496,7 @@ export default class AddForm extends View
                 
                 const frames = ["day", "week", "month", "year"]
                 frames.forEach(prefix => {
-                    const element = document.getElementById(`flAdd-${ prefix[0] }_${ propertyId }`)
+                    const element = document.getElementById(`flAdd-${ prefix[0] }_${ propertyId }-${ layout.screenIndex }`)
                     if (element) {
                         element.addEventListener("click", () => {
                             searchRefresh.classList.remove("btn-outline-primary")
@@ -510,7 +510,7 @@ export default class AddForm extends View
                 })
             }
             else if (["time", "duration"].includes(property.type)) {
-                const el = document.getElementById(`flAddOutline-${ propertyId }`)
+                const el = document.getElementById(`flAddOutline-${ propertyId }-${ layout.screenIndex }`)
                 el.addEventListener("valueChanged.mdb.timepicker", () => {
                     searchRefresh.classList.remove("btn-outline-primary")
                     searchRefresh.classList.add("btn-primary")
@@ -519,8 +519,8 @@ export default class AddForm extends View
                 new mdb.Timepicker(el,{ format24: true, increment: true }) 
             }
             else {
-                const el = document.getElementById(`flAddOutline-${ propertyId }`)
-                document.getElementById(`flAdd-${ propertyId }`).addEventListener("change", () => {
+                const el = document.getElementById(`flAddOutline-${ propertyId }-${ layout.screenIndex }`)
+                document.getElementById(`flAdd-${ propertyId }-${ layout.screenIndex }`).addEventListener("change", () => {
                     searchRefresh.classList.remove("btn-outline-primary")
                     searchRefresh.classList.add("btn-primary")
                     btnAnimation.startAnimation()
@@ -530,7 +530,7 @@ export default class AddForm extends View
         }
 
         // Handle form submission
-        const form = document.getElementById("flAddForm")
+        const form = document.getElementById(`flAddForm-${ layout.screenIndex }`)
         form?.addEventListener("submit", async (event) => {
             event.preventDefault()
 
@@ -549,7 +549,7 @@ export default class AddForm extends View
             // Build the request body
             let body = { status: "new" }
             for (const [propertyId, property] of Object.entries(properties)) {
-                const input = document.getElementById(`flAdd-${ propertyId }`)
+                const input = document.getElementById(`flAdd-${ propertyId }-${ layout.screenIndex }`)
                 if (property.type === "date") {
                     const val = input.value
                     body[propertyId] = val ? val.substring(6, 10) + "-" + val.substring(3, 5) + "-" + val.substring(0, 2) : ""
@@ -606,7 +606,7 @@ export default class AddForm extends View
         })
 
         for (const tag of this.tags) {
-            const tagElement = document.getElementById(`flAddTag-${ tag.name }`)
+            const tagElement = document.getElementById(`flAddTag-${ tag.name }-${ layout.screenIndex }`)
             tagElement.addEventListener("click", () => {
                 let checked = tagElement.getAttribute("data-fl-checked")
                 tagElement.setAttribute("data-fl-checked", (checked === "true") ? "false": "true")
@@ -620,7 +620,7 @@ export default class AddForm extends View
 
     extractFilters = () =>
     {
-        const { properties, columnLayout } = this, filters = []
+        const { properties, columnLayout, layout } = this, filters = []
         for (const propertyId of Object.keys(columnLayout ? columnLayout : properties)) {
             const property = properties[propertyId]
             const options = columnLayout ? columnLayout[propertyId] : {}
@@ -634,7 +634,7 @@ export default class AddForm extends View
                 if (property.type === "date") {
 
                     // Date interval depending on selected frame
-                    const value = document.getElementById(`flAdd-${ propertyId }`).value
+                    const value = document.getElementById(`flAdd-${ propertyId }-${ layout.screenIndex }`).value
                     if (value) {
                         if (property.frame === "week") {
                             const startOfWeek = moment(value, "DD/MM/YYYY").startOf("week").format("YYYY-MM-DD")
@@ -656,23 +656,23 @@ export default class AddForm extends View
                     }
 
                     // Days of week
-                    const dow = Array.from(document.getElementById(`flAdd-days_${ propertyId }`).selectedOptions)
+                    const dow = Array.from(document.getElementById(`flAdd-days_${ propertyId }-${ layout.screenIndex }`).selectedOptions)
                     if (dow.length > 0) {
                         filters.push(`${ property.dayOfWeekProperty }:in,${ dow.map(option => parseInt(option.value)).join(",") }`)
                     }
                 } else if (["select", "vector", "time"].includes(property.type)) {
-                    const value = document.getElementById(`flAdd-${ propertyId }`).value
+                    const value = document.getElementById(`flAdd-${ propertyId }-${ layout.screenIndex }`).value
                     if (value) {
                         filters.push(`${ propertyId }:${ value }`)
                     }
                 } else if (property.type === "duration") {
-                    const value = document.getElementById(`flAdd-${ propertyId }`).value
+                    const value = document.getElementById(`flAdd-${ propertyId }-${ layout.screenIndex }`).value
                     if (value) {
                         const [hours, minutes] = value.split(":").map(Number)
                         filters.push(`${ propertyId }:${ hours * 60 + minutes }`)
                     }
                 } else {
-                    const value = document.getElementById(`flAdd-${ propertyId }`).value
+                    const value = document.getElementById(`flAdd-${ propertyId }-${ layout.screenIndex }`).value
                     if (value) {
                         filters.push(`${ propertyId }:contains,${ value }`)
                     }
@@ -687,7 +687,7 @@ export default class AddForm extends View
 
     extractTags = () =>
     {
-        const tags = this.tags.filter(tag => document.getElementById(`flAddTag-${ tag.name }`).getAttribute("data-fl-checked") === "true").map(tag => tag.name)
+        const tags = this.tags.filter(tag => document.getElementById(`flAddTag-${ tag.name }-${ this.layout.screenIndex }`).getAttribute("data-fl-checked") === "true").map(tag => tag.name)
         return tags.join(",")
     }
 }

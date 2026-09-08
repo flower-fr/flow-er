@@ -36,7 +36,6 @@ class Modal extends View
     {
         const element = document.getElementById(`flModalToggle${ this.order }`)
         element.addEventListener("hidden.mdb.modal", () => {
-            this.controller.screenIndex--
         })
     }
 }

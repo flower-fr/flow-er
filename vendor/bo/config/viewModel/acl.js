@@ -7,7 +7,9 @@ const acl = {
     form_catalogue_default: ["user"],
     global_account_default: ["user"],
     group_account_default: ["user"],
+    group_account_suggestion: ["user"],
     list_account_default: ["user"],
+    list_account_suggestion: ["user"],
     navbar_flower: ["user"],
     search_account_default: ["user"],
 }

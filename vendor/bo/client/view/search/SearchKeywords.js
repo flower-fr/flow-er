@@ -42,7 +42,7 @@ export default class SearchKeywords extends View
         // Quick keyword search
 
         new mdb.Ripple(keywordsRefresh, { rippleColor: "primary" })
-        keywords.addEventListener("keydown", (e) => {
+        keywords?.addEventListener("keydown", (e) => {
             if (e.key === "Enter") {
                 e.preventDefault()
                 layout.refreshList({ where:`keywords:contains,${ keywords.value }`, tags: this.extractTags() })
@@ -53,7 +53,7 @@ export default class SearchKeywords extends View
                 keywordsRefresh.classList.add("btn-primary")
             }
         })
-        keywords.addEventListener("focusout", () => {
+        keywords?.addEventListener("focusout", () => {
             if (keywords.value === "") {
                 keywordsRefresh.classList.remove("btn-primary")
                 keywordsRefresh.classList.add("btn-outline-primary")
@@ -62,7 +62,7 @@ export default class SearchKeywords extends View
                 keywordsRefresh.classList.add("btn-primary")
             }
         })
-        keywordsRefresh.addEventListener("click", () => {
+        keywordsRefresh?.addEventListener("click", () => {
             layout.refreshList({ where:`keywords:contains,${ keywords.value }` })
             keywordsRefresh.classList.remove("btn-primary")
             keywordsRefresh.classList.add("btn-outline-primary")

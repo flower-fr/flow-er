@@ -2,7 +2,7 @@ import View from "../View.js"
 
 export default class ListCell extends View
 {
-    constructor({ controller, list, listRow, row, propertyId, params, property, orderProperty, translations}) {
+    constructor({ controller, list, listRow, row, propertyId, params, property, orderProperty, translations, layout }) {
         super({ controller })
         this.list = list
         this.listRow = listRow
@@ -12,13 +12,14 @@ export default class ListCell extends View
         this.property = property
         this.orderProperty = orderProperty
         this.translations = translations
+        this.layout = layout
     }
 
     initialize = async () => {}
 
     render = () => 
     {
-        const html = [], { row, propertyId, property, orderProperty, list, listRow } = this
+        const html = [], { row, propertyId, property, orderProperty, list, listRow, layout } = this
 
         // Compute class for cell depending on config rule
         const rowClass  = listRow.rowClass || this.consistencyClass()
@@ -99,7 +100,7 @@ export default class ListCell extends View
         }              
 
         else if (property.type === "tags") {
-            html.push(`<td class="listTagsName ${ rowClass   || ""}" id="listTagsName-${propertyId}-${row.id}">${row[propertyId]}</td>`)
+            html.push(`<td class="listTagsName ${ rowClass   || ""}" id="listTagsName-${propertyId}-${row.id}-${layout.screenIndex}">${row[propertyId]}</td>`)
         }
 
         else {

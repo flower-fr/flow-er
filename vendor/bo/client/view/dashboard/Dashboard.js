@@ -11,11 +11,12 @@ const DEFAULT_BACKGROUND = [
 
 export default class Dashboard extends View
 {
-    constructor({ controller, entity, view })
+    constructor({ controller, entity, view, layout })
     {
         super({ controller })
         this.entity = entity
         this.view = view
+        this.layout = layout
     }
 
     initialize = async () =>
@@ -42,7 +43,7 @@ export default class Dashboard extends View
         this.chartData = configs.map((config, index) => {
             const labels = (config.indicators ?? []).map(indicator => dateLabel(indicator.label))
             return {
-                id: `flDashboard-${index}`,
+                id: `flDashboard-${index}-${this.layout.screenIndex}`,
                 label: config.title,
                 labels,
                 data: datas[index],

@@ -17,7 +17,7 @@ export default class ListHeaderCell extends View
 
     render = () =>
     {
-        const html = [], { list, propertyId, property, orderProperty, orderDirection, translations } = this, grouping = list.grouping
+        const html = [], { list, propertyId, property, orderProperty, orderDirection, translations, layout } = this, grouping = list.grouping
         html.push(`
             <span class="fl-modal-list-header-label">
                 ${ property.label }
@@ -25,13 +25,13 @@ export default class ListHeaderCell extends View
                 ${ (propertyId === orderProperty) ? `
                     <i class="fas ${ (orderDirection === "asc") ? "fa-arrow-down-short-wide" : "fa-arrow-down-wide-short" }"></i>
                     ${ (grouping && ["date", "datetime"].includes(property.type)) ? `
-                        <a id="flListHeaderAM-${ propertyId }" href="#!">
+                        <a id="flListHeaderAM-${ propertyId }-${ layout.screenIndex }" href="#!">
                             <span class="${ (grouping !== "month") ? "text-primary" : "text-info" } title="${ translations["Month"] }">/${ translations["Month"].substr(0, 1) }</span>
                         </a>
-                        <a id="flListHeaderAW-${ propertyId }" href="#!">
+                        <a id="flListHeaderAW-${ propertyId }-${ layout.screenIndex }" href="#!">
                             <span class="${ (grouping !== "week") ? "text-primary" : "text-info" } title="${ translations["Week"] }">/${ translations["Week"].substr(0, 1) }</span>
                         </a>
-                        <a id="flListHeaderAD-${ propertyId }" href="#!">
+                        <a id="flListHeaderAD-${ propertyId }-${ layout.screenIndex }" href="#!">
                             <span class="${ (grouping !== "day") ? "text-primary" : "text-info" } title="${ translations["Day"] }">/${ translations["Day"].substr(0, 1) }</span>
                         </a>
                         </span>` : "" }` : "" }
@@ -43,7 +43,7 @@ export default class ListHeaderCell extends View
     trigger = () => {
         const { list, propertyId, layout } = this
 
-        let el = document.getElementById(`flListOrderButton-${propertyId}`)
+        let el = document.getElementById(`flListOrderButton-${propertyId}-${ layout.screenIndex }`)
         if (el) {
             el.onclick = () => {
                 const direction = (propertyId === this.orderProperty && this.orderDirection === "asc") ? "desc" : "asc"
@@ -51,27 +51,27 @@ export default class ListHeaderCell extends View
             }
         }
 
-        el = document.getElementById(`flListHeaderAM-${ propertyId }`)
+        el = document.getElementById(`flListHeaderAM-${ propertyId }-${ layout.screenIndex }`)
         if (el) {
             el.onclick = () => {
                 list.grouping = "month"
-                document.getElementById("flList").innerHTML = list.render()
+                document.getElementById(`flList-${ layout.screenIndex }`).innerHTML = list.render()
                 list.trigger()
             }
         }
-        el = document.getElementById(`flListHeaderAW-${ propertyId }`)
+        el = document.getElementById(`flListHeaderAW-${ propertyId }-${ layout.screenIndex }`)
         if (el) {
             el.onclick = () => {
                 list.grouping = "week"
-                document.getElementById("flList").innerHTML = list.render()
+                document.getElementById(`flList-${ layout.screenIndex }`).innerHTML = list.render()
                 list.trigger()
             }
         }
-        el = document.getElementById(`flListHeaderAD-${ propertyId }`)
+        el = document.getElementById(`flListHeaderAD-${ propertyId }-${ layout.screenIndex }`)
         if (el) {
             el.onclick = () => {
                 list.grouping = "day"
-                document.getElementById("flList").innerHTML = list.render()
+                document.getElementById(`flList-${ layout.screenIndex }`).innerHTML = list.render()
                 list.trigger()
             }
         }

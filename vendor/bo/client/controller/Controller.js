@@ -6,6 +6,7 @@ export default class Controller
     {
         this.url = url
         this.modal = new Modal({ controller: this, order: 1 })
+        this.screenIndex = 0
     }
 
     render = (object) => 
@@ -44,6 +45,11 @@ export default class Controller
         html.push(`
             <div id="flScreen2" class="screen hidden">
                 <button type="button" class="btn-close ripple-surface back-button" id="flScreen2BackButton" aria-label="Close"></button>
+                <div id="flScreen2Header" class="mb-3">
+                    <h4 id="flScreen2Title"></h4>
+                    <p id="flScreen2Description" class="text-muted"></p>
+                    <hr>
+                </div>
                 <div id="flScreen2Content"></div>
             </div>`)
         html.push(this.modal.render())
@@ -56,11 +62,17 @@ export default class Controller
         this.modal.trigger()
     }
 
-    stack = async (object) =>
+    stack = async (object, { title, description }) =>
     {
         console.log("in stack")
         await object.initialize()
         const content = object.render()
+
+        // Update screen 2 title and description
+        document.getElementById("flScreen2Title").textContent = title
+        document.getElementById("flScreen2Description").textContent = description
+        document.getElementById("flScreen2Header").style.display = (title || description) ? "block" : "none"
+
         // Hide screen 1 et show screen 2
         document.getElementById("flScreen2Content").innerHTML = content
         document.getElementById("flScreen1").classList.add("hidden")
@@ -98,6 +110,11 @@ export default class Controller
         document.getElementById("flScreen1").classList.remove("hidden")
 
         history.pushState({ screen: "index" }, "", this.url)
+    }
+
+    nextScreenIndex = () => {
+        this.screenIndex++
+        return this.screenIndex
     }
 
     showModal = async (object, title) =>

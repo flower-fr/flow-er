@@ -8,7 +8,21 @@ const action = async ({ req }, { context, sql, logger }) =>
     const entity = assert.notEmpty(req.params, "entity")
     const view = req.query.view || "default"
     const locale = req.query.locale || context.user.locale
+
+    // Handle special case for ACL
+    if (action === "acl") {
+        // Filter ACL based on user roles
+        const userRoles = context.user.roles || [context.user.role]
+        const filteredAcl = {}
+        for (const [key, roles] of Object.entries(context.config.acl)) {
+            if (roles.includes("user") || roles.some(role => userRoles.includes(role))) {
+                filteredAcl[key] = roles
+            }
+        }
+        return [200, filteredAcl, "application/json"]
+    }
     const config = context.config[`viewModel_${ action }_${ entity }_${ view }`]
+    if (!config) return [200, {}, "application/json"]
 
     // Check has role to acces this action
     const roles = context.user.roles || [context.user.role]
@@ -20,23 +34,8 @@ const action = async ({ req }, { context, sql, logger }) =>
         }
     }
 
-    // Replace tokens in the where clauses with actual dates
-    for (const value of Object.values(config ?? {})) {
-        if (value?.where) {
-            for (const [k, v] of Object.entries(value.where)) {
-                if (Array.isArray(v)) {
-                    value.where[k] = v.map(token => {
-                        switch (token) {
-                        case "today":          return moment().format("YYYY-MM-DD")
-                        case "start_of_month": return moment().startOf("month").format("YYYY-MM-DD")
-                        case "start_of_year":  return moment().startOf("year").format("YYYY-MM-DD")
-                        default:               return token
-                        }
-                    })
-                }
-            }
-        }
-    }
+    const EXCLUDED_KEYS = ["translations", "label"]
+    resolveTokensDeep(config, EXCLUDED_KEYS)
 
     logger && logger.debug(util.inspect(config, { depth: null, colors: true }))
 
@@ -112,6 +111,49 @@ const action = async ({ req }, { context, sql, logger }) =>
     }
     
     return [200, config, "application/json"]
+}
+
+const resolveToken = (token) => {
+    if (typeof token !== "string") return token
+
+    const relativeMatch = /^today([+-]\d+)?$/.exec(token)
+    if (relativeMatch) {
+        const offset = relativeMatch[1] ? parseInt(relativeMatch[1], 10) : 0
+        return moment().add(offset, "days").format("YYYY-MM-DD")
+    }
+
+    switch (token) {
+    case "start_of_month": return moment().startOf("month").format("YYYY-MM-DD")
+    case "start_of_year":  return moment().startOf("year").format("YYYY-MM-DD")
+    case "end_of_month":   return moment().endOf("month").format("YYYY-MM-DD")
+    case "end_of_year":    return moment().endOf("year").format("YYYY-MM-DD")
+    default:               return token
+    }
+}
+
+/**
+ * Recursively resolves tokens in an object, excluding specified keys.
+ * @param {Object} node - The object to process.
+ * @param {Array} excludeKeys - Keys to exclude from token resolution.
+ * @returns {Object} - The processed object with tokens resolved.
+ */
+const resolveTokensDeep = (node, excludeKeys = []) => {
+    if (typeof node === "string") return resolveToken(node)
+
+    if (Array.isArray(node)) {
+        node.forEach((item, i) => { node[i] = resolveTokensDeep(item, excludeKeys) })
+        return node
+    }
+
+    if (node && typeof node === "object") {
+        for (const key of Object.keys(node)) {
+            if (excludeKeys.includes(key)) continue
+            node[key] = resolveTokensDeep(node[key], excludeKeys)
+        }
+        return node
+    }
+
+    return node
 }
 
 module.exports = action

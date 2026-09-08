@@ -83,7 +83,7 @@ export default class List extends View
     groupRows = () =>
     {
         let i = 0
-        const { rows, properties, orderProperty, translations, grouping, params, eventConfig } = this
+        const { rows, properties, orderProperty, translations, grouping, params, eventConfig, layout } = this
         this.groups = [], this.listRows = []
         let currentPrefix, currentGroup, identifier = 0, first = true
         for (const row of rows) {
@@ -112,10 +112,10 @@ export default class List extends View
             if (!row[orderProperty] && first || pred()) {
                 first = false
                 currentPrefix = row[orderProperty]
-                currentGroup = [new ListGroup({ controller: this.controller, identifier: identifier++, list: this, value: row[orderProperty], size: Object.entries(row).length, translations })]
+                currentGroup = [new ListGroup({ controller: this.controller, identifier: identifier++, list: this, value: row[orderProperty], size: Object.entries(row).length, translations, layout })]
                 this.groups.push(currentGroup)
             }
-            const listRow = new ListRow({ i: i++, controller: this.controller, list: this, row, filledColumns: this.filledColumns, params, properties, eventConfig, orderProperty, translations })
+            const listRow = new ListRow({ i: i++, controller: this.controller, list: this, row, filledColumns: this.filledColumns, params, properties, eventConfig, orderProperty, translations, layout })
             currentGroup.push(listRow)
             this.listRows.push(listRow)
         }
@@ -141,7 +141,7 @@ export default class List extends View
         </style>
         <div class="table-responsive">
             <div class="col-md-12">
-                <table class="table table-sm table-hover" id="flListTable">
+                <table class="table table-sm table-hover" id="flListTable-${ this.layout.screenIndex }">
                     <thead class="fl-list">
                         ${ this.listHeader.render() }
                     </thead>
@@ -162,7 +162,7 @@ export default class List extends View
                         <tr class="listRow">
                             <td>
                                 <div class="text-center">
-                                    <input type="checkbox" id="flListCheckAllDown" data-toggle="tooltip" data-placement="top" title="${ translations["Check all"] }"></input>
+                                    <input type="checkbox" id="flListCheckAllDown-${ this.layout.screenIndex }" data-toggle="tooltip" data-placement="top" title="${ translations["Check all"] }"></input>
                                 </div>
                             </td>
 
@@ -190,12 +190,12 @@ export default class List extends View
     trigger = () =>
     {
         const { controller, grouping, entity, view, group, layout } = this
-        const tableEl = document.getElementById("flListTable")
-        const cardEl = document.getElementById("flCard")
-        const dashboardEl = document.getElementById("flDashboard")
-        const globalEl = document.getElementById("flGlobal")
-        const groupEl = document.getElementById("flGroup")
-        const addEl = document.getElementById("flAdd")
+        const tableEl = document.getElementById(`flListTable-${ layout.screenIndex }`)
+        const cardEl = document.getElementById(`flCard-${ layout.screenIndex }`)
+        const dashboardEl = document.getElementById(`flDashboard-${ layout.screenIndex }`)
+        const globalEl = document.getElementById(`flGlobal-${ layout.screenIndex }`)
+        const groupEl = document.getElementById(`flGroup-${ layout.screenIndex }`)
+        const addEl = document.getElementById(`flAdd-${ layout.screenIndex }`)
 
         if (grouping) {
             let label, dow
@@ -216,7 +216,7 @@ export default class List extends View
                 break
             }
 
-            const targetRow = document.getElementById(`flListRow-${ label }`)
+            const targetRow = document.getElementById(`flListRow-${ label }-${ layout.screenIndex }`)
             targetRow?.scrollIntoView({
                 behavior: "smooth",
                 block: "center"
@@ -231,70 +231,74 @@ export default class List extends View
         // Extend the displayed list
 
         $(".fl-list-more").click(function () {
-            $("#flListLimitHidden").val(this.data.limit * 2)
+            $(`#flListLimitHidden-${ layout.screenIndex }`).val(this.data.limit * 2)
             // triggerList({ context, entity, view })
         })
 
         layout.showMainMode()
 
         // Enable card action
-        this.rows.forEach(row => {
-            document.getElementById(`flListDetail-${row.id}`)?.addEventListener("click", async (el) => {
+        if (this.layout.enabledActions.includes("card")) {
+            this.rows.forEach(row => {
+                document.getElementById(`flListDetail-${row.id}-${ layout.screenIndex }`)?.addEventListener("click", async (el) => {
 
-                // document.getElementById("flMainView").classList.remove("col-md-9")
-                // document.getElementById("flMainView").classList.add("col-md-6")
-                // document.getElementById("flRightColumn").classList.remove("col-md-3")
-                // document.getElementById("flRightColumn").classList.add("col-md-6")
-                
-                if (!cardEl) return
-                const tr = el.target.closest("tr")
+                    // document.getElementById("flMainView").classList.remove("col-md-9")
+                    // document.getElementById("flMainView").classList.add("col-md-6")
+                    // document.getElementById("flRightColumn").classList.remove("col-md-3")
+                    // document.getElementById("flRightColumn").classList.add("col-md-6")
+                    
+                    if (!cardEl) return
+                    const tr = el.target.closest("tr")
 
-                // If the card is already open for this row, close it
-                if (cardEl.dataset.openId === String(row.id)) {
-                    cardEl.style.display = "none"
-                    cardEl.innerHTML = ""
-                    cardEl.dataset.openId = ""
-                    tr?.classList.remove("table-active", "fw-bold")
-                    tableEl.classList.add("table-hover")
-                    return
-                }
+                    // If the card is already open for this row, close it
+                    if (cardEl.dataset.openId === String(row.id)) {
+                        if (layout.list.checkedIds.size > 0) layout.showGroupMode()
+                        else layout.showMainMode()
 
-                // Handle the display of others side elements
-                layout.showCardMode()
+                        cardEl.innerHTML = ""
+                        cardEl.dataset.openId = ""
 
-                // Handle the highlighting of the row
-                document.querySelectorAll("tr.table-active").forEach(r => r.classList.remove("table-active", "fw-bold"))
-                tr?.classList.add("table-active", "fw-bold")
-                tableEl.classList.remove("table-hover")
+                        tr?.classList.remove("table-active", "fw-bold")
+                        tableEl?.classList.add("table-hover")
+                        return
+                    }
 
-                // Render and display the card for this row
-                const card = new Card({ controller, entity, id: row.id, view, layout })
-                await card.initialize()
-                cardEl.style.display = "block"
-                cardEl.dataset.openId = String(row.id)
-                cardEl.innerHTML = await card.render()
-                card.trigger()
+                    // Handle the display of others side elements
+                    layout.showCardMode()
 
-                const animate = new mdb.Animate(cardEl, { animation: "pulse", animationStart: "onLoad" })
-                animate.init()
+                    // Handle the highlighting of the row
+                    document.querySelectorAll("tr.table-active").forEach(r => r.classList.remove("table-active", "fw-bold"))
+                    tr?.classList.add("table-active", "fw-bold")
+                    tableEl.classList.remove("table-hover")
+
+                    // Render and display the card for this row
+                    const card = new Card({ controller, entity, id: row.id, view, layout })
+                    await card.initialize()
+                    cardEl.dataset.openId = String(row.id)
+                    cardEl.innerHTML = await card.render()
+                    card.trigger()
+
+                    const animate = new mdb.Animate(cardEl, { animation: "pulse", animationStart: "onLoad" })
+                    animate.init()
+                })
             })
-        })
+        }
 
         // Trigger checking rows for group action
         this.listRows.forEach(listRow => {
             const i = listRow.i
-            const row = document.getElementById(`flListCheck-${ i }`)
+            const row = document.getElementById(`flListCheck-${ i }-${ layout.screenIndex }`)
             const id = listRow.row.id
             row.onclick = (e) => {
                 if (e.shiftKey) {
                     const max = i, state = row.checked
                     let min = 0
                     this.listRows.forEach(lr => {
-                        const i = lr.i, r = document.getElementById(`flListCheck-${ i }`)
+                        const i = lr.i, r = document.getElementById(`flListCheck-${ i }-${ layout.screenIndex }`)
                         if (r.checked && i < max) min = i
                     })
                     this.listRows.forEach(lr => {
-                        const i = lr.i, r = document.getElementById(`flListCheck-${ i }`)
+                        const i = lr.i, r = document.getElementById(`flListCheck-${ i }-${ layout.screenIndex }`)
                         if (i >= min && i <= max) r.checked = state
                         this.toggleChecked(lr.row.id, r.checked)
                     })
@@ -304,13 +308,16 @@ export default class List extends View
 
                 const checked = this.checkedIds.size, checkedRows = []
                 this.listRows.forEach(lr => {
-                    const i = lr.i, r = document.getElementById(`flListCheck-${ i }`)
+                    const i = lr.i, r = document.getElementById(`flListCheck-${ i }-${ layout.screenIndex }`)
                     if (r.checked) {
                         checkedRows.push(lr.row)
                     }
                 })
 
-                if (checked > 0) {
+                if (cardEl.dataset.openId) {
+                    layout.showCardMode()
+                }
+                else if (checked > 0) {
                     layout.showGroupMode()
                 }
                 else {
@@ -325,32 +332,40 @@ export default class List extends View
         {
             const checkedRows = []
             this.listRows.forEach(lr => {
-                const i = lr.i, r = document.getElementById(`flListCheck-${ i }`)
+                const i = lr.i, r = document.getElementById(`flListCheck-${ i }-${ layout.screenIndex }`)
                 r.checked = state
                 this.toggleChecked(lr.row.id, state)
             })
 
             if (state)
             {
-                layout.showGroupMode()
+                if (cardEl.dataset.openId) layout.showCardMode()
+                else layout.showGroupMode()
                 group.eventRowChecked(this.summable, this.listRows.map(lr => lr.row))
             }
             else {
-                layout.showMainMode()
+                if (cardEl.dataset.openId) layout.showCardMode()
+                else layout.showMainMode()
                 group.eventRowChecked(this.summable, [])
             }
         }
 
-        const checkAllUp = document.getElementById("flListCheckAllUp")
-        const checkAllDown = document.getElementById("flListCheckAllDown")
-        document.getElementById("flListCheckAllUp").onclick = () => {
+        const checkAllUp = document.getElementById(`flListCheckAllUp-${ layout.screenIndex }`)
+        const checkAllDown = document.getElementById(`flListCheckAllDown-${ layout.screenIndex }`)
+        document.getElementById(`flListCheckAllUp-${ layout.screenIndex }`).onclick = () => {
             checkAllDown.checked = checkAllUp.checked
             checkAll(checkAllUp.checked)
         }
 
-        document.getElementById("flListCheckAllDown").onclick = () => {
+        document.getElementById(`flListCheckAllDown-${ layout.screenIndex }`).onclick = () => {
             checkAllUp.checked = checkAllDown.checked
             checkAll(checkAllDown.checked)
+        }
+
+        if (this.params?.checkAll) {
+            checkAllUp.checked = true
+            checkAllDown.checked = true
+            checkAll(true)
         }
     }
 

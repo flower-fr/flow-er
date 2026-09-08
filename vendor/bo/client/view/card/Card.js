@@ -18,7 +18,7 @@ export default class Card extends View
         let response = await fetch(`/bo/card/${ this.entity }?view=${ this.view }`)
         const { properties, layout, translations, title } = await response.json()
         this.properties = properties
-        this.layout = layout ? layout : [{ properties }]
+        this.cardLayout = layout ? layout : [{ properties }]
         this.translations = translations
         this.title = title?.label ?? ""
 
@@ -30,23 +30,23 @@ export default class Card extends View
 
     render = () => 
     {
-        const { layout, properties, data } = this
+        const { layout, cardLayout, properties, data } = this
 
         const html = []
 
         html.push(`
             <div class="d-flex justify-content-between mt-2">
                 <h5>${ this.title }</h5>
-                <button type="button" class="btn-close" id="flCardCloseButton" aria-label="Close"></button>
+                <button type="button" class="btn-close" id="flCardCloseButton-${layout.screenIndex}" aria-label="Close"></button>
             </div>
         `)
 
         html.push(`
-        <div class="my-3 mt-4" id="flCardContent">
+        <div class="my-3 mt-4" id="flCardContent-${layout.screenIndex}">
             <form class="row g-4">`)
 
         const blocs = []
-        for (const bloc of layout) {
+        for (const bloc of cardLayout) {
 
             const blocHtml = []
 
@@ -81,7 +81,7 @@ export default class Card extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline fl-form-outline" data-mdb-input-init>
-                            <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ value }"  disabled />
+                            <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }-${layout.screenIndex}" value="${ value }"  disabled />
                             <label class="form-label">${ label }</label>
                         </div>
                     </div>`
@@ -95,7 +95,7 @@ export default class Card extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline fl-form-outline" data-mdb-input-init>
-                            <input type="password" class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ value }" disabled />
+                            <input type="password" class="form-control form-control-sm" id="${ this.id }-${ propertyId }-${layout.screenIndex}" value="${ value }" disabled />
                             <label class="form-label">${ label }</label>
                         </div>
                     </div>`
@@ -123,7 +123,7 @@ export default class Card extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline fl-form-outline" data-mdb-input-init>
-                            <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ value }" disabled />
+                            <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }-${layout.screenIndex}" value="${ value }" disabled />
                             <label class="form-label">${ label }</label>
                         </div>
                     </div>`
@@ -137,7 +137,7 @@ export default class Card extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline fl-date-outline" data-mdb-input-init>
-                            <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ value ? moment(value).format("DD/MM/YYYY") : "" }"  disabled />
+                            <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }-${layout.screenIndex}" value="${ value ? moment(value).format("DD/MM/YYYY") : "" }"  disabled />
                             <label class="form-label">${ label }</label>
                         </div>
                     </div>`
@@ -151,7 +151,7 @@ export default class Card extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline fl-form-outline" data-mdb-input-init>
-                            <select class="form-control form-control-sm" id="${ this.id }-${ propertyId }" disabled>
+                            <select class="form-control form-control-sm" id="${ this.id }-${ propertyId }-${ layout.screenIndex }" disabled>
                                 <option />
                                 ${() => { for (let year = 1950; year < new Date.getFullYear(); year++) `<option value="${ year }" ${ value === year ? "selected=\"selected\"" : ""}>${ year }</option>` }}
                             </select>
@@ -168,7 +168,7 @@ export default class Card extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline fl-time-outline" data-mdb-input-init>
-                            <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ value }" disabled />
+                            <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }-${layout.screenIndex}" value="${ value }" disabled />
                             <label class="form-label">${ label }</label>
                         </div>
                     </div>`
@@ -182,7 +182,7 @@ export default class Card extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline fl-form-outline" data-mdb-input-init>
-                            <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ Math.floor(value / 60) }h${ (x => x ? x : "")(value % 60) }"  disabled />
+                            <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }-${layout.screenIndex}" value="${ Math.floor(value / 60) }h${ (x => x ? x : "")(value % 60) }"  disabled />
                             <label class="form-label">${ label }</label>
                         </div>
                     </div>`
@@ -196,7 +196,7 @@ export default class Card extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline fl-form-outline" data-mdb-input-init>
-                            <input type="number" class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ value }" disabled />
+                            <input type="number" class="form-control form-control-sm" id="${ this.id }-${ propertyId }-${layout.screenIndex}" value="${ value }" disabled />
                             <label class="form-label">${label}</label>
                         </div>
                     </div>`
@@ -210,7 +210,7 @@ export default class Card extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline fl-form-outline" data-mdb-input-init>
-                            <input type="number" class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ value }" disabled />
+                            <input type="number" class="form-control form-control-sm" id="${ this.id }-${ propertyId }-${layout.screenIndex}" value="${ value }" disabled />
                             <label class="form-label">${ label }</label>
                         </div>
                     </div>`
@@ -224,8 +224,8 @@ export default class Card extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline fl-form-outline" data-mdb-input-init>
-                            <textarea class="form-control form-control-sm" id="${ this.id }-${ propertyId }" rows="5" disabled>${ value }</textarea>
-                            <label class="form-label" for="${ this.id }-${ propertyId }">${ label }</label>
+                            <textarea class="form-control form-control-sm" id="${ this.id }-${ propertyId }-${layout.screenIndex}" rows="5" disabled>${ value }</textarea>
+                            <label class="form-label" for="${ this.id }-${ propertyId }-${layout.screenIndex}">${ label }</label>
                         </div>
                     </div>`
                     )
@@ -246,8 +246,8 @@ export default class Card extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline fl-form-outline" data-mdb-input-init>
-                            <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ values.join(",") }" disabled />
-                            <label class="form-label" for="${ this.id }-${ propertyId }">${ label }</label>
+                            <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }-${layout.screenIndex}" value="${ values.join(",") }" disabled />
+                            <label class="form-label" for="${ this.id }-${ propertyId }-${layout.screenIndex}">${ label }</label>
                         </div>
                     </div>`)
                 }
@@ -259,7 +259,7 @@ export default class Card extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline fl-form-outline mb-2">
-                            <textarea class="form-control form-control-sm" id="${ this.id }-${ propertyId }" disabled></textarea>
+                            <textarea class="form-control form-control-sm" id="${ this.id }-${ propertyId }-${layout.screenIndex}" disabled></textarea>
                             <label class="form-label">${ label }</label>
                         </div>
                     </div>
@@ -285,7 +285,7 @@ export default class Card extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline fl-form-outline" data-mdb-input-init>
-                            <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }" value="${ value }" disabled />
+                            <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }-${layout.screenIndex}" value="${ value }" disabled />
                             <label class="form-label select-label">${ label }</label>
                         </div>
                     </div>`
@@ -299,7 +299,7 @@ export default class Card extends View
     
         html.push(`
                 <div class="col-12">
-                    <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-update-button" id="flCardUpdateButton" title="${ this.translations["Update"] }">
+                    <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-update-button" id="flCardUpdateButton-${layout.screenIndex}" title="${ this.translations["Update"] }">
                         <i class="fas fa-pen"></i>
                     </button>
                 </div>`)
@@ -314,11 +314,11 @@ export default class Card extends View
     getForm = () =>
     {
         const { controller, entity, id, view, layout } = this
-        controller.showModal(new Form({ controller, entity, view, id, onSuccess: async () => {
+        controller.showModal(new Form({ controller, entity, view, id, layout, onSuccess: async () => {
             layout.refreshList({})
 
             // Refresh the card
-            const cardEl = document.getElementById("flCard")
+            const cardEl = document.getElementById(`flCard-${layout.screenIndex}`)
             if (cardEl) {
                 await this.initialize()
                 cardEl.innerHTML = this.render()
@@ -329,6 +329,8 @@ export default class Card extends View
 
     trigger = () =>
     {
+        const { layout } = this
+
         document.querySelectorAll(".form-outline").forEach(el => {
             const input = el.querySelector("input, textarea, select")
             const label = el.querySelector("label")
@@ -336,38 +338,30 @@ export default class Card extends View
         })
 
         // Update button
-        document.getElementById("flCardUpdateButton").onclick = () => {
+        document.getElementById(`flCardUpdateButton-${layout.screenIndex}`).onclick = () => {
             this.getForm()
         }
 
         // Close button
-        document.getElementById("flCardCloseButton").onclick = () => {
+        document.getElementById(`flCardCloseButton-${layout.screenIndex}`).onclick = () => {
 
             // document.getElementById("flMainView").classList.remove("col-md-6")
             // document.getElementById("flMainView").classList.add("col-md-9")
             // document.getElementById("flRightColumn").classList.remove("col-md-6")
             // document.getElementById("flRightColumn").classList.add("col-md-3")
 
-            const cardEl = document.getElementById("flCard")
-            const tableEl = document.getElementById("flListTable")
-            const groupEl = document.getElementById("flGroup")
-            const dashboardEl = document.getElementById("flDashboard")
-            const addEl = document.getElementById("flAdd")
-            const globalEl = document.getElementById("flGlobal")
+            const cardEl = document.getElementById(`flCard-${layout.screenIndex}`)
+            const tableEl = document.getElementById(`flListTable-${layout.screenIndex}`)
+
+            if (layout.list.checkedIds.size > 0) layout.showGroupMode()
+            else layout.showMainMode()
 
             if (cardEl) {
-                cardEl.style.display = "none"
                 cardEl.innerHTML = ""
                 cardEl.dataset.openId = ""
             }
             document.querySelectorAll("tr.table-active").forEach(r => r.classList.remove("table-active", "fw-bold"))
             tableEl?.classList.add("table-hover")
-
-            if (addEl && (!groupEl || groupEl.style.display === "none")) {
-                dashboardEl.style.display = "block"
-                addEl.style.display = "block"
-                globalEl.style.display = "block"
-            }
         }
     }
 }

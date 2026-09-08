@@ -3,7 +3,7 @@ import ListCell from "./ListCell.js"
 
 export default class ListRow extends View
 {
-    constructor({ i, controller, list, row, filledColumns, params, properties, orderProperty, summable, translations }) {
+    constructor({ i, controller, list, row, filledColumns, params, properties, orderProperty, summable, translations, layout }) {
         super({ controller })
         this.list = list
         this.i = i
@@ -13,6 +13,7 @@ export default class ListRow extends View
         this.orderProperty = orderProperty
         this.summable = summable
         this.translations = translations
+        this.layout = layout
         this.listCells = []
 
         this.listRowColumns = []
@@ -38,7 +39,7 @@ export default class ListRow extends View
 
     render = () =>
     {
-        const html = [], i = this.i, { row, properties, translations } = this
+        const html = [], i = this.i, { row, properties, translations, layout } = this
         let rowClass
         for (const [propertyId, property] of Object.entries(properties)) {
             if (property.type === "select") {
@@ -51,22 +52,28 @@ export default class ListRow extends View
         <tr class="listRow">
             <td>
                 <div class="text-center">
-                    <input type="checkbox" id="flListCheck-${ i }"></input>
+                    <input type="checkbox" id="flListCheck-${ i }-${ layout.screenIndex }"></input>
                 </div>
             </td>
 
-            <td class="text-center">
+            <td class="text-center">`)
+
+        if (this.list.layout.enabledActions.includes("card")) {
+            html.push(`
                 <a 
                     href="#!"
                     class="text-primary"
-                    id="flListDetail-${ row.id }"
+                    id="flListDetail-${ row.id }-${ layout.screenIndex }"
                     title="${ translations["Detail"] }"
                 >
                     <i class="fas fa-search"></i>
-                </a>
+                </a>`)
+        }
+
+        html.push(`
                 <a
                     href="#!"
-                    id="flListTooltip-${ row.id }"
+                    id="flListTooltip-${ row.id }-${ layout.screenIndex }"
                 >
                     <small><i class="fas fa-circle-exclamation me-md-2"></i></small>
                 </a>

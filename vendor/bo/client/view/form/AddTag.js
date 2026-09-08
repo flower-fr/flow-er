@@ -2,10 +2,11 @@ import View from "../View.js"
 
 export default class AddTag extends View
 {
-    constructor({ controller, name })
+    constructor({ controller, name, layout })
     {
         super({ controller })
         this.name = name
+        this.layout = layout
     }
 
     render = () =>
@@ -15,7 +16,7 @@ export default class AddTag extends View
         html.push(`
             <div
                 class="chip chip-outline btn-outline-primary"
-                id="flAddTag-${ this.name }"
+                id="flAddTag-${ this.name }-${ this.layout.screenIndex }"
                 data-fl-checked="false"
                 data-mdb-chip-init
                 data-mdb-ripple-color="dark"

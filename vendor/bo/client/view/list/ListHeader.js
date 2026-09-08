@@ -27,13 +27,13 @@ export default class ListHeader extends View
 
     render = () =>
     {
-        const html = [], { properties, orderProperty, translations, headerCells } = this
+        const html = [], { properties, orderProperty, translations, headerCells, layout } = this
 
         html.push(`
             <th>
                 <div class="text-center">
                     <div class="text-center">
-                        <input type="checkbox" id="flListCheckAllUp" data-toggle="tooltip" data-placement="top" title="${ translations["Check all"] }"></input>
+                        <input type="checkbox" id="flListCheckAllUp-${ layout.screenIndex }" data-toggle="tooltip" data-placement="top" title="${ translations["Check all"] }"></input>
                     </div>
                 </div>
             </th>
@@ -56,7 +56,7 @@ export default class ListHeader extends View
                 if (this.filledColumns.includes(propertyId)) {
                     html.push(`
                     <th ${ (property.type === "number") ? "class=\"text-end\"" : "" }>
-                        ${ (property.anchor) ? `<button type="button" class="btn btn-link" id="flListOrderButton-${propertyId}" data-mdb-ripple-init data-mdb-ripple-color="dark">` : "<div>" }
+                        ${ (property.anchor) ? `<button type="button" class="btn btn-link" id="flListOrderButton-${propertyId}-${ layout.screenIndex }" data-mdb-ripple-init data-mdb-ripple-color="dark">` : "<div>" }
                             ${ headerCells[propertyId].render() }
                         ${ (property.anchor) ? "</button>" : "</div>" }
                     </th>`)

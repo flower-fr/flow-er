@@ -19,6 +19,7 @@ export default class Global extends View
     initialize = async () =>
     {
         const response = await fetch(`/bo/global/${ this.entity }?view=${ this.view }`)
+        if (!response.ok) return
         const { actions, translations } = await response.json()
         this.actions = actions
         this.translations = translations
@@ -76,7 +77,7 @@ export default class Global extends View
 
     trigger = () =>
     {
-        const { controller, entity, view } = this
+        const { controller, entity, view, layout } = this
         for (const [actionId, action] of Object.entries(this.actions)) {
             // Handle file input change
             if (action.type && action.type === "import") {
@@ -91,7 +92,7 @@ export default class Global extends View
                 if (action.type && action.type !== "modal") return
                 controller.screenIndex = 1
                 controller.stackView = []
-                controller.stack(new Form({ controller: action.controller, entity: action.entity, view: action.view }), action.label, true)
+                controller.stack(new Form({ controller: action.controller, entity: action.entity, view: action.view, layout }), action.label, true)
             })
         }
 

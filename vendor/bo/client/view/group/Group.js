@@ -15,6 +15,7 @@ export default class Group extends View
         this.layout = layout
         this.locale = locale
         this.checkedRows = []
+        this.tags = []
     }
 
     initialize = async () =>
@@ -35,7 +36,7 @@ export default class Group extends View
 
     render = () =>
     {
-        const { translations } = this
+        const { translations, layout } = this
         const html = []
         html.push(`
                 <div class="card-header text-center">
@@ -53,7 +54,7 @@ export default class Group extends View
             const action = tab.post ?? tab.clientAction
 
             html.push(`
-                        <form id="flGroupForm-${ tabId }">`)
+                        <form id="flGroupForm-${ tabId }-${ layout.screenIndex }">`)
 
             for (const propertyId of (tab.form) ? tab.form : []) {
                 const property = this.properties[propertyId]
@@ -64,8 +65,8 @@ export default class Group extends View
                                 <div class="input-group-text">
                                     <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
                                 </div>
-                                <div class="form-outline" id="flGroupOutline-${tabId}-${propertyId}">
-                                    <select class="form-select form-select-sm fl-modal-form-select" id="flGroup-${tabId}-${propertyId}" data-mdb-size="sm">
+                                <div class="form-outline" id="flGroupOutline-${tabId}-${propertyId}-${layout.screenIndex}">
+                                    <select class="form-select form-select-sm fl-modal-form-select" id="flGroup-${tabId}-${propertyId}-${layout.screenIndex}" data-mdb-size="sm">
                                         <option />`)
 
                     for (let [modalityId, modality] of Object.entries(property.modalities)) {
@@ -80,20 +81,22 @@ export default class Group extends View
                     
                     if (property.text) {
                         html.push(`
-                            <div class="form-outline mb-3" id="flGroupTextOutline-${ tabId }-${ propertyId }" data-mdb-input-init>
-                                <textarea id="flGroupText-${ tabId }-${ propertyId }" class="form-control" rows="4"></textarea>
+                            <div class="form-outline mb-3" id="flGroupTextOutline-${ tabId }-${ propertyId }-${ layout.screenIndex }" data-mdb-input-init>
+                                <textarea id="flGroupText-${ tabId }-${ propertyId }-${ layout.screenIndex }" class="form-control" rows="4"></textarea>
                                     <label class="form-label">${ this.translations["Text"] }</label>
                             </div>`) 
                     }
 
                 } else if (property.type === "date") {
+                    const rawValue = tab.formDefaults?.[propertyId]
+                    const initialValue = rawValue ? rawValue.split("-").reverse().join("/") : ""
                     html.push(`
                             <div class="input-group mb-3">
                                 <div class="input-group-text">
                                     <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
                                 </div>
-                                <div class="form-outline mb-3" id="flGroupOutline-${ tabId }-${ propertyId }" data-mdb-datepicker-init data-mdb-input-init>
-                                    <input class="form-control form-control-sm" id="flGroup-${ tabId }-${ propertyId }" />
+                                <div class="form-outline mb-3" id="flGroupOutline-${ tabId }-${ propertyId }-${ layout.screenIndex }" data-mdb-datepicker-init data-mdb-input-init>
+                                    <input class="form-control form-control-sm" id="flGroup-${ tabId }-${ propertyId }-${ layout.screenIndex }" value="${ initialValue }" />
                                     <label class="form-label select-label">${property.label}</label>
                                 </div>
                             </div>`)
@@ -104,8 +107,8 @@ export default class Group extends View
                                 <div class="input-group-text">
                                     <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
                                 </div>
-                                <div class="form-outline mb-3" id="flGroupOutline-${ tabId }-${propertyId}" data-mdb-timepicker-init data-mdb-input-init>
-                                    <input class="form-control form-control-sm" id="flGroup-${ tabId }-${propertyId}" />
+                                <div class="form-outline mb-3" id="flGroupOutline-${ tabId }-${propertyId}-${layout.screenIndex}" data-mdb-timepicker-init data-mdb-input-init>
+                                    <input class="form-control form-control-sm" id="flGroup-${ tabId }-${propertyId}-${layout.screenIndex}" />
                                     <label class="form-label select-label">${property.label}</label>
                                 </div>
                             </div>`)
@@ -116,8 +119,8 @@ export default class Group extends View
                                 <div class="input-group-text">
                                     <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
                                 </div>
-                                <div class="form-outline mb-3" id="flGroupOutline-${ tabId }-${propertyId}">
-                                    <div class="wysiwyg" id="flGroupWysiwyg-${ tabId }-${ propertyId }" data-mdb-wysiwyg-init>TEST</div>
+                                <div class="form-outline mb-3" id="flGroupOutline-${ tabId }-${propertyId}-${layout.screenIndex}">
+                                    <div class="wysiwyg" id="flGroupWysiwyg-${ tabId }-${ propertyId }-${ layout.screenIndex }" data-mdb-wysiwyg-init>TEST</div>
                                 </div>
                             </div>`)
 
@@ -127,8 +130,8 @@ export default class Group extends View
                                 <div class="input-group-text">
                                     <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
                                 </div>
-                                <div class="form-outline mb-3" id="flGroupOutline-${ tabId }-${ propertyId }" data-mdb-input-init>
-                                    <input class="form-control form-control-sm fl-modal-form-input" id="flGroup-${ tabId }-${ propertyId }" />
+                                <div class="form-outline mb-3" id="flGroupOutline-${ tabId }-${ propertyId }-${layout.screenIndex}" data-mdb-input-init>
+                                    <input class="form-control form-control-sm fl-modal-form-input" id="flGroup-${ tabId }-${ propertyId }-${ layout.screenIndex }" />
                                     <label class="form-label select-label">${property.label}</label>
                                 </div>
                             </div>`)
@@ -137,7 +140,7 @@ export default class Group extends View
 
             html.push(`
                             <div class="form-outline mb-3">
-                                <button class="btn btn-sm ${ (action.class === "danger") ? "btn-danger" : "btn-warning" }">${ action.label } <span class="fl-group-btn-count" id="flGroupBtnCount-${ tabId }"></span></button>
+                                <button class="btn btn-sm ${ (action.class === "danger") ? "btn-danger" : "btn-warning" }">${ action.label } <span class="fl-group-btn-count" id="flGroupBtnCount-${ tabId }-${ layout.screenIndex }"></span></button>
                             </div>
                         </form>
                         <hr>`)
@@ -155,24 +158,27 @@ export default class Group extends View
 
     trigger = () =>
     {
+        const { layout } = this
+
         for (let [tabId, tab] of Object.entries(this.tabs ?? {})) {
             for (const propertyId of (tab.form) ? tab.form : []) {
                 const property = this.properties[propertyId]
                 if (["select", "vector"].includes(property.type)) {
-                    const el = document.getElementById(`flGroup-${ tabId }-${ propertyId }`)
+                    const el = document.getElementById(`flGroup-${ tabId }-${ propertyId }-${ layout.screenIndex }`)
                     new mdb.Select(el)
                     if (property.text) {
-                        new mdb.Input(document.getElementById(`flGroupTextOutline-${ tabId }-${ propertyId }`)).init()
+                        new mdb.Input(document.getElementById(`flGroupTextOutline-${ tabId }-${ propertyId }-${ layout.screenIndex }`)).init()
                         el.addEventListener("change", () => {
                             const modalityId = el.value
-                            document.getElementById(`flGroupText-${ tabId }-${ propertyId }`).innerHTML = property.rows[modalityId][property.text]
-                            new mdb.Input(document.getElementById(`flGroupTextOutline-${ tabId }-${ propertyId }`)).init()
+                            document.getElementById(`flGroupText-${ tabId }-${ propertyId }-${ layout.screenIndex }`).innerHTML = property.rows[modalityId][property.text]
+                            new mdb.Input(document.getElementById(`flGroupTextOutline-${ tabId }-${ propertyId }-${ layout.screenIndex }`)).init()
                         })
                     }
 
                 } else if (property.type == "date") {
-                    const el = document.getElementById(`flGroupOutline-${ tabId }-${ propertyId }`)
-                    
+                    const el = document.getElementById(`flGroupOutline-${ tabId }-${ propertyId }-${ layout.screenIndex }`)
+
+                    new mdb.Input(el)
                     const datePickerOptions = {
                         inline: true,
                     }
@@ -186,25 +192,26 @@ export default class Group extends View
                     new mdb.Datepicker(el, datePickerOptions)
 
                 } else if (["time", "duration"].includes(property.type)) {
-                    const el = document.getElementById(`flGroupOutline-${ tabId }-${ propertyId }`)
+                    const el = document.getElementById(`flGroupOutline-${ tabId }-${ propertyId }-${ layout.screenIndex }`)
+                    new mdb.Input(el)
                     new mdb.Timepicker(el,{ format24: true, increment: true })
 
                 } else if (property.type === "wysiwyg") {
-                    const el = document.getElementById(`flGroupWysiwyg-${ tabId }-${ propertyId }`)
+                    const el = document.getElementById(`flGroupWysiwyg-${ tabId }-${ propertyId }-${ layout.screenIndex }`)
 
                 } else {
-                    const el = document.getElementById(`flGroupOutline-${ tabId }-${ propertyId }`)
+                    const el = document.getElementById(`flGroupOutline-${ tabId }-${ propertyId }-${ layout.screenIndex }`)
                     new mdb.Input(el)
                 }
 
                 // Handle input change to check the checkbox
                 const check = (propertyId) => {
-                    document.getElementById(`flGroupCheck-${ tabId }-${ propertyId }`).checked = true
+                    document.getElementById(`flGroupCheck-${ tabId }-${ propertyId }-${ layout.screenIndex }`).checked = true
                 }
-                const input = document.getElementById(`flGroup-${ tabId }-${ propertyId }`)
+                const input = document.getElementById(`flGroup-${ tabId }-${ propertyId }-${ layout.screenIndex }`)
                 input.addEventListener("change", () => { check(propertyId) })
                 input.addEventListener("input", () => { check(propertyId) })
-                const outline = document.getElementById(`flGroupOutline-${ tabId }-${ propertyId }`)
+                const outline = document.getElementById(`flGroupOutline-${ tabId }-${ propertyId }-${ layout.screenIndex }`)
                 outline?.addEventListener("valueChanged.mdb.datepicker", () => { check(propertyId) })
                 outline?.addEventListener("valueChanged.mdb.timepicker", () => { check(propertyId) })
                 outline?.addEventListener("itemSelect.mdb.autocomplete", () => { check(propertyId) })
@@ -213,7 +220,7 @@ export default class Group extends View
 
         // Handle click on submit
         for (const [tabId, tab] of Object.entries(this.tabs ?? {})) {
-            const form = document.getElementById(`flGroupForm-${ tabId }`)
+            const form = document.getElementById(`flGroupForm-${ tabId }-${ layout.screenIndex }`)
             form.addEventListener("submit", event => {
                 event.preventDefault()
 
@@ -253,7 +260,7 @@ export default class Group extends View
                     })
                 }
                 const kept = checkedRows.reduce((acc, cur) => match(cur) ? acc+1 : acc, 0)
-                $(`#flGroupBtnCount-${ tabId }`).text(kept ? `(${ kept })` : "")
+                $(`#flGroupBtnCount-${ tabId }-${ this.layout.screenIndex }`).text(kept ? `(${ kept })` : "")
             }
             if (sumChecked) $(".fl-group-sum").text(`(${ sumLabel })`)
         } else {
@@ -283,7 +290,7 @@ export default class Group extends View
                         if (!document.getElementById(`flGroupCheck-${tabId}-${propertyId}`).checked) continue
 
                         const property = properties[propertyId]
-                        const input = document.getElementById(`flGroup-${ tabId }-${ propertyId }`)
+                        const input = document.getElementById(`flGroup-${ tabId }-${ propertyId }-${ layout.screenIndex }`)
                         if (property.type === "date") {
                             const val = input.value
                             row[propertyId] = val ? val.substring(6, 10) + "-" + val.substring(3, 5) + "-" + val.substring(0, 2) : ""
@@ -298,6 +305,8 @@ export default class Group extends View
                         } else {
                             row[propertyId] = input.value
                         }
+                    } else {
+                        row[propertyId] = target
                     }
                 }
                 rows.push(row)

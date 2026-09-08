@@ -7,13 +7,15 @@ export default class AlertsManager extends View
      * @param {Object} params
      * @param {Object} params.controller
      * @param {number} params.profileId - ID of the current profile.
+     * @param {Object} params.layout - The layout object.
      */
-    constructor({ controller, entity, view, profile_id })
+    constructor({ controller, entity, view, profile_id, layout })
     {
         super({ controller })
         this.entity = entity
         this.view = view
         this.profile_id = profile_id
+        this.layout = layout
         this.toasts = []
         this.alerts = []
     }
@@ -25,7 +27,26 @@ export default class AlertsManager extends View
             return
         }
 
-        const { controller, entity, view } = this
+        const { controller, entity, view, layout } = this
+
+        // #region Test toast for stack
+        let stack
+        if (entity === "crm_account") stack = { title: "Prospects en retard", description: "Décalez en un clic la date de prochaine action de tous les prospects dont le traitement est en retard.", entity, view: "actionEnRetard", buttonLabel: "Accéder" }
+        else stack = { title: "Suggestion", description: "Voici une suggestion d'action.", entity, view: "suggestion", buttonLabel: "En savoir plus" }
+        this.test = new Toast({ controller, 
+            entity, 
+            view, 
+            stack,
+            layout },
+        {
+            title: "Alerte",
+            message: entity === "crm_account" ? "Vous avez des prospects en retard. Décalez leur date de prochaine action sur la page suivante :" : "Voici une suggestion d'action.",
+            type: "info",
+            persistent: true,
+            onValidate: () => console.log("Alert dismissed")
+        })
+        this.test.initialize()
+        // #endregion
 
         let response = await fetch(`/bo/alert/${ this.entity }?view=${ this.view }`)
         const { profileEntity, properties, templates, actions, translations } = await response.json()
@@ -51,6 +72,8 @@ export default class AlertsManager extends View
             properties,
             template: alert.template ? templates[alert.template] : undefined,
             action: alert.action ? actions[alert.action] : undefined,
+            stack: alert.stack,
+            layout,
             translations
         },
         {
@@ -58,7 +81,7 @@ export default class AlertsManager extends View
             message: alert.message,
             type: "info",
             persistent: true,
-            onClose: () => this.dismissAlert(alert)
+            onValidate: () => this.dismissAlert(alert)
         }
         ))
         this.toasts?.forEach(async alert => await alert.initialize())
@@ -69,6 +92,7 @@ export default class AlertsManager extends View
     trigger = () =>
     {
         this.toasts?.forEach((toast) => toast.trigger())
+        this.test?.trigger()
     }
 
     /**

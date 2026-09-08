@@ -3,13 +3,14 @@ import Toast from "../toast/Toast.js"
 
 export default class Form extends View
 {
-    constructor({ controller, entity, view, id, onSuccess })
+    constructor({ controller, entity, view, id, layout, onSuccess })
     {
         super({ controller })
         this.identifier = Date.now()
         this.entity = entity
         this.view = view
         this.id = id
+        this.layout = layout
         this.onSuccess = onSuccess
     }
 
@@ -17,7 +18,7 @@ export default class Form extends View
         let response = await fetch(`/bo/form/${ this.entity }?view=${ this.view }`)
         const { properties, layout, post, translations } = await response.json()
         this.properties = properties
-        this.layout = layout
+        this.formLayout = layout
         this.post = post
         this.translations = translations
 
@@ -50,39 +51,39 @@ export default class Form extends View
 
     render = () => 
     {
-        const { layout, properties, post, data } = this
+        const { formLayout, properties, post, data, layout } = this
 
         const html = []
 
         html.push(`
         <div class="container">
             <div class="my-3">
-                <div class="flForm-message" id="flForm-messageOk">
+                <div class="flForm-message" id="flForm-messageOk-${ layout.screenIndex }">
                     <h5 class="alert alert-success my-3 text-center">${ this.translations["Request registered"] }</h5>
                 </div>
 
-                <div class="flForm-message" id="flForm-messageConsistency">
+                <div class="flForm-message" id="flForm-messageConsistency-${ layout.screenIndex }">
                     <h5 class="alert alert-danger  my-3 text-center">${ this.translations["The data has changed in the meantime, please input again"] }</h5>
                 </div>
 
-                <div class="flForm-message" id="flForm-messageDuplicate">
+                <div class="flForm-message" id="flForm-messageDuplicate-${ layout.screenIndex }">
                     <h5 class="alert alert-danger  my-3 text-center">${ this.translations["The data already exists"] }</h5>
                 </div>
 
-                <div class="flForm-message" id="flForm-messageServerError">
+                <div class="flForm-message" id="flForm-messageServerError-${ layout.screenIndex }">
                     <h5 class="alert alert-danger  my-3 text-center">${ this.translations["Technical error, pLease try again later"] }</h5>
                 </div>
 
-                <form class="row g-4" id="${ this.identifier }">`)
+                <form class="row g-4" id="${ this.identifier }-${ layout.screenIndex }">`)
 
         // Consistency
 
         if (data && data.touched_at) {
-            html.push(`<input type="hidden" id="flForm-touched_at" value="${ data.touched_at }" />`)
+            html.push(`<input type="hidden" id="flForm-touched_at-${ layout.screenIndex }" value="${ data.touched_at }" />`)
         }
 
         const blocs = []
-        for (const bloc of layout) {
+        for (const bloc of formLayout) {
 
             const blocHtml = []
 
@@ -109,7 +110,7 @@ export default class Form extends View
                 }
 
                 else if (property.type === "hidden" || property.hidden) {
-                    blocHtml.push(`<input type="hidden" class="fl-modal-form-input" id="flForm-${ propertyId }" data-fl-type="input" ${ value ? `value="${ value }"`: "" } />`)
+                    blocHtml.push(`<input type="hidden" class="fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="input" ${ value ? `value="${ value }"`: "" } />`)
                 }
 
                 // Input
@@ -118,8 +119,8 @@ export default class Form extends View
                 {
                     blocHtml.push(`
                     <div class="${ divClass }">
-                        <div class="form-outline" id="flFormOutline-${propertyId}" data-mdb-input-init>
-                            <input class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }" data-fl-type="input" ${ value ? `value="${ value }"`: "" }  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
+                        <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }" data-mdb-input-init>
+                            <input class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="input" ${ value ? `value="${ value }"`: "" }  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
                             <label class="form-label">${ label }</label>
                         </div>
                     </div>`
@@ -132,8 +133,8 @@ export default class Form extends View
                 {
                     blocHtml.push(`
                     <div class="${ divClass }">
-                        <div class="form-outline" id="flFormOutline-${propertyId}" data-mdb-input-init>
-                            <input type="password" class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }" data-fl-type="input" data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
+                        <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }" data-mdb-input-init>
+                            <input type="password" class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="input" data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
                             <label class="form-label">${ label }</label>
                         </div>
                     </div>`
@@ -146,8 +147,8 @@ export default class Form extends View
                 {
                     blocHtml.push(`
                     <div class="${ divClass }">
-                        <div class="form-outline" id="flFormOutline-${propertyId}" data-mdb-input-init>
-                            <input type="email" class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }" data-fl-property="flForm-${ propertyId }" data-fl-type="email" ${ value ? `value="${ value }"`: "" }  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
+                        <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }" data-mdb-input-init>
+                            <input type="email" class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-property="flForm-${ propertyId }" data-fl-type="email" ${ value ? `value="${ value }"`: "" }  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
                             <label class="form-label">${ label }</label>
                         </div>
                     </div>`
@@ -160,8 +161,8 @@ export default class Form extends View
                 {
                     blocHtml.push(`
                     <div class="${ divClass }">
-                        <div class="form-outline" id="flFormOutline-${propertyId}" data-mdb-input-init>
-                            <input class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }" data-fl-type="phone" ${ value ? `value="${ value }"`: "" }  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
+                        <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }" data-mdb-input-init>
+                            <input class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="phone" ${ value ? `value="${ value }"`: "" }  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
                             <label class="form-label">${ label }</label>
                         </div>
                     </div>`
@@ -174,8 +175,8 @@ export default class Form extends View
                 {
                     blocHtml.push(`
                     <div class="${ divClass }">
-                        <div class="form-outline" id="flFormOutline-${propertyId}" data-mdb-datepicker-init data-mdb-input-init>
-                            <input class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }" data-fl-type="date" value="${ value ? moment(value).format("DD/MM/YYYY") : "" }"  data-fl-disabled="${ disabled }" ${ required } placeholder="${ this.translations["DD/MM/YYYY"] }" />
+                        <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }" data-mdb-datepicker-init data-mdb-input-init>
+                            <input class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="date" value="${ value ? moment(value).format("DD/MM/YYYY") : "" }"  data-fl-disabled="${ disabled }" ${ required } placeholder="${ this.translations["DD/MM/YYYY"] }" />
                             <label class="form-label">${ label }</label>
                         </div>
                     </div>`
@@ -188,8 +189,8 @@ export default class Form extends View
                 {
                     blocHtml.push(`
                     <div class="${ divClass }">
-                        <div class="form-outline" id="flFormOutline-${propertyId}">
-                            <select class="form-control form-control-sm fl-modal-form-select" id="flForm-${ propertyId }" data-fl-type="birthYear" data-fl-disabled="${ disabled }" ${ required }>
+                        <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }">
+                            <select class="form-control form-control-sm fl-modal-form-select" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="birthYear" data-fl-disabled="${ disabled }" ${ required }>
                                 <option />
                                 ${() => { for (let year = 1950; year < new Date.getFullYear(); year++) `<option value="${ year }" ${ value === year ? "selected=\"selected\"" : ""}>${ year }</option>` }}
                             </select>
@@ -205,8 +206,8 @@ export default class Form extends View
                 {
                     blocHtml.push(`
                     <div class="${ divClass }">
-                        <div class="form-outline" id="flFormOutline-${propertyId}" data-mdb-timepicker-init data-mdb-input-init>
-                            <input class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }" data-fl-type="time" ${ value ? `value=  "${ value }"`: "" } data-fl-disabled="${ disabled }" ${ required } />
+                        <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }" data-mdb-timepicker-init data-mdb-input-init>
+                            <input class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="time" ${ value ? `value=  "${ value }"`: "" } data-fl-disabled="${ disabled }" ${ required } />
                             <label class="form-label">${ label }</label>
                         </div>
                     </div>`
@@ -219,8 +220,8 @@ export default class Form extends View
                 {
                     blocHtml.push(`
                     <div class="${ divClass }">
-                        <div class="form-outline" id="flFormOutline-${propertyId}" data-mdb-input-init>
-                            <input class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }" value="${ Math.floor(value / 60) }:${ (x => x ? x : "")(value % 60) }" data-fl-disabled="${ disabled }" ${ required } />
+                        <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }" data-mdb-input-init>
+                            <input class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" value="${ Math.floor(value / 60) }:${ (x => x ? x : "")(value % 60) }" data-fl-disabled="${ disabled }" ${ required } />
                             <label class="form-label">${ label }</label>
                         </div>
                     </div>`
@@ -233,8 +234,8 @@ export default class Form extends View
                 {
                     blocHtml.push(`
                     <div class="${ divClass }">
-                        <div class="form-outline" id="flFormOutline-${propertyId}">
-                            <input type="number" class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }" data-fl-type="number" ${ value ? `value="${ value }"`: "" } data-fl-disabled="${ disabled }" ${ required } pattern="[0-9]+(\.[0-9]{0,4})?" placeholder="12345,67" />
+                        <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }">
+                            <input type="number" class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="number" ${ value ? `value="${ value }"`: "" } data-fl-disabled="${ disabled }" ${ required } pattern="[0-9]+(\.[0-9]{0,4})?" placeholder="12345,67" />
                             <label class="form-label">${label}</label>
                         </div>
                     </div>`
@@ -247,8 +248,8 @@ export default class Form extends View
                 {
                     blocHtml.push(`
                     <div class="${ divClass }">
-                        <div class="form-outline" id="flFormOutline-${propertyId}">
-                            <input type="number" class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }" data-fl-type="percentage" ${ value ? `value="${ value }"`: "" } data-fl-disabled="${ disabled }" ${ required } pattern="[0-9]+(\.[0-9]{0,4})?" />
+                        <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }">
+                            <input type="number" class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="percentage" ${ value ? `value="${ value }"`: "" } data-fl-disabled="${ disabled }" ${ required } pattern="[0-9]+(\.[0-9]{0,4})?" />
                             <label class="form-label">${ label }</label>
                         </div>
                     </div>`
@@ -261,9 +262,9 @@ export default class Form extends View
                 {
                     blocHtml.push(`
                     <div class="${ divClass }">
-                        <div class="form-outline" id="flFormOutline-${propertyId}">
-                            <textarea class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }" data-fl-type="textarea" rows="5" data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 2047 }">${ value }</textarea>
-                            <label class="form-label" for="flForm-flForm-${ propertyId }">${ label }</label>
+                        <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }">
+                            <textarea class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="textarea" rows="5" data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 2047 }">${ value }</textarea>
+                            <label class="form-label" for="flForm-flForm-${ propertyId }-${ layout.screenIndex }">${ label }</label>
                         </div>
                     </div>`
                     )
@@ -284,8 +285,8 @@ export default class Form extends View
 
                     blocHtml.push(`
                     <div class="${ divClass }">
-                        <div class="form-outline" id="flFormOutline-${propertyId}">
-                            <select class="form-select form-select-sm fl-modal-form-select" id="flForm-${ propertyId }" data-fl-type="select" data-mdb-size="sm" data-mdb-select-init ${ (required) ? "data-mdb-validation=\"true\" data-mdb-invalid-feedback=\" \" data-mdb-valid-feedback=\" \"" : "" } ${( multiple ) ? "multiple" : ""}  data-fl-disabled="${ disabled }" ${ required }>
+                        <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }">
+                            <select class="form-select form-select-sm fl-modal-form-select" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="select" data-mdb-size="sm" data-mdb-select-init ${ (required) ? "data-mdb-validation=\"true\" data-mdb-invalid-feedback=\" \" data-mdb-valid-feedback=\" \"" : "" } ${( multiple ) ? "multiple" : ""}  data-fl-disabled="${ disabled }" ${ required }>
                                 ${( !multiple ) ? "<option />" : "" }`
                     )
 
@@ -311,7 +312,7 @@ export default class Form extends View
                     <div class="${ divClass }">
                         <div>
                             <label class="form-label" for="customFile">${ label }</label>
-                            <input type="file" class="form-control form-control-sm fl-modal-form-file" id="flForm-${ propertyId }" data-fl-type="file" data-fl-disabled="${ disabled }" ${ required } />
+                            <input type="file" class="form-control form-control-sm fl-modal-form-file" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="file" data-fl-disabled="${ disabled }" ${ required } />
                         </div>
                     </div>`
                     )
@@ -323,8 +324,8 @@ export default class Form extends View
                 {
                     blocHtml.push(`
                     <div class="${ divClass }">
-                        <div class="form-outline mb-2" id="flFormOutline-${propertyId}">
-                            <textarea class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }" data-fl-type="textarea" ${(required) ? "required" : ""} maxlength="${(property.max_length) ? property.max_length : 65535}"></textarea>
+                        <div class="form-outline mb-2" id="flFormOutline-${propertyId}-${ layout.screenIndex }">
+                            <textarea class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="textarea" ${(required) ? "required" : ""} maxlength="${(property.max_length) ? property.max_length : 65535}"></textarea>
                             <label class="form-label">${ label }</label>
                         </div>
                     </div>
@@ -365,8 +366,8 @@ export default class Form extends View
                 {
                     blocHtml.push(`
                     <div class="${ divClass }">
-                        <div class="form-outline" id="flFormOutline-${propertyId}">
-                            <input class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }" data-fl-type="input" ${ value ? `value="${ value }"`: "" }  data-fl-disabled="${ disabled }" ${( required ) ? "required" : ""} maxlength="${ property.max_length ? property.max_length : 255 }" />
+                        <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }">
+                            <input class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="input" ${ value ? `value="${ value }"`: "" }  data-fl-disabled="${ disabled }" ${( required ) ? "required" : ""} maxlength="${ property.max_length ? property.max_length : 255 }" />
                             <label class="form-label select-label">${ label }</label>
                         </div>
                     </div>`
@@ -385,7 +386,7 @@ export default class Form extends View
             <div class="col-md-3 p-3">
                 <button 
                     class="btn ${ (post.danger) ? "btn-outline-primary" : "btn-warning" } fl-detail-tab-submit"
-                    id="flFormSubmit"
+                    id="flFormSubmit-${ layout.screenIndex }"
                     disabled
                     data-mdb-ripple-init
                     data-mdb-ripple-color="danger"
@@ -396,7 +397,7 @@ export default class Form extends View
 
         html.push(`
                 <div class="col-md-3 p-3">
-                    <button type="button" id="flFormCancel" class="btn btn-link" disabled>
+                    <button type="button" id="flFormCancel-${ layout.screenIndex }" class="btn btn-link" disabled>
                         ${ this.translations["Cancel"] }
                     </button>
                 </div>`)
@@ -412,11 +413,11 @@ export default class Form extends View
 
     trigger = () =>
     {
-        const { properties, post, translations, controller, data } = this
-        const form = document.getElementById(this.identifier)
-        const cancelButton = document.getElementById("flFormCancel")
+        const { properties, post, translations, controller, data, layout } = this
+        const form = document.getElementById(`${this.identifier}-${ layout.screenIndex }`)
+        const cancelButton = document.getElementById(`flFormCancel-${ layout.screenIndex }`)
         // const backButton = document.getElementById("flScreen2BackButton")
-        const submitButton = document.getElementById("flFormSubmit")
+        const submitButton = document.getElementById(`flFormSubmit-${ layout.screenIndex }`)
 
         // Initialize MDB components
         for (const [propertyId, property] of Object.entries(properties)) {
@@ -424,11 +425,11 @@ export default class Form extends View
             const value = this.formatValueFromData(propertyId, property, data)
 
             if (property.type === "select") {
-                const el = document.getElementById(`flForm-${ propertyId }`)
+                const el = document.getElementById(`flForm-${ propertyId }-${ layout.screenIndex }`)
                 new mdb.Select(el)
             }
             else if (property.type === "vector") {
-                const el = document.getElementById(`flForm-${ propertyId }`)
+                const el = document.getElementById(`flForm-${ propertyId }-${ layout.screenIndex }`)
                 if (el) new mdb.Select(el)
             }
             // else if (property.type === "autocomplete") {
@@ -445,7 +446,7 @@ export default class Form extends View
             //     })
             // }
             else if (property.type === "date") {
-                let el = document.getElementById(`flFormOutline-${ propertyId }`)
+                let el = document.getElementById(`flFormOutline-${ propertyId }-${ layout.screenIndex }`)
                 const datePickerOptions = {
                     inline: true,
                 }
@@ -459,15 +460,15 @@ export default class Form extends View
                 new mdb.Datepicker(el, datePickerOptions)
             }
             else if (property.type === "time") {
-                const el = document.getElementById(`flFormOutline-${ propertyId }`)
+                const el = document.getElementById(`flFormOutline-${ propertyId }-${ layout.screenIndex }`)
                 new mdb.Timepicker(el,{ format24: true, increment: true }) 
             }
             else if (property.type === "duration") {
-                const el = document.getElementById(`flFormOutline-${ propertyId }`)
+                const el = document.getElementById(`flFormOutline-${ propertyId }-${ layout.screenIndex }`)
                 new mdb.Timepicker(el,{ format24: true, increment: true }) 
             }
             else {
-                const el = document.getElementById(`flFormOutline-${ propertyId }`)
+                const el = document.getElementById(`flFormOutline-${ propertyId }-${ layout.screenIndex }`)
                 new mdb.Input(el)
             }
         }
@@ -490,7 +491,7 @@ export default class Form extends View
                 // Build the request body
                 const row = {}
                 for (const [propertyId, property] of Object.entries(properties)) {
-                    const input = document.getElementById(`flForm-${ propertyId }`)
+                    const input = document.getElementById(`flForm-${ propertyId }-${ layout.screenIndex }`)
                     if (property.type === "date") {
                         const val = input.value
                         row[propertyId] = val ? val.substring(6, 10) + "-" + val.substring(3, 5) + "-" + val.substring(0, 2) : ""

@@ -3,6 +3,8 @@ const fs = require("fs")
 const acl = require("./acl.js")
 const defaultTr = require("./translations/defaultTr.js")
 
+fs.writeFileSync("../viewModel_acl.json", JSON.stringify({ acl }))
+
 for (const [viewModel, roles] of Object.entries(acl)) {
     const js = require(`./${viewModel}`)
 

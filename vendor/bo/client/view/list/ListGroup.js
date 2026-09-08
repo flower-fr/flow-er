@@ -2,7 +2,7 @@ import View from "../View.js"
 
 export default class ListGroup extends View
 {
-    constructor({ controller, identifier, list, value, property, size, translations }) {
+    constructor({ controller, identifier, list, value, property, size, translations, layout }) {
         super({ controller })
         this.identifier = identifier
         this.list = list
@@ -10,13 +10,14 @@ export default class ListGroup extends View
         this.property = property
         this.size = size
         this.translations = translations
+        this.layout = layout
     }
 
     initialize = async () => {}
 
     render = () =>
     {
-        const html = [], { identifier, value, list, size } = this
+        const html = [], { identifier, value, list, size, layout } = this
 
         let label, dow, textClass = "", month
         if (!value) {
@@ -46,7 +47,7 @@ export default class ListGroup extends View
 
         html.push(`
         <tbody>
-            <tr class="listRow" id="flListRow-${ label }">
+            <tr class="listRow" id="flListRow-${ label }-${ layout.screenIndex }">
                 <td/>
                 <td class="text-center">
                     <button 
@@ -59,7 +60,7 @@ export default class ListGroup extends View
                         role="button"
                         aria-expanded="true"
                         aria-controls="flCollapse-${ identifier }"
-                        id="flButtonCollapse-${ identifier }"
+                        id="flButtonCollapse-${ identifier }-${ layout.screenIndex }"
                     >
                         <i class="fas fa-angle-up"></i>
                     </button>
@@ -69,7 +70,7 @@ export default class ListGroup extends View
             </tr>
         </tbody>
         <tbody
-            id="flCollapse-${ identifier }"
+            id="flCollapse-${ identifier }-${ layout.screenIndex }"
         >`)
 
         return html.join("\n")
@@ -77,15 +78,15 @@ export default class ListGroup extends View
 
     trigger = () =>
     {
-        const { identifier } = this
-        $(`#flCollapse-${ identifier }`).each(function () {
+        const { identifier, layout } = this
+        $(`#flCollapse-${ identifier }-${ layout.screenIndex }`).each(function () {
             new mdb.Collapse($(this))
             const collapsible = document.getElementById($(this).attr("id"))
             collapsible.addEventListener("hidden.mdb.collapse", () => {
-                $(`#flButtonCollapse-${ identifier }`).html("<i class=\"fas fa-angle-down\"></i>")
+                $(`#flButtonCollapse-${ identifier }-${ layout.screenIndex }`).html("<i class=\"fas fa-angle-down\"></i>")
             })
             collapsible.addEventListener("shown.mdb.collapse", () => {
-                $(`#flButtonCollapse-${ identifier }`).html("<i class=\"fas fa-angle-up\"></i>")
+                $(`#flButtonCollapse-${ identifier }-${ layout.screenIndex }`).html("<i class=\"fas fa-angle-up\"></i>")
             })
         })
     }
