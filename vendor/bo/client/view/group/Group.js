@@ -60,7 +60,7 @@ export default class Group extends View
 
                 if (["select", "vector"].includes(property.type)) {
                     html.push(`
-                            <div class="input-group mb-3">
+                            <div class="input-group mb-1">
                                 <div class="input-group-text">
                                     <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
                                 </div>
@@ -80,7 +80,7 @@ export default class Group extends View
                     
                     if (property.text) {
                         html.push(`
-                            <div class="form-outline mb-3" id="flGroupTextOutline-${ tabId }-${ propertyId }" data-mdb-input-init>
+                            <div class="form-outline mb-1" id="flGroupTextOutline-${ tabId }-${ propertyId }" data-mdb-input-init>
                                 <textarea id="flGroupText-${ tabId }-${ propertyId }" class="form-control" rows="4"></textarea>
                                     <label class="form-label">${ this.translations["Text"] }</label>
                             </div>`) 
@@ -88,11 +88,11 @@ export default class Group extends View
 
                 } else if (property.type === "date") {
                     html.push(`
-                            <div class="input-group mb-3">
+                            <div class="input-group mb-1">
                                 <div class="input-group-text">
                                     <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
                                 </div>
-                                <div class="form-outline mb-3" id="flGroupOutline-${ tabId }-${ propertyId }" data-mdb-datepicker-init data-mdb-input-init>
+                                <div class="form-outline mb-1" id="flGroupOutline-${ tabId }-${ propertyId }" data-mdb-datepicker-init data-mdb-input-init>
                                     <input class="form-control form-control-sm" id="flGroup-${ tabId }-${ propertyId }" />
                                     <label class="form-label select-label">${property.label}</label>
                                 </div>
@@ -100,11 +100,11 @@ export default class Group extends View
 
                 } else if (["time", "duration"].includes(property.type)) {
                     html.push(`
-                            <div class="input-group mb-3">
+                            <div class="input-group mb-1">
                                 <div class="input-group-text">
                                     <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
                                 </div>
-                                <div class="form-outline mb-3" id="flGroupOutline-${ tabId }-${propertyId}" data-mdb-timepicker-init data-mdb-input-init>
+                                <div class="form-outline mb-1" id="flGroupOutline-${ tabId }-${propertyId}" data-mdb-timepicker-init data-mdb-input-init>
                                     <input class="form-control form-control-sm" id="flGroup-${ tabId }-${propertyId}" />
                                     <label class="form-label select-label">${property.label}</label>
                                 </div>
@@ -112,22 +112,22 @@ export default class Group extends View
 
                 } else if (property.type === "wysiwyg") {
                     html.push(`
-                            <div class="input-group mb-3">
+                            <div class="input-group mb-1">
                                 <div class="input-group-text">
                                     <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
                                 </div>
-                                <div class="form-outline mb-3" id="flGroupOutline-${ tabId }-${propertyId}">
+                                <div class="form-outline mb-1" id="flGroupOutline-${ tabId }-${propertyId}">
                                     <div class="wysiwyg" id="flGroupWysiwyg-${ tabId }-${ propertyId }" data-mdb-wysiwyg-init>TEST</div>
                                 </div>
                             </div>`)
 
                 } else {
                     html.push(`
-                            <div class="input-group mb-3">
+                            <div class="input-group mb-1">
                                 <div class="input-group-text">
                                     <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
                                 </div>
-                                <div class="form-outline mb-3" id="flGroupOutline-${ tabId }-${ propertyId }" data-mdb-input-init>
+                                <div class="form-outline mb-1" id="flGroupOutline-${ tabId }-${ propertyId }" data-mdb-input-init>
                                     <input class="form-control form-control-sm fl-modal-form-input" id="flGroup-${ tabId }-${ propertyId }" />
                                     <label class="form-label select-label">${property.label}</label>
                                 </div>
@@ -136,7 +136,7 @@ export default class Group extends View
             }
 
             html.push(`
-                            <div class="form-outline mb-3">
+                            <div class="form-outline mb-1">
                                 <button class="btn btn-sm ${ (action.class === "danger") ? "btn-danger" : "btn-warning" }">${ action.label } <span class="fl-group-btn-count" id="flGroupBtnCount-${ tabId }"></span></button>
                             </div>
                         </form>

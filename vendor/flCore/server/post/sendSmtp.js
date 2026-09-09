@@ -7,7 +7,7 @@ dayjs.extend(timezone)
 const { throwBadRequestError } = require("../../../../core/api-utils")
 const util = require("util")
 
-const sendSmtp = async ({ req }, context, rows, { sql, smtp }) => {
+const sendSmtp = async ({ req }, context, rows, { sql, smtp, testMail }) => {
 
     const type = "html"
     const model = context.config["interaction/model"]
@@ -46,12 +46,14 @@ const sendSmtp = async ({ req }, context, rows, { sql, smtp }) => {
             }
             const data = {
                 type: type,
-                to: row.email,
+                to: (testMail) ? testMail : row.email,
                 subject: row.email_subject,
                 content: row.email_body
             }
-            if (row.cc) data.cc = row.cc
-            if (row.cci) data.bcc = row.cci
+            if (!testMail) {
+                if (row.cc) data.cc = row.cc
+                if (row.cci) data.bcc = row.cci
+            }
             if (attachmentsToSend.length > 0) data.attachments = attachmentsToSend
 
             try {
@@ -78,7 +80,7 @@ const sendSmtp = async ({ req }, context, rows, { sql, smtp }) => {
     }
 }
 
-const resendSmtp = async ({ context, sql, smtp, logger, ids }) => 
+const resendSmtp = async ({ context, sql, smtp, logger, ids, testMail }) => 
 {
     const type = "html"
     const model = context.config["interaction/model"]
@@ -126,12 +128,14 @@ const resendSmtp = async ({ context, sql, smtp, logger, ids }) =>
             }
             const data = {
                 type: type,
-                to: params.to,
+                to: (testMail) ? testMail : params.to,
                 subject: params.subject,
                 content: row.body
             }
-            if (params.cc) data.cc = params.cc
-            if (params.cci) data.bcc = params.cci
+            if (!testMail) {
+                if (params.cc) data.cc = params.cc
+                if (params.cci) data.bcc = params.cci
+            }
             if (attachmentsToSend.length > 0) data.attachments = attachmentsToSend
 
             try {
