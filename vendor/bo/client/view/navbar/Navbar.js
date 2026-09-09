@@ -49,7 +49,7 @@ export default class Navbar extends View
                         <!-- Collapsible wrapper -->
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-                            <a class="navbar-brand" href="#">`)
+                            <a class="navbar-brand" href="/">`)
         
         if (this.logo) {
             html.push(`<img height="${ this.logoHeight }" src="/${`logos/${ this.logo }`}" alt="${ this.title }" title="${ this.title }" />`)

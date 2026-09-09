@@ -10,7 +10,7 @@ const { save } = require("./post/save")
 const { sendSmtp } = require("./post/sendSmtp")
 const { sendSms } = require("./post/sendSms")
 
-const transactionAction = async ({ req }, context, { sql, smtp, sms, logger }) =>
+const transactionAction = async ({ req }, context, { sql, smtp, testMail, sms, logger }) =>
 {
     const entity = req.params.entity
     const id = req.params.id
@@ -48,7 +48,7 @@ const transactionAction = async ({ req }, context, { sql, smtp, sms, logger }) =
             })
             result[stepId] = data
             if (!step.async) {
-                const result = await stepFunction({ req, step, entity: step.entity }, context, data, { sql, smtp, sms, logger })
+                const result = await stepFunction({ req, step, entity: step.entity }, context, data, { sql, smtp, testMail, sms, logger })
                 result.stored.forEach(row => {
                     if (row.entitiesToInsert && row.entitiesToInsert[entity]) insertId = row.entitiesToInsert[entity].rowId
                 })

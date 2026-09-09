@@ -19,7 +19,7 @@ export default class GroupTag extends View
 
         html.push(`
             <div
-                class="chip chip-outline btn-outline-secondary mb-3"
+                class="chip chip-outline btn-outline-secondary mb-1"
                 id="flGroupTag-${ this.name }"
                 data-mdb-chip-init
                 data-mdb-ripple-color="dark"

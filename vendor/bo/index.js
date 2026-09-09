@@ -19,7 +19,7 @@ const register = async ({ context, config, logger, app }) => {
     const execute = executeService(context, config, logger)
 
     // Default tab
-    // app.get("/", execute(defaultTab, { config, context }))
+    app.get("/", execute(defaultTab, { config, context }))
     
     app.use("/", express.static("vendor/bo/client/public/"))
 
