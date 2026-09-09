@@ -24,7 +24,7 @@ const select = (entity, columns, where, order = [], limit = null, model = [], us
             if (!columns.includes(modelProp)) columns.push(modelProp)
         }
     }
-
+console.log({ entity, columns, where, order, limit, model })
     const joins = join(entity, columns, where, order, model)
 
     const { columnDict, groupBy } = selectColumns(entity, columns, model, joins)

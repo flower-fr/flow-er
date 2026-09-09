@@ -19,7 +19,7 @@ export default class GroupNewTag extends View
         const html = []
 
         html.push(`
-            <div class="input-group mb-3" id="flGroupOutline-tag">
+            <div class="input-group mb-1" id="flGroupOutline-tag">
                 <input
                     type="text"
                     class="form-control rounded"
