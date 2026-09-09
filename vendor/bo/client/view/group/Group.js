@@ -63,7 +63,7 @@ export default class Group extends View
                     html.push(`
                             <div class="input-group mb-1">
                                 <div class="input-group-text">
-                                    <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
+                                    <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}-${layout.screenIndex}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
                                 </div>
                                 <div class="form-outline" id="flGroupOutline-${tabId}-${propertyId}-${layout.screenIndex}">
                                     <select class="form-select form-select-sm fl-modal-form-select" id="flGroup-${tabId}-${propertyId}-${layout.screenIndex}" data-mdb-size="sm">
@@ -93,7 +93,7 @@ export default class Group extends View
                     html.push(`
                             <div class="input-group mb-1">
                                 <div class="input-group-text">
-                                    <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
+                                    <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}-${layout.screenIndex}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
                                 </div>
                                 <div class="form-outline mb-1" id="flGroupOutline-${ tabId }-${ propertyId }-${ layout.screenIndex }" data-mdb-datepicker-init data-mdb-input-init>
                                     <input class="form-control form-control-sm" id="flGroup-${ tabId }-${ propertyId }-${ layout.screenIndex }" value="${ initialValue }" />
@@ -105,7 +105,7 @@ export default class Group extends View
                     html.push(`
                             <div class="input-group mb-1">
                                 <div class="input-group-text">
-                                    <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
+                                    <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}-${layout.screenIndex}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
                                 </div>
                                 <div class="form-outline mb-1" id="flGroupOutline-${ tabId }-${propertyId}-${layout.screenIndex}" data-mdb-timepicker-init data-mdb-input-init>
                                     <input class="form-control form-control-sm" id="flGroup-${ tabId }-${propertyId}-${layout.screenIndex}" />
@@ -117,7 +117,7 @@ export default class Group extends View
                     html.push(`
                             <div class="input-group mb-1">
                                 <div class="input-group-text">
-                                    <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
+                                    <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}-${layout.screenIndex}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
                                 </div>
                                 <div class="form-outline mb-1" id="flGroupOutline-${ tabId }-${propertyId}-${layout.screenIndex}">
                                     <div class="wysiwyg" id="flGroupWysiwyg-${ tabId }-${ propertyId }-${ layout.screenIndex }" data-mdb-wysiwyg-init>TEST</div>
@@ -128,7 +128,7 @@ export default class Group extends View
                     html.push(`
                             <div class="input-group mb-1">
                                 <div class="input-group-text">
-                                    <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
+                                    <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}-${layout.screenIndex}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
                                 </div>
                                 <div class="form-outline mb-1" id="flGroupOutline-${ tabId }-${ propertyId }-${layout.screenIndex}" data-mdb-input-init>
                                     <input class="form-control form-control-sm fl-modal-form-input" id="flGroup-${ tabId }-${ propertyId }-${ layout.screenIndex }" />
@@ -287,7 +287,7 @@ export default class Group extends View
                     } else if (target === "form") {
 
                         // Only send the value if the checkbox is checked
-                        if (!document.getElementById(`flGroupCheck-${tabId}-${propertyId}`).checked) continue
+                        if (!document.getElementById(`flGroupCheck-${tabId}-${propertyId}-${layout.screenIndex}`).checked) continue
 
                         const property = properties[propertyId]
                         const input = document.getElementById(`flGroup-${ tabId }-${ propertyId }-${ layout.screenIndex }`)
