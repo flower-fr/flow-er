@@ -56,10 +56,10 @@ export default class ListGroup extends View
                         data-mdb-ripple-init
                         data-ripple-color="primary"
                         data-mdb-collapse-init
-                        href="#flCollapse-${ identifier }"
+                        href="#flCollapse-${ identifier }-${ layout.screenIndex }"
                         role="button"
                         aria-expanded="true"
-                        aria-controls="flCollapse-${ identifier }"
+                        aria-controls="flCollapse-${ identifier }-${ layout.screenIndex }"
                         id="flButtonCollapse-${ identifier }-${ layout.screenIndex }"
                     >
                         <i class="fas fa-angle-up"></i>
