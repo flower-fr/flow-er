@@ -33,19 +33,19 @@ export default class AlertsManager extends View
         let stack
         if (entity === "crm_account") stack = { title: "Prospects en retard", description: "Décalez en un clic la date de prochaine action de tous les prospects dont le traitement est en retard.", entity, view: "actionEnRetard", buttonLabel: "Accéder" }
         else stack = { title: "Suggestion", description: "Voici une suggestion d'action.", entity, view: "suggestion", buttonLabel: "En savoir plus" }
-        this.test = new Toast({ controller, 
-            entity, 
-            view, 
-            stack,
-            layout },
-        {
-            title: "Alerte",
-            message: entity === "crm_account" ? "Vous avez des prospects en retard. Décalez leur date de prochaine action sur la page suivante :" : "Voici une suggestion d'action.",
-            type: "info",
-            persistent: true,
-            onValidate: () => console.log("Alert dismissed")
-        })
-        this.test.initialize()
+        // this.test = new Toast({ controller, 
+        //     entity, 
+        //     view, 
+        //     stack,
+        //     layout },
+        // {
+        //     title: "Alerte",
+        //     message: entity === "crm_account" ? "Vous avez des prospects en retard. Décalez leur date de prochaine action sur la page suivante :" : "Voici une suggestion d'action.",
+        //     type: "info",
+        //     persistent: true,
+        //     onValidate: () => console.log("Alert dismissed")
+        // })
+        // this.test.initialize()
         // #endregion
 
         let response = await fetch(`/bo/alert/${ this.entity }?view=${ this.view }`)
