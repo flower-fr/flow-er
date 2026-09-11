@@ -16,13 +16,13 @@ export default class SearchKeywords extends View
         html.push(`
             <section class="w-20 text-center">
                 <div class="input-group mb-3">
-                    <button class="btn btn-outline-primary" type="button" id="flSearchKeywordsRefresh" data-mdb-ripple-init data-mdb-ripple-color="dark">
+                    <button class="btn btn-outline-primary" type="button" id="flSearchKeywordsRefresh-${ this.layout.screenIndex }" data-mdb-ripple-init data-mdb-ripple-color="dark">
                         <i class="fas fa-search"></i>
                     </button>
                     <input
                         type="search"
                         class="form-control rounded"
-                        id="flSearchKeywords"
+                        id="flSearchKeywords-${ this.layout.screenIndex }"
                         placeholder="${ placeholder }"
                         aria-label="Search"
                     />
@@ -36,8 +36,8 @@ export default class SearchKeywords extends View
     {
         const {layout} = this
 
-        const keywords = document.getElementById("flSearchKeywords")
-        const keywordsRefresh = document.getElementById("flSearchKeywordsRefresh")
+        const keywords = document.getElementById(`flSearchKeywords-${ layout.screenIndex }`)
+        const keywordsRefresh = document.getElementById(`flSearchKeywordsRefresh-${ layout.screenIndex }`)
 
         // Quick keyword search
 

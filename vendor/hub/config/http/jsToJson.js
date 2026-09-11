@@ -1,7 +1,6 @@
 const fs = require("fs")
 
 const acl = require("./acl.js")
-const defaultTr = require("./translations/defaultTr.js")
 
 for (const [viewModel, roles] of Object.entries(acl)) {
     const js = require(`./${viewModel}`)
