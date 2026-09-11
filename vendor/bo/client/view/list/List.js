@@ -70,7 +70,7 @@ export default class List extends View
         this.listHeader = new ListHeader({ controller: this.controller, list: this, rows: this.rows, filledColumns: this.filledColumns, properties, orderProperty, orderDirection, limit, translations, layout: this.layout })
 
         if (eventConfig) {
-            this.listTooltips = new ListTooltip({ controller: this.controller, list: this, eventConfig })
+            this.listTooltips = new ListTooltip({ controller: this.controller, list: this, eventConfig, layout: this.layout })
             this.listTooltips.initialize()
         }
 

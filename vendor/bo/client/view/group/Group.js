@@ -57,14 +57,15 @@ export default class Group extends View
                         <form id="flGroupForm-${ tabId }-${ layout.screenIndex }">`)
 
             for (const propertyId of (tab.form) ? tab.form : []) {
-                const property = this.properties[propertyId]
+                const property = (tab.layout) ? tab.layout[propertyId] : this.properties[propertyId]
 
                 if (["select", "vector"].includes(property.type)) {
                     html.push(`
                             <div class="input-group mb-1">
+                                ${ (!property.required) ? `
                                 <div class="input-group-text">
-                                    <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}-${layout.screenIndex}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
-                                </div>
+                                    <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}-${ layout.screenIndex }" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
+                                </div>` : "" }
                                 <div class="form-outline" id="flGroupOutline-${tabId}-${propertyId}-${layout.screenIndex}">
                                     <select class="form-select form-select-sm fl-modal-form-select" id="flGroup-${tabId}-${propertyId}-${layout.screenIndex}" data-mdb-size="sm">
                                         <option />`)
@@ -86,50 +87,62 @@ export default class Group extends View
                                     <label class="form-label">${ this.translations["Text"] }</label>
                             </div>`) 
                     }
-
-                } else if (property.type === "date") {
+                }
+                else if (property.type === "date") {
                     const rawValue = tab.formDefaults?.[propertyId]
                     const initialValue = rawValue ? rawValue.split("-").reverse().join("/") : ""
                     html.push(`
                             <div class="input-group mb-1">
+                                ${ (!property.required) ? `
                                 <div class="input-group-text">
                                     <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}-${layout.screenIndex}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
-                                </div>
+                                </div>` : "" }
                                 <div class="form-outline mb-1" id="flGroupOutline-${ tabId }-${ propertyId }-${ layout.screenIndex }" data-mdb-datepicker-init data-mdb-input-init>
                                     <input class="form-control form-control-sm" id="flGroup-${ tabId }-${ propertyId }-${ layout.screenIndex }" value="${ initialValue }" />
                                     <label class="form-label select-label">${property.label}</label>
                                 </div>
                             </div>`)
-
-                } else if (["time", "duration"].includes(property.type)) {
+                }
+                else if (["time", "duration"].includes(property.type)) {
                     html.push(`
                             <div class="input-group mb-1">
+                                ${ (!property.required) ? `
                                 <div class="input-group-text">
                                     <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}-${layout.screenIndex}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
-                                </div>
+                                </div>` : "" }
                                 <div class="form-outline mb-1" id="flGroupOutline-${ tabId }-${propertyId}-${layout.screenIndex}" data-mdb-timepicker-init data-mdb-input-init>
                                     <input class="form-control form-control-sm" id="flGroup-${ tabId }-${propertyId}-${layout.screenIndex}" />
                                     <label class="form-label select-label">${property.label}</label>
                                 </div>
                             </div>`)
-
-                } else if (property.type === "wysiwyg") {
+                }
+                else if (property.type === "file") {
+                    html.push(`
+                            <div class="mb-1">
+                                <label for="flGroup-${ tabId }-${propertyId}-${layout.screenIndex}" class="form-label form-label-sm">${property.label}</label>
+                                <input type="file" class="form-control form-control-sm" id="flGroup-${ tabId }-${propertyId}-${layout.screenIndex}" />
+                            </div>`)
+                }
+                else if (property.type === "textarea") {
                     html.push(`
                             <div class="input-group mb-1">
+                                ${ (!property.required) ? `
                                 <div class="input-group-text">
                                     <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}-${layout.screenIndex}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
-                                </div>
-                                <div class="form-outline mb-1" id="flGroupOutline-${ tabId }-${propertyId}-${layout.screenIndex}">
-                                    <div class="wysiwyg" id="flGroupWysiwyg-${ tabId }-${ propertyId }-${ layout.screenIndex }" data-mdb-wysiwyg-init>TEST</div>
+                                </div>` : "" }
+                                <div class="form-outline mb-1" id="flGroupOutline-${ tabId }-${ propertyId }-${layout.screenIndex}" data-mdb-input-init>
+                                    <textarea class="form-control form-control-sm" id="flGroup-${ tabId }-${ propertyId }-${ layout.screenIndex }" rows="6">${ property.default || "" }</textarea>
+                                    <label class="form-label select-label">${property.label}</label>
                                 </div>
                             </div>`)
-
-                } else {
+                }
+                else {
                     html.push(`
                             <div class="input-group mb-1">
+                                ${ (!property.required) ? `
                                 <div class="input-group-text">
                                     <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}-${layout.screenIndex}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
-                                </div>
+                                </div>` : "" }
                                 <div class="form-outline mb-1" id="flGroupOutline-${ tabId }-${ propertyId }-${layout.screenIndex}" data-mdb-input-init>
                                     <input class="form-control form-control-sm fl-modal-form-input" id="flGroup-${ tabId }-${ propertyId }-${ layout.screenIndex }" />
                                     <label class="form-label select-label">${property.label}</label>
@@ -162,7 +175,7 @@ export default class Group extends View
 
         for (let [tabId, tab] of Object.entries(this.tabs ?? {})) {
             for (const propertyId of (tab.form) ? tab.form : []) {
-                const property = this.properties[propertyId]
+                const property = (tab.layout) ? tab.layout[propertyId] : this.properties[propertyId]
                 if (["select", "vector"].includes(property.type)) {
                     const el = document.getElementById(`flGroup-${ tabId }-${ propertyId }-${ layout.screenIndex }`)
                     new mdb.Select(el)
@@ -175,7 +188,8 @@ export default class Group extends View
                         })
                     }
 
-                } else if (property.type == "date") {
+                }
+                else if (property.type == "date") {
                     const el = document.getElementById(`flGroupOutline-${ tabId }-${ propertyId }-${ layout.screenIndex }`)
 
                     new mdb.Input(el)
@@ -190,31 +204,49 @@ export default class Group extends View
                         datePickerOptions.weekdaysNarrow = property.mdb.weekdaysNarrow
                     }
                     new mdb.Datepicker(el, datePickerOptions)
-
-                } else if (["time", "duration"].includes(property.type)) {
+                }
+                else if (["time", "duration"].includes(property.type)) {
                     const el = document.getElementById(`flGroupOutline-${ tabId }-${ propertyId }-${ layout.screenIndex }`)
                     new mdb.Input(el)
                     new mdb.Timepicker(el,{ format24: true, increment: true })
-
-                } else if (property.type === "wysiwyg") {
-                    const el = document.getElementById(`flGroupWysiwyg-${ tabId }-${ propertyId }-${ layout.screenIndex }`)
-
-                } else {
+                }
+                else if (property.type == "file") {
+                    const fileSelect = document.getElementById(`flGroup-${ tabId }-${ tab.post.body.file }-${ layout.screenIndex }`)
+                    fileSelect?.addEventListener("change", () => {
+                        if (fileSelect) {
+                            const files = fileSelect.files
+                            for (var i = 0; i < files.length; i++) {
+                                const file = files[i]
+                                if (!["jpeg","jpg","png","gif","pdf","doc","docx","xls","xlsx","ppt","pptx","md","txt"].includes(file.type.split("/")[1])) {
+                                    alert("File type not accepted")
+                                    fileSelect.value = ""
+                                }
+                                else if (file.size >= 1024000) {
+                                    alert("File to big (1 Mb max)")
+                                    fileSelect.value = ""
+                                }
+                            }
+                        }
+                    })
+                }
+                else {
                     const el = document.getElementById(`flGroupOutline-${ tabId }-${ propertyId }-${ layout.screenIndex }`)
                     new mdb.Input(el)
                 }
 
                 // Handle input change to check the checkbox
-                const check = (propertyId) => {
-                    document.getElementById(`flGroupCheck-${ tabId }-${ propertyId }-${ layout.screenIndex }`).checked = true
+                if (!property.required && property.type !== "file") {
+                    const check = (propertyId) => {
+                        document.getElementById(`flGroupCheck-${ tabId }-${ propertyId }-${ layout.screenIndex }`).checked = true
+                    }
+                    const input = document.getElementById(`flGroup-${ tabId }-${ propertyId }-${ layout.screenIndex }`)
+                    input.addEventListener("change", () => { check(propertyId) })
+                    input.addEventListener("input", () => { check(propertyId) })
+                    const outline = document.getElementById(`flGroupOutline-${ tabId }-${ propertyId }-${ layout.screenIndex }`)
+                    outline?.addEventListener("valueChanged.mdb.datepicker", () => { check(propertyId) })
+                    outline?.addEventListener("valueChanged.mdb.timepicker", () => { check(propertyId) })
+                    outline?.addEventListener("itemSelect.mdb.autocomplete", () => { check(propertyId) })
                 }
-                const input = document.getElementById(`flGroup-${ tabId }-${ propertyId }-${ layout.screenIndex }`)
-                input.addEventListener("change", () => { check(propertyId) })
-                input.addEventListener("input", () => { check(propertyId) })
-                const outline = document.getElementById(`flGroupOutline-${ tabId }-${ propertyId }-${ layout.screenIndex }`)
-                outline?.addEventListener("valueChanged.mdb.datepicker", () => { check(propertyId) })
-                outline?.addEventListener("valueChanged.mdb.timepicker", () => { check(propertyId) })
-                outline?.addEventListener("itemSelect.mdb.autocomplete", () => { check(propertyId) })
             }
         }
 
@@ -282,14 +314,16 @@ export default class Group extends View
             for (const matchingRow of matchingRows) {
                 const row = {}
                 for (const [propertyId, target] of Object.entries(tab.post.body?.rows ? tab.post.body.rows : {})) {
+                    const property = (tab.layout) ? tab.layout[propertyId] : properties[propertyId]
+                    
                     if (target === "matchingRow") {
                         row[propertyId] = matchingRow[propertyId]
-                    } else if (target === "form") {
+                    }
+                    else if (target === "form") {
 
                         // Only send the value if the checkbox is checked
-                        if (!document.getElementById(`flGroupCheck-${tabId}-${propertyId}-${layout.screenIndex}`).checked) continue
+                        if (!property.required && !document.getElementById(`flGroupCheck-${tabId}-${propertyId}-${ layout.screenIndex }`).checked) continue
 
-                        const property = properties[propertyId]
                         const input = document.getElementById(`flGroup-${ tabId }-${ propertyId }-${ layout.screenIndex }`)
                         if (property.type === "date") {
                             const val = input.value
@@ -314,10 +348,32 @@ export default class Group extends View
 
             const post = {
                 method: tab.post.method,
-                headers: new Headers({"content-type": "application/json"}),
             }
-            if (tab.post.body?.rows) post.body = JSON.stringify(rows)
-            const response = await fetch(`/${ tab.post.controller }/${ tab.post.action }/${ tab.post.entity }`, post)
+            if (tab.post.body.file) {
+                const formData = new FormData()
+                formData.append("rows", JSON.stringify(rows))
+                post.body = formData
+
+                const fileSelect = document.getElementById(`flGroup-${ tabId }-${ tab.post.body.file }-${ layout.screenIndex }`)
+                if (fileSelect) {
+                    const files = fileSelect.files
+                    for (var i = 0; i < files.length; i++) {
+                        const file = files[i]
+                        if (!["jpeg","jpg","png","gif","pdf","doc","docx","xls","xlsx","ppt","pptx","md","txt"].includes(file.type.split("/")[1])) {
+                            alert("File type not accepted")
+                        }
+                        else if (file.size >= 1024000) {
+                            alert("File to big (1 Mb max)")
+                        }
+                        else formData.append("attachment", file, file.name)
+                    }
+                }
+            }
+            else {
+                if (tab.post.body?.rows) post.body = JSON.stringify(rows)
+                post.headers = new Headers({"content-type": "application/json"})
+            }
+            const response = await fetch(`/${ tab.post.controller }/${ tab.post.action }${ tab.post.entity ? `/${ tab.post.entity }` : "" }`, post)
 
             // Handle the response
             if (response.ok) {

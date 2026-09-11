@@ -11,6 +11,7 @@ const { deleteAction } = require("./server/deleteAction")
 const deleteTagAction = require("./server/deleteTagAction")
 const { transactionAction } = require("./server/transactionAction")
 const { smtpAction } = require("./server/smtpAction")
+const { smtpActionV2 } = require("./server/smtpActionV2")
 const { createSqlClient } = require("./server/model/sql-client")
 const { createMailClient } = require("../utils/mail-client")
 const { executeService } = require("../../core/api-utils")
@@ -68,6 +69,13 @@ const register = async ({ context, config, logger, app }) => {
 
     app.get(`${config.prefix}v1/:entity`, execute(getAction, context, { sql, logger }))
     app.get(`${config.prefix}v1/:entity/:id`, execute(getAction, context, { sql, logger }))
+
+    const executeSmtp = async (req, res) => {
+        const result = await smtpActionV2({ req }, context, { sql, smtp, testMail: config.smtp?.testMail, logger })
+        return res.status(200).send(result)
+    }
+    app.post(`${config.prefix}v1/smtp`, upload.single("attachment"), executeSmtp)
+
     app.post(`${config.prefix}v1/tag`, execute(postTagAction, context, { sql, logger }))
     app.post(`${config.prefix}v1/:entity`, execute(postAction, context, { sql, logger }))
     app.post(`${config.prefix}file/:entity`, upload.single("attachment"), executeFile)

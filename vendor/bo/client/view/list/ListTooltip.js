@@ -2,10 +2,11 @@ import View from "../View.js"
 
 export default class ListEvents extends View
 {
-    constructor({ controller, list, eventConfig }) {
+    constructor({ controller, list, eventConfig, layout }) {
         super({ controller })
         this.list = list
         this.eventConfig = eventConfig
+        this.layout = layout
     }
 
     initialize = async () => {
@@ -35,7 +36,7 @@ export default class ListEvents extends View
 
     trigger = (events) => {
         for (const [key, rows] of Object.entries(events)) {
-            const el = document.getElementById(`flListTooltip-${ key }`)
+            const el = document.getElementById(`flListTooltip-${ key }-${ this.layout.screenIndex }`)
             if (el) {
                 el.setAttribute("title", this.render(rows))
                 new mdb.Tooltip(el, { html: true, placement: "right" })

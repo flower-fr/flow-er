@@ -245,7 +245,6 @@ export default class AddForm extends View
                 if (!input.value) formComplete = false
             }
         }
-
         if (toAdd.length !== 0 && formComplete) {
             $(".fl-add-count").text(`(${ toAdd.length })`)
             $(".flAdd-tab-submit").attr("disabled", false)
@@ -322,7 +321,7 @@ export default class AddForm extends View
             btnAnimation.stopAnimation()
             keywordsRefresh.classList.remove("btn-primary")
             keywordsRefresh.classList.add("btn-outline-primary")
-            document.getElementById("flSearchKeywords").value = ""
+            document.getElementById(`flSearchKeywords-${ layout.screenIndex }`).value = ""
 
             layout.refreshList({ where: this.extractFilters(), tags: this.extractTags() })
         }
