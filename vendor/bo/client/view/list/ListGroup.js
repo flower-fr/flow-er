@@ -47,8 +47,15 @@ export default class ListGroup extends View
 
         html.push(`
         <tbody>
-            <tr class="listRow" id="flListRow-${ label }-${ layout.screenIndex }">
-                <td/>
+            <tr class="listRow" id="flListRow-${ label }-${ layout.screenIndex }">`)
+
+        
+        if (this.layout.enabledActions.includes("group")) {
+            html.push(`
+                <td/>`)
+        }
+
+        html.push(`
                 <td class="text-center">
                     <button 
                         type="button"

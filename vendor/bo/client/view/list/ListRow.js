@@ -49,16 +49,21 @@ export default class ListRow extends View
         }
 
         html.push(`
-        <tr class="listRow">
+        <tr class="listRow">`)
+
+        if (layout.enabledActions.includes("group")) {
+            html.push(`
             <td>
                 <div class="text-center">
                     <input type="checkbox" id="flListCheck-${ i }-${ layout.screenIndex }"></input>
                 </div>
-            </td>
+            </td>`)
+        }
 
+        html.push(`
             <td class="text-center">`)
 
-        if (this.list.layout.enabledActions.includes("card")) {
+        if (layout.enabledActions.includes("card")) {
             html.push(`
                 <a 
                     href="#!"

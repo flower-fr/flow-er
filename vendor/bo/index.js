@@ -7,6 +7,7 @@ const { createSqlClient } = require("../flCore/server/model/sql-client")
 const action = require("./server/action")
 const indexAction = require("./server")
 const navbarAction = require("./server/navbar")
+const rulesAction = require("./server/rules")
 
 const register = async ({ context, config, logger, app }) => {
 
@@ -25,6 +26,7 @@ const register = async ({ context, config, logger, app }) => {
 
     app.get(`${config.prefix}index/:application/:tab`, execute(indexAction, { context, logger }))
     app.get(`${config.prefix}navbar/:application/:tab`, execute(navbarAction, { context, logger }))
+    app.get(`${config.prefix}rules/:application`, execute(rulesAction, { context, logger }))
     app.get(`${config.prefix}:action/:entity`, execute(action, { context, sql, logger }))
 
     // fallback : send 404

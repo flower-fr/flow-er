@@ -16,7 +16,7 @@ export default class Toast extends View
      * @param {boolean} [options.persistent=false] - If true, toast only closes on manual dismiss.
      * @param {Function} [options.onValidate=null] - Callback function to execute when the toast is validated.
      */
-    constructor({ controller, entity, view, properties, template, action, stack, layout, translations }, { title, message, type = "info", delay = 3000, persistent = false, onValidate = null }) {
+    constructor({ controller, entity, view, template, action, stack, layout, translations }, { title, message, type = "info", delay = 3000, persistent = false, onValidate = null }) {
         super({ controller })
         this.entity = entity
         this.view = view
@@ -30,9 +30,8 @@ export default class Toast extends View
         this.delay = delay
         this.persistent = persistent
         this.onValidate = onValidate
+        this.translations = translations
         this.id = `toast-${Toast.#counter++}`
-
-        if (this.action) this.toastForm = new ToastForm({ controller, entity, view, properties, action, translations })
     }
 
     initialize = async () => {}

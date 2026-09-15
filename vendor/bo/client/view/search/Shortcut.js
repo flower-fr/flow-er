@@ -14,8 +14,8 @@ export default class Shortcut extends View
         const { propertyId, property } = this, html = []
 
         html.push(`
-            <div class="chip chip-outline btn-outline-primary" id="flSearchShortcut-${propertyId}">
-                ${ property.label }&nbsp;&nbsp;<i class="fas fa-times" id="flSearchShortcutClose-${propertyId}"></i>
+            <div class="chip chip-outline btn-outline-primary" id="flSearchShortcut-${propertyId}-${ this.layout.screenIndex }">
+                ${ property.label }&nbsp;&nbsp;<i class="fas fa-times" id="flSearchShortcutClose-${propertyId}-${ this.layout.screenIndex }"></i>
             </div>`)
 
         return html.join("\n")

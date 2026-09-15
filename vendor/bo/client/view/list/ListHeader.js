@@ -29,14 +29,18 @@ export default class ListHeader extends View
     {
         const html = [], { properties, orderProperty, translations, headerCells, layout } = this
 
-        html.push(`
+        if (this.list.layout.enabledActions.includes("group")) {
+            html.push(`
             <th>
                 <div class="text-center">
                     <div class="text-center">
                         <input type="checkbox" id="flListCheckAllUp-${ layout.screenIndex }" data-toggle="tooltip" data-placement="top" title="${ translations["Check all"] }"></input>
                     </div>
                 </div>
-            </th>
+            </th>`)
+        }
+
+        html.push(`
             <th />`)
 
         const grouping = properties[orderProperty].group

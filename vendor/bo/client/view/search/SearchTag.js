@@ -15,7 +15,7 @@ export default class SearchTag extends View
         html.push(`
             <div
                 class="chip chip-outline btn-outline-primary"
-                id="flSearchTag-${ this.name }"
+                id="flSearchTag-${ this.name }-${ this.layout.screenIndex }"
                 data-fl-checked="false"
                 data-mdb-chip-init
                 data-mdb-ripple-color="dark"

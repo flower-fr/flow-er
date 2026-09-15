@@ -127,6 +127,7 @@ const renderLogin = ({ context }, data) => {
         ${renderFooter({ context }, data)}
     </body>
 
+    <script>localStorage.clear()</script>
     ${ renderScripts({ context }, data) }
 
     </html>`

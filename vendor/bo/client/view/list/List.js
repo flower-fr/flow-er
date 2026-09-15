@@ -159,13 +159,18 @@ export default class List extends View
         }
 
         html.push(`
-                        <tr class="listRow">
+                        <tr class="listRow">`)
+
+        if (this.layout.enabledActions.includes("group")) {
+            html.push(`
                             <td>
                                 <div class="text-center">
                                     <input type="checkbox" id="flListCheckAllDown-${ this.layout.screenIndex }" data-toggle="tooltip" data-placement="top" title="${ translations["Check all"] }"></input>
                                 </div>
-                            </td>
+                            </td>`)
+        }
 
+        html.push(`
                             <td class="text-center">
                                 ${(this.listRows.length === this.limit) 
         ? `
@@ -284,88 +289,90 @@ export default class List extends View
             })
         }
 
-        // Trigger checking rows for group action
-        this.listRows.forEach(listRow => {
-            const i = listRow.i
-            const row = document.getElementById(`flListCheck-${ i }-${ layout.screenIndex }`)
-            const id = listRow.row.id
-            row.onclick = (e) => {
-                if (e.shiftKey) {
-                    const max = i, state = row.checked
-                    let min = 0
-                    this.listRows.forEach(lr => {
-                        const i = lr.i, r = document.getElementById(`flListCheck-${ i }-${ layout.screenIndex }`)
-                        if (r.checked && i < max) min = i
-                    })
-                    this.listRows.forEach(lr => {
-                        const i = lr.i, r = document.getElementById(`flListCheck-${ i }-${ layout.screenIndex }`)
-                        if (i >= min && i <= max) r.checked = state
-                        this.toggleChecked(lr.row.id, r.checked)
-                    })
-                } else {
-                    this.toggleChecked(id, row.checked)
-                }
-
-                const checked = this.checkedIds.size, checkedRows = []
-                this.listRows.forEach(lr => {
-                    const i = lr.i, r = document.getElementById(`flListCheck-${ i }-${ layout.screenIndex }`)
-                    if (r.checked) {
-                        checkedRows.push(lr.row)
+        if (this.layout.enabledActions.includes("group")) {
+            // Trigger checking rows for group action
+            this.listRows.forEach(listRow => {
+                const i = listRow.i
+                const row = document.getElementById(`flListCheck-${ i }-${ layout.screenIndex }`)
+                const id = listRow.row.id
+                row.onclick = (e) => {
+                    if (e.shiftKey) {
+                        const max = i, state = row.checked
+                        let min = 0
+                        this.listRows.forEach(lr => {
+                            const i = lr.i, r = document.getElementById(`flListCheck-${ i }-${ layout.screenIndex }`)
+                            if (r.checked && i < max) min = i
+                        })
+                        this.listRows.forEach(lr => {
+                            const i = lr.i, r = document.getElementById(`flListCheck-${ i }-${ layout.screenIndex }`)
+                            if (i >= min && i <= max) r.checked = state
+                            this.toggleChecked(lr.row.id, r.checked)
+                        })
+                    } else {
+                        this.toggleChecked(id, row.checked)
                     }
-                })
 
-                if (cardEl.dataset.openId) {
-                    layout.showCardMode()
-                }
-                else if (checked > 0) {
-                    layout.showGroupMode()
-                }
-                else {
-                    layout.showMainMode()
-                }
-                group.eventRowChecked(this.summable, checkedRows)                
-            }
-        })
+                    const checked = this.checkedIds.size, checkedRows = []
+                    this.listRows.forEach(lr => {
+                        const i = lr.i, r = document.getElementById(`flListCheck-${ i }-${ layout.screenIndex }`)
+                        if (r.checked) {
+                            checkedRows.push(lr.row)
+                        }
+                    })
 
-        // Trigger checking all rows
-        const checkAll = (state) =>
-        {
-            const checkedRows = []
-            this.listRows.forEach(lr => {
-                const i = lr.i, r = document.getElementById(`flListCheck-${ i }-${ layout.screenIndex }`)
-                r.checked = state
-                this.toggleChecked(lr.row.id, state)
+                    if (cardEl.dataset.openId) {
+                        layout.showCardMode()
+                    }
+                    else if (checked > 0) {
+                        layout.showGroupMode()
+                    }
+                    else {
+                        layout.showMainMode()
+                    }
+                    group.eventRowChecked(this.summable, checkedRows)                
+                }
             })
 
-            if (state)
+            // Trigger checking all rows
+            const checkAll = (state) =>
             {
-                if (cardEl.dataset.openId) layout.showCardMode()
-                else layout.showGroupMode()
-                group.eventRowChecked(this.summable, this.listRows.map(lr => lr.row))
+                const checkedRows = []
+                this.listRows.forEach(lr => {
+                    const i = lr.i, r = document.getElementById(`flListCheck-${ i }-${ layout.screenIndex }`)
+                    r.checked = state
+                    this.toggleChecked(lr.row.id, state)
+                })
+
+                if (state)
+                {
+                    if (cardEl.dataset.openId) layout.showCardMode()
+                    else layout.showGroupMode()
+                    group.eventRowChecked(this.summable, this.listRows.map(lr => lr.row))
+                }
+                else {
+                    if (cardEl.dataset.openId) layout.showCardMode()
+                    else layout.showMainMode()
+                    group.eventRowChecked(this.summable, [])
+                }
             }
-            else {
-                if (cardEl.dataset.openId) layout.showCardMode()
-                else layout.showMainMode()
-                group.eventRowChecked(this.summable, [])
+
+            const checkAllUp = document.getElementById(`flListCheckAllUp-${ layout.screenIndex }`)
+            const checkAllDown = document.getElementById(`flListCheckAllDown-${ layout.screenIndex }`)
+            document.getElementById(`flListCheckAllUp-${ layout.screenIndex }`).onclick = () => {
+                checkAllDown.checked = checkAllUp.checked
+                checkAll(checkAllUp.checked)
             }
-        }
 
-        const checkAllUp = document.getElementById(`flListCheckAllUp-${ layout.screenIndex }`)
-        const checkAllDown = document.getElementById(`flListCheckAllDown-${ layout.screenIndex }`)
-        document.getElementById(`flListCheckAllUp-${ layout.screenIndex }`).onclick = () => {
-            checkAllDown.checked = checkAllUp.checked
-            checkAll(checkAllUp.checked)
-        }
+            document.getElementById(`flListCheckAllDown-${ layout.screenIndex }`).onclick = () => {
+                checkAllUp.checked = checkAllDown.checked
+                checkAll(checkAllDown.checked)
+            }
 
-        document.getElementById(`flListCheckAllDown-${ layout.screenIndex }`).onclick = () => {
-            checkAllUp.checked = checkAllDown.checked
-            checkAll(checkAllDown.checked)
-        }
-
-        if (this.params?.checkAll) {
-            checkAllUp.checked = true
-            checkAllDown.checked = true
-            checkAll(true)
+            if (this.params?.checkAll) {
+                checkAllUp.checked = true
+                checkAllDown.checked = true
+                checkAll(true)
+            }
         }
     }
 

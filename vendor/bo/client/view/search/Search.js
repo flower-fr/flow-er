@@ -36,7 +36,7 @@ export default class Search extends View
         const html = []
 
         html.push(`
-        <div class="card mb-3" id="flGroup">
+        <div class="card mb-3" id="flGroup-${ this.layout.screenIndex }">
             <div class="card-body">
                 <div class="row my-3">`)
 
@@ -45,10 +45,10 @@ export default class Search extends View
         html.push(`
                     <div class="col-md-12">    
                         <div class="input-group text-center">
-                            <button type="button" class="btn btn-outline-primary" id="flSearchRefresh" title="${ this.translations["Refresh the list"] }">
+                            <button type="button" class="btn btn-outline-primary" id="flSearchRefresh-${ this.layout.screenIndex }" title="${ this.translations["Refresh the list"] }">
                                 <i class="fa fa-sync-alt"></i>
                             </button>
-                            <button type="button" class="btn btn-outline-primary" id="flSearchErase" title="${ this.translations["Erase"] }">
+                            <button type="button" class="btn btn-outline-primary" id="flSearchErase-${ this.layout.screenIndex }" title="${ this.translations["Erase"] }">
                                 <i class="fa fa-times"></i>
                             </button>                
                         </div>
@@ -67,38 +67,38 @@ export default class Search extends View
     buildShortcuts = () =>
     {
         const { controller, layout, properties } = this
-        document.getElementById("flShortcuts").innerHTML = layout.sidenavButton.render()
-        document.getElementById("flShortcuts").insertAdjacentHTML("beforeend", layout.searchKeywords.render())
+        document.getElementById(`flShortcuts-${ layout.screenIndex }`).innerHTML = layout.sidenavButton.render()
+        document.getElementById(`flShortcuts-${ layout.screenIndex }`).insertAdjacentHTML("beforeend", layout.searchKeywords.render())
 
         // Quick keyword search
-        document.getElementById("flSearchKeywordsRefresh").addEventListener("click", () => {
-            layout.refreshList({ where:`keywords:contains,${ document.getElementById("flSearchKeywords").value }`, tags: this.extractTags() })
+        document.getElementById(`flSearchKeywordsRefresh-${ layout.screenIndex }`).addEventListener("click", () => {
+            layout.refreshList({ where:`keywords:contains,${ document.getElementById(`flSearchKeywords-${ layout.screenIndex }`).value }`, tags: this.extractTags() })
         })
 
         for (const [propertyId, property] of Object.entries(properties)) {
             if (["date", "time", "datetime", "number"].includes(property.type)) {
-                if (document.getElementById(`flSearchMin-${propertyId}`).value || document.getElementById(`flSearchMax-${propertyId}`).value) {
+                if (document.getElementById(`flSearchMin-${propertyId}-${ layout.screenIndex }`).value || document.getElementById(`flSearchMax-${propertyId}-${ layout.screenIndex }`).value) {
                     const shortcut = new Shortcut({ controller, propertyId, property: properties[propertyId] })
-                    document.getElementById("flShortcuts").insertAdjacentHTML("beforeend", shortcut.render())
+                    document.getElementById(`flShortcuts-${ layout.screenIndex }`).insertAdjacentHTML("beforeend", shortcut.render())
 
                     // Close shortcut
-                    document.getElementById(`flSearchShortcutClose-${ propertyId }`).addEventListener("click", () => {
-                        document.getElementById(`flSearchMin-${ propertyId }`).value = ""
-                        document.getElementById(`flSearchMax-${ propertyId }`).value = ""
+                    document.getElementById(`flSearchShortcutClose-${ propertyId }-${ layout.screenIndex }`).addEventListener("click", () => {
+                        document.getElementById(`flSearchMin-${ propertyId }-${ layout.screenIndex }`).value = ""
+                        document.getElementById(`flSearchMax-${ propertyId }-${ layout.screenIndex }`).value = ""
                         this.buildShortcuts()
                         layout.refreshList({ where: this.extractFilters(), tags: this.extractTags() })
                     })
                 }
             } else {
-                if (document.getElementById(`flSearch-${ propertyId }`).value) {
+                if (document.getElementById(`flSearch-${ propertyId }-${ layout.screenIndex }`).value) {
                     const shortcut = new Shortcut({ controller, propertyId, property: properties[propertyId] })
-                    document.getElementById("flShortcuts").insertAdjacentHTML("beforeend", shortcut.render())
+                    document.getElementById(`flShortcuts-${ layout.screenIndex }-${ layout.screenIndex }`).insertAdjacentHTML("beforeend", shortcut.render())
 
                     // Close shortcut
-                    document.getElementById(`flSearchShortcutClose-${ propertyId }`).addEventListener("click", () => {
-                        const instance = mdb.Select.getInstance(`#flSearch-${ propertyId }`)
+                    document.getElementById(`flSearchShortcutClose-${ propertyId }-${ layout.screenIndex }`).addEventListener("click", () => {
+                        const instance = mdb.Select.getInstance(`#flSearch-${ propertyId }-${ layout.screenIndex }`)
                         if (instance) instance.setValue("")
-                        else document.getElementById(`flSearch-${ propertyId }`).value = ""
+                        else document.getElementById(`flSearch-${ propertyId }-${ layout.screenIndex }`).value = ""
                         this.buildShortcuts()
                         layout.refreshList({ where: this.extractFilters(), tags: this.extractTags() })
                     })
@@ -107,13 +107,13 @@ export default class Search extends View
         }
 
         for (const tag of this.tags) {
-            const tagElement = document.getElementById(`flSearchTag-${ tag.name }`)
+            const tagElement = document.getElementById(`flSearchTag-${ tag.name }-${ layout.screenIndex }`)
             if (tagElement.getAttribute("data-fl-checked") === "true") {
                 const shortcut = new Shortcut({ controller, propertyId: `tag:${ tag.name }`, property: { label: `#${ tag.name }` } })
-                document.getElementById("flShortcuts").insertAdjacentHTML("beforeend", shortcut.render())
+                document.getElementById(`flShortcuts-${ layout.screenIndex }`).insertAdjacentHTML("beforeend", shortcut.render())
 
                 // Close shortcut
-                document.getElementById(`flSearchShortcutClose-tag:${ tag.name }`).addEventListener("click", () => {
+                document.getElementById(`flSearchShortcutClose-tag:${ tag.name }-${ layout.screenIndex }`).addEventListener("click", () => {
                     tagElement.setAttribute("data-fl-checked", "false")
                     this.buildShortcuts()
                     layout.refreshList({ where: this.extractFilters(), tags: this.extractTags() })
@@ -124,12 +124,12 @@ export default class Search extends View
 
     extractFilters = () =>
     {
-        const { properties } = this, filters = []
+        const { properties, layout } = this, filters = []
         for (const [propertyId, property] of Object.entries(properties)) {
             if (["date", "time", "datetime", "number"].includes(property.type)) {
-                let min = document.getElementById(`flSearchMin-${ propertyId }`).value
+                let min = document.getElementById(`flSearchMin-${ propertyId }-${ layout.screenIndex }`).value
                 if (min) min = moment(min, "DD/MM/YYYY").format("YYYY-MM-DD")
-                let max = document.getElementById(`flSearchMax-${ propertyId }`).value
+                let max = document.getElementById(`flSearchMax-${ propertyId }-${ layout.screenIndex }`).value
                 if (max) max = moment(max, "DD/MM/YYYY").format("YYYY-MM-DD")
                 if (min && max) {
                     filters.push(`${ propertyId }:between,${ min },${ max }`)
@@ -139,7 +139,7 @@ export default class Search extends View
                     filters.push(`${ propertyId }:<=,${ max }`)
                 }
             } else {
-                const value = document.getElementById(`flSearch-${ propertyId }`).value
+                const value = document.getElementById(`flSearch-${ propertyId }-${ layout.screenIndex }`).value
                 if (value) {
                     filters.push(`${ propertyId }:contains,${ value }`)
                 }
@@ -150,7 +150,7 @@ export default class Search extends View
 
     extractTags = () =>
     {
-        const tags = this.tags.filter(tag => document.getElementById(`flSearchTag-${ tag.name }`).getAttribute("data-fl-checked") === "true").map(tag => tag.name)
+        const tags = this.tags.filter(tag => document.getElementById(`flSearchTag-${ tag.name }-${ this.layout.screenIndex }`).getAttribute("data-fl-checked") === "true").map(tag => tag.name)
         return tags.join(",")
     }
 
@@ -165,7 +165,7 @@ export default class Search extends View
         }
 
         for (const tag of this.tags) {
-            const tagElement = document.getElementById(`flSearchTag-${ tag.name }`)
+            const tagElement = document.getElementById(`flSearchTag-${ tag.name }-${ layout.screenIndex }`)
             tagElement.addEventListener("click", () => {
                 tagElement.setAttribute("data-fl-checked", "true")
                 layout.refreshList({ where: this.extractFilters(), tags: this.extractTags() })
@@ -173,30 +173,30 @@ export default class Search extends View
             })
         }
 
-        const refresh = document.getElementById("flSearchRefresh")
+        const refresh = document.getElementById(`flSearchRefresh-${ layout.screenIndex }`)
         new mdb.Ripple(refresh, { rippleColor: "primary" })
 
-        const erase = document.getElementById("flSearchErase")
+        const erase = document.getElementById(`flSearchErase-${ layout.screenIndex }`)
         new mdb.Ripple(erase, { rippleColor: "primary" })
 
-        document.getElementById("flSearchRefresh").onclick = () => {
+        document.getElementById(`flSearchRefresh-${ layout.screenIndex }`).onclick = () => {
             layout.refreshList({ where: this.extractFilters(), tags: this.extractTags() })
             this.buildShortcuts()
         }
 
-        document.getElementById("flSearchErase").onclick = () => {
+        document.getElementById(`flSearchErase-${ layout.screenIndex }`).onclick = () => {
             layout.refreshList({})
             for (const [propertyId, property] of Object.entries(properties)) {
                 if (["date", "time", "datetime", "number"].includes(property.type)) {
-                    document.getElementById(`flSearchMin-${ propertyId }`).value = ""
-                    document.getElementById(`flSearchMax-${ propertyId }`).value = ""
+                    document.getElementById(`flSearchMin-${ propertyId }-${ layout.screenIndex }`).value = ""
+                    document.getElementById(`flSearchMax-${ propertyId }-${ layout.screenIndex }`).value = ""
                 } else {
-                    const instance = mdb.Select.getInstance(`#flSearch-${ propertyId }`)
+                    const instance = mdb.Select.getInstance(`#flSearch-${ propertyId }-${ layout.screenIndex }`)
                     if (instance) instance.setValue("")
-                    else document.getElementById(`flSearch-${ propertyId }`).value = ""
+                    else document.getElementById(`flSearch-${ propertyId }-${ layout.screenIndex }`).value = ""
                 }
                 for (const tag of this.tags) {
-                    const tagElement = document.getElementById(`flSearchTag-${ tag.name }`)
+                    const tagElement = document.getElementById(`flSearchTag-${ tag.name }-${ layout.screenIndex }`)
                     tagElement.setAttribute("data-fl-checked", "false")
                 }
             }

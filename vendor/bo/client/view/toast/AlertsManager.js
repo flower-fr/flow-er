@@ -29,52 +29,31 @@ export default class AlertsManager extends View
 
         const { controller, entity, view, layout } = this
 
-        // #region Test toast for stack
-        let stack
-        if (entity === "crm_account") stack = { title: "Prospects en retard", description: "Décalez en un clic la date de prochaine action de tous les prospects dont le traitement est en retard.", entity, view: "actionEnRetard", buttonLabel: "Accéder" }
-        else stack = { title: "Suggestion", description: "Voici une suggestion d'action.", entity, view: "suggestion", buttonLabel: "En savoir plus" }
-        this.test = new Toast({ controller, 
-            entity, 
-            view, 
-            stack,
-            layout },
-        {
-            title: "Alerte",
-            message: entity === "crm_account" ? "Vous avez des prospects en retard. Décalez leur date de prochaine action sur la page suivante :" : "Voici une suggestion d'action.",
-            type: "info",
-            persistent: true,
-            onValidate: () => console.log("Alert dismissed")
-        })
-        this.test.initialize()
-        // #endregion
-
-        let response = await fetch(`/bo/alert/${ this.entity }?view=${ this.view }`)
-        const { profileEntity, properties, templates, actions, translations } = await response.json()
-        this.profileEntity = profileEntity
-        this.templates = templates
-        this.actions = actions
+        // let response = await fetch(`/bo/alert/${ this.entity }?view=${ this.view }`)
+        // const { profileEntity, properties, templates, actions, translations } = await response.json()
+        // this.profileEntity = profileEntity
+        // this.templates = templates
+        // this.actions = actions
 
         // Fetch alerts for the given profileId
-        response = await fetch(`/core/v1/${ profileEntity }?columns=alerts&where=id:${ this.profile_id }`)
-        if (!response.ok) {
-            console.error("Failed to load profile alerts")
-            return
-        }
-        const data = await response.json()
-        this.alerts = data.rows?.[0]?.alerts ?? []
+        // response = await fetch(`/core/v1/${ profileEntity }?columns=alerts&where=id:${ this.profile_id }`)
+        // if (!response.ok) {
+        //     console.error("Failed to load profile alerts")
+        //     return
+        // }
+        // const data = await response.json()
+        // this.alerts = data.rows?.[0]?.alerts ?? []
+        this.alerts = this.getAlertsFromStorage()
 
         // Create Toast instances for each active alert
         const alert = this.alerts.find(alert => (alert.visibility !== "hidden") ? alert : false)
         this.toasts = (alert ? [alert] : []).map((alert) => new Toast({ 
             controller, 
             entity, 
-            view, 
-            properties,
-            template: alert.template ? templates[alert.template] : undefined,
-            action: alert.action ? actions[alert.action] : undefined,
+            view,
             stack: alert.stack,
             layout,
-            translations
+            // translations
         },
         {
             title: alert.title,
@@ -92,7 +71,21 @@ export default class AlertsManager extends View
     trigger = () =>
     {
         this.toasts?.forEach((toast) => toast.trigger())
-        this.test?.trigger()
+    }
+
+    /**
+     * Reads alerts from localStorage.
+     * @returns {Array<Object>} The list of stored alerts.
+     */
+    getAlertsFromStorage = () => {
+        const raw = localStorage.getItem("alerts")
+
+        try {
+            return JSON.parse(raw) ?? []
+        } catch (error) {
+            console.error("Failed to parse alerts from localStorage", error)
+            return []
+        }
     }
 
     /**
@@ -106,21 +99,28 @@ export default class AlertsManager extends View
             return
         }
 
-        const { profileEntity } = this
+        // const { profileEntity } = this
 
         alert.visibility = "hidden"
+        alert.dismissedAt = new Date().toISOString()
+        // try {
+        //     const response = await fetch(`/core/v1/${ profileEntity }?id=${ this.profile_id }`, {
+        //         method: "POST",
+        //         headers: {
+        //             "Content-Type": "application/json"
+        //         },
+        //         body: JSON.stringify([{ alerts: this.alerts }])
+        //     })
+        //     const result = await response.json()
+        //     if (result.status !== "ok") {
+        //         console.error("Failed to dismiss alert:", result)
+        //     }
+        // } catch (error) {
+        //     console.error(`Failed to dismiss alert "${alert.title}"`, error)
+        // }
+
         try {
-            const response = await fetch(`/core/v1/${ profileEntity }?id=${ this.profile_id }`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify([{ alerts: this.alerts }])
-            })
-            const result = await response.json()
-            if (result.status !== "ok") {
-                console.error("Failed to dismiss alert:", result)
-            }
+            localStorage.setItem("alerts", JSON.stringify(this.alerts))
         } catch (error) {
             console.error(`Failed to dismiss alert "${alert.title}"`, error)
         }
