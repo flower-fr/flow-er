@@ -77,7 +77,7 @@ export default class AddForm extends View
                         <div class="row mb-3">
                             <div class="col-md-4">
                                 <div class="form-outline" id="flAddOutline-${ propertyId }-${ layout.screenIndex }" data-mdb-datepicker-init data-mdb-input-init>
-                                    <input class="form-control form-control-sm" id="flAdd-${ propertyId }-${ layout.screenIndex }" value="${ initialValue }" />
+                                    <input class="form-control form-control-sm" id="flAdd-${ propertyId }-${ layout.screenIndex }" value="${ moment(initialValue).format("DD/MM/YYYY") }" />
                                     <label class="form-label select-label">${ property.required ? "* " : "" }${property.label}</label>
                                 </div>
                             </div>
