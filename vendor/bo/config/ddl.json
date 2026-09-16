@@ -2,10 +2,16 @@
     "bo/model/releases": {
         "V260829": { 
             "entities": [
-                "guided_action",
-                "view_model"
+                "guided_action"
             ],
             "properties" : []
+        },
+        "V260925": { 
+            "entities": [],
+            "properties" : [
+                "guided_action/validity_date",
+                "guided_action/where_ids"
+            ]
         }
     }
 }
