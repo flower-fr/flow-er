@@ -60,7 +60,7 @@ export default class Layout extends View
         await this.dashboard?.initialize()
         await this.addForm?.initialize()
         await this.global?.initialize()
-        await this.list?.initialize()
+        // await this.list?.initialize()
         await this.group?.initialize()
         await this.alertsManager?.initialize()
     }
@@ -99,7 +99,7 @@ export default class Layout extends View
                             <div class="section">
                                 <div class="row" id="flList-${ this.screenIndex }">`)
         
-        if (this.list) html.push(this.list.render())
+        // if (this.list) html.push(this.list.render())
 
         html.push(`
                                 </div>
@@ -245,7 +245,10 @@ const getEnabledActions = (acl, view) => {
         const firstUnderscore = key.indexOf("_")
         const lastUnderscore = key.lastIndexOf("_")
 
-        if (firstUnderscore === -1 || firstUnderscore === lastUnderscore) continue
+        if (firstUnderscore === -1 || firstUnderscore === lastUnderscore) {
+            actions.add(key)
+            continue
+        }
 
         const action = key.slice(0, firstUnderscore)
         const keyView = key.slice(lastUnderscore + 1)

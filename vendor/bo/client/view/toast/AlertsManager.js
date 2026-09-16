@@ -29,11 +29,30 @@ export default class AlertsManager extends View
 
         const { controller, entity, view, layout } = this
 
-        // let response = await fetch(`/bo/alert/${ this.entity }?view=${ this.view }`)
-        // const { profileEntity, properties, templates, actions, translations } = await response.json()
-        // this.profileEntity = profileEntity
-        // this.templates = templates
-        // this.actions = actions
+        // #region Test toast for stack
+        let stack
+        if (entity === "crm_account") stack = { title: "Prospects en retard", description: "Décalez en un clic la date de prochaine action de tous les prospects dont le traitement est en retard.", entity, view: "actionEnRetard", buttonLabel: "Accéder" }
+        else stack = { title: "Suggestion", description: "Voici une suggestion d'action.", entity, view: "suggestion", buttonLabel: "En savoir plus" }
+        // this.test = new Toast({ controller, 
+        //     entity, 
+        //     view, 
+        //     stack,
+        //     layout },
+        // {
+        //     title: "Alerte",
+        //     message: entity === "crm_account" ? "Vous avez des prospects en retard. Décalez leur date de prochaine action sur la page suivante :" : "Voici une suggestion d'action.",
+        //     type: "info",
+        //     persistent: true,
+        //     onValidate: () => console.log("Alert dismissed")
+        // })
+        // this.test.initialize()
+        // #endregion
+
+        let response = await fetch(`/bo/alert/${ this.entity }?view=${ this.view }`)
+        const { profileEntity, properties, templates, actions, translations } = await response.json()
+        this.profileEntity = profileEntity
+        this.templates = templates
+        this.actions = actions
 
         // Fetch alerts for the given profileId
         // response = await fetch(`/core/v1/${ profileEntity }?columns=alerts&where=id:${ this.profile_id }`)
