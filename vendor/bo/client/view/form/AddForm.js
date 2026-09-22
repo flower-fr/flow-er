@@ -336,7 +336,6 @@ export default class AddForm extends View
             keywordsRefresh.classList.remove("btn-primary")
             keywordsRefresh.classList.add("btn-outline-primary")
 
-            layout.refreshList({})
             for (const [propertyId, property] of Object.entries(properties)) {
                 if (["select", "vector"].includes(property.type)) {
                     const instance = mdb.Select.getInstance(`#flAdd-${ propertyId }-${layout.screenIndex}`)
@@ -373,6 +372,7 @@ export default class AddForm extends View
                 tagElement.classList.add("btn-outline-primary")
             }
             document.getElementById(`flSearchKeywords-${ layout.screenIndex }`).value = ""
+            layout.refreshList({})
         }
 
         // Initialize and trigger MDB components for each property

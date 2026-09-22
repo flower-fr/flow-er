@@ -18,7 +18,22 @@ export default class AlertLoader {
         const config = await this.loadRules()
         if (config.length === 0) return []
 
+        const guidedActions = await this.loadGuidedActions()
+
         const alerts = this.getExistingAlerts()
+
+        // Merge guided actions with existing alerts
+        for (const action of guidedActions) {
+            const existing = alerts.find((alert) => alert.id === action.id)
+
+            if (existing?.visibility === "active" && action.visibility === "hidden") {
+                existing.visibility = "hidden"
+                existing.dismissedAt = new Date().toISOString()
+            }
+            if (existing) continue
+
+            if (action.visibility === "active") alerts.push(action)
+        }
 
         // Check each rule and update alerts
         for (const rule of config.rules) {
@@ -40,8 +55,6 @@ export default class AlertLoader {
         }
 
         localStorage.setItem("alerts", JSON.stringify(alerts))
-
-        if (alerts.length > 0) localStorage.setItem("alerts", JSON.stringify(alerts))
     }
 
     /**
@@ -57,6 +70,45 @@ export default class AlertLoader {
             console.error(`AlertLoader: no rules file found for application "${ this.application }"`, error)
             return []
         }
+    }
+
+    loadGuidedActions = async () => {
+        const response = await fetch(`/core/v1/guided_action?columns=entity,view,validity_date,where_ids,profile_id,status&where=profile_id:${ this.profile_id },0`)
+        if (!response.ok) {
+            console.error("AlertLoader: failed to load guided actions")
+            return []
+        }
+        const guidedActions = await response.json()
+
+        // Filter out guided actions that are not valid
+        const validGuidedActions = guidedActions.rows.filter(action => {
+            const validityDate = action.validity_date ? new Date(action.validity_date) : null
+            const today = new Date()
+            return !validityDate || validityDate <= today
+        })
+
+        // Prepare alerts object for valid guided actions
+        const alerts = validGuidedActions.map(action => {
+            const where = action.where_ids ? { id: action.where_ids } : undefined
+            const alert = {
+                id: `guided_action_${ action.id }`,
+                title: "Action guidée",
+                message: "Vous avez une action guidée à réaliser. Retrouvez le détail sur la page suivante :",
+                visibility: action.status === "active" ? "active" : "hidden",
+                dismissedAt: null,
+                stack: {
+                    entity: action.entity,
+                    view: action.view,
+                    where,
+                    title: "Action guidée",
+                    description: "Vous avez une action guidée à effectuer.",
+                    buttonLabel: "Accéder",
+                }
+            }
+            return alert
+        })
+
+        return alerts
     }
 
     /**

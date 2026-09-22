@@ -39,7 +39,8 @@ module.exports = {
         },
         where_ids: {
             entity: "guided_action",
-            column: "where_ids"
+            column: "where_ids",
+            type: "json"
         },
     },
     audit: "audit"

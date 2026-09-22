@@ -75,7 +75,7 @@ export default class Toast extends View
         if (this.onValidate) {
             html.push(`
                 <button type="button" class="btn btn-sm btn-success" id="${ this.id }-validate-button">
-                    ${ this.validateButtonLabel ?? "Validate" }
+                    ${ this.translations?.["Done"] ?? "Done" }
                 </button>
             `)
         }
@@ -125,7 +125,7 @@ export default class Toast extends View
                     locale: layout.locale,
                     theme: layout.theme,
                     profile_id: layout.profile_id,
-                    stackView: true,
+                    stack: this.stack.where ? { where: this.stack.where } : {}
                 })
                 this.controller.stack(stackLayout, { title: this.stack.title, description: this.stack.description })
             }

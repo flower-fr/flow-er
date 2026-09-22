@@ -10,7 +10,7 @@ import { computeConsistencyIssues } from "../../utils/consistencyEngine.js"
 
 export default class List extends View
 {
-    constructor({ controller, entity, view, group, where, tags, orderProperty, orderDirection, layout })
+    constructor({ controller, entity, view, group, where, tags, orderProperty, orderDirection, layout, stack })
     {
         super({ controller })
         this.entity = entity
@@ -21,6 +21,7 @@ export default class List extends View
         this.orderProperty = orderProperty
         this.orderDirection = orderDirection
         this.layout = layout
+        this.stack = stack
     }
 
     initialize = async () =>
@@ -39,7 +40,11 @@ export default class List extends View
         const columns = Object.keys(properties).join(",")
         let where = this.where
         const tags = this.tags
-        if (!where && !tags) where = ((params.where) ? Object.entries(params.where).map(([k, v]) => `${ k }:${ v }`).join("|") : [])
+        if (Object.keys(this.stack?.where || {}).length) {
+            const stackWhere = Object.entries(this.stack.where).map(([k, v]) => `${ k }:${ v }`).join("|")
+            where = where ? `${ where }|${ stackWhere }` : stackWhere
+        }
+        else if (!where && !tags) where = ((params.where) ? Object.entries(params.where).map(([k, v]) => `${ k }:${ v }`).join("|") : [])
         this.where = where
 
         // Define order and grouping property

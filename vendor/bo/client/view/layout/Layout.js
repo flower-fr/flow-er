@@ -12,7 +12,7 @@ import AlertsManager from "../toast/AlertsManager.js"
 
 export default class Layout extends View
 {
-    constructor({ controller, application, tab, entity, view, locale, theme, profile_id, stackView = false })
+    constructor({ controller, application, tab, entity, view, locale, theme, profile_id, stack = null })
     {
         super({ controller })
         this.application = application
@@ -22,13 +22,13 @@ export default class Layout extends View
         this.locale = locale
         this.theme = theme
         this.profile_id = profile_id
-        this.stackView = stackView
+        this.stack = stack
         this.screenIndex = controller.nextScreenIndex()
     }
     
     initialize = async () =>
     {
-        const { controller, application, tab, entity, view, locale, theme, profile_id, stackView } = this
+        const { controller, application, tab, entity, view, locale, theme, profile_id, stack } = this
 
         let response = await fetch(`/bo/acl/${ entity }?view=${ view }`)
         if (!response.ok) {
@@ -45,7 +45,7 @@ export default class Layout extends View
         const enabledActions = getEnabledActions(acl, view)
         this.enabledActions = enabledActions
 
-        this.navbar = !stackView ? new Navbar({ controller, application, tab, locale, theme }) : null
+        this.navbar = !stack ? new Navbar({ controller, application, tab, locale, theme }) : null
         // this.search = new Search({ controller, entity, view, locale, layout: this })
         this.dashboard = enabledActions.includes("dashboard") ? new Dashboard({ controller, entity, view, layout: this }) : null
         this.addForm = enabledActions.includes("add") ? new AddForm({ controller, entity, view, layout: this }) : null
@@ -53,7 +53,7 @@ export default class Layout extends View
         this.searchKeywords = new SearchKeywords({ controller, placeholder: "Nom, entreprise, coordonnées", layout: this })
         // this.sidenavButton = new SidenavButton({ controller })
         this.group = enabledActions.includes("group") ? new Group({ controller, entity, view, layout: this }) : null
-        this.list = enabledActions.includes("list") ? new List({ controller, entity, view, group: this.group, layout: this }) : null
+        // this.list = enabledActions.includes("list") ? new List({ controller, entity, view, group: this.group, layout: this, stack: this.stack }) : null
         this.alertsManager = enabledActions.includes("alert") ? new AlertsManager({ controller, entity, view, profile_id, layout: this }) : null
         await this.navbar?.initialize()
         // await this.search.initialize()
@@ -134,7 +134,7 @@ export default class Layout extends View
                     </div>
                 </div>`)
 
-        if (!this.stackView) html.push(`
+        if (!this.stack) html.push(`
                 <!-- Footer -->
                 <div id="flFooter-${ this.screenIndex }">
                 </div>`)
@@ -189,7 +189,7 @@ export default class Layout extends View
             this.orderDirection = orderDirection
         }
         const { controller, entity, view, group } = this
-        this.list = new List({ controller, entity, view, group, where, tags, orderProperty: this.orderProperty, orderDirection: this.orderDirection, layout: this })
+        this.list = new List({ controller, entity, view, group, where, tags, orderProperty: this.orderProperty, orderDirection: this.orderDirection, layout: this, stack: this.stack })
         await this.list.initialize()
         document.getElementById(`flList-${ this.screenIndex }`).innerHTML = this.list.render()
         this.list.trigger()

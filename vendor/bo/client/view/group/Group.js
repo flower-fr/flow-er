@@ -60,18 +60,19 @@ export default class Group extends View
                 const property = (tab.layout) ? tab.layout[propertyId] : this.properties[propertyId]
 
                 if (["select", "vector"].includes(property.type)) {
+                    const initialValue = tab.formDefaults?.[propertyId] ?? ""
                     html.push(`
                             <div class="input-group mb-1">
                                 ${ (!property.required) ? `
                                 <div class="input-group-text">
-                                    <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}-${ layout.screenIndex }" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
+                                    <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}-${ layout.screenIndex }" type="checkbox" aria-label="${ translations.keepPreviousValue }" ${ initialValue ? "checked" : "" } />
                                 </div>` : "" }
                                 <div class="form-outline" id="flGroupOutline-${tabId}-${propertyId}-${layout.screenIndex}">
                                     <select class="form-select form-select-sm fl-modal-form-select" id="flGroup-${tabId}-${propertyId}-${layout.screenIndex}" data-mdb-size="sm">
                                         <option />`)
 
                     for (let [modalityId, modality] of Object.entries(property.modalities)) {
-                        html.push(`<option value="${modalityId}" ${ modality.archive ? "disabled" : "" }>${modality.label}</option>`)
+                        html.push(`<option value="${modalityId}" ${ modality.archive ? "disabled" : "" } ${ String(modalityId) === String(initialValue) ? "selected" : "" }>${modality.label}</option>`)
                     }
 
                     html.push(`
@@ -95,7 +96,7 @@ export default class Group extends View
                             <div class="input-group mb-1">
                                 ${ (!property.required) ? `
                                 <div class="input-group-text">
-                                    <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}-${layout.screenIndex}" type="checkbox" aria-label="${ translations.keepPreviousValue }" />
+                                    <input class="form-check-input mt-0" id="flGroupCheck-${tabId}-${propertyId}-${layout.screenIndex}" type="checkbox" aria-label="${ translations.keepPreviousValue }" ${ initialValue ? "checked" : "" } />
                                 </div>` : "" }
                                 <div class="form-outline mb-1" id="flGroupOutline-${ tabId }-${ propertyId }-${ layout.screenIndex }" data-mdb-datepicker-init data-mdb-input-init>
                                     <input class="form-control form-control-sm" id="flGroup-${ tabId }-${ propertyId }-${ layout.screenIndex }" value="${ initialValue }" />
