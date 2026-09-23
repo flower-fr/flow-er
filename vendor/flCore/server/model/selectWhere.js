@@ -75,7 +75,7 @@ const selectWhere = (table, where, model, joins) => {
                         predicates.push(`${qEntity}${qColumn} LIKE ${qv(value[1])}`)
                     }
                     else if (operator == "contains") {
-                        predicates.push(`${qEntity}${qColumn} LIKE ${qv(`%${value[1]}%`)}`)
+                        predicates.push(`REPLACE(${qEntity}${qColumn}, ' ', '') LIKE ${qv(`%${value[1]}%`)}`)
                     }
                     else if (operator == "startsWith") {
                         predicates.push(`${qEntity}${qColumn} LIKE ${qv(`${value[1]}%`)}`)

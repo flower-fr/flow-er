@@ -350,7 +350,7 @@ export default class Group extends View
             const post = {
                 method: tab.post.method,
             }
-            if (tab.post.body.file) {
+            if (tab.post.body?.file) {
                 const formData = new FormData()
                 formData.append("rows", JSON.stringify(rows))
                 post.body = formData
