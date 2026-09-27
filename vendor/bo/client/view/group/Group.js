@@ -316,7 +316,7 @@ export default class Group extends View
                 const row = {}
                 for (const [propertyId, target] of Object.entries(tab.post.body?.rows ? tab.post.body.rows : {})) {
                     const property = (tab.layout) ? tab.layout[propertyId] : properties[propertyId]
-                    
+
                     if (target === "matchingRow") {
                         row[propertyId] = matchingRow[propertyId]
                     }

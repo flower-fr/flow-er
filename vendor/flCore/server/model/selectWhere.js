@@ -44,6 +44,7 @@ const selectWhere = (table, where, model, joins) => {
                 let value = where[propertyId]
 
                 if (Array.isArray(value)) {
+                    value = [...value]
                     if (["like", "contains", "startsWith", "endsWith"].includes(value[0])) {
                         value = value.map(x => { return x.split(" ").join("") })
                     }

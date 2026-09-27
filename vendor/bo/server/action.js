@@ -37,7 +37,7 @@ const action = async ({ req }, { context, sql, logger }) =>
     const EXCLUDED_KEYS = ["translations", "label"]
     resolveTokensDeep(config, EXCLUDED_KEYS)
 
-    logger && logger.debug(util.inspect(config, { depth: null, colors: true }))
+    logger && logger.debug(util.inspect({ config }, { depth: null, colors: true }))
 
     // Title localization
     if (config?.title?.label?.[locale]) config.title.label = config.title.label[locale]
@@ -69,7 +69,7 @@ const action = async ({ req }, { context, sql, logger }) =>
                 property.rows[item[key]] = item
             }
         }
-        logger && logger.debug(util.inspect({ property }, { depth: null, colors: true }))
+        logger && logger.debug(util.inspect({ propertyId, property }, { depth: null, colors: true }))
 
         // Property localization
 

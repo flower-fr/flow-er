@@ -7,15 +7,21 @@ const { throwBadRequestError } = require("../../../core/api-utils")
 const deleteAction = async ({ req }, context, { sql, logger }) => {
     const entity = assert.notEmpty(req.params, "entity")
     let id = req.params.id
-    if (!id) id = req.body[0] && req.body[0].id
 
     try {
         await sql.beginTransaction()
         const model = context.config[`${entity}/model`], table = model.entities[entity].table
-        const columnsToUpdate = {}, pair = {}
-        pair[id] = "deleted"
-        columnsToUpdate[table] = { visibility: pair }
-        updateColumns(context, columnsToUpdate, null, sql)
+        const columnsToUpdate = {}, pairs = {}
+        if (id) {
+            pairs[id] = "deleted"
+        }
+        else {
+            for (const row of req.body) {
+                pairs[row.id] = "deleted"
+            }
+        }
+        columnsToUpdate[table] = { visibility: pairs }
+        await updateColumns(context, columnsToUpdate, null, sql)
         await sql.commit()
         return JSON.stringify({ "status": "ok" })
     }
