@@ -15,10 +15,20 @@ export default class AddForm extends View
 
     initialize = async () =>
     {
+        const { controller, entity } = this
         const response = await fetch(`/bo/add/${ this.entity }?view=${ this.view }`)
         const { properties, layout, data, searchKeywords, tags, identifier, iterators, posts, translations } = await response.json()
+
         this.properties = properties
         this.columnLayout = layout
+        for (const propertyId of Object.keys(layout ? layout : properties)) {
+            const property = properties[propertyId]
+            const options = layout ? layout[propertyId] : {}
+            for (const [optionId, option] of Object.entries(options)) {
+                property[optionId] = option
+            }
+        }
+
         this.calendars = data.calendar && data.calendar[1].calendar
         this.searchKeywords = searchKeywords
         this.identifier = identifier
@@ -32,12 +42,12 @@ export default class AddForm extends View
             }
         }
 
-        this.tags = tags.map(tag => new AddTag({ controller: this.controller, name: tag.distinct_name, layout: this.layout }))
+        this.tags = tags.map(tag => new AddTag({ controller, entity, name: tag.distinct_name, layout: this.layout, translations }))
     }
 
     render = () =>
     {
-        const html = [], { properties, columnLayout, searchKeywords, posts, translations, layout } = this
+        const html = [], { properties, searchKeywords, posts, translations, layout } = this
         html.push(`
             <div class="card" id="flAdd-${ layout.screenIndex }">
                 <div class="card-body">
@@ -48,10 +58,9 @@ export default class AddForm extends View
 
                     <form id="flAddForm-${ layout.screenIndex }">`)
 
-        for (const propertyId of Object.keys(columnLayout ? columnLayout : properties)) {
-            const property = properties[propertyId]
-            const options = columnLayout ? columnLayout[propertyId] : {}
-            const initialValue = (options.initialValue === "today") ? moment().format("DD/MM/YYYY") : options.initialValue
+        for (const [propertyId, property] of Object.entries(properties)) {
+
+            const { initialValue } = property
 
             if (property.type === "hidden") {
                 html.push(`
@@ -337,9 +346,10 @@ export default class AddForm extends View
             keywordsRefresh.classList.add("btn-outline-primary")
 
             for (const [propertyId, property] of Object.entries(properties)) {
+                const { initialValue } = property
                 if (["select", "vector"].includes(property.type)) {
                     const instance = mdb.Select.getInstance(`#flAdd-${ propertyId }-${layout.screenIndex}`)
-                    instance.setValue("")
+                    instance.setValue(initialValue || "")
                     instance.dispose()
                     new mdb.Select(document.getElementById(`flAdd-${ propertyId }-${layout.screenIndex}`))
 
@@ -350,10 +360,9 @@ export default class AddForm extends View
                     new mdb.Autocomplete(document.getElementById(`flAddOutline-${ propertyId }-${layout.screenIndex}`))
 
                 } else if (property.type === "date") {
-                    document.getElementById(`flAdd-${ propertyId }-${layout.screenIndex}`).value = ""
+                    document.getElementById(`flAdd-${ propertyId }-${layout.screenIndex}`).value = initialValue ? moment(initialValue).format("DD/MM/YYYY") : ""
                     document.getElementById(`flAdd-days_${ propertyId }-${layout.screenIndex}`)
                     const instance = mdb.Select.getInstance(`#flAdd-days_${ propertyId }-${layout.screenIndex}`)
-                    instance.setValue("")
                     instance.dispose()
                     new mdb.Select(document.getElementById(`flAdd-days_${ propertyId }-${ layout.screenIndex }`))
                     switcher(propertyId, property.defaultFrame)
@@ -390,11 +399,13 @@ export default class AddForm extends View
                 el.addEventListener("change", this.triggerScopeChange)
             } else {
                 el = document.getElementById(`flAddOutline-${ key }-${ layout.screenIndex }`)
-                el.addEventListener("change", this.triggerScopeChange)
-                if (["time", "duration"].includes(property.type)) {
-                    el.addEventListener("valueChanged.mdb.timepicker", this.triggerScopeChange)
-                } else if (property.type === "autocomplete") {
-                    el.addEventListener("close.mdb.autocomplete", this.triggerScopeChange)
+                if (el) {
+                    el.addEventListener("change", this.triggerScopeChange)
+                    if (["time", "duration"].includes(property.type)) {
+                        el.addEventListener("valueChanged.mdb.timepicker", this.triggerScopeChange)
+                    } else if (property.type === "autocomplete") {
+                        el.addEventListener("close.mdb.autocomplete", this.triggerScopeChange)
+                    }
                 }
             }
         }
@@ -413,20 +424,11 @@ export default class AddForm extends View
             else if (property.type === "vector") {
                 const el = document.getElementById(`flAdd-${ propertyId }-${ layout.screenIndex }`)
                 new mdb.Select(el)
-
-                if (property.foreignIdentifier) {
-                    const setLabel = (selected) => {
-                        const match = Object.entries(property.modalities).find(([id]) => id === selected)
-                        const label = match ? match[1].label : ""
-                        document.getElementById(`flAdd-${ property.foreignIdentifier }-${ layout.screenIndex }`).value = label
-                    }
-                    el.addEventListener("change", () => {
-                        searchRefresh.classList.remove("btn-outline-primary")
-                        searchRefresh.classList.add("btn-primary")
-                        btnAnimation.startAnimation()
-                        setLabel(document.getElementById(`flAdd-${ propertyId }-${ layout.screenIndex }`).value)
-                    })
-                }
+                el.addEventListener("change", () => {
+                    searchRefresh.classList.remove("btn-outline-primary")
+                    searchRefresh.classList.add("btn-primary")
+                    btnAnimation.startAnimation()
+                })
             }
             else if (property.type === "autocomplete") {
                 const data = Object.values(property.modalities).map(x => x.label)
@@ -564,18 +566,19 @@ export default class AddForm extends View
                     body[propertyId] = input.value
                 }
             }
-            if (post.action === "transaction") {
-                const rows = []
-                for (const entry of toAdd) {
-                    const row = { ...body }
-                    for (const [key, value] of Object.entries(entry)) {
-                        row[key] = value
-                    }
-                    rows.push(row)
+
+            const rows = []
+            for (const entry of toAdd) {
+                const row = { ...body }
+                for (const [key, value] of Object.entries(entry)) {
+                    row[key] = value
                 }
+                rows.push(row)
+            }
+            if (post.action === "transaction") {
                 body = JSON.stringify({ rows, steps: post.steps })
             } else {
-                body = JSON.stringify([body])
+                body = JSON.stringify(rows)
             }
 
             const response = await fetch(`/${ post.controller }/${ post.action }/${ post.entity }`, {
@@ -583,11 +586,15 @@ export default class AddForm extends View
                 headers: new Headers({"content-type": "application/json"}),
                 body,
             })
-
             // Handle the response
             if (response.ok) {
+                const newId = (await response.json()).stored[0].entitiesToInsert[post.entity].rowId
+                for (const tag of this.tags) {
+                    tag.postHandler(newId)
+                }
                 layout.refreshList({})
-                // form.reset()
+                this.triggerScopeChange()
+
                 const toast = new Toast({ controller: controller }, {
                     title: translations["success"],
                     message: translations["requestRegistered"],
@@ -610,6 +617,7 @@ export default class AddForm extends View
                 let checked = tagElement.getAttribute("data-fl-checked")
                 tagElement.setAttribute("data-fl-checked", (checked === "true") ? "false": "true")
                 checked = (checked === "true") ? "false" : "true"
+                tag.checked = checked
                 tagElement.classList.remove((checked === "true") ? "btn-outline-primary" : "btn-outline-success")
                 tagElement.classList.add((checked === "true") ? "btn-outline-success" : "btn-outline-primary")
                 layout.refreshList({ where: this.extractFilters(), tags: this.extractTags() })
@@ -663,6 +671,9 @@ export default class AddForm extends View
                     const value = document.getElementById(`flAdd-${ propertyId }-${ layout.screenIndex }`).value
                     if (value) {
                         filters.push(`${ propertyId }:${ value }`)
+                    }
+                    else if (property.defaultWhere) {
+                        filters.push(`${ propertyId}:${ property.defaultWhere }`)
                     }
                 } else if (property.type === "duration") {
                     const value = document.getElementById(`flAdd-${ propertyId }-${ layout.screenIndex }`).value

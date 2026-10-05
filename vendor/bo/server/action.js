@@ -10,17 +10,17 @@ const action = async ({ req }, { context, sql, logger }) =>
     const locale = req.query.locale || context.user.locale
 
     // Handle special case for ACL
-    if (action === "acl") {
-        // Filter ACL based on user roles
-        const userRoles = context.user.roles || [context.user.role]
-        const filteredAcl = {}
-        for (const [key, roles] of Object.entries(context.config.acl)) {
-            if (roles.includes("user") || roles.some(role => userRoles.includes(role))) {
-                filteredAcl[key] = roles
-            }
-        }
-        return [200, filteredAcl, "application/json"]
-    }
+    // if (action === "acl") {
+    //     // Filter ACL based on user roles
+    //     const userRoles = context.user.roles || [context.user.role]
+    //     const filteredAcl = {}
+    //     for (const [key, roles] of Object.entries(context.config.acl)) {
+    //         if (roles.includes("user") || roles.some(role => userRoles.includes(role))) {
+    //             filteredAcl[key] = roles
+    //         }
+    //     }
+    //     return [200, filteredAcl, "application/json"]
+    // }
     const config = context.config[`viewModel_${ action }_${ entity }_${ view }`]
     if (!config) return [200, {}, "application/json"]
 
@@ -37,7 +37,7 @@ const action = async ({ req }, { context, sql, logger }) =>
     const EXCLUDED_KEYS = ["translations", "label"]
     resolveTokensDeep(config, EXCLUDED_KEYS)
 
-    logger && logger.debug(util.inspect(config, { depth: null, colors: true }))
+    logger && logger.debug(util.inspect({ config }, { depth: null, colors: true }))
 
     // Title localization
     if (config?.title?.label?.[locale]) config.title.label = config.title.label[locale]
@@ -69,7 +69,7 @@ const action = async ({ req }, { context, sql, logger }) =>
                 property.rows[item[key]] = item
             }
         }
-        logger && logger.debug(util.inspect({ property }, { depth: null, colors: true }))
+        logger && logger.debug(util.inspect({ propertyId, property }, { depth: null, colors: true }))
 
         // Property localization
 

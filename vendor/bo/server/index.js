@@ -10,11 +10,11 @@ const indexAction = async ({ req }, { context, logger }) =>
     const entity = req.query["entity"], view = req.query["view"] || "default", theme = context.user.theme || "light"
     logger && logger.debug(util.inspect({ application, tab, entity }, { depth: null, colors: true }))
     const applicationConfig = context.config[`viewModel_navbar_${ application }`]
-    const { title } = applicationConfig
+    const { title, alerts } = applicationConfig
     const locale = context.user.locale || "default", profile_id = context.user.profile_id
 
     applicationConfig.profile = { name: "Démo CRITE", roles: { any: "responsible" } }
-    return renderIndex(context, application, tab, entity, view, title, theme, locale, profile_id)
+    return renderIndex(context, application, tab, entity, view, title, theme, locale, alerts, profile_id)
 }
 
 module.exports = indexAction

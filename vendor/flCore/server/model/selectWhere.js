@@ -44,6 +44,7 @@ const selectWhere = (table, where, model, joins) => {
                 let value = where[propertyId]
 
                 if (Array.isArray(value)) {
+                    value = [...value]
                     if (["like", "contains", "startsWith", "endsWith"].includes(value[0])) {
                         value = value.map(x => { return x.split(" ").join("") })
                     }
@@ -75,7 +76,7 @@ const selectWhere = (table, where, model, joins) => {
                         predicates.push(`${qEntity}${qColumn} LIKE ${qv(value[1])}`)
                     }
                     else if (operator == "contains") {
-                        predicates.push(`${qEntity}${qColumn} LIKE ${qv(`%${value[1]}%`)}`)
+                        predicates.push(`REPLACE(${qEntity}${qColumn}, ' ', '') LIKE ${qv(`%${value[1]}%`)}`)
                     }
                     else if (operator == "startsWith") {
                         predicates.push(`${qEntity}${qColumn} LIKE ${qv(`${value[1]}%`)}`)
