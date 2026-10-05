@@ -20,7 +20,7 @@ const executeService = (context, config, logger) => (service, ...args) => async 
                 res.setHeader("content-type", contentType)
             }
             if (content instanceof Buffer) {
-                res.setHeader("content-length", result.length)
+                res.setHeader("content-length", content.length)
                 return res.status(status).end(content)
             }
             return res.status(status).send(content)

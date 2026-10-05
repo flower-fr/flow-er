@@ -1,0 +1,41 @@
+{
+    "datahub_transfer/model": {
+        "entities": {
+            "datahub_transfer": { "table": "datahub_transfer" },
+            "datahub_sender": { "table": "datahub_profile", "foreignKey": "sender_id", "foreignEntity": "datahub_transfer" },
+            "datahub_sender_place": { "table": "datahub_place", "foreignKey": "place_id", "foreignEntity": "datahub_sender" },
+            "datahub_recipient": { "table": "datahub_profile", "foreignKey": "recipient_id", "foreignEntity": "datahub_transfer" },
+            "datahub_recipient_place": { "table": "datahub_place", "foreignKey": "place_id", "foreignEntity": "datahub_recipient" }
+        },
+        "properties": {
+            "id": { "entity": "datahub_transfer", "column": "id", "type": "primary" },
+            "sender_identifier": { "entity": "datahub_transfer", "column": "sender_identifier" },
+            "recipient_identifier": { "entity": "datahub_transfer", "column": "recipient_identifier" },
+            "status": { "entity": "datahub_transfer", "column": "status" },
+            "content_type": { "entity": "datahub_transfer", "column": "content_type" },
+            "data": { "entity": "datahub_transfer", "column": "data", "type": "mediumtext" },
+
+            "sender_n_first": { "entity": "datahub_sender", "column": "n_first" },
+            "sender_n_last": { "entity": "datahub_sender", "column": "n_last" },
+            "sender_n_fn": { "entity": "datahub_sender", "column": "n_fn", "type": "CONCAT", "components": ["sender_n_first", "sender_n_last"] },
+            "sender_email": { "entity": "datahub_sender", "column": "email" },
+            "sender_place_name": { "entity": "datahub_sender_place", "column": "name" },
+
+            "recipient_n_first": { "entity": "datahub_recipient", "column": "n_first" },
+            "recipient_n_last": { "entity": "datahub_recipient", "column": "n_last" },
+            "recipient_n_fn": { "entity": "datahub_recipient", "column": "n_fn", "type": "CONCAT", "components": ["recipient_n_first", "recipient_n_last"] },
+            "recipient_email": { "entity": "datahub_recipient", "column": "email" },
+            "recipient_place_name": { "entity": "datahub_recipient_place", "column": "name" },
+
+            "keywords": { 
+                "column": "keywords",
+                "type": "CONCAT",
+                "components": ["sender_n_fn", "sender_place_name", "recipient_n_fn", "recipient_place_name"] 
+            },
+
+            "visibility": { "entity": "datahub_transfer", "column": "visibility", "audit": true },
+            "touched_at": { "entity": "datahub_transfer", "column": "touched_at", "type": "datetime" },
+            "touched_by": { "entity": "datahub_transfer", "column": "touched_by", "type": "int" }
+        }
+    }
+}

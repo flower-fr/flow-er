@@ -1,0 +1,10 @@
+{
+    "hub/model/releases": {
+        "V260925": { 
+            "entities": [
+                "datahub_transfer"
+            ],
+            "properties" : []
+        }
+    }
+}

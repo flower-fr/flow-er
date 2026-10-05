@@ -21,6 +21,9 @@ module.exports = {
         "bank_account": { "entity": "place", "column": "bank_account", "audit": true, "sensitive": true },
         "bank_identifier": { "entity": "place", "column": "bank_identifier", "sensitive": true },
 
+        "public_key": { "entity": "place", "column": "public_key", "type": "mediumtext", "audit": true, "sensitive": true },
+        "datahub_identifier": { "entity": "place", "column": "datahub_identifier", "audit": true },
+
         "keywords": { 
             "column": "keywords",
             "type": "CONCAT",

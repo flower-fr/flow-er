@@ -21,6 +21,8 @@ const acl_place = {
             "touched_at": {},
             "touched_by": {},
             "vat_identifier": {},
+            "public_key": {},
+            "datahub_identifier": {}
         }
     },
     post: {
