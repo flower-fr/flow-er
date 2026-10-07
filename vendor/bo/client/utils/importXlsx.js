@@ -5,44 +5,62 @@
  * @returns {{ toUpdate: Array<Object>, rejected: Record<string, Object> }}
  */
 const importXlsx = (xlsxRows, config, dbRows) => {
-    const identifierHeader = config.properties.identifier.header
+    const identifierHeader = config.properties.identifier?.header
     const dbRowsByIdentifier = new Map(dbRows.map(dbRow => [dbRow.identifier, dbRow]))
 
     const toUpdate = []
     const rejected = {}
 
     for (const xlsxRow of xlsxRows) {
-        const identifier = xlsxRow[identifierHeader]
+        const identifier = identifierHeader ?? xlsxRow[identifierHeader]
         const dbRow = dbRowsByIdentifier.get(identifier)
 
-        if (!dbRow) {
+        if (identifierHeader && !dbRow) {
             rejected[identifier ?? "(missing identifier)"] = { status: "notInScope" }
             continue
         }
 
         const conflicts = {}
-        const changes = { id: dbRow.id }
+        const changes = {}
+        if (identifierHeader) changes.id = dbRow.id
 
         for (const [dataId, definition] of Object.entries(config.properties)) {
+console.log({ dataId, definition })
             if (dataId === "identifier" || !definition.property) continue //
 
             // Check if the loaded value is empty
-            const loadedValue = xlsxRow[definition.header]
+            let loadedValue = xlsxRow[definition.header]
             if (definition.required && isEmpty(loadedValue)) {
                 conflicts[dataId] = { status: "missingRequiredData" }
                 continue
             }
 
-            // Check if the current value in the database is different from the loaded value
-            const currentValue = dbRow[definition.property]
-            if (!isEmpty(currentValue)) {
-                if (String(currentValue) !== String(loadedValue ?? "")) {
-                    conflicts[dataId] = { current: currentValue, loaded: loadedValue }
-                }
-                continue
+            if (!isEmpty(loadedValue) && definition.type === "date" && definition.format === "dd/mm/yyyy HH:mm:ss") {
+                const dateString = "29/10/2004 00:00:00"
+
+                // 1. Séparer la date et l'heure
+                const [datePart, timePart] = dateString.split(" ")
+
+                // 2. Découper le jour, le mois et l'année
+                const [day, month, year] = datePart.split("/")
+
+                // 3. Recomposer au format SQL (AAAA-MM-JJ HH:mm:ss)
+                loadedValue = `${year}-${month}-${day}`
             }
 
-            if (!isEmpty(loadedValue)) changes[definition.property] = toDbValue(loadedValue)
+            // Check if the current value in the database is different from the loaded value
+            let currentValue
+            if (identifierHeader) {
+                currentValue = dbRow[definition.property]
+                if (!isEmpty(currentValue)) {
+                    if (String(currentValue) !== String(loadedValue ?? "")) {
+                        conflicts[dataId] = { current: currentValue, loaded: loadedValue }
+                    }
+                    continue
+                }
+            }
+
+            if (!isEmpty(loadedValue)) changes[definition.property] = toDbValue(loadedValue, definition)
         }
 
         if (Object.keys(conflicts).length > 0) {
@@ -68,9 +86,10 @@ const isEmpty = (value) => {
 /**
  * Converts a value to a format suitable for database storage.
  */
-const toDbValue = (value) => {
+const toDbValue = (value, definition) => {
     if (isEmpty(value)) return value
     if (value instanceof Date) return value.toISOString().slice(0, 10)
+    if (definition.mapping) return Object.entries(definition.mapping).find(([target, source]) => (value === source) ? target : false)
     return String(value)
 }
 

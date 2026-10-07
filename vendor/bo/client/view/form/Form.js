@@ -120,7 +120,7 @@ export default class Form extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }" data-mdb-input-init>
-                            <input class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="input" ${ value ? `value="${ value }"`: "" }  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
+                            <input class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="input" ${ value ? `value="${ value }"`: "" } ${ disabled ? "disabled" : "" } ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
                             <label class="form-label">${ label }</label>
                         </div>
                     </div>`
@@ -134,7 +134,7 @@ export default class Form extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }" data-mdb-input-init>
-                            <input type="password" class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="input" data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
+                            <input type="password" class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="input" ${ disabled ? "disabled" : "" } ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
                             <label class="form-label">${ label }</label>
                         </div>
                     </div>`
@@ -148,7 +148,7 @@ export default class Form extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }" data-mdb-input-init>
-                            <input type="email" class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-property="flForm-${ propertyId }" data-fl-type="email" ${ value ? `value="${ value }"`: "" }  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
+                            <input type="email" class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-property="flForm-${ propertyId }" data-fl-type="email" ${ value ? `value="${ value }"`: "" }  ${ disabled ? "disabled" : "" } ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
                             <label class="form-label">${ label }</label>
                         </div>
                     </div>`
@@ -162,7 +162,7 @@ export default class Form extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }" data-mdb-input-init>
-                            <input class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="phone" ${ value ? `value="${ value }"`: "" }  data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
+                            <input class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="phone" ${ value ? `value="${ value }"`: "" }  ${ disabled ? "disabled" : "" } ${ required } maxlength="${ property.max_length ? property.max_length : 255 }" />
                             <label class="form-label">${ label }</label>
                         </div>
                     </div>`
@@ -176,7 +176,7 @@ export default class Form extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }" data-mdb-datepicker-init data-mdb-input-init>
-                            <input class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="date" value="${ value ? moment(value).format("DD/MM/YYYY") : "" }"  data-fl-disabled="${ disabled }" ${ required } placeholder="${ this.translations["DD/MM/YYYY"] }" />
+                            <input class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="date" value="${ value ? moment(value).format("DD/MM/YYYY") : "" }"  ${ disabled ? "disabled" : "" } ${ required } placeholder="${ this.translations["DD/MM/YYYY"] }" />
                             <label class="form-label">${ label }</label>
                         </div>
                     </div>`
@@ -190,7 +190,7 @@ export default class Form extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }">
-                            <select class="form-control form-control-sm fl-modal-form-select" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="birthYear" data-fl-disabled="${ disabled }" ${ required }>
+                            <select class="form-control form-control-sm fl-modal-form-select" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="birthYear" ${ disabled ? "disabled" : "" } ${ required }>
                                 <option />
                                 ${() => { for (let year = 1950; year < new Date.getFullYear(); year++) `<option value="${ year }" ${ value === year ? "selected=\"selected\"" : ""}>${ year }</option>` }}
                             </select>
@@ -207,7 +207,7 @@ export default class Form extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }" data-mdb-timepicker-init data-mdb-input-init>
-                            <input class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="time" ${ value ? `value=  "${ value }"`: "" } data-fl-disabled="${ disabled }" ${ required } />
+                            <input class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="time" ${ value ? `value=  "${ value }"`: "" } ${ disabled ? "disabled" : "" } ${ required } />
                             <label class="form-label">${ label }</label>
                         </div>
                     </div>`
@@ -221,7 +221,7 @@ export default class Form extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }" data-mdb-input-init>
-                            <input class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" value="${ Math.floor(value / 60) }:${ (x => x ? x : "")(value % 60) }" data-fl-disabled="${ disabled }" ${ required } />
+                            <input class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" value="${ Math.floor(value / 60) }:${ (x => x ? x : "")(value % 60) }" ${ disabled ? "disabled" : "" } ${ required } />
                             <label class="form-label">${ label }</label>
                         </div>
                     </div>`
@@ -235,7 +235,7 @@ export default class Form extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }">
-                            <input type="number" class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="number" ${ value ? `value="${ value }"`: "" } data-fl-disabled="${ disabled }" ${ required } pattern="[0-9]+(\.[0-9]{0,4})?" placeholder="12345,67" />
+                            <input type="number" class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="number" ${ value ? `value="${ value }"`: "" } ${ disabled ? "disabled" : "" } ${ required } pattern="[0-9]+(\.[0-9]{0,4})?" placeholder="12345,67" />
                             <label class="form-label">${label}</label>
                         </div>
                     </div>`
@@ -249,7 +249,7 @@ export default class Form extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }">
-                            <input type="number" class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="percentage" ${ value ? `value="${ value }"`: "" } data-fl-disabled="${ disabled }" ${ required } pattern="[0-9]+(\.[0-9]{0,4})?" />
+                            <input type="number" class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="percentage" ${ value ? `value="${ value }"`: "" } ${ disabled ? "disabled" : "" } ${ required } pattern="[0-9]+(\.[0-9]{0,4})?" />
                             <label class="form-label">${ label }</label>
                         </div>
                     </div>`
@@ -263,7 +263,7 @@ export default class Form extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }">
-                            <textarea class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="textarea" rows="5" data-fl-disabled="${ disabled }" ${ required } maxlength="${ property.max_length ? property.max_length : 2047 }">${ value }</textarea>
+                            <textarea class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="textarea" rows="5" ${ disabled ? "disabled" : "" } ${ required } maxlength="${ property.max_length ? property.max_length : 2047 }">${ value }</textarea>
                             <label class="form-label" for="flForm-flForm-${ propertyId }-${ layout.screenIndex }">${ label }</label>
                         </div>
                     </div>`
@@ -286,7 +286,7 @@ export default class Form extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }">
-                            <select class="form-select form-select-sm fl-modal-form-select" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="select" data-mdb-size="sm" data-mdb-select-init ${ (required) ? "data-mdb-validation=\"true\" data-mdb-invalid-feedback=\" \" data-mdb-valid-feedback=\" \"" : "" } ${( multiple ) ? "multiple" : ""}  data-fl-disabled="${ disabled }" ${ required }>
+                            <select class="form-select form-select-sm fl-modal-form-select" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="select" data-mdb-size="sm" data-mdb-select-init ${ (required) ? "data-mdb-validation=\"true\" data-mdb-invalid-feedback=\" \" data-mdb-valid-feedback=\" \"" : "" } ${( multiple ) ? "multiple" : ""}  ${ disabled ? "disabled" : "" } ${ required }>
                                 ${( !multiple ) ? "<option />" : "" }`
                     )
 
@@ -312,7 +312,7 @@ export default class Form extends View
                     <div class="${ divClass }">
                         <div>
                             <label class="form-label" for="customFile">${ label }</label>
-                            <input type="file" class="form-control form-control-sm fl-modal-form-file" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="file" data-fl-disabled="${ disabled }" ${ required } />
+                            <input type="file" class="form-control form-control-sm fl-modal-form-file" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="file" ${ disabled ? "disabled" : "" } ${ required } />
                         </div>
                     </div>`
                     )
@@ -367,7 +367,7 @@ export default class Form extends View
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <div class="form-outline" id="flFormOutline-${propertyId}-${ layout.screenIndex }">
-                            <input class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="input" ${ value ? `value="${ value }"`: "" }  data-fl-disabled="${ disabled }" ${( required ) ? "required" : ""} maxlength="${ property.max_length ? property.max_length : 255 }" />
+                            <input class="form-control form-control-sm fl-modal-form-input" id="flForm-${ propertyId }-${ layout.screenIndex }" data-fl-type="input" ${ value ? `value="${ value }"`: "" }  ${ disabled ? "disabled" : "" } ${( required ) ? "required" : ""} maxlength="${ property.max_length ? property.max_length : 255 }" />
                             <label class="form-label select-label">${ label }</label>
                         </div>
                     </div>`

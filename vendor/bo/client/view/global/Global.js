@@ -40,7 +40,11 @@ export default class Global extends View
                 if (action.type === "import") {
                     actionHtml.push(`
                         <input type="file" class="form-control form-control-sm mb-2" id="flGlobalImportFile-${ actionId }" />
-                        <button type="button" class="btn ${ (action.class === "danger") ? "btn-danger" : "btn-warning" }" id="flGlobal-${ actionId }">
+                        <button
+                            type="button"
+                            class="btn ${ (action.class === "danger") ? "btn-danger" : "btn-warning" }"
+                            id="flGlobal-${ actionId }"
+                        >
                             <i ${ (action.glyph) ? `class="fa ${action.glyph}"` : "" }></i> ${ action.label }
                         </button>`)
 
@@ -48,7 +52,7 @@ export default class Global extends View
                     actionHtml.push(`
                         <button
                             type="button"
-                            class="btn btn-outline-primary"
+                            class="btn ${ (action.class) ? `btn-${ action.class }` : "btn-outline-primary" }"
                             id="flGlobal-${ actionId }"
                         >
                             <i ${ (action.glyph) ? `class="fa ${action.glyph}"` : "" }></i> ${ action.label }
@@ -58,7 +62,7 @@ export default class Global extends View
                     actionHtml.push(`
                         <a
                             type="button"
-                            class="btn btn-outline-primary"
+                            class="btn ${ (action.class) ? `btn-${ action.class }` : "btn-outline-primary" }"
                             href="/${action.controller}/${action.action}/${action.entity}${ (action.id) ? `/${action.id}` : "" }?${ (action.view) ? `view=${action.view}` : "" }"
                         >
                             <i ${ (action.glyph) ? `class="fa ${action.glyph}"` : "" }></i> ${ action.label }
@@ -95,8 +99,6 @@ export default class Global extends View
                 controller.stack(new Form({ controller: action.controller, entity: action.entity, view: action.view, layout }), action.label, true)
             })
         }
-
-
     }
 
     runImport = async (action, actionId) => {
@@ -121,72 +123,83 @@ export default class Global extends View
             })
             rows.push(rowData)
         })
-        
-        let response = await fetch(`/bo/import/${ action.entity }?view=${ action.view }`)
+
+        // To deal with body size limit, split the rows into chunks of 200
+        const chunks = []
+        let i = 0
+        while (i < rows.length) {
+            chunks.push(rows.slice(i, i + 200))
+            i += 200
+        }
+
+        let response = await fetch(`/bo/import/${ action.entity }?view=${ action.view ?? "default" }`)
         const config = await response.json()
+
+        for (const chunk of chunks) {
         
-        // Extract identifiers
-        const identifiers = rows.map(row => row[config.properties?.identifier?.header])
+            // Extract identifiers
+            const identifiers = (config.properties?.identifier?.header) ? chunk.map(row => row[config.properties?.identifier?.header]) : []
     
-        // Fetch database rows from the database based on identifiers and where
-        const identifierString = identifiers.join(",")
-        const whereParam = Object.entries({ ...config.params.where, ...action.restriction }).map(([k, v]) => `${k}:${v}`).join("|")
-        const columnsParam = [...new Set(Object.values(config.properties).filter(v => !!v.property).map(v => v.property))].join(",")
-        response = await fetch(`/core/v1/${ action.entity }?columns=${ columnsParam }&where=identifier:${ encodeURIComponent(identifierString) }|${ whereParam }`)
-        const data = await response.json()
+            // Fetch database rows from the database based on identifiers and where
+            const identifierString = identifiers.join(",")
+            const whereParam = Object.entries({ ...config.params.where, ...action.restriction }).map(([k, v]) => `${k}:${v}`).join("|")
+            const columnsParam = [...new Set(Object.values(config.properties).filter(v => !!v.property).map(v => v.property))].join(",")
+            response = await fetch(`/core/v1/${ action.entity }?columns=${ columnsParam }&where=identifier:${ encodeURIComponent(identifierString) }|${ whereParam }`)
+            const data = await response.json()
 
-        const logInteraction = (status, responseBody) => fetch("/core/v1/interaction", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify([{
-                status,
-                provider: "flow-er",
-                endpoint: "bo/import-xlsx",
+            const logInteraction = (status, responseBody) => fetch("/core/v1/interaction", {
                 method: "POST",
-                body: JSON.stringify(rows),
-                response_body: JSON.stringify(responseBody),
-            }])
-        })
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify([{
+                    status,
+                    provider: "flow-er",
+                    endpoint: "bo/import-xlsx",
+                    method: "POST",
+                    body: JSON.stringify(chunk),
+                    response_body: JSON.stringify(responseBody),
+                }])
+            })
 
-        // Run the importXlsx function to determine which rows to update and which to reject
-        const { toUpdate, rejected } = importXlsx(rows, config, data.rows)
+            // Run the importXlsx function to determine which rows to update and which to reject
+            const { toUpdate, rejected } = importXlsx(chunk, config, data.rows)
 
-        // Show rejected rows in a toast
-        if (Object.keys(rejected).length > 0) {
-            console.log("Rejected rows:", rejected)
-            const toast = new Toast({ controller: this.controller },
-                { title: "Importation", message: `${Object.keys(rejected).length} lignes ont été rejetées.`, type: "warning", persistent: true })
-            toast.initialize()
-            toast.trigger()
-        }
+            // Show rejected rows in a toast
+            if (Object.keys(rejected).length > 0) {
+                console.log("Rejected rows:", rejected)
+                const toast = new Toast({ controller: this.controller },
+                    { title: "Importation", message: `${Object.keys(rejected).length} lignes ont été rejetées.`, type: "warning", persistent: true })
+                toast.initialize()
+                toast.trigger()
+            }
 
-        // If there are no rows to update, show a toast and return
-        if (toUpdate.length === 0) {
-            await logInteraction("processed", { toUpdate, rejected })
-            const toast = new Toast({ controller: this.controller }, { title: "Importation", message: "Aucune donnée à mettre à jour." })
-            toast.initialize()
-            toast.trigger()
-            return
-        }
+            // If there are no rows to update, show a toast and return
+            if (toUpdate.length === 0) {
+                await logInteraction("processed", { toUpdate, rejected })
+                const toast = new Toast({ controller: this.controller }, { title: "Importation", message: "Aucune donnée à mettre à jour." })
+                toast.initialize()
+                toast.trigger()
+                return
+            }
 
-        const body = toUpdate.map(row => ({ ...row, status: config.params.nextStatus }))
-        response = await fetch(`/core/v1/${ action.entity }`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body)
-        })
-        const result = await response.json()
+            const body = toUpdate.map(row => ({ ...row, status: config.params.nextStatus }))
+            response = await fetch(`/core/v1/${ action.entity }`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body)
+            })
+            const result = await response.json()
 
-        const updateFailed = !response.ok || result.error
-        await logInteraction(updateFailed ? "error" : "processed", { toUpdate, rejected, result })
+            const updateFailed = !response.ok || result.error
+            await logInteraction(updateFailed ? "error" : "processed", { toUpdate, rejected, result })
 
-        // Handle error response
-        if (updateFailed) {
-            const toast = new Toast({ controller: this.controller },
-                { title: "Importation", message: "Une erreur est survenue lors de la mise à jour.", type: "error", persistent: true })
-            toast.initialize()
-            toast.trigger()
-            return
+            // Handle error response
+            if (updateFailed) {
+                const toast = new Toast({ controller: this.controller },
+                    { title: "Importation", message: "Une erreur est survenue lors de la mise à jour.", type: "error", persistent: true })
+                toast.initialize()
+                toast.trigger()
+                return
+            }
         }
 
         // Show success toast

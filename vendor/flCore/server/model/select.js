@@ -63,7 +63,7 @@ const select = (entity, columns, where, order = [], limit = null, model = [], us
         for (let orderSpecifier of Object.keys(order)) {
             const direction = order[orderSpecifier]
             const orderProperty = model.properties[orderSpecifier]
-            const orderTable = (orderProperty.entity) ? ((model.entities[orderProperty.entity]) ? model.entities[orderProperty.entity].table : table) : false
+            const orderTable = (orderProperty.entity) ? orderProperty.entity : false
             const qColumn = qi(orderProperty.column)
             orderArray.push(`${ (orderTable) ? `${qi(orderTable)}.` : "" }${qColumn} ${direction}`)
         }
