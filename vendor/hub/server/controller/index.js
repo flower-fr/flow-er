@@ -1,5 +1,6 @@
 const multer = require("multer")
 const moment = require("moment")
+const path = require("path")
 
 const { sessionCookieMiddleware } = require("../../../user/server/controller/sessionCookieMiddleware")
 const { createDbClient } = require("../../../utils/db-client")
@@ -13,6 +14,12 @@ const { getPdfAction, postPdfAction } = require("./pdfAction")
 const { notificationAction } = require("./notificationAction")
 const { registerReminders, sendReminders } = require("../post/remind")
 const { sendSms } = require("../post/sendSms")
+
+const { listTransfer } = require("./transfer/listTransfer")
+const { getTransfer } = require("./transfer/getTransfer")
+const { acquitTransfer } = require("./transfer/acquitTransfer")
+const { postTransfer } = require("./transfer/postTransfer")
+const { postFormTransfer } = require("./transfer/postFormTransfer")
 
 const { select } = require("../../../flCore/server/model/select")
 const { update } = require("../../../flCore/server/model/update")
@@ -36,6 +43,11 @@ const registerHub = async ({ context, config, logger, app }) => {
     }
     const upload = multer()
 
+    const executeFile = async (req, res) => {
+        const result = await postFormTransfer({ req }, context, sql, mailClient, logger)
+        return res.status(200).send(result)
+    }
+
     // Routes bypassing standard authentication should check a query token !!!
     app.get(`${config.prefix}pdf/:entity/:id`, execute(getPdfAction, context, db))
     app.post(`${config.prefix}pdf/:entity/:type/:owner_entity/:owner_id`, execute(postPdfAction, context, db))
@@ -51,6 +63,12 @@ const registerHub = async ({ context, config, logger, app }) => {
     app.post(`${config.prefix}remind/:entity`, execute(postReminder, context, db, mailClient))
     app.post(`${config.prefix}send-sms`, execute(postSmsAction, context, db, smsClient))
     app.get(`${config.prefix}notification/:entity`, execute(notificationAction, context, db, mailClient))
+
+    app.get(`${config.prefix}transfer/:sender_id/:recipient_id`, execute(listTransfer, context, sql, logger))
+    app.get(`${config.prefix}transfer/:sender_id/:recipient_id/:transfer_id`, execute(getTransfer, context, sql, logger))
+    app.post(`${config.prefix}transfer/:sender_id/:recipient_id/:transfer_id`, execute(acquitTransfer, context, sql, mailClient, logger))
+    app.post(`${config.prefix}transfer/:sender_id/:recipient_id`, execute(postTransfer, context, sql, mailClient, logger))
+    app.post(`${config.prefix}form-transfer/:sender_id/:recipient_id`, handleUpload, executeFile)
 }
 
 // const getAction = async ({ req }, context, db) => {
@@ -138,6 +156,48 @@ const sendMailAction = async ({ req }, context, mailClient) => {
         content: `Bonjour,
         Contenu du message...`
     })
+}
+
+const handleUpload = (req, res, next) => {
+    const upload = multer({
+        limits: { fileSize: 1000000 },
+        fileFilter: (req, file, cb) => {
+            checkFile(file, cb)
+        }
+    })
+    upload.single("attachment")(req, res, (error) => {
+        if (error instanceof multer.MulterError) {
+            if (error.code === "LIMIT_FILE_SIZE") {
+                return res.status(413).json({
+                    error: "File too large",
+                    code: error.code
+                })
+            }
+
+            return res.status(400).json({
+                error: error.message || "Upload failed",
+                code: error.code
+            })
+        }
+
+        if (error) return res.status(400).json({
+            error: error.message,
+            code: error.code
+        })
+        return next()
+    })
+}
+
+const checkFile = (file, cb) => {
+    const filetypes = /jpeg|jpg|png|gif|pdf|doc|docx|xls|xlsx|ppt|pptx|md|txt/
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase())
+    const mimetype = filetypes.test(file.mimetype)
+
+    if (mimetype && extname) {
+        return cb(null, true)
+    } else {
+        cb(new Error("File type is not accepted"))
+    }
 }
 
 module.exports = {

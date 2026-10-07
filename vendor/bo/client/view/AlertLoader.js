@@ -64,6 +64,10 @@ export default class AlertLoader {
     loadRules = async () => {
         try {
             const response = await fetch(`/bo/rules/${ this.application }`)
+            if (!response.ok) {
+                console.error(`AlertLoader: failed to load rules for application "${ this.application }"`)
+                return []
+            }
             const config = await response.json()
             return config ?? []
         } catch (error) {

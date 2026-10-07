@@ -1,24 +1,55 @@
 const fs = require("fs")
-
-const acl = require("./acl.js")
 const defaultTr = require("./translations/defaultTr.js")
 
-fs.writeFileSync("../viewModel_acl.json", JSON.stringify({ acl }))
+const entitiesViews = {
+    account: ["default", "suggestion"],
+    catalogue: ["default"],
+}
 
-for (const [viewModel, roles] of Object.entries(acl)) {
-    const js = require(`./${viewModel}`)
+let js = require("./navbar")
+js.translations = { default: defaultTr.translations }
+for (const key of defaultTr.languages) {
+    const language = require(`./translations/${ key }.js`)
+    js.translations[key] = language.translations
+}
+fs.writeFileSync("../viewModel_navbar_flower.json", JSON.stringify({
+    ["viewModel_navbar_flower"]: js
+}))
 
-    // ACL
-    js.acl = { roles }
+// js = require("./rules")
+// fs.writeFileSync("../viewModel_rules_flower.json", JSON.stringify({
+//     ["viewModel_rules_flower"]: js
+// }))
 
-    // Translations
-    js.translations = { default: defaultTr.translations }
-    for (const key of defaultTr.languages) {
-        const language = require(`./translations/${ key }.js`)
-        js.translations[key] = language.translations
+for (const [entity, views] of Object.entries(entitiesViews)) {
+    for (const view of views) {
+
+        const acl = require(`./${ entity }/${ view }/acl.js`)
+
+        for (const [viewModel, roles] of Object.entries(acl)) {
+            const js = require(`./${ entity }/${ view }/${viewModel}`)
+
+            // Properties
+            if (js.entity) {
+                const propertiesConfig = require(`./${ entity }/properties`).properties, properties = {}
+                if (propertiesConfig) {
+                    for (const property of js.properties) properties[property] = propertiesConfig[property]
+                    js.properties = properties        
+                }
+            }
+            // ACL
+            js.acl = { roles }
+
+            // Translations
+            js.translations = { default: defaultTr.translations }
+            for (const key of defaultTr.languages) {
+                const language = require(`./translations/${ key }.js`)
+                js.translations[key] = language.translations
+            }
+
+            fs.writeFileSync(`../viewModel_${ viewModel }_${ entity }_${ view }.json`, JSON.stringify({
+                [`viewModel_${ viewModel }_${ entity }_${ view }`]: js
+            }))
+        }
     }
-
-    fs.writeFileSync(`../viewModel_${viewModel}.json`, JSON.stringify({
-        [`viewModel_${viewModel}`]: js
-    }))
 }

@@ -9,18 +9,6 @@ const action = async ({ req }, { context, sql, logger }) =>
     const view = req.query.view || "default"
     const locale = req.query.locale || context.user.locale
 
-    // Handle special case for ACL
-    // if (action === "acl") {
-    //     // Filter ACL based on user roles
-    //     const userRoles = context.user.roles || [context.user.role]
-    //     const filteredAcl = {}
-    //     for (const [key, roles] of Object.entries(context.config.acl)) {
-    //         if (roles.includes("user") || roles.some(role => userRoles.includes(role))) {
-    //             filteredAcl[key] = roles
-    //         }
-    //     }
-    //     return [200, filteredAcl, "application/json"]
-    // }
     const config = context.config[`viewModel_${ action }_${ entity }_${ view }`]
     if (!config) return [200, {}, "application/json"]
 
