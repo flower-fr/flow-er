@@ -4,6 +4,29 @@
  * @param {Array} dbRows - Rows from the database currently in scope, keyed by DB property name (must include `id` and `identifier`).
  * @returns {{ toUpdate: Array<Object>, rejected: Record<string, Object> }}
  */
+function separateLastFirst(str) {
+    // Divise la chaîne en groupes de mots en préservant les espaces et les tirets
+    const tokens = str.trim().split(/(\s+|-)/)
+
+    let indexSeparation = tokens.length
+
+    // Parcourt les jetons pour trouver le premier élément qui contient une minuscule
+    for (let i = 0; i < tokens.length; i++) {
+        const token = tokens[i]
+        // Si le jeton contient au moins une lettre minuscule (a-z ou caractères accentués)
+        if (/[a-zà-öø-ÿ]/.test(token)) {
+            indexSeparation = i
+            break
+        }
+    }
+
+    // Rassemble les parties avant et après le premier mot contenant des minuscules
+    const lastname = tokens.slice(0, indexSeparation).join("").trim()
+    const firstname = tokens.slice(indexSeparation).join("").trim()
+
+    return [ lastname, firstname ]
+}
+
 const importXlsx = (xlsxRows, config, dbRows) => {
     const identifierHeader = config.properties.identifier?.header
     const dbRowsByIdentifier = new Map(dbRows.map(dbRow => [dbRow.identifier, dbRow]))
@@ -25,7 +48,6 @@ const importXlsx = (xlsxRows, config, dbRows) => {
         if (identifierHeader) changes.id = dbRow.id
 
         for (const [dataId, definition] of Object.entries(config.properties)) {
-console.log({ dataId, definition })
             if (dataId === "identifier" || !definition.property) continue //
 
             // Check if the loaded value is empty
@@ -35,17 +57,40 @@ console.log({ dataId, definition })
                 continue
             }
 
-            if (!isEmpty(loadedValue) && definition.type === "date" && definition.format === "dd/mm/yyyy HH:mm:ss") {
-                const dateString = "29/10/2004 00:00:00"
+            if (!isEmpty(loadedValue)) {
+                if (definition.mapping) {
+                    for (const [k, v] of Object.entries(definition.mapping)) {
+                        if (loadedValue === v) {
+                            loadedValue = k
+                            break
+                        }
+                    }
+                }
+                else if (definition.type === "email") {
+                    loadedValue = loadedValue.hyperlink
+                    if (loadedValue.startsWith("mailto:")) {
+                        loadedValue = loadedValue.slice(7)
+                    }
+                }
+                else if (definition.type === "date" && definition.format === "dd/mm/yyyy HH:mm:ss") {
 
-                // 1. Séparer la date et l'heure
-                const [datePart, timePart] = dateString.split(" ")
+                    // 1. Séparer la date et l'heure
+                    const [datePart, timePart] = loadedValue.split(" ")
 
-                // 2. Découper le jour, le mois et l'année
-                const [day, month, year] = datePart.split("/")
+                    // 2. Découper le jour, le mois et l'année
+                    const [day, month, year] = datePart.split("/")
 
-                // 3. Recomposer au format SQL (AAAA-MM-JJ HH:mm:ss)
-                loadedValue = `${year}-${month}-${day}`
+                    // 3. Recomposer au format SQL (AAAA-MM-JJ HH:mm:ss)
+                    loadedValue = `${year}-${month}-${day}`
+                }
+                else if (definition.type === "lastname" && definition.format === "LASTNAME Firstname") {
+                    const [lastName, firstName] = separateLastFirst(loadedValue)
+                    loadedValue = lastName
+                }
+                else if (definition.type === "firstname" && definition.format === "LASTNAME Firstname") {
+                    const [lastName, firstName] = separateLastFirst(loadedValue)
+                    loadedValue = firstName
+                }
             }
 
             // Check if the current value in the database is different from the loaded value
@@ -60,7 +105,7 @@ console.log({ dataId, definition })
                 }
             }
 
-            if (!isEmpty(loadedValue)) changes[definition.property] = toDbValue(loadedValue, definition)
+            if (loadedValue) changes[definition.property] = toDbValue(loadedValue, definition)
         }
 
         if (Object.keys(conflicts).length > 0) {
@@ -86,10 +131,9 @@ const isEmpty = (value) => {
 /**
  * Converts a value to a format suitable for database storage.
  */
-const toDbValue = (value, definition) => {
+const toDbValue = (value) => {
     if (isEmpty(value)) return value
     if (value instanceof Date) return value.toISOString().slice(0, 10)
-    if (definition.mapping) return Object.entries(definition.mapping).find(([target, source]) => (value === source) ? target : false)
     return String(value)
 }
 

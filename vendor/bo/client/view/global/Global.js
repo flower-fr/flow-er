@@ -105,6 +105,8 @@ export default class Global extends View
         if (!this.importFiles?.[actionId]) return
         const buffer = await this.importFiles[actionId].arrayBuffer()
 
+        let response = await fetch(`/bo/import/${ action.entity }?view=${ action.view ?? "default" }`)
+        const config = await response.json()
         // Load the XLSX file using ExcelJS
         const workbook = new ExcelJS.Workbook()
         await workbook.xlsx.load(buffer)
@@ -121,7 +123,14 @@ export default class Global extends View
             row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
                 rowData[headers[colNumber]] = cell.value
             })
-            rows.push(rowData)
+
+            if (config.params.restriction) {
+                if (config.params.restriction.every(r => r.values.includes(rowData[r.header]))) {
+                    rows.push(rowData)
+                }
+            } else {
+                rows.push(rowData)
+            }
         })
 
         // To deal with body size limit, split the rows into chunks of 200
@@ -132,9 +141,6 @@ export default class Global extends View
             i += 200
         }
 
-        let response = await fetch(`/bo/import/${ action.entity }?view=${ action.view ?? "default" }`)
-        const config = await response.json()
-
         for (const chunk of chunks) {
         
             // Extract identifiers
@@ -142,7 +148,7 @@ export default class Global extends View
     
             // Fetch database rows from the database based on identifiers and where
             const identifierString = identifiers.join(",")
-            const whereParam = Object.entries({ ...config.params.where, ...action.restriction }).map(([k, v]) => `${k}:${v}`).join("|")
+            const whereParam = Object.entries({ /*...config.params.where, */...action.restriction }).map(([k, v]) => `${k}:${v}`).join("|")
             const columnsParam = [...new Set(Object.values(config.properties).filter(v => !!v.property).map(v => v.property))].join(",")
             response = await fetch(`/core/v1/${ action.entity }?columns=${ columnsParam }&where=identifier:${ encodeURIComponent(identifierString) }|${ whereParam }`)
             const data = await response.json()
