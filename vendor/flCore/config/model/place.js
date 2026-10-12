@@ -1,40 +1,40 @@
 module.exports = {
-    "entities": {
-        "place": { "table": "place" }
+    entities: {
+        place: { table: "place" }
     },
-    "properties": {
-        "id": { "entity": "place", "column": "id" },
-        "status": { "entity": "place", "column": "status", "audit": true },
-        "identifier": { "entity": "place", "column": "identifier", "audit": true },
-        "name": { "entity": "place", "column": "name", "audit": true },
-        "region": { "entity": "place", "column": "region", "audit": true },
-        "logo": { "entity": "place", "column": "logo", "audit": true },
-        "adr_street": { "entity": "place", "column": "adr_street", "audit": true },
-        "adr_extended": { "entity": "place", "column": "adr_extended", "audit": true },
-        "adr_post_office_box": { "entity": "place", "column": "adr_post_office_box", "audit": true },
-        "adr_zip": { "entity": "place", "column": "adr_zip", "audit": true },
-        "adr_city": { "entity": "place", "column": "adr_city", "audit": true },
-        "adr_state": { "entity": "place", "column": "adr_state", "audit": true },
-        "vat_identifier": { "entity": "place", "column": "vat_identifier", "audit": true },
-        "adr_country": { "entity": "place", "column": "adr_country", "audit": true },
-        "bank_name": { "entity": "place", "column": "bank_name", "audit": true },
-        "bank_account": { "entity": "place", "column": "bank_account", "audit": true, "sensitive": true },
-        "bank_identifier": { "entity": "place", "column": "bank_identifier", "sensitive": true },
+    properties: {
+        id: { entity: "place", column: "id" },
+        status: { entity: "place", column: "status", audit: true },
+        identifier: { entity: "place", column: "identifier", audit: true },
+        name: { entity: "place", column: "name", audit: true },
+        region: { entity: "place", column: "region", audit: true },
+        logo: { entity: "place", column: "logo", audit: true },
+        adr_street: { entity: "place", column: "adr_street", audit: true },
+        adr_extended: { entity: "place", column: "adr_extended", audit: true },
+        adr_post_office_box: { entity: "place", column: "adr_post_office_box", audit: true },
+        adr_zip: { entity: "place", column: "adr_zip", audit: true },
+        adr_city: { entity: "place", column: "adr_city", audit: true },
+        adr_state: { entity: "place", column: "adr_state", audit: true },
+        vat_identifier: { entity: "place", column: "vat_identifier", audit: true },
+        adr_country: { entity: "place", column: "adr_country", audit: true },
+        bank_name: { entity: "place", column: "bank_name", audit: true },
+        bank_account: { entity: "place", column: "bank_account", audit: true, sensitive: true },
+        bank_identifier: { entity: "place", column: "bank_identifier", sensitive: true },
 
-        "public_key": { "entity": "place", "column": "public_key", "type": "mediumtext", "audit": true, "sensitive": true },
-        "datahub_identifier": { "entity": "place", "column": "datahub_identifier", "audit": true },
+        public_key: { entity: "place", column: "public_key", type: "mediumtext", audit: true, sensitive: true },
+        datahub_identifier: { entity: "place", column: "datahub_identifier", audit: true },
 
-        "keywords": { 
-            "column": "keywords",
-            "type": "CONCAT",
-            "components": ["name", "region", "adr_city"] 
+        keywords: { 
+            column: "keywords",
+            type: "CONCAT",
+            components: ["name", "region", "adr_city"] 
         },
 
-        "visibility": { "entity": "place", "column": "visibility", "audit": true },
-        "touched_at": { "entity": "place", "column": "touched_at", "type": "datetime" },
-        "touched_by": { "entity": "place", "column": "touched_by", "type": "int" }
+        visibility: { entity: "place", column: "visibility", audit: true },
+        touched_at: { entity: "place", column: "touched_at", type: "datetime" },
+        touched_by: { entity: "place", column: "touched_by", type: "int" }
     },
-    "access": {
-        "id": "place_id"
+    access: {
+        id: "place_id"
     }
 }
