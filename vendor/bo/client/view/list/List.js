@@ -400,7 +400,7 @@ export default class List extends View
 
         // Widen the where clause based on the consistency rules
         const currentWhere = this.parseWhere(this.where)
-        const consistencyWhere = this.buildConsistencyWhere(currentWhere, config.rules)
+        const consistencyWhere = {} //this.buildConsistencyWhere(currentWhere, config.rules)
         const whereParam = Object.entries(consistencyWhere).map(([k, v]) => `${k}:${v}`).join("|")
 
         // Fetch consistency data
