@@ -13,7 +13,7 @@ const action = async ({ req }, { context, sql, logger }) =>
     if (!config) return [200, {}, "application/json"]
 
     // Check has role to acces this action
-    const roles = context.user.roles || [context.user.role]
+    const roles = Array.isArray(context.user.role) ? context.user.role : [context.user.role]
     if (config.acl?.roles) {
         if (!config.acl?.roles.includes("user")) {
             if (!roles.some(role => config.acl?.roles.includes(role))) {
