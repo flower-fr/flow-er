@@ -16,7 +16,7 @@ const navbarAction = async ({ req }, { context }) =>
     })
 
     // Filter menu based on ACL and user role
-    const userRoles = (context.user?.role ?? "").split(",").map(role => role.trim()).filter(Boolean)
+    const userRoles = Array.isArray(context.user.role) ? context.user.role : [context.user.role]
     const allowedMenu = {}
 
     for (const [menuTabId, menuTab] of Object.entries(config.menu)) {

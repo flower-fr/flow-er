@@ -12,7 +12,7 @@
             "email": { "entity": "profile", "column": "email" },
             "email_key": { "entity": "profile", "column": "email_key" },
             "place_id": { "entity": "profile", "column": "place_id", "type": "int" },
-            "role": { "entity": "profile", "column": "role" },
+            "role": { "entity": "profile", "column": "role", "type": "json" },
             "theme": { "entity": "profile", "column": "theme" },
             "kpis": { "entity": "profile", "column": "kpis", "type": "json" },
             "alerts": { "entity": "profile", "column": "alerts", "type": "json" },
