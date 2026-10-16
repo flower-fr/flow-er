@@ -8,6 +8,7 @@ const refreshToken = async ({ req, res }, context, config, sql, logger) =>
 {
     const token = req.cookies.refresh
     if (!token) {
+        logger && logger.debug("No refresh token found in cookies")
         return false
     }
 
@@ -30,7 +31,7 @@ const refreshToken = async ({ req, res }, context, config, sql, logger) =>
             }
 
             // Check the validity in database of the refresh token
-            const user = await sql.execute({ context, type: "select", entity: "user", columns: ["id", "refresh_token_expires_at"], where: { id: payload.id } })[0]
+            const user = (await sql.execute({ context, type: "select", entity: "user", columns: ["id", "refresh_token_expires_at"], where: { id: payload.id } }))[0]
             if (user.refresh_token_expires_at < moment().format("YYYY-MM-DD HH:mm:ss")) {
                 logger && logger.debug("Token expired in database")
                 return false

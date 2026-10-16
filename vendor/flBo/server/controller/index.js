@@ -31,7 +31,7 @@ const registerFlBo = async ({ context, config, logger, app }) =>
     app.get(`${config.prefix}language`, execute(() => { return JSON.stringify(context.translations) }))
     app.get(`${config.prefix}user`, execute(() => { return JSON.stringify(context.user) }))
 
-    app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
+    app.use(`${config.prefix}`, sessionCookieMiddleware(config, context, sql, logger))
 
     app.get(`${config.prefix}dashboard/:entity`, execute(dashboardAction, context))
     app.get(`${config.prefix}detail/:entity/:id`, execute(detailAction, context))

@@ -26,7 +26,7 @@ const changePasswordPost = async ({ req, res }, context, config, db) => {
 
     const model = context.config["user/model"]
 
-    const [result] = (await db.execute(select(context, "user", ["id", "email", "password", "last_login", "last_updated", "login_failed"], { "email": email }, null, null, model)))
+    const [result] = (await db.execute(select("user", ["id", "email", "password", "last_login", "last_updated", "login_failed"], { "email": email }, null, null, model)))
     const user = result[0]
     if (!user) return throwUnauthorized("Unauthorized")
 
@@ -41,7 +41,7 @@ const changePasswordPost = async ({ req, res }, context, config, db) => {
         userData.login_failed = 0
     }
 
-    await db.execute(update(context, "user", [user.id], userData, model))
+    await db.execute(update("user", [user.id], userData, model, user))
 
     if (!authorized) {
         return renderChangePassword({ context }, { 
@@ -55,7 +55,7 @@ const changePasswordPost = async ({ req, res }, context, config, db) => {
     }
 
     const encryptedPassword = await encryptPassword(newPassword)
-    await db.execute(update(context, "user", [user.id], { status: "active", password: encryptedPassword }, model))
+    await db.execute(update("user", [user.id], { status: "active", password: encryptedPassword }, model, user))
 
     res.clearCookie("session")
 

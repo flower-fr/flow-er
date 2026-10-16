@@ -21,12 +21,12 @@ const registerUser = async ({ context, config, logger, app }) =>
     const mailClient = createMailClient({ config: config.smtp, logger })
     const execute = executeService(context, config, logger)
 
-    app.get(`${config.prefix}login`, execute(login, context, config, db))
+    app.get(`${config.prefix}login`, execute(loginV2, context, config, db))
     app.get(`${config.prefix}loginV2`, execute(loginV2, context, config, db))
-    app.post(`${config.prefix}login`, execute(loginPost, context, config, sql)) // Deprecated
+    app.post(`${config.prefix}login`, execute(loginPostV2, context, config, sql)) // Deprecated
     app.post(`${config.prefix}loginV2`, execute(loginPostV2, context, config, sql, logger))
 
-    app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
+    app.use(`${config.prefix}`, sessionCookieMiddleware(config, context, sql, logger))
 
     app.get(`${config.prefix}logout`, execute(logout, context, db))
     app.get(`${config.prefix}change-password`, execute(changePassword, context, config, db))
@@ -34,7 +34,7 @@ const registerUser = async ({ context, config, logger, app }) =>
     app.post(`${config.prefix}refresh-token`, execute(refreshToken, context, config, sql))
 
     app.post(`${config.prefix}createuser`, execute(createUser, context, db))
-    app.get(`${config.prefix}register`, execute(register, context, db, mailClient))
+    app.get(`${config.prefix}register/:userId`, execute(register, context, sql, mailClient, config))
     app.post(`${config.prefix}checkcredentials`, execute(checkCredentials, context, config))
     app.post(`${config.prefix}/users/checkactivationtoken`, execute(checkActivationToken, context, db))
     app.post(`${config.prefix}requestpasswordreset`, execute(requestPasswordReset, context, db, mailClient))

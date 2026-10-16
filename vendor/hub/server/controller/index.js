@@ -52,7 +52,7 @@ const registerHub = async ({ context, config, logger, app }) => {
     app.get(`${config.prefix}pdf/:entity/:id`, execute(getPdfAction, context, db))
     app.post(`${config.prefix}pdf/:entity/:type/:owner_entity/:owner_id`, execute(postPdfAction, context, db))
 
-    app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
+    app.use(`${config.prefix}`, sessionCookieMiddleware(config, context, sql, logger))
     // app.get(`${config.prefix}send`, execute(getAction, context, db))
     // app.post(`${config.prefix}send`, execute(postAction, context, db))
     app.get(`${config.prefix}send-mail`, execute(sendMailAction, context, mailClient))
@@ -151,7 +151,7 @@ const postSmsAction = async ({ req, res }, context, db, smsClient) => {
 const sendMailAction = async ({ req }, context, mailClient) => {
     await mailClient.sendMail({
         type: "html",
-        to: "bruno@lartillot.net",
+        to: "victor.chansolme@hotmail.fr",
         subject: "Test emailing",
         content: `Bonjour,
         Contenu du message...`

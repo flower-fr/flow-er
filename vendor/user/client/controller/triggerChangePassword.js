@@ -31,16 +31,17 @@ const triggerChangePassword = async (rule) => {
 
             else {
 
-                event.currentTarget.submit()
+                // event.currentTarget.submit()
 
                 $(".fl-submit").prop("disabled", true)
 
                 // Create a new FormData object.
-                const payload = {}
-                payload.csrfToken = $("#csrfToken").val()
-                payload.email = $("#email").val()
-                payload.currentPassword = $("#currentPassword").val()
-                payload.newPassword = $("#newPassword").val()
+                const payload = {
+                    csrfToken: form.elements.csrfToken.value,
+                    email: form.elements.email.value,
+                    currentPassword: form.elements.currentPassword.value,
+                    newPassword: form.elements.newPassword.value,
+                }
 
                 const xhttp = await fetch("/user/change-password", {
                     method: "POST",

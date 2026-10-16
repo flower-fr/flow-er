@@ -22,9 +22,9 @@ const register = async ({ context, config, logger, app }) => {
     app.use(`${config.prefix}/*`, noCacheMiddleware)
     app.use(`${config.prefix}/*`, handleCorsMiddleware)
 
-    app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
-
     const sql = await createSqlClient({ config: config.db, logger, dbName: context.dbName })
+    
+    app.use(`${config.prefix}`, sessionCookieMiddleware(config, context, sql, logger))
 
     const execute = executeService(context.clone(), config, logger)
 

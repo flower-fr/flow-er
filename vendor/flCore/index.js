@@ -15,6 +15,7 @@ const { smtpActionV2 } = require("./server/smtpActionV2")
 const { createSqlClient } = require("./server/model/sql-client")
 const { createMailClient } = require("../utils/mail-client")
 const { executeService } = require("../../core/api-utils")
+const { createCsrfToken } = require("./server/csrf")
 
 const { deprecatedTransactionAction } = require("./server/deprecatedTransactionAction")
 
@@ -22,9 +23,11 @@ const register = async ({ context, config, logger, app }) => {
 
     app.use(`${config.prefix}/*`, noCacheMiddleware)
     app.use(`${config.prefix}/*`, handleCorsMiddleware)
-    app.use(`${config.prefix}`, sessionCookieMiddleware(config, context))
 
     const sql = await createSqlClient({ config: config.db, logger, dbName: context.dbName })
+
+    app.use(`${config.prefix}`, sessionCookieMiddleware(config, context, sql, logger))
+
     const smtp = createMailClient({ config: config.smtp, logger })
     const sms = config.sms
  
@@ -85,6 +88,8 @@ const register = async ({ context, config, logger, app }) => {
     app.delete(`${config.prefix}v1/tag`, execute(deleteTagAction, context, { sql, logger }))
     app.delete(`${config.prefix}v1/:entity/:id`, execute(deleteAction, context, { sql, logger }))
     app.delete(`${config.prefix}v1/:entity`, execute(deleteAction, context, { sql, logger }))
+
+    app.get(`${config.prefix}csrf`, execute(createCsrfToken, context, { config, sql, logger }))
 
     // Deprecated actions
     app.post(`${config.prefix}v1/:entity/:transaction/:id`, execute(deprecatedTransactionAction, context, { sql, smtp, sms }))
