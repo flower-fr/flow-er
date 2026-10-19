@@ -16,7 +16,7 @@ export default class Form extends View
 
     initialize = async () => {
         let response = await fetch(`/bo/form/${ this.entity }?view=${ this.view }`)
-        const { properties, layout, post, translations } = await response.json()
+        const { properties, title, layout, post, translations } = await response.json()
         this.properties = properties
         this.formLayout = layout
         this.post = post
@@ -27,6 +27,7 @@ export default class Form extends View
             const columns = Object.keys(properties).join(",")
             response = await fetch(`/core/v1/${ this.entity }/${ this.id }?columns=${ columns }`)
             this.data = (await response.json()).rows[0]
+            this.title = this.data[title]
         }
     }
 

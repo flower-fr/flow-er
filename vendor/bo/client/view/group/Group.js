@@ -401,7 +401,7 @@ export default class Group extends View
     }
 
     runExport = async (tab) => {
-        let response = await fetch(`/bo/export/${ this.entity }?view=${ tab.clientAction.view }`)
+        let response = await fetch(`/bo/export/${ this.entity }?view=${ tab.clientAction.view ?? "default" }`)
         const config = await response.json()
         
         const rows = this.getMatchingRows(tab)
