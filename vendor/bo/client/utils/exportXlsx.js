@@ -20,7 +20,7 @@ const exportXlsx = async (fileName, config, rows) => {
 
     const propertyEntries = Object.entries(config.properties)
     worksheet.columns = propertyEntries.map(([key, definition]) => ({
-        header: definition.header,
+        header: definition.header || definition.label,
         key,
         width: 20,
     }))
@@ -42,7 +42,7 @@ const exportXlsx = async (fileName, config, rows) => {
 const buildRowValues = (row, propertyEntries) => {
     const values = {}
     for (const [key, definition] of propertyEntries) {
-        values[key] = Object.hasOwn(definition, "value") ? definition.value : row[definition.property]
+        values[key] = Object.hasOwn(definition, "value") ? definition.value : row[definition.property || key]
     }
     return values
 }

@@ -311,10 +311,10 @@ export default class Card extends View
         return html.join("\n")
     }
 
-    getForm = () =>
+    getForm = async () =>
     {
         const { controller, entity, id, view, layout } = this
-        controller.showModal(new Form({ controller, entity, view, id, layout, onSuccess: async () => {
+        const form = new Form({ controller, entity, view, id, layout, onSuccess: async () => {
             layout.refreshList({})
 
             // Refresh the card
@@ -324,7 +324,9 @@ export default class Card extends View
                 cardEl.innerHTML = this.render()
                 this.trigger()
             } 
-        }}))
+        }})
+        await form.initialize()
+        controller.showModal(form, form.title)
     }
 
     trigger = () =>
