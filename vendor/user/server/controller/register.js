@@ -11,11 +11,11 @@ const register = async ({ req }, context, sql, mailClient, config) => {
     if (user.status !== "pending") return [400, { message: "User is not in pending status" }, "application/json"]
 
     // Generate activation token
-    const token = createToken({ userId: user.id }, config.apiKey, 48 * 60 * 60 * 1000)
+    const token = createToken({ userId: user.id }, config.apiKey, 48 * 60 * 60)
 
     // Prepare email content
     const data = { 
-        activationLink: `${config.baseUrl}/user/new-password?jwt=Bearer%20${token}`,
+        activationLink: `${config.baseUrl}/user/new-password?token=${token}`,
         // registrationLink: "http://localhost:5010/bo/index/account",
         instanceCaption: "Applee"
     }

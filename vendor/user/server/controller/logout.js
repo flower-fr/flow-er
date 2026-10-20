@@ -10,6 +10,7 @@ const logout = async ({ res }, context) => {
 
     res.clearCookie("session")
     res.clearCookie("access")
+    res.clearCookie("refresh")
 
     return renderLogout({ context }, data)
 }

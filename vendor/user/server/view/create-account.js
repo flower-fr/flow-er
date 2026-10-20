@@ -44,7 +44,7 @@ const renderCreateAccount = (context, data) => {
     Si le lien ne fonctionne pas, veuillez copier-coller  l’adresse suivante dans votre navigateur :<br>
     ${data.activationLink}
     <br><br>
-    Ce lien n'est valide que <b>48 heures</b>. En cas d'expiration de ce délai, vous devrez renouveler votre demande sur notre site <a href="${data.registrationLink}">${data.registrationLink}</a>
+    Ce lien n'est valide que <b>48 heures</b>. En cas d'expiration de ce délai, vous pourrez en demander un nouveau depuis la page du lien expiré.
     <br><br>
     A très bientôt,<br>
     <b>${data.instanceCaption}</b>

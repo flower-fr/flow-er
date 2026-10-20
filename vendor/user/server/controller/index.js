@@ -8,6 +8,9 @@ const { sessionCookieMiddleware } = require("./sessionCookieMiddleware")
 const { logout } = require("./logout")
 const { changePassword } = require("./changePassword")
 const { changePasswordPost } = require("./changePasswordPost")
+const { newPassword } = require("./newPassword")
+const { newPasswordPost } = require("./newPasswordPost")
+const { resendLink } = require("./resendLink")
 const { createUser } = require("./createUser")
 const { register } = require("./register")
 const { refreshToken } = require("./refreshToken")
@@ -25,6 +28,10 @@ const registerUser = async ({ context, config, logger, app }) =>
     app.get(`${config.prefix}loginV2`, execute(loginV2, context, config, db))
     app.post(`${config.prefix}login`, execute(loginPostV2, context, config, sql)) // Deprecated
     app.post(`${config.prefix}loginV2`, execute(loginPostV2, context, config, sql, logger))
+
+    app.get(`${config.prefix}new-password`, execute(newPassword, context, config, db))
+    app.post(`${config.prefix}new-password`, execute(newPasswordPost, context, config, db, logger))
+    app.post(`${config.prefix}resend-link`, execute(resendLink, context, sql, mailClient, config))
 
     app.use(`${config.prefix}`, sessionCookieMiddleware(config, context, sql, logger))
 
