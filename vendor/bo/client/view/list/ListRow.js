@@ -9,6 +9,7 @@ export default class ListRow extends View
         this.i = i
         this.row = row
         this.filledColumns = filledColumns
+        this.params = params
         this.properties = properties
         this.orderProperty = orderProperty
         this.summable = summable
@@ -75,17 +76,19 @@ export default class ListRow extends View
                 </a>`)
         }
 
+        if (this.listRow) {
+            html.push(`
+                    <a
+                        href="#!"
+                        id="flListTooltip-${ row.id }-${ layout.screenIndex }"
+                    >
+                        <small><i class="fas fa-circle-exclamation me-md-2"></i></small>
+                    </a>`)
+        }
+
         html.push(`
-                <a
-                    href="#!"
-                    id="flListTooltip-${ row.id }-${ layout.screenIndex }"
-                >
-                    <small><i class="fas fa-circle-exclamation me-md-2"></i></small>
-                </a>
             </td>
-
             ${ this.listCells.map(cell => cell.render()).join("\n") }
-
         </tr>`)
 
         return html.join("\n")

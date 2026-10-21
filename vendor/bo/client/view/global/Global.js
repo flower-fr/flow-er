@@ -1,5 +1,6 @@
 import ExcelJS from "/js/exceljs.esm.js"
 import Form from "../form/Form.js"
+import flattenXlsx from "../../utils/flattenXlsx.js"
 import importXlsx from "../../utils/importXlsx.js"
 import Toast from "../toast/Toast.js"
 import View from "../View.js"
@@ -143,32 +144,48 @@ export default class Global extends View
 
         for (const chunk of chunks) {
         
+            let rows
+            if (config.properties?.identifier) {
             // Extract identifiers
-            const identifiers = (config.properties?.identifier?.header) ? chunk.map(row => row[config.properties?.identifier?.header]) : []
+                const identifiers = (config.properties?.identifier?.header) ? chunk.map(row => row[config.properties?.identifier?.header]) : []
     
-            // Fetch database rows from the database based on identifiers and where
-            const identifierString = identifiers.join(",")
-            const whereParam = Object.entries({ /*...config.params.where, */...action.restriction }).map(([k, v]) => `${k}:${v}`).join("|")
-            const columnsParam = [...new Set(Object.values(config.properties).filter(v => !!v.property).map(v => v.property))].join(",")
-            response = await fetch(`/core/v1/${ action.entity }?columns=${ columnsParam }&where=identifier:${ encodeURIComponent(identifierString) }|${ whereParam }`)
-            const data = await response.json()
+                // Fetch database rows from the database based on identifiers and where
+                const identifierString = identifiers.join(",")
+                const whereParam = Object.entries({ /*...config.params.where, */...action.restriction }).map(([k, v]) => `${k}:${v}`).join("|")
+                const columnsParam = [...new Set(Object.values(config.properties).filter(v => !!v.property).map(v => v.property))].join(",")
+                response = await fetch(`/core/v1/${ action.entity }?columns=${ columnsParam }&where=identifier:${ encodeURIComponent(identifierString) }|${ whereParam }`)
+                const data = await response.json()
 
-            const logInteraction = (status, responseBody) => fetch("/core/v1/interaction", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify([{
-                    status,
-                    provider: "flow-er",
-                    endpoint: "bo/import-xlsx",
+                const logInteraction = (status, responseBody) => fetch("/core/v1/interaction", {
                     method: "POST",
-                    body: JSON.stringify(chunk),
-                    response_body: JSON.stringify(responseBody),
-                }])
-            })
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify([{
+                        status,
+                        provider: "flow-er",
+                        endpoint: "bo/import-xlsx",
+                        method: "POST",
+                        body: JSON.stringify(chunk),
+                        response_body: JSON.stringify(responseBody),
+                    }])
+                })
+                rows = data.rows
+            }
+            else {
+                rows = []
+            }
+
+            let vector
+            if (config.params.flattening) {
+                vector = flattenXlsx(chunk, config)
+            }
+            else {
+                vector = chunk
+            }
 
             // Run the importXlsx function to determine which rows to update and which to reject
-            const { toUpdate, rejected } = importXlsx(chunk, config, data.rows)
-
+            const { toUpdate, rejected } = importXlsx(vector, config, rows || [])
+console.log({toUpdate})
+return
             // Show rejected rows in a toast
             if (Object.keys(rejected).length > 0) {
                 console.log("Rejected rows:", rejected)
