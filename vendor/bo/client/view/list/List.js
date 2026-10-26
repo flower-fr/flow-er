@@ -1,5 +1,6 @@
 import View from "../View.js"
 
+import Calendar from "../calendar/Calendar.js"
 import Card from "../card/Card.js"
 import ListHeader from "./ListHeader.js"
 import ListGroup from "./ListGroup.js"
@@ -10,7 +11,7 @@ import { computeConsistencyIssues } from "../../utils/consistencyEngine.js"
 
 export default class List extends View
 {
-    constructor({ controller, entity, view, group, where, tags, orderProperty, orderDirection, layout, stack })
+    constructor({ controller, entity, view, group, where, tags, orderProperty, orderDirection, limit, layout, stack })
     {
         super({ controller })
         this.entity = entity
@@ -20,12 +21,15 @@ export default class List extends View
         this.tags = tags || ""
         this.orderProperty = orderProperty
         this.orderDirection = orderDirection
+        this.limit = limit ?? 1000
         this.layout = layout
         this.stack = stack
     }
 
     initialize = async () =>
     {
+        const { controller, entity, view, layout } = this
+
         // Retrieve the config and params
         let response = await fetch(`/bo/list/${ this.entity }?view=${ this.view }`)
         const { properties, identifier, params, cellClass, eventConfig, summable, translations } = await response.json()
@@ -57,7 +61,9 @@ export default class List extends View
         orderDirection = this.orderDirection
         this.grouping = properties[orderProperty].group
 
-        const limit = params.limit
+        const limit = this.limit //params.limit ?? 1000
+        // this.limit = limit
+
         response = await fetch(`/core/v1/${ this.entity }?columns=${ columns }&where=${ where }&tags=${ tags }&order=${ order }${ limit ? `&limit=${ limit }` : "" }`)
         const rows = (await response.json()).rows
         this.rows = rows
@@ -83,6 +89,11 @@ export default class List extends View
         //     return new ListRow({ i: i++, controller: this.controller, row, filledColumns: this.filledColumns, properties, translations })
         // })
         this.checkedIds = new Set()
+
+        if (params.calendarView) {
+            this.calendar = new Calendar({ controller, entity, view, layout })
+            await this.calendar.initialize()
+        }
     }
 
     groupRows = () =>
@@ -128,9 +139,14 @@ export default class List extends View
 
     render = () =>
     {    
-        const html = [], { grouping, translations } = this
+        const html = [], { params, grouping, translations } = this
 
         this.groupRows()
+
+        if (params.calendarView) {
+            html.push(this.calendar.style())
+            html.push(this.calendar.render())
+        }
 
         html.push(`
         <style>
@@ -199,7 +215,7 @@ export default class List extends View
 
     trigger = () =>
     {
-        const { controller, grouping, entity, view, group, layout } = this
+        const { controller, grouping, entity, view, group, layout, params } = this
         const tableEl = document.getElementById(`flListTable-${ layout.screenIndex }`)
         const cardEl = document.getElementById(`flCard-${ layout.screenIndex }`)
         const dashboardEl = document.getElementById(`flDashboard-${ layout.screenIndex }`)
@@ -241,8 +257,9 @@ export default class List extends View
         // Extend the displayed list
 
         $(".fl-list-more").click(function () {
-            $(`#flListLimitHidden-${ layout.screenIndex }`).val(this.data.limit * 2)
-            // triggerList({ context, entity, view })
+            const limit = this.limit * 2
+            $(`#flListLimitHidden-${ layout.screenIndex }`).val(limit)
+            layout.refreshList({})
         })
 
         layout.showMainMode()
@@ -378,6 +395,10 @@ export default class List extends View
                 checkAllDown.checked = true
                 checkAll(true)
             }
+        }
+
+        if (params.calendarView) {
+            this.calendar.trigger()
         }
     }
 

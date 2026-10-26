@@ -3,9 +3,13 @@ const { refreshToken } = require("./refreshToken")
 
 const sessionCookieMiddleware = (config, context, sql, logger) => async (req, res, next) => {
 
-    let session = req.cookies["session"] || req.query.jwt, token
+    let session = req.cookies["session"], token
     if (!session) {
-        return handleAccessToken({ req, res, next }, context, config, sql, logger)
+        session = req.query.jwt
+        if (!session) {
+            return handleAccessToken({ req, res, next }, context, config, sql, logger)
+        }
+        token = session
     } else { // Deprecated
         const [schema, t] = session.split(" ")
         if (!t || schema !== "Bearer") {

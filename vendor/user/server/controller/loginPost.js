@@ -35,7 +35,9 @@ const loginPostV2 = async ({ req, res }, context, config, sql, logger) =>
     const user = result[0]
     if (!user) {
         logger && logger.debug(util.inspect({ csrfToken, user }))
-        return [403, { status: "unauthorized", csrfToken }, "application/json"]
+        // return [403, { status: "unauthorized", csrfToken }, "application/json"]
+        data.status = "403"
+        return renderLogin({ context }, data)
     }
 
     context.user.id = user.id

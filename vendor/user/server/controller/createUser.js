@@ -3,14 +3,15 @@ const { assert, throwUnauthorized, throwNotFoundError } = require("../../../../c
 const { select } = require("../../../flCore/server/model/select")
 const { insert } = require("../../../flCore/server/model/insert")
 
-const createUser = async ({ req }, context, db) => {
+const createUser = async ({ req }, context, sql) => {
 
     const [
         email, password
     ] = assert.notEmpty(req.body, "email", "password")
 
     const model = context.config["user/model"]
-    const [result, fields] = (await db.execute(select(context, "user", ["email"], { "email": email }, null, null, model)))[0]
+    const { result } = await sql.execute({ context, type: "select", entity: "user", columns: ["email"], where: { "email": email } })
+console.log({result})
     if (result) {
         return throwUnauthorized("user already exist", "ALREADY_EXIST")
     }
@@ -25,7 +26,7 @@ const createUser = async ({ req }, context, db) => {
         password: encryptedPassword
     }
 
-    await db.execute(insert(context, "user", userData, model))
+    await sql.execute({ context, type: "insert", entity: "user", data: userData })
 
     return { status: "ok" }
 };

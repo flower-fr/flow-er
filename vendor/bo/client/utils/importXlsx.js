@@ -35,7 +35,7 @@ const importXlsx = (xlsxRows, config, dbRows) => {
     const rejected = {}
 
     for (const xlsxRow of xlsxRows) {
-        const identifier = identifierHeader ?? xlsxRow[identifierHeader]
+        let identifier = identifierHeader ?? xlsxRow[identifierHeader]
         const dbRow = dbRowsByIdentifier.get(identifier)
 
         if (identifierHeader && !dbRow) {
@@ -66,22 +66,50 @@ const importXlsx = (xlsxRows, config, dbRows) => {
                         }
                     }
                 }
+                else if (definition.type === "vector") {
+                    loadedValue = Object.entries(definition.modalities).find(([key, obj]) => obj.label === loadedValue)
+                    if (loadedValue) {
+                        loadedValue = loadedValue[0]
+                    }
+                    else {
+                        conflicts[dataId] = { status: "unmatchedData" }
+                        continue
+                    }
+                }
                 else if (definition.type === "email") {
                     loadedValue = loadedValue.hyperlink
                     if (loadedValue.startsWith("mailto:")) {
                         loadedValue = loadedValue.slice(7)
                     }
                 }
-                else if (definition.type === "date" && definition.format === "dd/mm/yyyy HH:mm:ss") {
+                else if (definition.type === "date") {
+                    if (definition.format === "dd/mm/yyyy HH:mm:ss") {
 
-                    // 1. Séparer la date et l'heure
-                    const [datePart, timePart] = loadedValue.split(" ")
+                        // 1. Séparer la date et l'heure
+                        const [datePart, timePart] = loadedValue.split(" ")
 
-                    // 2. Découper le jour, le mois et l'année
-                    const [day, month, year] = datePart.split("/")
+                        // 2. Découper le jour, le mois et l'année
+                        const [day, month, year] = datePart.split("/")
 
-                    // 3. Recomposer au format SQL (AAAA-MM-JJ HH:mm:ss)
-                    loadedValue = `${year}-${month}-${day}`
+                        // 3. Recomposer au format SQL (AAAA-MM-JJ HH:mm:ss)
+                        loadedValue = `${year}-${month}-${day}`
+                    }
+                    else if (definition.format === "dd/mm/yyyy") {
+                        const [day, month, year] = loadedValue.split("/")
+                        loadedValue = `${year}-${month}-${day}`
+                    }
+                }
+                else if (definition.type === "time") {
+                    const [hour, minute] = loadedValue.split(":")
+                    loadedValue = `${hour}:${minute}:00`
+                }
+                else if (definition.type === "duration") {
+                    if (loadedValue) {
+                        const [hours, minutes] = loadedValue.split("h").map(Number)
+                        loadedValue = hours * 60 + minutes
+                    } else {
+                        loadedValue = 0
+                    }
                 }
                 else if (definition.type === "lastname" && definition.format === "LASTNAME Firstname") {
                     const [lastName, firstName] = separateLastFirst(loadedValue)
@@ -107,11 +135,12 @@ const importXlsx = (xlsxRows, config, dbRows) => {
 
             if (loadedValue) changes[definition.property] = toDbValue(loadedValue, definition)
         }
+        if (!identifier) identifier = xlsxRow.flatIdentifier // Transient
 
-        if (Object.keys(conflicts).length > 0) {
-            rejected[identifier] = { status: "inconsistentData", ...conflicts }
-            continue
-        }
+        // if (Object.keys(conflicts).length > 0) {
+        //     rejected[identifier] = { status: "inconsistentData", ...conflicts }
+        //     continue
+        // }
 
         toUpdate.push(changes)
     }

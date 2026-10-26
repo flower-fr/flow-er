@@ -178,7 +178,7 @@ export default class Layout extends View
         $(`#flGroup-${ this.screenIndex }`).show()
     }
     
-    refreshList = async ({ where, tags, orderProperty, orderDirection }) =>
+    refreshList = async ({ where, tags, orderProperty, orderDirection, limit }) =>
     {
         if (!where) where = this.addForm?.extractFilters()
         if (!tags) tags = this.addForm?.extractTags()
@@ -188,8 +188,11 @@ export default class Layout extends View
         if (orderDirection) {
             this.orderDirection = orderDirection
         }
+        if (limit) {
+            this.limit = limit
+        }
         const { controller, entity, view, group } = this
-        this.list = new List({ controller, entity, view, group, where, tags, orderProperty: this.orderProperty, orderDirection: this.orderDirection, layout: this, stack: this.stack })
+        this.list = new List({ controller, entity, view, group, where, tags, orderProperty: this.orderProperty, orderDirection: this.orderDirection, limit: this.limit, layout: this, stack: this.stack })
         await this.list.initialize()
         document.getElementById(`flList-${ this.screenIndex }`).innerHTML = this.list.render()
         this.list.trigger()

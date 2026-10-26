@@ -41,7 +41,7 @@ const action = async ({ req }, { context, sql, logger }) =>
         }
         if (["vector", "autocomplete"].includes(property.type)) {
             const { entity, key, format, columns, where, order } = property
-            const items = await sql.execute({ context, type: "select", entity, columns, where, order })
+            const items = await sql.execute({ context, type: "select", entity, columns, where, order, limit: null })
             property.modalities = {}
             property.rows = {}
             for (const item of items) {

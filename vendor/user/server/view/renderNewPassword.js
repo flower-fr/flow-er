@@ -4,6 +4,9 @@ const { renderFooter } = require("./renderFooter")
 const { renderScripts } = require("./renderScripts")
 
 const renderNewPassword = ({ context, rule }, data) => {
+    
+    // const rule = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%?&])[A-Za-z\d@.#$!%?&]{8,64}$/
+
     return `<!DOCTYPE html>
     <html lang="fr" ${ (data.darkMode) ? "data-mdb-theme=\"dark\"" : "" }>
 

@@ -183,9 +183,8 @@ export default class Global extends View
             }
 
             // Run the importXlsx function to determine which rows to update and which to reject
-            const { toUpdate, rejected } = importXlsx(vector, config, rows || [])
-console.log({toUpdate})
-return
+            const { toUpdate, rejected } = importXlsx(vector, config, rows)
+
             // Show rejected rows in a toast
             if (Object.keys(rejected).length > 0) {
                 console.log("Rejected rows:", rejected)

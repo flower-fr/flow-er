@@ -16,8 +16,7 @@ const register = async ({ req }, context, sql, mailClient, config) => {
     // Prepare email content
     const data = { 
         activationLink: `${config.baseUrl}/user/new-password?token=${token}`,
-        // registrationLink: "http://localhost:5010/bo/index/account",
-        instanceCaption: "Applee"
+        instanceCaption: "PPIT"
     }
     const content = renderCreateAccount(context, data)
 
@@ -26,7 +25,7 @@ const register = async ({ req }, context, sql, mailClient, config) => {
         type: "html",
         from: "support@p-pit.fr",
         to: user.email,
-        subject: "Register",
+        subject: "Activez votre nouveau compte PPIT",
         content: content
     })
 }

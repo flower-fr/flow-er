@@ -37,7 +37,7 @@ const renderCreateAccount = (context, data) => {
 <body>
 <div class="content">
     Bonjour et merci pour votre inscription,<br><br>
-    Nous avons bien reçu votre demande de création de votre compte Flow-ER. Veuillez finaliser la création en cliquant sur le lien ci-dessous :
+    Nous avons bien reçu votre demande de création de votre compte ${data.instanceCaption}. Veuillez finaliser la création en cliquant sur le lien ci-dessous :
     <br><br>
     <div class="activate"><a href="${data.activationLink}">Activer mon compte</a></div>
     <br><br>
