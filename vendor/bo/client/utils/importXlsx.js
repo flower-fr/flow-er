@@ -67,6 +67,7 @@ const importXlsx = (xlsxRows, config, dbRows) => {
                     }
                 }
                 else if (definition.type === "vector") {
+console.log({dataId, loadedValue, definition})
                     loadedValue = Object.entries(definition.modalities).find(([key, obj]) => obj.label === loadedValue)
                     if (loadedValue) {
                         loadedValue = loadedValue[0]

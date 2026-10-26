@@ -194,16 +194,16 @@ export default class Global extends View
                 toast.trigger()
             }
 
-            // If there are no rows to update, show a toast and return
-            if (toUpdate.length === 0) {
-                await logInteraction("processed", { toUpdate, rejected })
-                const toast = new Toast({ controller: this.controller }, { title: "Importation", message: "Aucune donnée à mettre à jour." })
-                toast.initialize()
-                toast.trigger()
-                return
-            }
-
-            const body = toUpdate.map(row => ({ ...row, status: config.params.nextStatus }))
+            // // If there are no rows to update, show a toast and return
+            // if (toUpdate.length === 0) {
+            //     await logInteraction("processed", { toUpdate, rejected })
+            //     const toast = new Toast({ controller: this.controller }, { title: "Importation", message: "Aucune donnée à mettre à jour." })
+            //     toast.initialize()
+            //     toast.trigger()
+            //     return
+            // }
+            
+            const body = toUpdate.map(row => ({ ...row/*, status: config.params.nextStatus*/ }))
             response = await fetch(`/core/v1/${ action.entity }`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -212,7 +212,7 @@ export default class Global extends View
             const result = await response.json()
 
             const updateFailed = !response.ok || result.error
-            await logInteraction(updateFailed ? "error" : "processed", { toUpdate, rejected, result })
+            // await logInteraction(updateFailed ? "error" : "processed", { toUpdate, rejected, result })
 
             // Handle error response
             if (updateFailed) {
@@ -226,7 +226,7 @@ export default class Global extends View
 
         // Show success toast
         const toast = new Toast({ controller: this.controller },
-            { title: "Importation", message: `${toUpdate.length} lignes ont été mises à jour.`, type: "success" })
+            { title: "Importation", message: `${i} lignes ont été mises à jour.`, type: "success" })
         toast.initialize()
         toast.trigger()
 

@@ -153,8 +153,12 @@ export default class Group extends View
             }
 
             html.push(`
+                            ${ (action.class === "danger") ? `
+                            <div class="flGroup-alert" id="flGroupAlert-${tabId}-${layout.screenIndex}">
+                                <p class="alert alert-danger  my-3 text-center">! Veuillez confirmer cette action !</p>
+                            </div>` : ""}
                             <div class="form-outline mb-1">
-                                <button class="btn btn-sm ${ (action.class === "danger") ? "btn-danger" : "btn-warning" }">${ action.label } <span class="fl-group-btn-count" id="flGroupBtnCount-${ tabId }-${ layout.screenIndex }"></span></button>
+                                <button class="btn btn-sm ${ (action.class === "danger") ? "btn-danger" : "btn-warning" }" id="flGroupBtn-${tabId}-${layout.screenIndex}">${ action.label } <span class="fl-group-btn-count" id="flGroupBtnCount-${ tabId }-${ layout.screenIndex }"></span></button>
                             </div>
                         </form>
                         <hr>`)
@@ -251,9 +255,18 @@ export default class Group extends View
             }
         }
 
+        $(".flGroup-alert").hide()
+
         // Handle click on submit
         for (const [tabId, tab] of Object.entries(this.tabs ?? {})) {
+            const action = tab.post ?? tab.clientAction
+            if (action.class === "danger") $(`#flGroupBtn-${tabId}-${layout.screenIndex}`).click(function () {
+                $(`#flGroupAlert-${tabId}-${layout.screenIndex}`).hide()
+                $(this).prop("disabled", false)
+            })
+
             const form = document.getElementById(`flGroupForm-${ tabId }-${ layout.screenIndex }`)
+            
             form.addEventListener("submit", event => {
                 event.preventDefault()
 
@@ -262,12 +275,21 @@ export default class Group extends View
                     return
                 }
 
-                if (tab.clientAction) {
-                    return this.clientActionHandler(tab)
-                } else if (tab.post) {
-                    this.postHandler({ tabId, tab })
-                    form.reset()
+                const action = tab.post ?? tab.clientAction
+                const proceed = () => {
+                    if (tab.clientAction) {
+                        return this.clientActionHandler(tab)
+                    } else if (tab.post) {
+                        this.postHandler({ tabId, tab })
+                        // form.reset()
+                        $(".flGroup-alert").hide()
+                    }
                 }
+                if (action.class === "danger") {
+                    $($(`#flGroupAlert-${ tabId }-${ layout.screenIndex }`)).show()
+                    $(`#flGroupBtn-${ tabId }-${ layout.screenIndex }`).click(proceed)
+                }
+                else proceed()
             })
         }
 

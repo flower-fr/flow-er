@@ -11,7 +11,7 @@ const createUser = async ({ req }, context, sql) => {
 
     const model = context.config["user/model"]
     const { result } = await sql.execute({ context, type: "select", entity: "user", columns: ["email"], where: { "email": email } })
-console.log({result})
+
     if (result) {
         return throwUnauthorized("user already exist", "ALREADY_EXIST")
     }
