@@ -25,7 +25,7 @@ const register = async ({ req }, context, sql, mailClient, config) => {
         type: "html",
         from: "support@p-pit.fr",
         to: user.email,
-        subject: "Activez votre nouveau compte PPIT",
+        subject: `Activez votre nouveau compte ${ config.instanceCaption }`,
         content: content
     })
 }
