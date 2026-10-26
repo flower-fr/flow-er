@@ -16,7 +16,7 @@ const register = async ({ req }, context, sql, mailClient, config) => {
     // Prepare email content
     const data = { 
         activationLink: `${config.baseUrl}/user/new-password?token=${token}`,
-        instanceCaption: "PPIT"
+        instanceCaption: config.instanceCaption
     }
     const content = renderCreateAccount(context, data)
 
