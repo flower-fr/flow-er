@@ -210,6 +210,7 @@ export default class Global extends View
                 body: JSON.stringify(body)
             })
             const result = await response.json()
+            console.log(result)
 
             const updateFailed = !response.ok || result.error
             // await logInteraction(updateFailed ? "error" : "processed", { toUpdate, rejected, result })
