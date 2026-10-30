@@ -49,6 +49,17 @@ export default class Global extends View
                             <i ${ (action.glyph) ? `class="fa ${action.glyph}"` : "" }></i> ${ action.label }
                         </button>`)
 
+                } else if (!action.type || action.type == "migration") {
+                    actionHtml.push(`
+                        <input type="file" class="form-control form-control-sm mb-2" id="flGlobalImportFile-${ actionId }" />
+                        <button
+                            type="button"
+                            class="btn ${ (action.class === "danger") ? "btn-danger" : "btn-warning" }"
+                            id="flGlobal-${ actionId }"
+                        >
+                            <i ${ (action.glyph) ? `class="fa ${action.glyph}"` : "" }></i> ${ action.label }
+                        </button>`)
+
                 } else if (!action.type || action.type == "modal") {
                     actionHtml.push(`
                         <button
@@ -94,6 +105,7 @@ export default class Global extends View
             // Handle button click
             $(`#flGlobal-${ actionId }`).click(() => {
                 if (action.type && action.type === "import") return this.runImport(action, actionId)
+                if (action.type && action.type === "migration") return this.runMigration(action, actionId)
                 if (action.type && action.type !== "modal") return
                 controller.screenIndex = 1
                 controller.stackView = []
@@ -185,6 +197,28 @@ export default class Global extends View
             // Run the importXlsx function to determine which rows to update and which to reject
             const { toUpdate, rejected } = importXlsx(vector, config, rows)
 
+            // TRANSIENT
+            const f = (await (await fetch("/core/v1/cours_period?columns=id,external_ref&limit=3000")).json())
+            const keysArray = f.rows
+            const keys = new Map()
+            keysArray.forEach(x => { keys.set(x.external_ref, x.id) })
+            const data = []
+            for (const period of toUpdate) {
+                const id = keys.get(period.external_ref)
+                if (id) {
+                    data.push({ id, external_groups: period.external_groups })
+                }
+            }
+            // const data = toUpdate.map(period => { return { id: keys.get(period.external_ref), external_groups: period.external_groups }})
+            response = await fetch(`/core/v1/cours_period`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            })
+            const res = await response.json()
+console.log(res)
+continue
+
             // Show rejected rows in a toast
             if (Object.keys(rejected).length > 0) {
                 console.log("Rejected rows:", rejected)
@@ -223,6 +257,69 @@ export default class Global extends View
                 toast.trigger()
                 return
             }
+        }
+
+        // Show success toast
+        const toast = new Toast({ controller: this.controller },
+            { title: "Importation", message: `${i} lignes ont été mises à jour.`, type: "success" })
+        toast.initialize()
+        toast.trigger()
+
+        this.layout.refreshList({})
+    }
+
+    runMigration = async (action, actionId) =>
+    {
+        // const flatten = (rows, config) => {
+        // entity: "tag",
+        // flattening: {
+        //     sourceProperty: "room",
+        //     separator: ",",
+        //     targetProperty: "name",
+        // },
+        // values: {
+        //     entity_id: "cours_period",
+        //     row_id: "=id",
+        //     name: "=name" 
+        // }
+        //     const result = rows.reduce((previous, current))
+        // }
+
+        let response = await fetch(`/${ action.controller }/${ action.action }/${ action.entity }?view=${ action.view ?? "default" }`)
+        const config = await response.json()
+
+        let rows
+        // Fetch database rows from the database based on identifiers and where
+        response = await fetch(`/core/v1/${ action.entity }?columns=${ Object.keys(config.properties) }`)
+        const data = await response.json()
+        rows = data.rows
+
+        let vector
+        if (config.params.flattening) {
+            vector = flatten(rows, config)
+        }
+        else {
+            vector = rows
+        }
+            
+        const body = vector.map(row => ({ ...row/*, status: config.params.nextStatus*/ }))
+        response = await fetch(`/core/v1/${ action.entity }`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+        })
+        const result = await response.json()
+        console.log(result)
+
+        const updateFailed = !response.ok || result.error
+
+        // Handle error response
+        if (updateFailed) {
+            const toast = new Toast({ controller: this.controller },
+                { title: "Importation", message: "Une erreur est survenue lors de la mise à jour.", type: "error", persistent: true })
+            toast.initialize()
+            toast.trigger()
+            return
         }
 
         // Show success toast
