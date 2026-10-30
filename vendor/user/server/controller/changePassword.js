@@ -10,7 +10,7 @@ const changePassword = async ({ req }, context, config) => {
         csrfToken: createToken({ form: "user/change-password" }, config.apiKey, 600),
     }
 
-    return renderChangePassword({ context }, data)
+    return renderChangePassword({ context,  rule: config.passwordRule || context.config["user/password"]["rule"]  }, data)
 }
 
 module.exports = {

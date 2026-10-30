@@ -29,7 +29,7 @@ const registerUser = async ({ context, config, logger, app }) =>
     app.post(`${config.prefix}login`, execute(loginPostV2, context, config, sql)) // Deprecated
     app.post(`${config.prefix}loginV2`, execute(loginPostV2, context, config, sql, logger))
 
-    app.get(`${config.prefix}new-password`, execute(newPassword, context, config, db))
+    app.get(`${config.prefix}new-password`, execute(newPassword, context, config, sql))
     app.post(`${config.prefix}new-password`, execute(newPasswordPost, context, config, db, logger))
     app.post(`${config.prefix}resend-link`, execute(resendLink, context, sql, mailClient, config))
 

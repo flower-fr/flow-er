@@ -4,6 +4,7 @@ const { dataToStore } = require("../model/dataToStore")
 const { entitiesToStore } = require("../model/entitiesToStore")
 const { storeEntities } = require("./storeEntities")
 const { auditCells } = require("./auditCells")
+const { getAllowedProperties, filterRowsByAllowedProperties } = require("../aclHandler")
 
 /**
  * Merge received payload with stored data
@@ -129,12 +130,15 @@ const save = async ({ req, entity }, context, rows, { sql, logger }) =>
     logger && logger.debug(util.inspect({ step: "save", entity, rows }, { depth: null, colors: true }))
 
     const model = context.config[`${entity}/model`]
-    
+
+    const allowedProperties = getAllowedProperties(entity, "post", context)
+    const filteredRows = filterRowsByAllowedProperties(rows, allowedProperties)
+
     /**
      * Find out the data to actually store in the database 
      */
     
-    let { rowsToStore, rowsToReject } = dataToStore(model, rows)
+    let { rowsToStore, rowsToReject } = dataToStore(model, filteredRows)
     logger && logger.debug(util.inspect({ rowsToReject }, { depth: null, colors: true }))
 
     // if (rowsToReject.length > 0) {

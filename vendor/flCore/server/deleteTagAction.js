@@ -1,9 +1,13 @@
 const { assert } = require("../../../core/api-utils")
-const { throwBadRequestError } = require("../../../core/api-utils")
+const { throwBadRequestError, throwUnauthorized } = require("../../../core/api-utils")
 const util = require("util")
+
+const { isDeleteAllowed } = require("./aclHandler")
 
 const deleteTagAction = async ({ req }, context, { sql, logger }) =>
 {
+    if (!isDeleteAllowed("tag", context)) return throwUnauthorized()
+
     try {
         const { entity, name, rowIds } = req.body
         logger && logger.debug(util.inspect(req.body, { depth: null, colors: true }))

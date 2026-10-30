@@ -1,0 +1,10 @@
+{
+    "user/model/releases": {
+        "V261023": { 
+            "entities": [],
+            "properties" : [
+                "user/password_token_hash"
+            ]
+        }
+    }
+}

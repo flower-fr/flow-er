@@ -2,10 +2,13 @@ const { assert } = require("../../../core/api-utils")
 const { updateColumns } = require("./post/updateColumns")
 const util = require("util")
 
-const { throwBadRequestError } = require("../../../core/api-utils")
+const { throwBadRequestError, throwUnauthorized } = require("../../../core/api-utils")
+const { isDeleteAllowed } = require("./aclHandler")
 
 const deleteAction = async ({ req }, context, { sql, logger }) => {
     const entity = assert.notEmpty(req.params, "entity")
+    if (!isDeleteAllowed(entity, context)) return throwUnauthorized()
+
     let id = req.params.id
 
     try {

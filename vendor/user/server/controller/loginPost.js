@@ -26,6 +26,7 @@ const loginPostV2 = async ({ req, res }, context, config, sql, logger) =>
     } else if (status === "expired") {
         logger && logger.debug(util.inspect({ csrfToken, status }))
         // return [401, { status: "expired", csrfToken }, "application/json"]
+        data.status = "401"
         return renderLogin({ context }, data)
     }
 

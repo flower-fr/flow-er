@@ -3,7 +3,7 @@ const { renderHeader } = require("./renderHeader")
 const { renderFooter } = require("./renderFooter")
 const { renderScripts } = require("./renderScripts")
 
-const renderChangePassword = ({ context }, data) => {
+const renderChangePassword = ({ context, rule }, data) => {
 
     return `<!DOCTYPE html>
     <html lang="fr" ${ (data.darkMode) ? "data-mdb-theme=\"dark\"" : "" }>
@@ -150,7 +150,7 @@ const renderChangePassword = ({ context }, data) => {
     <script type="text/javascript" src="/user/cli/controller/triggerChangePassword.js"></script>
 
     <script>
-    triggerChangePassword(${ context.config["user/password"]["rule"] })
+    triggerChangePassword(${ rule })
     </script>
 
     </html>`

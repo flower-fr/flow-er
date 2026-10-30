@@ -1,15 +1,25 @@
 const { assert } = require("../../../core/api-utils")
 const { throwBadRequestError } = require("../../../core/api-utils")
 const util = require("util")
+const { getAllowedProperties } = require("./aclHandler")
 
 const getAction = async ({ req }, context, { sql, logger }) => 
 {
     const entity = assert.notEmpty(req.params, "entity")
 
-    const columns = (req.query.columns) ? req.query.columns.split(",").map(col => {
+    const allowedProperties = getAllowedProperties(entity, "get", context)
+
+    let columns = (req.query.columns) ? req.query.columns.split(",").map(col => {
         const parts = col.split(":")
         return parts.length > 1 ? [parts[0], parts[1]] : parts[0]
     }) : []
+
+    const filteredColumns = allowedProperties === undefined ? columns : [...columns].filter(col => {
+        const propertyId = Array.isArray(col) ? col[1] : col
+        return allowedProperties.includes(propertyId)
+    })
+
+    columns = (filteredColumns.length > 0) ? filteredColumns : allowedProperties
 
     const id = req.params.id
     const hasAggregator = columns.some(c => Array.isArray(c))

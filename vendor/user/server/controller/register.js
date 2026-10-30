@@ -1,6 +1,7 @@
 const { renderCreateAccount } = require("../view/create-account")
 const { createToken } = require("../../../../core/tools/security")
 const { assert } = require("../../../../core/api-utils")
+const crypto = require("crypto")
 
 const register = async ({ req }, context, sql, mailClient, config) => {
     const userId = assert.notEmpty(req.params, "userId")
@@ -12,6 +13,10 @@ const register = async ({ req }, context, sql, mailClient, config) => {
 
     // Generate activation token
     const token = createToken({ userId: user.id }, config.apiKey, 48 * 60 * 60)
+
+    // Store the hash of the token in the database
+    const hash = crypto.createHash("sha256").update(token).digest("hex")
+    await sql.execute({ context, type: "update", entity: "user", ids: [user.id], data: { password_token_hash: hash } })
 
     // Prepare email content
     const data = { 

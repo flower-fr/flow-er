@@ -15,6 +15,8 @@ const { save } = require("./post/save")
 const { sendSmtp } = require("./post/sendSmtp")
 const { sendSms } = require("./post/sendSms")
 
+const { getAllowedProperties, filterRowsByAllowedProperties } = require("./aclHandler")
+
 const postAction = async ({ req }, context, { sql, logger }) => {
     const entity = assert.notEmpty(req.params, "entity")
     const id = (req.query.id) ? req.query.id : 0
@@ -33,12 +35,15 @@ const postAction = async ({ req }, context, { sql, logger }) => {
             form[0].id = id
         }
         logger && logger.debug(util.inspect({form}, { depth: null, colors: true }))
+        const allowedProperties = getAllowedProperties(entity, "post", context)
+        const filteredForm = filterRowsByAllowedProperties(form, allowedProperties)
+        logger && logger.debug(util.inspect({filteredForm}, { depth: null, colors: true }))
 
         /**
          * Find out the data to actually store in the database 
          */
 
-        let { rowsToStore, rowsToReject } = dataToStore(model, form)
+        let { rowsToStore, rowsToReject } = dataToStore(model, filteredForm)
         logger && logger.debug(util.inspect({rowsToStore, rowsToReject}))
 
         if (rowsToReject.length > 0) {
