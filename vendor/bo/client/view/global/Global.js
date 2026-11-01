@@ -209,8 +209,7 @@ export default class Global extends View
                     data.push({ id, external_groups: period.external_groups })
                 }
             }
-console.log(data)
-return
+
             // const data = toUpdate.map(period => { return { id: keys.get(period.external_ref), external_groups: period.external_groups }})
             response = await fetch(`/core/v1/cours_period`, {
                 method: "POST",
