@@ -150,8 +150,8 @@ export default class Global extends View
         const chunks = []
         let i = 0
         while (i < rows.length) {
-            chunks.push(rows.slice(i, i + 200))
-            i += 200
+            chunks.push(rows.slice(i, i + 2000))
+            i += 2000
         }
 
         for (const chunk of chunks) {
@@ -198,17 +198,19 @@ export default class Global extends View
             const { toUpdate, rejected } = importXlsx(vector, config, rows)
 
             // TRANSIENT
-            const f = (await (await fetch("/core/v1/cours_period?columns=id,external_ref&limit=3000")).json())
+            const f = (await (await fetch("/core/v1/cours_period?columns=id,external_ref&where=group_id:0|external_groups:null")).json())
             const keysArray = f.rows
             const keys = new Map()
             keysArray.forEach(x => { keys.set(x.external_ref, x.id) })
             const data = []
             for (const period of toUpdate) {
                 const id = keys.get(period.external_ref)
-                if (id) {
+                if (id && period.external_groups) {
                     data.push({ id, external_groups: period.external_groups })
                 }
             }
+console.log(data)
+return
             // const data = toUpdate.map(period => { return { id: keys.get(period.external_ref), external_groups: period.external_groups }})
             response = await fetch(`/core/v1/cours_period`, {
                 method: "POST",
@@ -217,7 +219,7 @@ export default class Global extends View
             })
             const res = await response.json()
 console.log(res)
-continue
+return
 
             // Show rejected rows in a toast
             if (Object.keys(rejected).length > 0) {
