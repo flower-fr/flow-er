@@ -59,16 +59,19 @@ export default class Card extends View
 
             for (const [propertyId, options] of Object.entries(bloc.properties)) {
                 const property = properties[propertyId]
-                const label = property.label
-                const propertyType = property.type
+                const label = (property) ? property.label : options.label
+                const propertyType = (property) ? property.type : options.type
                 const divClass = options.class ? options.class : "col-md-6"
 
                 let value = data[propertyId] || ""
-                if (property.type === "percentage" && value) value = parseFloat(value * 100)
-                else if (property.value && !Array.isArray(property.value)) {
-                    value = property.value
-                    if (value.substring(0, 5) === "today") {
-                        value = moment().format("YYYY-MM-DD")
+                if (propertyType === "percentage" && value) value = parseFloat(value * 100)
+                else {
+                    const configValue = (property) ? property.value : options.value
+                    if (configValue && !Array.isArray(configValue)) {
+                        value = configValue
+                        if (value.substring(0, 5) === "today") {
+                            value = moment().format("YYYY-MM-DD")
+                        }
                     }
                 }
 
@@ -76,7 +79,7 @@ export default class Card extends View
 
                 // Input
 
-                if (property.type === "input")
+                if (propertyType === "input")
                 {
                     blocHtml.push(`
                     <div class="${ divClass }">
@@ -90,7 +93,7 @@ export default class Card extends View
 
                 // Password
 
-                else if (property.type === "password")
+                else if (propertyType === "password")
                 {
                     blocHtml.push(`
                     <div class="${ divClass }">
@@ -104,7 +107,7 @@ export default class Card extends View
 
                 // Email
 
-                else if (property.type === "email")
+                else if (propertyType === "email")
                 {
                     blocHtml.push(`
                     <div class="${ divClass }">
@@ -118,7 +121,7 @@ export default class Card extends View
 
                 // Phone
 
-                else if (property.type === "phone")
+                else if (propertyType === "phone")
                 {
                     blocHtml.push(`
                     <div class="${ divClass }">
@@ -132,7 +135,7 @@ export default class Card extends View
         
                 // Date or datetime
 
-                else if (["date", "datetime"].includes(property.type))
+                else if (["date", "datetime"].includes(propertyType))
                 {
                     blocHtml.push(`
                     <div class="${ divClass }">
@@ -249,6 +252,20 @@ export default class Card extends View
                             <input class="form-control form-control-sm" id="${ this.id }-${ propertyId }-${layout.screenIndex}" value="${ values.join(",") }" disabled />
                             <label class="form-label" for="${ this.id }-${ propertyId }-${layout.screenIndex}">${ label }</label>
                         </div>
+                    </div>`)
+                }
+
+                // Link
+
+                else if (propertyType == "link")
+                {
+                    const template = value
+                    const args = options.params.map(arg => data[arg])
+                    let index = 0
+                    const link = template.replace(/%s/g, () => args[index++] ?? "%s")
+                    blocHtml.push(`
+                    <div class="${ divClass }">
+                        <a href="${ link }" target="_blank">${ link }</a>
                     </div>`)
                 }
 

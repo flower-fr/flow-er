@@ -1,5 +1,6 @@
 import ExcelJS from "/js/exceljs.esm.js"
 import Form from "../form/Form.js"
+import { codeDate, decodeDate } from "../../utils/codeDecodeDate.js"
 import flattenXlsx from "../../utils/flattenXlsx.js"
 import importXlsx from "../../utils/importXlsx.js"
 import Toast from "../toast/Toast.js"
@@ -71,14 +72,36 @@ export default class Global extends View
                         </button>`)
 
                 } else {
-                    actionHtml.push(`
-                        <a
-                            type="button"
-                            class="btn ${ (action.class) ? `btn-${ action.class }` : "btn-outline-primary" }"
-                            href="/${action.controller}/${action.action}/${action.entity}${ (action.id) ? `/${action.id}` : "" }?${ (action.view) ? `view=${action.view}` : "" }"
-                        >
-                            <i ${ (action.glyph) ? `class="fa ${action.glyph}"` : "" }></i> ${ action.label }
-                        </a>`)
+                    if (action.controller) {
+                        actionHtml.push(`
+                            <a
+                                type="button"
+                                class="btn ${ (action.class) ? `btn-${ action.class }` : "btn-outline-primary" }"
+                                href="/${action.controller}/${action.action}/${action.entity}${ (action.id) ? `/${action.id}` : "" }?${ (action.view) ? `view=${action.view}` : "" }"
+                            >
+                                <i ${ (action.glyph) ? `class="fa ${action.glyph}"` : "" }></i> ${ action.label }
+                            </a>`)
+                    }
+                    else {
+                        const template = action.value
+                        const args = action.params.map(arg => {
+                            if (arg === "dateCoded") {
+                                const date = new Date()
+                                const year = date.getFullYear()
+                                const month = String(date.getMonth() + 1).padStart(2, "0")
+                                const day = String(date.getDate()).padStart(2, "0")
+                                const today = `${ year }-${ month }-${ day }`
+                                const dateCoded = codeDate(today)
+                                return dateCoded                                
+                            }
+                        })
+                        let index = 0
+                        const link = template.replace(/%s/g, () => args[index++] ?? "%s")
+                        actionHtml.push(`
+                            <a href="${ link }" target="_blank">
+                                <i ${ (action.glyph) ? `class="fa ${action.glyph}"` : "" }></i> ${ action.label }
+                            </a>`)
+                    }
                 }
             }
             html.push(actionHtml.join("<hr />"))
@@ -209,16 +232,17 @@ export default class Global extends View
                     data.push({ id, external_groups: period.external_groups })
                 }
             }
-
+            console.log(data)
+            return
             // const data = toUpdate.map(period => { return { id: keys.get(period.external_ref), external_groups: period.external_groups }})
-            response = await fetch(`/core/v1/cours_period`, {
+            response = await fetch("/core/v1/cours_period", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
             })
             const res = await response.json()
-console.log(res)
-return
+            console.log(res)
+            return
 
             // Show rejected rows in a toast
             if (Object.keys(rejected).length > 0) {
