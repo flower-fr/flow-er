@@ -32,20 +32,14 @@ const importXlsx = (xlsxRows, config, dbRows) => {
     const dbRowsByIdentifier = new Map(dbRows.map(dbRow => [dbRow.identifier, dbRow]))
 
     const toUpdate = []
-    const rejected = {}
+    const toInsert = []
 
     for (const xlsxRow of xlsxRows) {
-        let identifier = identifierHeader ?? xlsxRow[identifierHeader]
+        let identifier = xlsxRow[identifierHeader]
         const dbRow = dbRowsByIdentifier.get(identifier)
-
-        if (identifierHeader && !dbRow) {
-            rejected[identifier ?? "(missing identifier)"] = { status: "notInScope" }
-            continue
-        }
 
         const conflicts = {}
         const changes = {}
-        if (identifierHeader) changes.id = dbRow.id
 
         for (const [dataId, definition] of Object.entries(config.properties)) {
             if (dataId === "identifier" || !definition.property) continue //
@@ -123,7 +117,7 @@ const importXlsx = (xlsxRows, config, dbRows) => {
 
             // Check if the current value in the database is different from the loaded value
             let currentValue
-            if (identifierHeader) {
+            if (dbRow) {
                 currentValue = dbRow[definition.property]
                 if (!isEmpty(currentValue)) {
                     if (String(currentValue) !== String(loadedValue ?? "")) {
@@ -137,15 +131,23 @@ const importXlsx = (xlsxRows, config, dbRows) => {
         }
         if (!identifier) identifier = xlsxRow.flatIdentifier // Transient
 
+        if (dbRow) {
+            changes.id = dbRow.id
+            toUpdate.push(changes)
+        }
+        else {
+            toInsert.push(changes)
+        }
+
         // if (Object.keys(conflicts).length > 0) {
-        //     rejected[identifier] = { status: "inconsistentData", ...conflicts }
+        //     toInsert[identifier] = { status: "inconsistentData", ...conflicts }
         //     continue
         // }
 
-        toUpdate.push(changes)
+        // toUpdate.push(changes)
     }
 
-    return { toUpdate, rejected }
+    return { toUpdate, toInsert }
 }
 
 /**

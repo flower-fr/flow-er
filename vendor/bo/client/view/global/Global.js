@@ -188,21 +188,22 @@ export default class Global extends View
                 const identifierString = identifiers.join(",")
                 const whereParam = Object.entries({ /*...config.params.where, */...action.restriction }).map(([k, v]) => `${k}:${v}`).join("|")
                 const columnsParam = [...new Set(Object.values(config.properties).filter(v => !!v.property).map(v => v.property))].join(",")
-                response = await fetch(`/core/v1/${ action.entity }?columns=${ columnsParam }&where=identifier:${ encodeURIComponent(identifierString) }|${ whereParam }`)
+                // response = await fetch(`/core/v1/${ action.entity }?columns=${ columnsParam }&where=identifier:${ encodeURIComponent(identifierString) }|${ whereParam }`)
+                response = await fetch(`/core/v1/${ action.entity }?columns=${ columnsParam }&where=${ whereParam }&limit=2000`)
                 const data = await response.json()
 
-                const logInteraction = (status, responseBody) => fetch("/core/v1/interaction", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify([{
-                        status,
-                        provider: "flow-er",
-                        endpoint: "bo/import-xlsx",
-                        method: "POST",
-                        body: JSON.stringify(chunk),
-                        response_body: JSON.stringify(responseBody),
-                    }])
-                })
+                // const logInteraction = (status, responseBody) => fetch("/core/v1/interaction", {
+                //     method: "POST",
+                //     headers: { "Content-Type": "application/json" },
+                //     body: JSON.stringify([{
+                //         status,
+                //         provider: "flow-er",
+                //         endpoint: "bo/import-xlsx",
+                //         method: "POST",
+                //         body: JSON.stringify(chunk),
+                //         response_body: JSON.stringify(responseBody),
+                //     }])
+                // })
                 rows = data.rows
             }
             else {
@@ -218,40 +219,40 @@ export default class Global extends View
             }
 
             // Run the importXlsx function to determine which rows to update and which to reject
-            const { toUpdate, rejected } = importXlsx(vector, config, rows)
+            const { toUpdate, toInsert } = importXlsx(vector, config, rows)
 
             // TRANSIENT
-            const f = (await (await fetch("/core/v1/cours_period?columns=id,external_ref&where=group_id:0|external_groups:null")).json())
-            const keysArray = f.rows
-            const keys = new Map()
-            keysArray.forEach(x => { keys.set(x.external_ref, x.id) })
-            const data = []
-            for (const period of toUpdate) {
-                const id = keys.get(period.external_ref)
-                if (id && period.external_groups) {
-                    data.push({ id, external_groups: period.external_groups })
-                }
-            }
-            console.log(data)
-            return
+            // const f = (await (await fetch("/core/v1/cours_period?columns=id,external_ref&where=group_id:0|external_groups:null")).json())
+            // const keysArray = f.rows
+            // const keys = new Map()
+            // keysArray.forEach(x => { keys.set(x.external_ref, x.id) })
+            // const data = []
+            // for (const period of toUpdate) {
+            //     const id = keys.get(period.external_ref)
+            //     if (id && period.external_groups) {
+            //         data.push({ id, external_groups: period.external_groups })
+            //     }
+            // }
+            // console.log(data)
+            // return
             // const data = toUpdate.map(period => { return { id: keys.get(period.external_ref), external_groups: period.external_groups }})
-            response = await fetch("/core/v1/cours_period", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data)
-            })
-            const res = await response.json()
-            console.log(res)
-            return
+            // response = await fetch("/core/v1/cours_period", {
+            //     method: "POST",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(data)
+            // })
+            // const res = await response.json()
+            // console.log(res)
+            // return
 
             // Show rejected rows in a toast
-            if (Object.keys(rejected).length > 0) {
-                console.log("Rejected rows:", rejected)
-                const toast = new Toast({ controller: this.controller },
-                    { title: "Importation", message: `${Object.keys(rejected).length} lignes ont été rejetées.`, type: "warning", persistent: true })
-                toast.initialize()
-                toast.trigger()
-            }
+            // if (Object.keys(rejected).length > 0) {
+            //     console.log("Rejected rows:", rejected)
+            //     const toast = new Toast({ controller: this.controller },
+            //         { title: "Importation", message: `${Object.keys(rejected).length} lignes ont été rejetées.`, type: "warning", persistent: true })
+            //     toast.initialize()
+            //     toast.trigger()
+            // }
 
             // // If there are no rows to update, show a toast and return
             // if (toUpdate.length === 0) {
@@ -262,7 +263,7 @@ export default class Global extends View
             //     return
             // }
             
-            const body = toUpdate.map(row => ({ ...row/*, status: config.params.nextStatus*/ }))
+            const body = toInsert.map(row => ({ ...row/*, status: config.params.nextStatus*/ }))
             response = await fetch(`/core/v1/${ action.entity }`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -270,18 +271,48 @@ export default class Global extends View
             })
             const result = await response.json()
             console.log(result)
+            const subscriptions = result.stored
 
-            const updateFailed = !response.ok || result.error
+            // TRANSIENT
+            const f = (await (await fetch("/core/v1/cours_program_group?columns=group_id,program_id")).json())
+            const keysArray = f.rows
+            const keys = new Map()
+            keysArray.forEach(x => {
+                if (!keys.get(x.program_id)) {
+                    const groups = {}
+                    groups[x.group_id] = null
+                    keys.set(x.program_id, groups) 
+                }
+                else {
+                    const groups = keys.get(x.program_id)
+                    groups[x.group_id] = null
+                }
+            })
+            let data = []
+            for (const subscription of subscriptions) {
+                Object.keys(keys.get(Number(subscription.program_id))).forEach(x => {
+                    data.push({ group_id: x, subscription_id: subscription.entitiesToInsert.cours_subscription.rowId })
+                })
+            }
+            response = await fetch("/core/v1/cours_group_subscription", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            })
+            const res = await response.json()
+            console.log(res)
+
+            // const updateFailed = !response.ok || result.error
             // await logInteraction(updateFailed ? "error" : "processed", { toUpdate, rejected, result })
 
-            // Handle error response
-            if (updateFailed) {
-                const toast = new Toast({ controller: this.controller },
-                    { title: "Importation", message: "Une erreur est survenue lors de la mise à jour.", type: "error", persistent: true })
-                toast.initialize()
-                toast.trigger()
-                return
-            }
+            // // Handle error response
+            // if (updateFailed) {
+            //     const toast = new Toast({ controller: this.controller },
+            //         { title: "Importation", message: "Une erreur est survenue lors de la mise à jour.", type: "error", persistent: true })
+            //     toast.initialize()
+            //     toast.trigger()
+            //     return
+            // }
         }
 
         // Show success toast
