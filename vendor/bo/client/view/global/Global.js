@@ -85,15 +85,16 @@ export default class Global extends View
                     else {
                         const template = action.value
                         const args = action.params.map(arg => {
-                            if (arg === "dateCoded") {
-                                const date = new Date()
-                                const year = date.getFullYear()
-                                const month = String(date.getMonth() + 1).padStart(2, "0")
-                                const day = String(date.getDate()).padStart(2, "0")
-                                const today = `${ year }-${ month }-${ day }`
-                                const dateCoded = codeDate(today)
-                                return dateCoded                                
-                            }
+                            // if (arg === "dateCoded") {
+                            //     const date = new Date()
+                            //     const year = date.getFullYear()
+                            //     const month = String(date.getMonth() + 1).padStart(2, "0")
+                            //     const day = String(date.getDate()).padStart(2, "0")
+                            //     const today = `${ year }-${ month }-${ day }`
+                            //     const dateCoded = codeDate(today)
+                            //     return dateCoded                                
+                            // }
+                            return (arg === "today") ? new Date().toISOString().split("T")[0] : arg
                         })
                         let index = 0
                         const link = template.replace(/%s/g, () => args[index++] ?? "%s")

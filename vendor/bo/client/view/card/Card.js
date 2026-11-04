@@ -260,9 +260,13 @@ export default class Card extends View
                 else if (propertyType == "link")
                 {
                     const template = value
-                    const args = options.params.map(arg => data[arg])
-                    let index = 0
-                    const link = template.replace(/%s/g, () => args[index++] ?? "%s")
+                    let link
+                    if (options.params) {
+                        const args = options.params.map(arg => data[arg])
+                        let index = 0
+                        link = template.replace(/%s/g, () => args[index++] ?? "%s")
+                    }
+                    else link = template
                     blocHtml.push(`
                     <div class="${ divClass }">
                         <a href="${ link }" target="_blank">${ link }</a>
