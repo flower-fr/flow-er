@@ -70,6 +70,12 @@ export default class List extends View
         await this.consistencyCheck()
 
         this.filledColumns = []
+        for (const [propertyId, property] of Object.entries(properties)) {
+            if (property.linkEntity) {
+                this.filledColumns.push(propertyId)
+            }
+        }
+
         if (orderProperty) this.filledColumns.push(this.orderProperty)
         this.rows.forEach(row => {
             Object.keys(row).forEach(column => {

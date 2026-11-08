@@ -264,14 +264,16 @@ export default class Global extends View
             //     return
             // }
             
-            const body = toInsert.map(row => ({ ...row/*, status: config.params.nextStatus*/ }))
+            // Insert new rows
+
+            let body = toInsert.map(row => ({ ...row/*, status: config.params.nextStatus*/ }))
             response = await fetch(`/core/v1/${ action.entity }`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body)
             })
-            const result = await response.json()
-            console.log(result)
+            let result = await response.json()
+            console.log({ insert_subscription: result })
             const subscriptions = result.stored
 
             // TRANSIENT
@@ -301,7 +303,18 @@ export default class Global extends View
                 body: JSON.stringify(data)
             })
             const res = await response.json()
-            console.log(res)
+            console.log({ insert_group_subscription: res })
+            
+            // Update changed rows
+            
+            body = toUpdate.map(row => ({ ...row/*, status: config.params.nextStatus*/ }))
+            response = await fetch(`/core/v1/${ action.entity }`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body)
+            })
+            result = await response.json()
+            console.log({ update_subscription: result })
 
             // const updateFailed = !response.ok || result.error
             // await logInteraction(updateFailed ? "error" : "processed", { toUpdate, rejected, result })

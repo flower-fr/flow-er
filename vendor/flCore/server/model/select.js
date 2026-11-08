@@ -28,7 +28,7 @@ const select = (entity, columns, where, order = [], limit = null, model = [], us
     const joins = join(entity, columns, where, order, model)
 
     const { columnDict, groupBy } = selectColumns(entity, columns, model, joins)
-
+console.log({columnDict})
     const select = []
     for (let propertyId of Object.keys(columnDict)) {
         const column = columnDict[propertyId]

@@ -32,6 +32,7 @@ const action = async ({ req }, { context, sql, logger }) =>
     else if (config?.title?.label?.["default"]) config.title.label = config.title.label["default"]
 
     const model = context.config[`${ entity }/model`], aclProperties = {}
+
     for (const [propertyId, property] of config.properties ? Object.entries(config.properties) : []) {
 
         // Check property authorization
@@ -39,8 +40,10 @@ const action = async ({ req }, { context, sql, logger }) =>
             if (!Object.keys(model.acl.get.properties).includes(propertyId)) continue
             if (model.acl.get.properties[propertyId].roles && !roles.some(role => model.acl.get.properties[propertyId].roles.includes(role))) continue
         }
+
+        // Retrieve vectors
         if (["vector", "autocomplete"].includes(property.type)) {
-            const { entity, key, format, columns, where, order } = property
+            const { entity, linkEntity, key, format, columns, where, order } = property
             const items = await sql.execute({ context, type: "select", entity, columns, where, order })
             property.modalities = {}
             property.rows = {}
@@ -55,6 +58,62 @@ const action = async ({ req }, { context, sql, logger }) =>
                 }
                 property.modalities[item[key]] = { label: formatted.join("") }
                 property.rows[item[key]] = item
+            }
+
+            // Retrieve per vector links
+            if (linkEntity) {
+                const fk = model.links[linkEntity].foreignKey
+                const links = await sql.execute({ context, type: "select", entity: model.links[linkEntity].table, columns: ["id", propertyId, fk], limit: null })
+                const map = new Map()
+                links.forEach(link => {
+                    let ids = map.get(link[propertyId])
+                    if (!ids) {
+                        ids = []
+                        map.set(link[propertyId], ids)
+                    }
+                    ids.push({ id: link.id, fk: link[fk] })
+                })
+                items.forEach(item => {
+                    item.links = map.get(item.id) || []
+                })
+            }
+        }
+
+        // Retrieve vectors
+        if (["vector", "autocomplete"].includes(property.type)) {
+            const { entity, linkEntity, key, format, columns, where, order } = property
+            const items = await sql.execute({ context, type: "select", entity, columns, where, order })
+            property.modalities = {}
+            property.rows = {}
+            for (const item of items) {
+                const formatted = []
+                let i = 1
+                const args = (format[1]) ? format[1].split(",") : []
+                for (let sub of property.format[0].split("%s")) {
+                    formatted.push(sub)
+                    if (item[args[i-1]]) formatted.push(item[args[i-1]])
+                    i++
+                }
+                property.modalities[item[key]] = { label: formatted.join("") }
+                property.rows[item[key]] = item
+            }
+
+            // Retrieve per vector links
+            if (linkEntity) {
+                const fk = model.links[linkEntity].foreignKey
+                const links = await sql.execute({ context, type: "select", entity: model.links[linkEntity].table, columns: ["id", propertyId, fk], limit: null })
+                const map = new Map()
+                links.forEach(link => {
+                    let ids = map.get(link[propertyId])
+                    if (!ids) {
+                        ids = []
+                        map.set(link[propertyId], ids)
+                    }
+                    ids.push({ id: link.id, fk: link[fk] })
+                })
+                items.forEach(item => {
+                    item.links = map.get(item.id) || []
+                })
             }
         }
         logger && logger.debug(util.inspect({ propertyId, property }, { depth: null, colors: true }))
@@ -74,6 +133,68 @@ const action = async ({ req }, { context, sql, logger }) =>
         aclProperties[propertyId] = property
     }
     config.properties = aclProperties
+
+    // const linkProperties = {}
+    // for (const [propertyId, property] of config.links ? Object.entries(config.links) : []) {
+
+    //     // Check property authorization
+    //     if (model.acl) {
+    //         if (!Object.keys(model.acl.get.properties).includes(propertyId)) continue
+    //         if (model.acl.get.properties[propertyId].roles && !roles.some(role => model.acl.get.properties[propertyId].roles.includes(role))) continue
+    //     }
+
+    //     // Retrieve vectors
+    //         const { entity, linkEntity, key, format, columns, where, order } = property
+    //         const items = await sql.execute({ context, type: "select", entity, columns, where, order })
+    //         property.modalities = {}
+    //         property.rows = {}
+    //         for (const item of items) {
+    //             const formatted = []
+    //             let i = 1
+    //             const args = (format[1]) ? format[1].split(",") : []
+    //             for (let sub of property.format[0].split("%s")) {
+    //                 formatted.push(sub)
+    //                 if (item[args[i-1]]) formatted.push(item[args[i-1]])
+    //                 i++
+    //             }
+    //             property.modalities[item[key]] = { label: formatted.join("") }
+    //             property.rows[item[key]] = item
+    //         }
+
+    //         // Retrieve per vector links
+    //         if (linkEntity) {
+    //             const fk = model.links[linkEntity].foreignKey
+    //             const links = await sql.execute({ context, type: "select", entity: model.links[linkEntity].table, columns: ["id", propertyId, fk], limit: null })
+    //             const map = new Map()
+    //             links.forEach(link => {
+    //                 let ids = map.get(link[propertyId])
+    //                 if (!ids) {
+    //                     ids = []
+    //                     map.set(link[propertyId], ids)
+    //                 }
+    //                 ids.push({ id: link.id, fk: link[fk] })
+    //             })
+    //             items.forEach(item => {
+    //                 item.links = map.get(item.id) || []
+    //             })
+    //         }
+    //     }
+    //     logger && logger.debug(util.inspect({ propertyId, property }, { depth: null, colors: true }))
+
+    //     // Property localization
+
+    //     if (property.label?.[locale]) property.label = property.label[locale]
+    //     else if (property.label?.["default"]) property.label = property.label["default"]
+
+    //     if (property.modalities) {
+    //         for (const modality of Object.values(property.modalities)) {
+    //             if (modality.label[locale]) modality.label = modality.label[locale]
+    //             else if (modality.label["default"]) modality.label = modality.label["default"]
+    //         }
+    //     }
+    //     linkProperties[propertyId] = property
+    // }
+    // config.links = linkProperties
 
     // Data
     const data = {}

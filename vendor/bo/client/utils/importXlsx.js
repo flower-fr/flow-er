@@ -119,25 +119,33 @@ const importXlsx = (xlsxRows, config, dbRows) => {
             let currentValue
             if (dbRow) {
                 currentValue = dbRow[definition.property]
-                if (!isEmpty(currentValue)) {
+                // if (!isEmpty(currentValue)) {
                     if (String(currentValue) !== String(loadedValue ?? "")) {
                         conflicts[dataId] = { current: currentValue, loaded: loadedValue }
+                        changes[definition.property] = toDbValue(loadedValue, definition)
                     }
                     continue
-                }
+                // }
             }
 
             if (loadedValue) changes[definition.property] = toDbValue(loadedValue, definition)
         }
+
         if (!identifier) identifier = xlsxRow.flatIdentifier // Transient
 
         if (dbRow) {
-            changes.id = dbRow.id
-            toUpdate.push(changes)
+            if (Object.entries(changes).length > 0) {
+                changes.id = dbRow.id
+                toUpdate.push(changes)
+            }
         }
         else {
             toInsert.push(changes)
         }
+
+        // if (Object.values(conflicts).length > 0) {
+        //     console.log({identifier, conflicts})
+        // }
 
         // if (Object.keys(conflicts).length > 0) {
         //     toInsert[identifier] = { status: "inconsistentData", ...conflicts }
