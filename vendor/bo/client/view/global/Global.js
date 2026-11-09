@@ -1,5 +1,6 @@
 import ExcelJS from "/js/exceljs.esm.js"
 import Form from "../form/Form.js"
+import { codeDate, decodeDate } from "../../utils/codeDecodeDate.js"
 import flattenXlsx from "../../utils/flattenXlsx.js"
 import importXlsx from "../../utils/importXlsx.js"
 import Toast from "../toast/Toast.js"
@@ -49,6 +50,17 @@ export default class Global extends View
                             <i ${ (action.glyph) ? `class="fa ${action.glyph}"` : "" }></i> ${ action.label }
                         </button>`)
 
+                } else if (!action.type || action.type == "migration") {
+                    actionHtml.push(`
+                        <input type="file" class="form-control form-control-sm mb-2" id="flGlobalImportFile-${ actionId }" />
+                        <button
+                            type="button"
+                            class="btn ${ (action.class === "danger") ? "btn-danger" : "btn-warning" }"
+                            id="flGlobal-${ actionId }"
+                        >
+                            <i ${ (action.glyph) ? `class="fa ${action.glyph}"` : "" }></i> ${ action.label }
+                        </button>`)
+
                 } else if (!action.type || action.type == "modal") {
                     actionHtml.push(`
                         <button
@@ -60,14 +72,37 @@ export default class Global extends View
                         </button>`)
 
                 } else {
-                    actionHtml.push(`
-                        <a
-                            type="button"
-                            class="btn ${ (action.class) ? `btn-${ action.class }` : "btn-outline-primary" }"
-                            href="/${action.controller}/${action.action}/${action.entity}${ (action.id) ? `/${action.id}` : "" }?${ (action.view) ? `view=${action.view}` : "" }"
-                        >
-                            <i ${ (action.glyph) ? `class="fa ${action.glyph}"` : "" }></i> ${ action.label }
-                        </a>`)
+                    if (action.controller) {
+                        actionHtml.push(`
+                            <a
+                                type="button"
+                                class="btn ${ (action.class) ? `btn-${ action.class }` : "btn-outline-primary" }"
+                                href="/${action.controller}/${action.action}/${action.entity}${ (action.id) ? `/${action.id}` : "" }?${ (action.view) ? `view=${action.view}` : "" }"
+                            >
+                                <i ${ (action.glyph) ? `class="fa ${action.glyph}"` : "" }></i> ${ action.label }
+                            </a>`)
+                    }
+                    else {
+                        const template = action.value
+                        const args = action.params.map(arg => {
+                            // if (arg === "dateCoded") {
+                            //     const date = new Date()
+                            //     const year = date.getFullYear()
+                            //     const month = String(date.getMonth() + 1).padStart(2, "0")
+                            //     const day = String(date.getDate()).padStart(2, "0")
+                            //     const today = `${ year }-${ month }-${ day }`
+                            //     const dateCoded = codeDate(today)
+                            //     return dateCoded                                
+                            // }
+                            return (arg === "today") ? new Date().toISOString().split("T")[0] : arg
+                        })
+                        let index = 0
+                        const link = template.replace(/%s/g, () => args[index++] ?? "%s")
+                        actionHtml.push(`
+                            <a href="${ link }" target="_blank">
+                                <i ${ (action.glyph) ? `class="fa ${action.glyph}"` : "" }></i> ${ action.label }
+                            </a>`)
+                    }
                 }
             }
             html.push(actionHtml.join("<hr />"))
@@ -94,6 +129,7 @@ export default class Global extends View
             // Handle button click
             $(`#flGlobal-${ actionId }`).click(() => {
                 if (action.type && action.type === "import") return this.runImport(action, actionId)
+                if (action.type && action.type === "migration") return this.runMigration(action, actionId)
                 if (action.type && action.type !== "modal") return
                 controller.screenIndex = 1
                 controller.stackView = []
@@ -138,8 +174,8 @@ export default class Global extends View
         const chunks = []
         let i = 0
         while (i < rows.length) {
-            chunks.push(rows.slice(i, i + 200))
-            i += 200
+            chunks.push(rows.slice(i, i + 2000))
+            i += 2000
         }
 
         for (const chunk of chunks) {
@@ -153,21 +189,22 @@ export default class Global extends View
                 const identifierString = identifiers.join(",")
                 const whereParam = Object.entries({ /*...config.params.where, */...action.restriction }).map(([k, v]) => `${k}:${v}`).join("|")
                 const columnsParam = [...new Set(Object.values(config.properties).filter(v => !!v.property).map(v => v.property))].join(",")
-                response = await fetch(`/core/v1/${ action.entity }?columns=${ columnsParam }&where=identifier:${ encodeURIComponent(identifierString) }|${ whereParam }`)
+                // response = await fetch(`/core/v1/${ action.entity }?columns=${ columnsParam }&where=identifier:${ encodeURIComponent(identifierString) }|${ whereParam }`)
+                response = await fetch(`/core/v1/${ action.entity }?columns=${ columnsParam }&where=${ whereParam }&limit=2000`)
                 const data = await response.json()
 
-                const logInteraction = (status, responseBody) => fetch("/core/v1/interaction", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify([{
-                        status,
-                        provider: "flow-er",
-                        endpoint: "bo/import-xlsx",
-                        method: "POST",
-                        body: JSON.stringify(chunk),
-                        response_body: JSON.stringify(responseBody),
-                    }])
-                })
+                // const logInteraction = (status, responseBody) => fetch("/core/v1/interaction", {
+                //     method: "POST",
+                //     headers: { "Content-Type": "application/json" },
+                //     body: JSON.stringify([{
+                //         status,
+                //         provider: "flow-er",
+                //         endpoint: "bo/import-xlsx",
+                //         method: "POST",
+                //         body: JSON.stringify(chunk),
+                //         response_body: JSON.stringify(responseBody),
+                //     }])
+                // })
                 rows = data.rows
             }
             else {
@@ -183,50 +220,184 @@ export default class Global extends View
             }
 
             // Run the importXlsx function to determine which rows to update and which to reject
-            const { toUpdate, rejected } = importXlsx(vector, config, rows)
+            const { toUpdate, toInsert } = importXlsx(vector, config, rows)
+
+            // TRANSIENT
+            // const f = (await (await fetch("/core/v1/cours_period?columns=id,external_ref&where=group_id:0|external_groups:null")).json())
+            // const keysArray = f.rows
+            // const keys = new Map()
+            // keysArray.forEach(x => { keys.set(x.external_ref, x.id) })
+            // const data = []
+            // for (const period of toUpdate) {
+            //     const id = keys.get(period.external_ref)
+            //     if (id && period.external_groups) {
+            //         data.push({ id, external_groups: period.external_groups })
+            //     }
+            // }
+            // console.log(data)
+            // return
+            // const data = toUpdate.map(period => { return { id: keys.get(period.external_ref), external_groups: period.external_groups }})
+            // response = await fetch("/core/v1/cours_period", {
+            //     method: "POST",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(data)
+            // })
+            // const res = await response.json()
+            // console.log(res)
+            // return
 
             // Show rejected rows in a toast
-            if (Object.keys(rejected).length > 0) {
-                console.log("Rejected rows:", rejected)
-                const toast = new Toast({ controller: this.controller },
-                    { title: "Importation", message: `${Object.keys(rejected).length} lignes ont été rejetées.`, type: "warning", persistent: true })
-                toast.initialize()
-                toast.trigger()
-            }
+            // if (Object.keys(rejected).length > 0) {
+            //     console.log("Rejected rows:", rejected)
+            //     const toast = new Toast({ controller: this.controller },
+            //         { title: "Importation", message: `${Object.keys(rejected).length} lignes ont été rejetées.`, type: "warning", persistent: true })
+            //     toast.initialize()
+            //     toast.trigger()
+            // }
 
-            // If there are no rows to update, show a toast and return
-            if (toUpdate.length === 0) {
-                await logInteraction("processed", { toUpdate, rejected })
-                const toast = new Toast({ controller: this.controller }, { title: "Importation", message: "Aucune donnée à mettre à jour." })
-                toast.initialize()
-                toast.trigger()
-                return
-            }
+            // // If there are no rows to update, show a toast and return
+            // if (toUpdate.length === 0) {
+            //     await logInteraction("processed", { toUpdate, rejected })
+            //     const toast = new Toast({ controller: this.controller }, { title: "Importation", message: "Aucune donnée à mettre à jour." })
+            //     toast.initialize()
+            //     toast.trigger()
+            //     return
+            // }
+            
+            // Insert new rows
 
-            const body = toUpdate.map(row => ({ ...row, status: config.params.nextStatus }))
+            let body = toInsert.map(row => ({ ...row/*, status: config.params.nextStatus*/ }))
             response = await fetch(`/core/v1/${ action.entity }`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body)
             })
-            const result = await response.json()
+            let result = await response.json()
+            console.log({ insert_subscription: result })
+            const subscriptions = result.stored
 
-            const updateFailed = !response.ok || result.error
-            await logInteraction(updateFailed ? "error" : "processed", { toUpdate, rejected, result })
-
-            // Handle error response
-            if (updateFailed) {
-                const toast = new Toast({ controller: this.controller },
-                    { title: "Importation", message: "Une erreur est survenue lors de la mise à jour.", type: "error", persistent: true })
-                toast.initialize()
-                toast.trigger()
-                return
+            // TRANSIENT
+            const f = (await (await fetch("/core/v1/cours_program_group?columns=group_id,program_id")).json())
+            const keysArray = f.rows
+            const keys = new Map()
+            keysArray.forEach(x => {
+                if (!keys.get(x.program_id)) {
+                    const groups = {}
+                    groups[x.group_id] = null
+                    keys.set(x.program_id, groups) 
+                }
+                else {
+                    const groups = keys.get(x.program_id)
+                    groups[x.group_id] = null
+                }
+            })
+            let data = []
+            for (const subscription of subscriptions) {
+                const links = keys.get(Number(subscription.program_id))
+                if (links) {
+                    Object.keys(links).forEach(x => {
+                        data.push({ group_id: x, subscription_id: subscription.entitiesToInsert.cours_subscription.rowId })
+                    })
+                }
             }
+            response = await fetch("/core/v1/cours_group_subscription", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            })
+            const res = await response.json()
+            console.log({ insert_group_subscription: res })
+            
+            // Update changed rows
+            
+            body = toUpdate.map(row => ({ ...row/*, status: config.params.nextStatus*/ }))
+            response = await fetch(`/core/v1/${ action.entity }`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body)
+            })
+            result = await response.json()
+            console.log({ update_subscription: result })
+
+            // const updateFailed = !response.ok || result.error
+            // await logInteraction(updateFailed ? "error" : "processed", { toUpdate, rejected, result })
+
+            // // Handle error response
+            // if (updateFailed) {
+            //     const toast = new Toast({ controller: this.controller },
+            //         { title: "Importation", message: "Une erreur est survenue lors de la mise à jour.", type: "error", persistent: true })
+            //     toast.initialize()
+            //     toast.trigger()
+            //     return
+            // }
         }
 
         // Show success toast
         const toast = new Toast({ controller: this.controller },
-            { title: "Importation", message: `${toUpdate.length} lignes ont été mises à jour.`, type: "success" })
+            { title: "Importation", message: `${i} lignes ont été mises à jour.`, type: "success" })
+        toast.initialize()
+        toast.trigger()
+
+        this.layout.refreshList({})
+    }
+
+    runMigration = async (action, actionId) =>
+    {
+        // const flatten = (rows, config) => {
+        // entity: "tag",
+        // flattening: {
+        //     sourceProperty: "room",
+        //     separator: ",",
+        //     targetProperty: "name",
+        // },
+        // values: {
+        //     entity_id: "cours_period",
+        //     row_id: "=id",
+        //     name: "=name" 
+        // }
+        //     const result = rows.reduce((previous, current))
+        // }
+
+        let response = await fetch(`/${ action.controller }/${ action.action }/${ action.entity }?view=${ action.view ?? "default" }`)
+        const config = await response.json()
+
+        let rows
+        // Fetch database rows from the database based on identifiers and where
+        response = await fetch(`/core/v1/${ action.entity }?columns=${ Object.keys(config.properties) }`)
+        const data = await response.json()
+        rows = data.rows
+
+        let vector
+        if (config.params.flattening) {
+            vector = flatten(rows, config)
+        }
+        else {
+            vector = rows
+        }
+            
+        const body = vector.map(row => ({ ...row/*, status: config.params.nextStatus*/ }))
+        response = await fetch(`/core/v1/${ action.entity }`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+        })
+        const result = await response.json()
+        console.log(result)
+
+        const updateFailed = !response.ok || result.error
+
+        // Handle error response
+        if (updateFailed) {
+            const toast = new Toast({ controller: this.controller },
+                { title: "Importation", message: "Une erreur est survenue lors de la mise à jour.", type: "error", persistent: true })
+            toast.initialize()
+            toast.trigger()
+            return
+        }
+
+        // Show success toast
+        const toast = new Toast({ controller: this.controller },
+            { title: "Importation", message: `${i} lignes ont été mises à jour.`, type: "success" })
         toast.initialize()
         toast.trigger()
 

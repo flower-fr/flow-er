@@ -1,4 +1,6 @@
 import View from "../View.js"
+import FormNewLink from "./FormNewLink.js"
+import FormLink from "./FormLink.js"
 import Toast from "../toast/Toast.js"
 
 export default class Form extends View
@@ -14,7 +16,10 @@ export default class Form extends View
         this.onSuccess = onSuccess
     }
 
-    initialize = async () => {
+    initialize = async () =>
+    {
+        const { controller, entity, id } = this
+
         let response = await fetch(`/bo/form/${ this.entity }?view=${ this.view }`)
         const { properties, title, layout, post, translations } = await response.json()
         this.properties = properties
@@ -29,6 +34,23 @@ export default class Form extends View
             this.data = (await response.json()).rows[0]
             this.title = this.data[title]
         }
+
+        const links = {}
+        const newLinks = {}
+        for (const [propertyId, property] of Object.entries(properties)) {
+            if (property.linkEntity) {
+                links[propertyId] = Object.values(property.rows).reduce((acc, row) => {
+                    const link = (row.links.find(link => link.fk === id))
+                    if (link) {
+                        acc.push(new FormLink({ controller, propertyId, linkEntity: property.linkEntity, id: link.id, link, name: property.modalities[row.id].label, translations }))
+                    }
+                    return acc
+                }, new Array())
+            }
+            newLinks[propertyId] = new FormNewLink({ controller, propertyId, id, property, links: links[propertyId], translations })
+        } 
+        this.links = links
+        this.newLinks = newLinks
     }
 
     formatValueFromData = (propertyId, property, data) =>
@@ -52,7 +74,7 @@ export default class Form extends View
 
     render = () => 
     {
-        const { formLayout, properties, post, data, layout } = this
+        const { formLayout, properties, post, data, layout, links, newLinks } = this
 
         const html = []
 
@@ -403,6 +425,13 @@ export default class Form extends View
                     </button>
                 </div>`)
 
+        for (const [propertyId, property] of Object.entries(this.links)) {
+            html.push(this.newLinks[propertyId].render())
+            property.forEach(link => { 
+                html.push(link.render())
+            })
+        }
+
         html.push(`
                     </div>
                 </form>
@@ -573,6 +602,11 @@ export default class Form extends View
             // backButton?.removeAttribute("disabled")
             cancelButton.setAttribute("disabled", "true")
             submitButton.setAttribute("disabled", "true")
+        }
+
+        for (const [propertyId, property] of Object.entries(this.links)) {
+            this.newLinks[propertyId].trigger()
+            property.forEach(link => { link.trigger() })
         }
     }
 }

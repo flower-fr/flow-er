@@ -56,6 +56,7 @@ const getAction = async ({ req }, context, { sql, logger }) =>
     try {
         if (vectors) {
             const result = {}
+console.log(util.inspect({model: context.config[`${ entity }/model`], entity, columns, where, tags, order, limit}, { depth: null, colors: true }))
             result.rows = await sql.execute({ context, type: "select", entity, columns, where, tags, order, limit })
             result.vectors = await sql.execute({context, type: "vectors", entity, vectors})
             logger && logger.debug(util.inspect({result}, {depth: null, colors: true}))

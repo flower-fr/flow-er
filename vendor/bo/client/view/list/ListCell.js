@@ -24,7 +24,23 @@ export default class ListCell extends View
         // Compute class for cell depending on config rule
         const rowClass  = listRow.rowClass || this.consistencyClass()
         let classSpec
-        if (property.type == "select") {
+
+        if (property.linkEntity) {
+            const names = Object.values(property.rows).reduce((acc, r) => {
+                const link = (r.links.find(link => link.fk === row.id))
+                if (link) {
+                    acc.push(property.modalities[r.id].label)
+                }
+                return acc
+            }, new Array())
+
+            html.push(`
+                <td class="${ rowClass || classSpec || "" }">
+                    ${ names ? names.join("<br>") : "" }
+                </td>`)
+        }
+
+        else if (property.type == "select") {
             if (list.cellClass) {
                 const cellClassSpec = list.cellClass[propertyId]
                 if (cellClassSpec && row[propertyId]) {
@@ -108,7 +124,7 @@ export default class ListCell extends View
                 html.push("<td/>")
             } else {
                 const value = (Array.isArray(row[propertyId])) ? row[propertyId].join(", ") : row[propertyId]
-                html.push(`<td class="${ rowClass   || ""}">${(value && value !== null) ? value : ""}</td>`)
+                html.push(`<td class="${ rowClass || ""}">${(value && value !== null) ? value : ""}</td>`)
             }
         }
 
