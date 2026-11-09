@@ -293,9 +293,12 @@ export default class Global extends View
             })
             let data = []
             for (const subscription of subscriptions) {
-                Object.keys(keys.get(Number(subscription.program_id))).forEach(x => {
-                    data.push({ group_id: x, subscription_id: subscription.entitiesToInsert.cours_subscription.rowId })
-                })
+                const links = keys.get(Number(subscription.program_id))
+                if (links) {
+                    Object.keys(links).forEach(x => {
+                        data.push({ group_id: x, subscription_id: subscription.entitiesToInsert.cours_subscription.rowId })
+                    })
+                }
             }
             response = await fetch("/core/v1/cours_group_subscription", {
                 method: "POST",
