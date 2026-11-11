@@ -1,5 +1,6 @@
 .DS_Store
 .env
+.eslintignore
 /config/
 /devops/
 /etc/settings.json

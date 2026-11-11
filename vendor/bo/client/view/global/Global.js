@@ -267,35 +267,56 @@ export default class Global extends View
             // Insert new rows
 
             let body = toInsert.map(row => ({ ...row/*, status: config.params.nextStatus*/ }))
+            let result
             response = await fetch(`/core/v1/${ action.entity }`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body)
             })
-            let result = await response.json()
+            result = await response.json()
             console.log({ insert_subscription: result })
             const subscriptions = result.stored
 
             // TRANSIENT
-            const f = (await (await fetch("/core/v1/cours_program_group?columns=group_id,program_id")).json())
+            const f = (await (await fetch("/core/v1/cours_group?columns=group_id,program_id,level")).json())
+
             const keysArray = f.rows
             const keys = new Map()
             keysArray.forEach(x => {
-                if (!keys.get(x.program_id)) {
+                if (!keys.get(`${ x.program_id }|${ x.level }`)) {
                     const groups = {}
-                    groups[x.group_id] = null
-                    keys.set(x.program_id, groups) 
+                    groups[x.id] = null
+                    keys.set(`${ x.program_id }|${ x.level }`, groups) 
                 }
                 else {
-                    const groups = keys.get(x.program_id)
-                    groups[x.group_id] = null
+                    const groups = keys.get(`${ x.program_id }|${ x.level }`)
+                    groups[x.id] = null
                 }
             })
+
             let data = []
             for (const subscription of subscriptions) {
-                const links = keys.get(Number(subscription.program_id))
-                if (links) {
-                    Object.keys(links).forEach(x => {
+
+                // Ajouter les groupes qui matchent programme + niveau
+                const progLevel = keys.get(`${ subscription.program_id }|${ subscription.level }`)
+                if (progLevel) {
+                    Object.keys(progLevel).forEach(x => {
+                        data.push({ group_id: x, subscription_id: subscription.entitiesToInsert.cours_subscription.rowId })
+                    })
+                }
+
+                // Ajouter les groupes tous niveaux qui matchent programme
+                const prog = keys.get(`0|${ subscription.level }`)
+                if (prog) {
+                    Object.keys(prog).forEach(x => {
+                        data.push({ group_id: x, subscription_id: subscription.entitiesToInsert.cours_subscription.rowId })
+                    })
+                }
+
+                // Ajouter les groupes tronc commun du niveau
+                const level = keys.get(`${ subscription.program_id }|`)
+                if (level) {
+                    Object.keys(level).forEach(x => {
                         data.push({ group_id: x, subscription_id: subscription.entitiesToInsert.cours_subscription.rowId })
                     })
                 }
