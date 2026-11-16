@@ -64,7 +64,6 @@ export default class Controller
 
     stack = async (object, { title, description }) =>
     {
-        console.log("in stack")
         await object.initialize()
         const content = object.render()
 

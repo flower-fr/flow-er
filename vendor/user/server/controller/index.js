@@ -44,7 +44,7 @@ const registerUser = async ({ context, config, logger, app }) =>
     app.get(`${config.prefix}register/:userId`, execute(register, context, sql, mailClient, config))
     app.post(`${config.prefix}checkcredentials`, execute(checkCredentials, context, config))
     app.post(`${config.prefix}/users/checkactivationtoken`, execute(checkActivationToken, context, db))
-    app.post(`${config.prefix}requestpasswordreset`, execute(requestPasswordReset, context, db, mailClient))
+    app.post(`${config.prefix}requestpasswordreset`, execute(requestPasswordReset, context, sql, mailClient))
     app.post(`${config.prefix}/users/refreshtoken/check`, execute(checkRefreshToken, context, db))
     app.post(`${config.prefix}/users/refreshtoken`, execute(saveRefreshToken, context, db))
     app.post(`${config.prefix}resetpassword`, execute(resetPassword, context, db))

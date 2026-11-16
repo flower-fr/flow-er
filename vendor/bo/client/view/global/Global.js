@@ -149,7 +149,7 @@ export default class Global extends View
         await workbook.xlsx.load(buffer)
 
         // Get the first worksheet and its header
-        const worksheet = workbook.getWorksheet(1)
+        const worksheet = workbook.worksheets[0]
         const headers = worksheet.getRow(1).values
 
         // Extract rows from the worksheet
@@ -161,7 +161,7 @@ export default class Global extends View
                 rowData[headers[colNumber]] = cell.value
             })
 
-            if (config.params.restriction) {
+            if (config.params?.restriction) {
                 if (config.params.restriction.every(r => r.values.includes(rowData[r.header]))) {
                     rows.push(rowData)
                 }
@@ -170,7 +170,7 @@ export default class Global extends View
             }
         })
 
-        // To deal with body size limit, split the rows into chunks of 200
+        // To deal with body size limit, split the rows into chunks
         const chunks = []
         let i = 0
         while (i < rows.length) {
@@ -212,7 +212,7 @@ export default class Global extends View
             }
 
             let vector
-            if (config.params.flattening) {
+            if (config.params?.flattening) {
                 vector = flattenXlsx(chunk, config)
             }
             else {
@@ -274,7 +274,8 @@ export default class Global extends View
                 body: JSON.stringify(body)
             })
             result = await response.json()
-            console.log({ insert_subscription: result })
+            console.log({ insertedRows: result })
+return
             const subscriptions = result.stored
 
             // TRANSIENT

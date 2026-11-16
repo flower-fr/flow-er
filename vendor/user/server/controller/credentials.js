@@ -102,11 +102,11 @@ const checkRefreshToken = async ({ req }, context, db) => {
     return { status: "ok" }
 }
 
-const requestPasswordReset = async ({ req, config }, context, db, mailClient) => {
+const requestPasswordReset = async ({ req, config }, context, sql, mailClient) => {
     let [origin, email] = assert.notEmpty(req.body, "origin", "email")
     email = email.toLowerCase()
     const model = context.config["user/model"]
-    const [result, fields] = (await db.execute(select(context, "user", ["id", "status", "email", "password", "last_login", "last_updated", "login_failed"], { "email": email }, null, null, model)))
+    const result = await sql.execute({ context, type: "select", entity: "user", columns: ["id", "status", "email", "password", "last_login", "last_updated", "login_failed"], where: { "email": email }})
     const user = result[0]
 
     if (user && user.status === "active") {
