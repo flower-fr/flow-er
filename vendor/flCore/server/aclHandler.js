@@ -1,8 +1,10 @@
-const getAllowedProperties = (entity, operation, context) => {
+const util = require("util")
+
+const getAllowedProperties = (entity, operation, context) =>
+{
     const model = context.config[`${entity}/model`]
     const acl = model?.acl
     if (!acl) return undefined
-
     const aclProperties = acl[operation]?.properties
     if (!aclProperties) return []
 

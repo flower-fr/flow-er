@@ -66,6 +66,10 @@ const loginPostV2 = async ({ req, res }, context, config, sql, logger) =>
     // New tokens
 
     const accessToken = await createAccessToken(context, config, user, sql)
+    if (!accessToken) {
+        data.status = "403"
+        return renderLogin({ context }, data)
+    }
     const refreshToken = createToken({ id: user.id }, config.jwtRefreshSecret, config.jwtRefreshExpirationTime)
     userData.refresh_token_expires_at = moment().add(config.jwtRefreshExpirationTime).format("YYYY-MM-DD HH:mm:ss")
 

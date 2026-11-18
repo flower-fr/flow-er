@@ -668,9 +668,24 @@ export default class AddForm extends View
                         filters.push(`${ property.dayOfWeekProperty }:in,${ dow.map(option => parseInt(option.value)).join(",") }`)
                     }
                 } else if (["select", "vector", "time"].includes(property.type)) {
-                    const value = document.getElementById(`flAdd-${ propertyId }-${ layout.screenIndex }`).value
-                    if (value) {
-                        filters.push(`${ propertyId }:${ value }`)
+                    const selectElement = document.getElementById(`flAdd-${ propertyId }-${ layout.screenIndex }`)
+                    const value = []
+                    if (property.multiple) {
+                        const selected = selectElement.selectedOptions
+                        if (selected) {
+                            for (let i = 0; i < selected.length; i++) {
+                                value.push(selected[i].value)
+                            }
+                        }
+                    }
+                    else {
+                        const val = document.getElementById(`flAdd-${ propertyId }-${ layout.screenIndex }`).value
+                        if (val) {
+                            value.push(val)
+                        }
+                    }
+                    if (value.length > 0) {
+                        filters.push(`${ propertyId }:${ value.join(",") }`)
                     }
                     else if (property.defaultWhere) {
                         filters.push(`${ propertyId}:${ property.defaultWhere }`)

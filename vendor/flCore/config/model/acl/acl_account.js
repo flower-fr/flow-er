@@ -1,7 +1,7 @@
 const acl_account = {
     get: {
         properties: {
-            adr_city: {},
+            adr_city: { roles: ["api"] },
             adr_street: {},
             adr_zip: {},
             id: {},
