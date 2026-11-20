@@ -96,7 +96,8 @@ export default class ListCell extends View
         }
 
         else if (property.type === "number") {
-            html.push(`<td class="text-end ${ rowClass   || ""}">${ parseFloat(row[propertyId]).toLocaleString("fr-FR", { minimumFractionDigits: 2 }) }</td>`)
+            const precision = (property.precision !== undefined) ? property.precision : 2
+            html.push(`<td class="text-end ${ rowClass   || ""}">${ parseFloat(row[propertyId]).toLocaleString("fr-FR", { minimumFractionDigits: precision, maximumFractionDigits: precision }) }</td>`)
         }
 
         else if (property.type === "percentage") {
