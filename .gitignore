@@ -11,6 +11,7 @@
 /module/
 /tmp/
 /vendor/*
+!/vendor/api/
 !/vendor/auth/
 !/vendor/bo/
 !/vendor/doc/
