@@ -118,7 +118,6 @@ export default class Controller
 
     showModal = async (object, title) =>
     {
-        console.log("in showModal", {title})
         const content = object.render()
         $("#flModalTabs").html(content)
         $("#flModalForm").hide()

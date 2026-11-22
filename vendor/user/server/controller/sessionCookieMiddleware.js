@@ -6,7 +6,6 @@ const { refreshToken } = require("./refreshToken")
 const sessionCookieMiddleware = (config, context, sql, logger) => async (req, res, next) => {
 
     let session = req.cookies["session"], token
-    logger && logger.debug(util.inspect({session}, {depth: null, colors: true}))
 
     if (!session) {
         session = req.query.jwt
