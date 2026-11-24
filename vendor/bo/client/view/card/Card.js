@@ -324,7 +324,7 @@ export default class Card extends View
                     <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-update-button" id="flCardUpdateButton-${layout.screenIndex}" title="${ this.translations["Update"] }">
                         <i class="fas fa-pen"></i>
                     </button>
-                    <button type="button" class="btn btn-primary btn-sm" id="flCardEpreuveButton-${layout.screenIndex}" data-fl-method="modal">＋ Épreuve</button>
+                    <!-- <button type="button" class="btn btn-primary btn-sm" id="flCardEpreuveButton-${layout.screenIndex}" data-fl-method="modal">＋ Épreuve</button> -->
                 </div>`)
 
         html.push(`
@@ -386,9 +386,9 @@ export default class Card extends View
         }
 
         // Action button
-        document.getElementById(`flCardEpreuveButton-${layout.screenIndex}`).onclick = () => {
-            this.getRichForm()
-        }
+        // document.getElementById(`flCardEpreuveButton-${layout.screenIndex}`).onclick = () => {
+        //     this.getRichForm()
+        // }
 
         // Close button
         document.getElementById(`flCardCloseButton-${layout.screenIndex}`).onclick = () => {
