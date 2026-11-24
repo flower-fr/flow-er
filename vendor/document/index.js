@@ -5,6 +5,7 @@ const { sessionCookieMiddleware } = require("../user/server/controller/sessionCo
 
 const { registerDocument } = require("./server/controller/index")
 
+const { getDocument } = require("./server/getDocument")
 const { getCellAction } = require("./server/getCellAction")
 const { postCellAction } = require("./server/postCellAction")
 const { patchCellAction } = require("./server/patchCellAction")
@@ -28,6 +29,7 @@ const register = async ({ context, config, logger, app }) => {
 
     const execute = executeService(context.clone(), config, logger)
 
+    app.get(`${config.prefix}v1/:document_id`, execute(getDocument, context, { sql, logger }))
     app.get(`${config.prefix}v1/document_cell/:document_id`, execute(getCellAction, context, { sql, logger }))
     app.get(`${config.prefix}v1/document_cell/:document_id/:identifier`, execute(getCellAction, context, { sql, logger }))
     app.post(`${config.prefix}v1/document_cell/:document_id`, execute(postCellAction, context, { sql, logger }))
