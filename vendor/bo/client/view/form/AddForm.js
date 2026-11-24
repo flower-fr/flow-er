@@ -66,13 +66,30 @@ export default class AddForm extends View
                 html.push(`
                         <input type="hidden" id="flAdd-${propertyId}-${ layout.screenIndex }" value="${ initialValue }" />`)
                         
-            } else if (["select", "vector"].includes(property.type)) {
+            } else if (["select"].includes(property.type)) {
                 html.push(`
                         <div class="form-outline mb-3" id="flAddOutline-${propertyId}-${ layout.screenIndex }">
                             <select class="form-select form-select-sm" id="flAdd-${propertyId}-${ layout.screenIndex }" data-mdb-size="sm" ${ property.required ? "required" : "" } ${ property.multiple ? "multiple" : "" } >
                                 ${ !property.multiple ? "<option />" : "" }`)
 
-                for (let [modalityId, modality] of Object.entries(property.modalities)) {
+                for (const [modalityId, modality] of Object.entries(property.modalities)) {
+                    html.push(`<option value="${modalityId}" ${ modality.archive ? "disabled" : "" } ${ modalityId === initialValue ? "selected" : "" }>${modality.label}</option>`)
+                }
+
+                html.push(`
+                            </select>
+                            <label class="form-label select-label">${ property.required ? "* " : "" }${property.label}</label>
+                        </div>`)
+                        
+            } else if (["vector"].includes(property.type)) {
+                html.push(`
+                        <div class="form-outline mb-3" id="flAddOutline-${propertyId}-${ layout.screenIndex }">
+                            <select class="form-select form-select-sm" id="flAdd-${propertyId}-${ layout.screenIndex }" data-mdb-size="sm" ${ property.required ? "required" : "" } ${ property.multiple ? "multiple" : "" } >
+                                ${ !property.multiple ? "<option />" : "" }`)
+
+                for (const row of property.rows) {
+                    const modalityId = row.id
+                    const modality = property.modalities[modalityId]
                     html.push(`<option value="${modalityId}" ${ modality.archive ? "disabled" : "" } ${ modalityId === initialValue ? "selected" : "" }>${modality.label}</option>`)
                 }
 
@@ -478,13 +495,12 @@ export default class AddForm extends View
                 const datePickerOptions = {
                     inline: true,
                 }
-                if (property.mdb) {
-                    datePickerOptions.datepicker = { 
-                        format: property.mdb.dateFormat
-                    }
-                    datePickerOptions.monthsFull = property.mdb.monthsFull
-                    datePickerOptions.weekdaysNarrow = property.mdb.weekdaysNarrow
+                datePickerOptions.datepicker = { 
+                    format: translations.mdbDateFormat
                 }
+                datePickerOptions.monthsFull = translations.mdbMonthsFull
+                datePickerOptions.startDay = translations.mdbStartDay
+                datePickerOptions.weekdaysNarrow = translations.mdbWeekdaysNarrow
                 new mdb.Datepicker(el, datePickerOptions)
 
                 el = document.getElementById(`flAdd-days_${ propertyId }-${ layout.screenIndex }`)
@@ -630,6 +646,10 @@ export default class AddForm extends View
         const { properties, columnLayout, layout } = this, filters = []
         for (const propertyId of Object.keys(columnLayout ? columnLayout : properties)) {
             const property = properties[propertyId]
+            if (!property) {
+                console.log(`missing property definition ${propertyId}`)
+                continue
+            }
             const options = columnLayout ? columnLayout[propertyId] : {}
             const initialValue = (options.initialValue === "today") ? moment().format("DD/MM/YYYY") : options.initialValue
             if (property.type === "hidden") {
@@ -668,27 +688,51 @@ export default class AddForm extends View
                         filters.push(`${ property.dayOfWeekProperty }:in,${ dow.map(option => parseInt(option.value)).join(",") }`)
                     }
                 } else if (["select", "vector", "time"].includes(property.type)) {
-                    const selectElement = document.getElementById(`flAdd-${ propertyId }-${ layout.screenIndex }`)
-                    const value = []
-                    if (property.multiple) {
+
+                    // Filter ids as foreign key of a link table
+
+                    if (property.linkEntity) {
+                        const selectElement = document.getElementById(`flAdd-${ propertyId }-${ layout.screenIndex }`)
+                        const value = []
                         const selected = selectElement.selectedOptions
                         if (selected) {
                             for (let i = 0; i < selected.length; i++) {
                                 value.push(selected[i].value)
                             }
                         }
-                    }
-                    else {
-                        const val = document.getElementById(`flAdd-${ propertyId }-${ layout.screenIndex }`).value
-                        if (val) {
-                            value.push(val)
+                        const matching = [...new Set(
+                            property.rows.filter(row => value.includes(String(row.id)))
+                                .map(x => x.links.map(x => x.fk))?.flat())
+                        ]
+                        if (matching.length > 0) {
+                            filters.push(`id:${ matching.join(",") }`)
                         }
+
                     }
-                    if (value.length > 0) {
-                        filters.push(`${ propertyId }:${ value.join(",") }`)
-                    }
-                    else if (property.defaultWhere) {
-                        filters.push(`${ propertyId}:${ property.defaultWhere }`)
+
+                    else {
+                        const selectElement = document.getElementById(`flAdd-${ propertyId }-${ layout.screenIndex }`)
+                        const value = []
+                        if (property.multiple) {
+                            const selected = selectElement.selectedOptions
+                            if (selected) {
+                                for (let i = 0; i < selected.length; i++) {
+                                    value.push(selected[i].value)
+                                }
+                            }
+                        }
+                        else {
+                            const val = document.getElementById(`flAdd-${ propertyId }-${ layout.screenIndex }`).value
+                            if (val) {
+                                value.push(val)
+                            }
+                        }
+                        if (value.length > 0) {
+                            filters.push(`${ propertyId }:${ value.join(",") }`)
+                        }
+                        else if (property.defaultWhere) {
+                            filters.push(`${ propertyId}:${ property.defaultWhere }`)
+                        }
                     }
                 } else if (property.type === "duration") {
                     const value = document.getElementById(`flAdd-${ propertyId }-${ layout.screenIndex }`).value

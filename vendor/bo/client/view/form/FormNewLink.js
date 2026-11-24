@@ -61,6 +61,7 @@ export default class FormNewLink extends View
                 return item.toLowerCase().includes(value.toLowerCase())
             })
         }
+console.log({el})
         new mdb.Autocomplete(el, {
             filter: dataFilter,
             noResults: property.noResults,

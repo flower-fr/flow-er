@@ -3,6 +3,7 @@ import Form from "../form/Form.js"
 import { codeDate, decodeDate } from "../../utils/codeDecodeDate.js"
 import flattenXlsx from "../../utils/flattenXlsx.js"
 import importXlsx from "../../utils/importXlsx.js"
+import exportXlsx from "../../utils/exportXlsx.js"
 import Toast from "../toast/Toast.js"
 import View from "../View.js"
 
@@ -18,8 +19,9 @@ export default class Global extends View
         this.importFiles = {}
     }
 
-    initialize = async () =>
+    initialize = async (addForm) =>
     {
+        this.addForm = addForm
         const response = await fetch(`/bo/global/${ this.entity }?view=${ this.view }`)
         if (!response.ok) return
         const { actions, translations } = await response.json()
@@ -49,8 +51,8 @@ export default class Global extends View
                         >
                             <i ${ (action.glyph) ? `class="fa ${action.glyph}"` : "" }></i> ${ action.label }
                         </button>`)
-
-                } else if (!action.type || action.type == "migration") {
+                }
+                else if (!action.type || action.type == "migration") {
                     actionHtml.push(`
                         <input type="file" class="form-control form-control-sm mb-2" id="flGlobalImportFile-${ actionId }" />
                         <button
@@ -60,8 +62,8 @@ export default class Global extends View
                         >
                             <i ${ (action.glyph) ? `class="fa ${action.glyph}"` : "" }></i> ${ action.label }
                         </button>`)
-
-                } else if (!action.type || action.type == "modal") {
+                }
+                else if (!action.type || action.type == "export") {
                     actionHtml.push(`
                         <button
                             type="button"
@@ -70,8 +72,18 @@ export default class Global extends View
                         >
                             <i ${ (action.glyph) ? `class="fa ${action.glyph}"` : "" }></i> ${ action.label }
                         </button>`)
-
-                } else {
+                }
+                else if (!action.type || action.type == "modal") {
+                    actionHtml.push(`
+                        <button
+                            type="button"
+                            class="btn ${ (action.class) ? `btn-${ action.class }` : "btn-outline-primary" }"
+                            id="flGlobal-${ actionId }"
+                        >
+                            <i ${ (action.glyph) ? `class="fa ${action.glyph}"` : "" }></i> ${ action.label }
+                        </button>`)
+                }
+                else {
                     if (action.controller) {
                         actionHtml.push(`
                             <a
@@ -119,8 +131,12 @@ export default class Global extends View
     {
         const { controller, entity, view, layout } = this
         for (const [actionId, action] of Object.entries(this.actions)) {
-            // Handle file input change
-            if (action.type && action.type === "import") {
+            if (action.type === "export") {
+                $(`#flGlobal-${ actionId }`).click(() => {
+                    return this.runExport(action)
+                })
+            }
+            else if (action.type && action.type === "import") {
                 document.getElementById(`flGlobalImportFile-${ actionId }`)?.addEventListener("change", event => {
                     this.importFiles[actionId] = event.target.files[0] ?? null
                 })
@@ -174,8 +190,8 @@ export default class Global extends View
         const chunks = []
         let i = 0
         while (i < rows.length) {
-            chunks.push(rows.slice(i, i + 2000))
-            i += 2000
+            chunks.push(rows.slice(i, i + 1))
+            i += 1
         }
 
         for (const chunk of chunks) {
@@ -275,7 +291,7 @@ export default class Global extends View
             })
             result = await response.json()
             console.log({ insertedRows: result })
-return
+
             const subscriptions = result.stored
 
             // TRANSIENT
@@ -424,5 +440,34 @@ return
         toast.trigger()
 
         this.layout.refreshList({})
+    }
+
+    runExport = async (tab) => {
+        let response = await fetch(`/bo/export/${ this.entity }?view=${ tab.view ?? "default" }`)
+        const config = await response.json()
+
+        const where = this.addForm?.extractFilters()
+        response = await fetch(`/core/v1/${ this.entity }?columns=${ Object.keys(config.properties).join(",") }&where=${ where }&order=${ tab.order }&limit=10000`)
+        const rows = (await response.json()).rows
+
+        // Merge mltiple values from linked entities
+        rows.forEach(row => {
+            for (const [propertyId, property] of Object.entries(config.properties)) {
+                if (property.linkEntity) {
+                    const names = Object.values(property.rows).reduce((acc, r) => {
+                        const link = (r.links.find(link => link.fk === row.id))
+                        if (link) {
+                            acc.push(property.modalities[r.id].label)
+                        }
+                        return acc
+                    }, new Array())
+                    row[propertyId] = names.join(", ")
+                }
+            }
+        })
+
+        const resolvedToken = config.params.fileName?.params?.[0] === "today" ? new Date().toISOString().split("T")[0] : ""
+        const fileName = config.params.fileName.template.replace("%s", resolvedToken)
+        await exportXlsx(fileName, config, rows)
     }
 }

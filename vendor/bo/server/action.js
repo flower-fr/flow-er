@@ -84,7 +84,7 @@ const action = async ({ req }, { context, sql, logger }) =>
             const { entity, linkEntity, key, format, columns, where, order } = property
             const items = await sql.execute({ context, type: "select", entity, columns, where, order })
             property.modalities = {}
-            property.rows = {}
+            property.rows = items
             for (const item of items) {
                 const formatted = []
                 let i = 1
@@ -95,7 +95,7 @@ const action = async ({ req }, { context, sql, logger }) =>
                     i++
                 }
                 property.modalities[item[key]] = { label: formatted.join("") }
-                property.rows[item[key]] = item
+                // property.rows[item[key]] = item
             }
 
             // Retrieve per vector links

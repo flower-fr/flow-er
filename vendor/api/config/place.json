@@ -1,0 +1,286 @@
+{
+    "place/model": {
+        "entities": {
+            "place": { "table": "place" }
+        },
+        "properties": {
+            "id": { "entity": "place", "column": "id" },
+            "status": { "entity": "place", "column": "status", "audit": true },
+            "identifier": { "entity": "place", "column": "identifier", "audit": true },
+            "name": { "entity": "place", "column": "name", "audit": true },
+            "region": { "entity": "place", "column": "region", "audit": true },
+            "logo": { "entity": "place", "column": "logo", "audit": true },
+            "adr_street": { "entity": "place", "column": "adr_street", "audit": true },
+            "adr_extended": { "entity": "place", "column": "adr_extended", "audit": true },
+            "adr_post_office_box": { "entity": "place", "column": "adr_post_office_box", "audit": true },
+            "adr_zip": { "entity": "place", "column": "adr_zip", "audit": true },
+            "adr_city": { "entity": "place", "column": "adr_city", "audit": true },
+            "adr_state": { "entity": "place", "column": "adr_state", "audit": true },
+            "vat_identifier": { "entity": "place", "column": "vat_identifier", "audit": true },
+            "adr_country": { "entity": "place", "column": "adr_country", "audit": true },
+            "bank_name": { "entity": "place", "column": "bank_name", "audit": true },
+            "bank_account": { "entity": "place", "column": "bank_account", "audit": true, "sensitive": true },
+            "bank_identifier": { "entity": "place", "column": "bank_identifier", "sensitive": true },
+
+            "public_key": { "entity": "place", "column": "public_key", "type": "mediumtext", "audit": true },
+            "datahub_identifier": { "entity": "place", "column": "datahub_identifier", "audit": true },
+
+            "keywords": { 
+                "column": "keywords",
+                "type": "CONCAT",
+                "components": ["name", "region", "adr_city"] 
+            },
+
+            "visibility": { "entity": "place", "column": "visibility", "audit": true },
+            "touched_at": { "entity": "place", "column": "touched_at", "type": "datetime" },
+            "touched_by": { "entity": "place", "column": "touched_by", "type": "int" }
+        },
+        "access": {
+            "id": "place_id"
+        }
+    },
+
+    "place/property/status": {
+        "definition": "inline",
+        "type": "select",
+        "modalities": {
+            "new": { "default": "Active", "fr_FR": "Actif" },
+            "archived": { "default": "Archived", "fr_FR": "Archivé" }
+        },
+        "labels": {
+            "default": "Status",
+            "fr_FR": "Statut"
+        }
+    },
+
+    "place/property/name": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Name",
+            "fr_FR": "Nom"
+        }
+    },
+
+    "place/property/region": {
+        "definition": "inline",
+        "type": "select",
+        "modalities": {
+            "auvergne_rhone_alpes": { "default": "Auvergne-Rhône-Alpes" },
+            "bourgogne_franche_comte": { "default": "Bourgogne-Franche-Comté" }, 
+            "bretagne": { "default": "Bretagne" }, 
+            "centre_val_de_loire": { "default": "Centre-Val de Loire" },
+            "corse": { "default": "Corse" },
+            "grand_est": { "default": "Grand Est" },
+            "guadeloupe": { "default": "Guadeloupe" },
+            "guyane": { "default": "Guyane" },
+            "hauts_de_france": { "default": "Hauts-de-France" },
+            "ile_de_france": { "default": "Île-de-France" },
+            "la_reunion": { "default": "La Réunion" },
+            "martinique": { "default": "Martinique" },
+            "mayotte": { "default": "Mayotte" },
+            "normandie": { "default": "Normandie" },
+            "nouvelle_aquitaine": { "default": "Nouvelle-Aquitaine" },
+            "occitanie": { "default": "Occitanie" },
+            "pays_de_la_loire": { "default": "Pays de la Loire" },
+            "provence_alpes_cote_d_azur": { "default": "Provence-Alpes-Côte d'Azur" }
+        },
+        "labels": {
+            "default": "Region",
+            "fr_FR": "Région"
+        }
+    },
+    
+    "place/property/adr_street": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Address street",
+            "fr_FR": "Adresse rue"
+        }
+    },
+
+    "place/property/adr_extended": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Address extended",
+            "fr_FR": "Adresse complément"
+        }
+    },
+
+    "place/property/adr_zip": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Address zip",
+            "fr_FR": "Adresse code postal"
+        }
+    },
+
+    "place/property/adr_city": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Address city",
+            "fr_FR": "Adresse ville"
+        }
+    },
+
+    "place/property/adr_country": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Address country",
+            "fr_FR": "Adresse pays"
+        }
+    },
+
+    "place/property/bank_name": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Bank name",
+            "fr_FR": "Nom de la banque"
+        }
+    },
+
+    "place/property/bank_account": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Bank identifier",
+            "fr_FR": "IBAN"
+        }
+    },
+
+    "place/property/bank_identifier": {
+        "definition": "inline",
+        "type": "input",
+        "labels": {
+            "default": "Bank code",
+            "fr_FR": "Domiciliation bancaire"
+        }
+    },
+
+    "crm_account/property/keywords": {
+        "type": "input",
+        "labels": {
+            "default": "Keywords",
+            "fr_FR": "Mots-clés"
+        }
+    },
+
+	"place/index/place": {
+        "order": "name",
+        "modalRenderers": {},
+        "keywords": { "placeholder": { "default": "region, name, city", "fr_FR": "région, nom, ville" }}
+    }, 
+
+    "place/search/default": {
+        "properties": {
+            "status": { "multiple": true },
+            "region": {},
+            "name": {}
+        }
+    },
+
+    "place/list/default": {
+        "checkData": ["id"],
+        "properties": {
+            "status": {},
+            "region": {},
+            "name": {}
+        }
+    },
+
+    "place/detail/default": {
+        "tabs": {
+            "place": {
+                "definition": "inline",
+                "controller": "flBo",
+                "action": "detailTab",
+                "entity": "place",
+                "id": "id",
+                "query": {
+                    "where": { "id": "id" }
+                },
+                "labels": {"default": "Place", "fr_FR": "Établissement"},
+                "renderer": "renderDetailTab"
+            }
+        }
+    },
+
+    "place/detailTab/default": {
+        "controller": "flBo",
+        "action": "detailTab",
+        "entity": "place",
+        "layout": {
+            "sections": {
+                "identification": {
+                    "entity": "place",
+                    "properties": ["status", "name", "region", "adr_street", "adr_extended", "adr_zip", "adr_city", "bank_name", "bank_account", "bank_identifier"],
+                    "renderer": "renderUpdate",
+                    "labels": { "default": "Signalétique" }
+                }    
+            },
+            "posts": {
+                "add": {
+                    "controller": "core",
+                    "action": "v1",
+                    "entity": "place",
+                    "labels": { "default": "Add", "fr_FR": "Ajouter" }
+                },
+                "update": {
+                    "condition": "id",
+                    "controller": "core",
+                    "action": "v1",
+                    "entity": "place",
+                    "labels": { "default": "Save", "fr_FR": "Enregistrer" }
+                }
+            }
+        },
+        "data": {
+            "place": { 
+                "where": {
+                    "id": "id"
+                },
+                "properties": {
+                    "status": { "required": true },
+                    "name": { "required": true },
+                    "region": {},
+                    "adr_street": { "required": true },
+                    "adr_extended": {},
+                    "adr_zip": { "required": true },
+                    "adr_city": { "required": true },
+                    "bank_name": {},
+                    "bank_account": {},
+                    "bank_identifier": {}
+                }
+            }
+        },
+        "properties": {}
+    },
+
+	"place/global/default": {
+		"actions": {
+			"export": {
+                "type": "link",
+				"controller": "flBo",
+				"action": "export",
+				"entity": "place",
+                "view": "default",
+				"labels": { "default": "Export", "fr_FR": "Exporter" },
+				"glyph": "fa-cloud-download-alt"
+            }
+        }
+    },
+
+    "place/v1/default": {
+        "properties": {
+            "status": {},
+            "region": {},
+            "name": {}
+        }
+    }
+}

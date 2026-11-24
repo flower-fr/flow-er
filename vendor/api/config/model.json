@@ -1,0 +1,39 @@
+{
+    "flCore/model/releases": {
+        "V250808": { 
+            "entities": [],
+            "properties" : [
+                "place/logo",
+                "place/adr_street",
+                "place/adr_extended",
+                "place/adr_post_office_box",
+                "place/adr_zip",
+                "place/adr_city",
+                "place/adr_state",
+                "place/adr_country"
+            ]
+        },
+        "V250829": { 
+            "entities": [
+            ],
+            "properties" : [
+                "place/bank_name",
+                "place/bank_account",
+                "place/bank_identifier"
+            ]
+        },
+        "V251212": { 
+            "entities": [
+                "www_content"
+            ],
+            "properties" : []
+        },
+        "V260925": { 
+            "entities": [],
+            "properties" : [
+                "place/identifier",
+                "place/public_key"
+            ]
+        }
+    }
+}
