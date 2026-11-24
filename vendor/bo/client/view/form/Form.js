@@ -117,11 +117,14 @@ export default class Form extends View
 
             for (const [propertyId, options] of Object.entries(bloc.properties)) {
                 const property = properties[propertyId]
-
+                if (!property) {
+                    console.log(`missing property definition ${propertyId}`)
+                    continue
+                }
                 const label = property.label
                 const propertyType = property.type
                 const divClass = options.class ? options.class : "col-md-6"
-                const disabled = property.disabled
+                const disabled = (options.disabled !== undefined) ? options.disabled : property.disabled
                 const required = property.required
 
                 const value = this.formatValueFromData(propertyId, property, data)

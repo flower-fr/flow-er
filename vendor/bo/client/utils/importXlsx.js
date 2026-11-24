@@ -29,15 +29,13 @@ function separateLastFirst(str) {
 
 const importXlsx = (xlsxRows, config, dbRows) => {
     const identifierHeader = config.properties.identifier?.header
-    const dbRowsByIdentifier = new Map(dbRows.map(dbRow => [dbRow.identifier, dbRow]))
-
+    const dbRowsByIdentifier = new Map(dbRows.map(dbRow => [dbRow[config.properties.identifier?.property], dbRow]))
     const toUpdate = []
     const toInsert = []
 
     for (const xlsxRow of xlsxRows) {
         let identifier = xlsxRow[identifierHeader]
         const dbRow = dbRowsByIdentifier.get(identifier)
-
         const conflicts = {}
         const changes = {}
 

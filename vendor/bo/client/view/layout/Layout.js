@@ -59,7 +59,7 @@ export default class Layout extends View
         // await this.search.initialize()
         await this.dashboard?.initialize()
         await this.addForm?.initialize()
-        await this.global?.initialize()
+        await this.global?.initialize(this.addForm)
         // await this.list?.initialize()
         await this.group?.initialize()
         await this.alertsManager?.initialize()

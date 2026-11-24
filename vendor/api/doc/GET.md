@@ -22,7 +22,7 @@ The response contains the JWT to use for subsequent API calls.
 Every request to the API must carry the token in the `Authorization` header as a Bearer token:
 
 ```
-GET /core/v1/invoices
+GET /api/v1/some-entity
 Authorization: Bearer <token>
 ```
 
@@ -32,7 +32,7 @@ A request without a token, or with an invalid or expired token, is rejected with
 
 # Generic GET Requests
 
-All read-only resources of the Core API follow a single generic route. Replace `:entity` with the resource name (e.g. `invoice`, `user`, `product`).
+All read-only resources of the Core API follow a single generic route. Replace `:entity` with the resource name (e.g. `some-entity`, `user`, `product`).
 
 ```
 GET /api/v1/:entity
@@ -50,7 +50,7 @@ The response is always a JSON array of objects, one object per matching record. 
 | `limit`   | string | No       | Maximum number of records to return. Defaults to 100. |
 
 ```
-GET /core/v1/invoices?columns=id,date,total&where=status:active|total:>=,1000&order=-date&limit=50
+GET /core/v1/some-entity?columns=id,date,total&where=status:active|total:>=,1000&order=-date&limit=50
 ```
 
 ## `columns`
@@ -168,7 +168,7 @@ A `limit` of `0` or a non-integer value produces a `400 Bad Request` error. When
 ## Full Example
 
 ```
-GET /core/v1/invoice?columns=id,customer,total&where=status:active,total:>=,500|paid_at:null&order=total:desc&limit=20
+GET /api/v1/invoice?columns=id,customer,total&where=status:active,total:>=,500|paid_at:null&order=total:desc&limit=20
 ```
 
 Returns at most 20 active, unpaid invoices of at least 500, sorted by total (highest first), each with only the `id`, `customer` and `total` fields.

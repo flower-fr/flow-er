@@ -2,7 +2,7 @@ const acl_account = {
     get: {
         properties: {
             id:                     { roles: ["responsible"], description: "The unique identifier for the account" },
-            adr_city:               { roles: ["api"], description: "The city of the account's address" },
+            adr_city:               { roles: ["api", "responsible"], description: "The city of the account's address" },
             adr_street:             { roles: ["responsible"], description: "The street of the account's address" },
             adr_zip:                { roles: ["responsible"], description: "The zip code of the account's address" },
             contact_1_id:           { roles: ["responsible"], description: "The ID of the first contact for the account" },
@@ -24,6 +24,7 @@ const acl_account = {
     },
     post: {
         properties: {
+            id:                     { roles: ["responsible"],
             adr_city:               { roles: ["responsible"], description: "The city of the account holder's address" },
             adr_street:             { roles: ["responsible"], description: "The street of the account holder's address" },
             adr_zip:                { roles: ["responsible"], description: "The zip code of the account holder's address" },

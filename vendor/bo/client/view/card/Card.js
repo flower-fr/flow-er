@@ -1,6 +1,7 @@
 import View from "../View.js"
 
 import Form from "../form/Form.js"
+import RichForm from "../form/RichForm.js"
 
 export default class Card extends View
 {
@@ -323,6 +324,7 @@ export default class Card extends View
                     <button type="button" class="btn btn-sm btn-outline-primary index-btn fl-update-button" id="flCardUpdateButton-${layout.screenIndex}" title="${ this.translations["Update"] }">
                         <i class="fas fa-pen"></i>
                     </button>
+                    <button type="button" class="btn btn-primary btn-sm" id="flCardEpreuveButton-${layout.screenIndex}" data-fl-method="modal">＋ Épreuve</button>
                 </div>`)
 
         html.push(`
@@ -350,6 +352,24 @@ export default class Card extends View
         controller.showModal(form, form.title)
     }
 
+    getRichForm = async () =>
+    {
+        const { controller, entity, id, view, layout } = this
+        const form = new RichForm({ controller, entity, view, id, layout, onSuccess: async () => {
+            layout.refreshList({})
+
+            // Refresh the card
+            const cardEl = document.getElementById(`flCard-${layout.screenIndex}`)
+            if (cardEl) {
+                await this.initialize()
+                cardEl.innerHTML = this.render()
+                this.trigger()
+            } 
+        }})
+        await form.initialize()
+        controller.showModal(form, form.title)
+    }
+
     trigger = () =>
     {
         const { layout } = this
@@ -363,6 +383,11 @@ export default class Card extends View
         // Update button
         document.getElementById(`flCardUpdateButton-${layout.screenIndex}`).onclick = () => {
             this.getForm()
+        }
+
+        // Action button
+        document.getElementById(`flCardEpreuveButton-${layout.screenIndex}`).onclick = () => {
+            this.getRichForm()
         }
 
         // Close button
